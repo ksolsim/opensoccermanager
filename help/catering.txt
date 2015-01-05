@@ -1,0 +1,3 @@
+Catering items such as hot dogs and meals are sold at restaurants, burger bars, bars, and, cafes with different shops selling more or less items.
+
+The production cost is the amount of money it costs to produce and sell the item, and is a fixed value. The profit percentage determines the amount of money which will be made on each item, and is adjustable. The higher the profit percentage, the fewer items that are likely to be sold. Adjusting the percentage adjusts the final cost to the customer.

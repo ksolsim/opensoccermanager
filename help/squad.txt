@@ -1,0 +1,9 @@
+The squad selection screen lists all the players belonging to your club, along with other important information such as position, contract length, skills, fitness, goals, appearances and much more.
+
+In the right panel, both the starting eleven and substitutes can be selected using the dropdown menus.
+
+If you enable 'Limit Listed Players', the dropdown menus will only display players which are most suitable for use in the position. E.g. a goalkeeper will not show in the dropdown menus for the midfield postions (Players can still be selected in these positions if required however).
+
+Filter
+
+A filter dialog is provided to list only players in the specified position. It can also be used to filter out players who are not available for the next game due to injury and suspension.

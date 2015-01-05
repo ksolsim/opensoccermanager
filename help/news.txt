@@ -1,0 +1,11 @@
+The news screen displays a range of informational and warning messages to the user to guide them through the game. This can include things such as transfer offers and responses, sponsorship offers, contract renewals, and the opinion of the chairman and assistant manager.
+
+New news items are placed at the top of the list and highlighted in bold when unread. When the news item is read by the user, the message will no longer be bold in the list. Also, when the last unread message is viewed, the notification on the status bar in the bottom left is removed.
+
+Searching
+
+The title and text body of each message can be searched using the search entry in the top left of the screen.
+
+Filtering
+
+News items are categorised, and can be filtered by selecting an appropriate item from the filter dropdown menu.

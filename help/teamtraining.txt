@@ -1,0 +1,5 @@
+Team Training is used to maintain and improve skill levels of players in the squad. A number of training areas can be worked on such as five-a-side, passing, offside trap, and gym work amongst others. When team training is not setup, the team performances will suffer initially followed by player skill values also dropping.
+
+Individual training must also be assigned to ensure that any individual training setup is completed.
+
+It is also important to rest players, as working them too hard will reduce morale and possibly impact fitness over time. Training should also be refreshed periodically to prevent players from becoming bored with the training schedule.

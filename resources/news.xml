@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="utf-8"?>
+<news>
+    <article id="MA01">
+        <title>_CLUB_ announce managerial appointment</title>
+        <message>_CLUB_ have confirmed the signing of manager _USER_. The club are looking forward to the new season and hope for success in the future.</message>
+        <category>1</category>
+    </article>
+    <article id="MA01">
+        <title>_USER_ announced as new manager</title>
+        <message>_CLUB_ have today announced that manager _USER_ will join the club. The club are delighted with the appointment and have set high hopes for the new season.</message>
+        <category>1</category>
+    </article>
+    <article id="FX01">
+        <title>League fixtures announced for _SEASON_ season</title>
+        <message>The league fixtures for the _SEASON_ season have been announced. The first three are _FIXTURE1_, _FIXTURE2_, and _FIXTURE3_.</message>
+        <category>6</category>
+    </article>
+    <article id="FX01">
+        <title>Fixtures available for _SEASON_ season</title>
+        <message>The Football Association has released the fixture list for this season. The first three games we face are _FIXTURE1_, _FIXTURE2_, and _FIXTURE3_.</message>
+        <category>6</category>
+    </article>
+    <article id="PC01">
+        <title>_PLAYER_ has left the club</title>
+        <message>The contract of _PLAYER_ has now expired. The player has collected his belongings and said goodbye to his teammates.</message>
+        <category>10</category>
+    </article>
+    <article id="PC01">
+        <title>The contract of _PLAYER_ has expired</title>
+        <message>_PLAYER_ has now left the club on a free transfer after his contract expired. The player has said goodbye to the other players and staff.</message>
+        <category>10</category>
+    </article>
+    <article id="PC02">
+        <title>Player contract close to expiring</title>
+        <message>The contract of _PLAYER_ is due to expire in _WEEKS_ weeks, and if we expect to retain his services, we really need to offer a new contract now. Once expired, the player will be able to sign for any club for free.</message>
+        <category>10</category>
+    </article>
+    <article id="PC02">
+        <title>Player contract is due to expire</title>
+        <message>In _WEEKS_ weeks, the contract of _PLAYER_ is going to end and he will be free to join another club at no cost. If we wish to retain him, we need to look at offering a new contract soon.</message>
+        <category>10</category>
+    </article>
+    <article id="BS01">
+        <title>New sponsorship offer received</title>
+        <message>We have received a new sponsorship offer that you need to take a look at. We need to decide on whether to proceed with the deal or not as soon as possible. If we do reject the deal, it will be another few weeks before another is offered to us.</message>
+        <category>8</category>
+    </article>
+    <article id="BS01">
+        <title>Offer of sponsorship received</title>
+        <message>The club has received a new sponsorship offer that needs to be looked over. The deal needs to be decided on as soon as possible, however if the deal doesn't meet our expectations, it will probably be another few weeks before a new offer arrives.</message>
+        <category>8</category>
+    </article>
+    <article id="BS01">
+        <title>Sponsorship offer made to club</title>
+        <message>A sponsorship offer has been received which needs to be looked at by you. We need to decide on whether the deal is suitable or not as soon as possible. If we reject, it may be another few weeks before the club receives another offer.</message>
+        <category>8</category>
+    </article>
+    <article id="EX01">
+        <title>Expectations for this season revealed</title>
+        <message>Chairman _CHAIRMAN_ has announced that this season, the expectations are to challenge for the league title. The board believe that the team is strong enough and there is enough financial support to win it.</message>
+        <category>2</category>
+    </article>
+    <article id="EX01">
+        <title>Season expectations announced by board</title>
+        <message>The board along with chairman _CHAIRMAN_ have announced that the club should be attempting to win the league this season. The fans have made clear their expectations and believe that a strong campaign is essential.</message>
+        <category>2</category>
+    </article>
+    <article id="EX02">
+        <title>Board announce season aims and expectations</title>
+        <message>The club board have revealed that they expect the club to have a strong season, with a mid-table finish. The club should be looking to beat most teams and put up a good fight against those expecting to win the league.</message>
+        <category>2</category>
+    </article>
+    <article id="EX03">
+        <title>Chairman expects relegation battle</title>
+        <message>Club chairman _CHAIRMAN_ has said he expects the club to stave off relegation and makes strong plans for next season. He also said that he expects it to be a tough season but feels there are other teams in the league who aren't as good.</message>
+        <category>2</category>
+    </article>
+    <article id="EX03">
+        <title>Relegation battle expected this season</title>
+        <message>The club have released a statement today saying they expect us to spend the season in a battle against relegation, however they also believe we have enough quality to survive. Plans should be made to improve the squad wherever possible.</message>
+        <category>2</category>
+    </article>
+    <article id="TT02">
+        <title>Team training schedule needs change</title>
+        <message>The team training schedule has been the same now for a couple of months, and the lads are getting a little bored of the same routine. Perhaps we could have a change and introduce some different skills into the sessions?</message>
+        <category>3</category>
+    </article>
+    <article id="TT02">
+        <title>Request to refresh team training</title>
+        <message>Some of the lads have been complaining about the team training schedule being the same for the last few months. I recommend that we change it, and take the opportunity to train some new skills.</message>
+        <category>3</category>
+    </article>
+    <article id="TT03">
+        <title>Players ask for training break on Sunday</title>
+        <message>The players are getting a little upset that we have scheduled team training on Sunday. Maybe we should give them a day off to recuperate?</message>
+        <category>2</category>
+    </article>
+    <article id="TT03">
+        <title>Squad asking for no training on Sunday</title>
+        <message>The majority of the squad is asking for a break from team training on Sunday. The training schedule has disrupted morale as the players would like the day off.</message>
+        <category>2</category>
+    </article>
+    <article id="TT04">
+        <title>Players being overworked on team training</title>
+        <message>The squad are looking a little jaded from the amount of work they have been doing in team training. We really could do with reducing the workload for a couple of months.</message>
+        <category>2</category>
+    </article>
+    <article id="BS03">
+        <title>Sponsorship offer withdrawn</title>
+        <message>You missed our meeting with the sponsor and they have now withdrawn a very good offer. Don't let that happen again or you'll be looking for a new job!</message>
+        <category>2</category>
+    </article>
+    <article id="TT01">
+        <title>No training schedule currently setup</title>
+        <message>To get the best out of the team, it is important we setup a team training schedule which covers a number of skills. We also need to assign time to individual training to ensure the players have time to hone individual skills.</message>
+        <category>3</category>
+    </article>
+    <article id="TO01">
+        <title>Response received to _PLAYER_ transfer offer</title>
+        <message>The transfer offer lodged for _PLAYER_ has been rejected by _TEAM_. The club do not wish to sell him at this time.</message>
+        <category>4</category>
+    </article>
+    <article id="TO01">
+        <title>Response to _PLAYER_ transfer enquiry received</title>
+        <message>A response has been received to our request to purchase _PLAYER_. The enquiry has been rejected by _TEAM_ as they do not want to sell.</message>
+        <category>4</category>
+    </article>
+    <article id="TO02">
+        <title>_TEAM_ has responded to transfer offer</title>
+        <message>The transfer enquiry made for _PLAYER_ will be accepted pending successful negotiation of the price. The club invite you to negotiate.</message>
+        <category>4</category>
+    </article>
+    <article id="TO05">
+        <title>Response to offer for _PLAYER_</title>
+        <message>_TEAM_ have agreed to the transfer fee for _PLAYER_. The club have allowed us to open negotiations with the player, however the transfer completion is now dependent on a deal being made.</message>
+        <category>4</category>
+    </article>
+    <article id="TO06">
+        <title>Transfer fee for _PLAYER_ rejected</title>
+        <message>The transfer fee submitted for _PLAYER_ has been rejected due to _TEAM_ believing that the player is worth more money.</message>
+        <category>4</category>
+    </article>
+    <article id="TO07">
+        <title>Contract offer rejected by _PLAYER_</title>
+        <message>_PLAYER_ has rejected the contract offered by us. He has decided to stay with his current team but thanks us for the interest shown in him.</message>
+        <category>4</category>
+    </article>
+    <article id="TO08">
+        <title>_PLAYER_ has agreed to the contract offered</title>
+        <message>_PLAYER_ is delighted with the contract offer made and is ready to transfer to our club. We just need to confirm the signing to complete the transfer.</message>
+        <category>4</category>
+    </article>
+    <article id="TO09">
+        <title>_PLAYER_ has accepted our transfer enquiry</title>
+        <message>_PLAYER_ has accepted the offer of a free transfer and is willing to open contract negotiations to join the club.</message>
+        <category>4</category>
+    </article>
+    <article id="TO10">
+        <title>_PLAYER_ rejects our contract offer</title>
+        <message>The contract offered to _PLAYER_ has been rejected as the player believes he is worth more than the offer.</message>
+        <category>4</category>
+    </article>
+    <article id="TO11">
+        <title>_PLAYER_ agrees to contract offering</title>
+        <message>The contract for _PLAYER_ has now been finalised. The player will join up with the team on confirmation by us of the transfer.</message>
+        <category>4</category>
+    </article>
+    <article id="LO01">
+        <title>Reply received to _PLAYER_ loan enquiry</title>
+        <message>We have received a reply to our request to take _PLAYER_ on loan. _TEAM_ have rejected the offer as they do not wish to loan him to a rival club.</message>
+        <category>4</category>
+    </article>
+    <article id="LO02">
+        <title>Answer to _PLAYER_ loan negotiation enquiry</title>
+        <message>_TEAM_ have responded to the loan offer for _PLAYER_ positively and have suggested we submit a offer on the loan-length period.</message>
+        <category>4</category>
+    </article>
+    <article id="LO03">
+        <title>_TEAM_ response to loan negotiation offer</title>
+        <message>The loan offer made for _PLAYER_ has been received and rejected by _TEAM_. The club do not wish to loan the player for that length of time.</message>
+        <category>4</category>
+    </article>
+    <article id="LO04">
+        <title>_PLAYER_ loan offer accepted by _TEAM_</title>
+        <message>The loan offer made to _TEAM_ for _PLAYER_ has been accepted. The player will be joining the rest of the squad shortly.</message>
+        <category>4</category>
+    </article>
+    <article id="BS04">
+        <title>Advertising funds being missed out on</title>
+        <message>We really need to keep a handle on the advertising situation, and arrange new adverts when they come available. Each match which passes where there is no advertising is lost revenue for the club.</message>
+        <category>2</category>
+    </article>
+    <article id="BS04">
+        <title>Advertising issues need to be resolved</title>
+        <message>A key part of your job includes handling the business side, and we are losing money by not arranging advertising. Ensure you resolve this or I'll find another manager who will.</message>
+        <category>2</category>
+    </article>
+    <article id="IN01">
+        <title>_PLAYER_ out for _WEEKS_ weeks</title>
+        <message>The coaching team report that _PLAYER_ suffered a _INJURY_ and will be unable to play for the next _WEEKS_ weeks.</message>
+        <category>7</category>
+    </article>
+    <article id="IN02">
+        <title>Injury to _PLAYER_ in recent match</title>
+        <message>We have had confirmation from the medical team that _PLAYER_ has suffered a _INJURY_, and is unable to play for _WEEKS_ weeks.</message>
+        <category>7</category>
+    </article>
+    <article id="IN03">
+        <title>_PLAYER_ returns to training after injury</title>
+        <message>_PLAYER_ has returned to team and individual training as he has now recovered from _INJURY_. He is not fully match fit however so his complete recovery will take some further time.</message>
+        <category>7</category>
+    </article>
+    <article id="TE01">
+        <title>Transfer bid for _PLAYER_ declined</title>
+        <message>_TEAM_ have rejected the enquiry for _PLAYER_ as they do not have enough depth in their squad to complete the transfer.</message>
+        <category>4</category>
+    </article>
+    <article id="TE01">
+        <title>_PLAYER_ transfer enquiry turned down</title>
+        <message>The transfer enquiry lodged for _PLAYER_ has been dismissed as _TEAM_ do not have enough players to transfer the player.</message>
+        <category>4</category>
+    </article>
+    <article id="LE01">
+        <title>Loan contract for _PLAYER_ cancelled</title>
+        <message>The loan contract for _PLAYER_ has been ended and the player has returned to _TEAM_. The player has said goodbye to the rest of the squad.</message>
+        <category>9</category>
+    </article>
+    <article id="LE01">
+        <title>_PLAYER_ has loan contract terminated</title>
+        <message>_PLAYER_ has now rejoined his parent club _TEAM_ after we cancelled his loan contract. He thanks you for his spell at the club.</message>
+        <category>9</category>
+    </article>
+    <article id="LA01">
+        <title>Loan period for _PLAYER_ expiring soon</title>
+        <message>The loan contract agreed for _PLAYER_ is due to expire in the next _WEEKS_ weeks. If we do not negotiate an extension, the player will rejoin his parent club once the contract has ended.</message>
+        <category>9</category>
+    </article>
+    <article id="LA01">
+        <title>_PLAYER_ loan period is due to end</title>
+        <message>The loan period for _PLAYER_ is due to expire in _WEEKS_ weeks. If we want to extend his spell, we'll need to agree an extension with _TEAM_.</message>
+        <category>9</category>
+    </article>
+    <article id="LA01">
+        <title>Loan contract ending for _PLAYER_</title>
+        <message>_PLAYER_ is due to return to _TEAM_ in _WEEKS_ weeks once his loan contract expires. We may have a chance at extending the loan, however we'll need to negotiate quickly.</message>
+        <category>9</category>
+    </article>
+    <article id="CC01">
+        <title>_COACH_ contract has expired</title>
+        <message>Coach _COACH_ has left the club as his contract expired this week. He has said goodbye to the other members of staff and thanks you for his time at the club.</message>
+        <category>3</category>
+    </article>
+    <article id="SC01">
+        <title>_SCOUT_ has left the club</title>
+        <message>Member of the scouting team _SCOUT_ has now left the club after his contract expired. He thanks you and the rest of the team here for his time with the club.</message>
+        <category>3</category>
+    </article>
+    <article id="SH01">
+        <title>Shortlisted player available for free</title>
+        <message>The contract of _PLAYER_ has now expired as his club failed to renew. We have the opportunity to sign him for free if we can make a deal with the player.</message>
+        <category>3</category>
+    </article>
+    <article id="RC01">
+        <title>_PLAYER_ negotiates new contract with _TEAM_</title>
+        <message>_TEAM_ have today announced a new contract with _PLAYER_ which will see the player stay at the club for the next _PERIOD_ years. The club are delighted to have sewn up the deal.</message>
+        <category>1</category>
+    </article>
+    <article id="RC01">
+        <title>_TEAM_ agree new deal with _PLAYER_</title>
+        <message>_PLAYER_ has reported that he has signed a new contract with _TEAM_. The new deal will see him stay at the club for _PERIOD_ years. The club are said to be extremely happy to have finalised the deal.</message>
+        <category>1</category>
+    </article>
+    <article id="RE01">
+        <title>Chairman reaction to recent result</title>
+        <message>That was a fantastic performance in the _RESULT_ win against _TEAM_. The performance was one of the best this club has seen in recent history.</message>
+        <category>2</category>
+    </article>
+    <article id="RE02">
+        <title>Communication from chairman about loss</title>
+        <message>The _RESULT_ against _TEAM_ was extremely poor. I want to see a marked improvement and no more results like that again, otherwise you'll be looking for another job.</message>
+        <category>2</category>
+    </article>
+    <article id="ST01">
+        <title>Shortlisted player approached by rival</title>
+        <message>_PLAYER_ listed on our shortlist has been approached by another club for transfer. If we are looking to sign this player, we should be looking to make an offer ourselves.</message>
+        <category>1</category>
+    </article>
+    <article id="ST02">
+        <title>Player on shortlist loan enquiry</title>
+        <message>A rival club has make an enquiry into taking _PLAYER_ on loan. We will need to look into making a transfer offer soon ourselves if we wish to sign the player.</message>
+        <category>1</category>
+    </article>
+    <article id="PZ01">
+        <title>Prize money for last season received</title>
+        <message>The club has received a cheque for _AMOUNT_ for last seasons _POSITION_ finish. The money can be used to fund new player purchases, stadium improvements, or other things to improve the club.</message>
+        <category>1</category>
+    </article>
+    <article id="SU01">
+        <title>_PLAYER_ suspended for _PERIOD_ matches</title>
+        <message>_PLAYER_ will be suspended for _PERIOD_ matches as he received two yellow cards in a recent match.</message>
+        <category>1</category>
+    </article>
+    <article id="SU02">
+        <title>Suspension for _PLAYER_ for _PERIOD_ games</title>
+        <message>As _PLAYER_ was sent off in a recent match for _SUSPENSION_, he will be suspended for the next _PERIOD_ matches.</message>
+        <category>1</category>
+    </article>
+    <article id="SU03">
+        <title>_PLAYER_ banned for _PERIOD_ matches</title>
+        <message>Due to accumulating _CARDS_ cards this season, _PLAYER_ will be unavailable for _PERIOD_ matches as he serves his suspension.</message>
+        <category>1</category>
+    </article>
+    <article id="SM01">
+        <title>Stadium condition is extremely poor</title>
+        <message>Due to our lack of upkeep on the stadium, the stadium is in extremely poor condition and in some cases very dangerous. We need to make investment now to prevent some parts of the stadium being closed.</message>
+        <category>11</category>
+    </article>
+    <article id="SM02">
+        <title>Fans complaining about state of stadium</title>
+        <message>Due to our recent cuts to the stadium maintenance budget, a number of fans have voiced their concerns at the state of the stadium, and have suggested that we should make improvements to keep up attendances.</message>
+        <category>11</category>
+    </article>
+    <article id="SG01">
+        <title>Improvement grant for stadium received</title>
+        <message>The stadium improvement grant for _AMOUNT_ has now been received. The amount can be used to improve the stadium, or the shops outside.</message>
+        <category>1</category>
+    </article>
+</news>

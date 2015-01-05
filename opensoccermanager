@@ -1,0 +1,813 @@
+#!/usr/bin/env python3
+
+#  OpenSoccerManager
+#
+#  Copyright 2014 Andrew Steele <andrew@andrewsteele.me.uk>
+#
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program; if not, write to the Free Software
+#  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+#  MA 02110-1301, USA.
+
+
+from gi.repository import Gtk
+from gi.repository import GdkPixbuf
+from lxml import etree as ET
+import random
+import os
+
+import ai
+import business
+import calculator
+import constants
+import data
+import database
+import dialogs
+import display
+import events
+import fileio
+import finances
+import fixtures
+import game
+import information
+import match
+import money
+import music
+import news
+import preferences
+import sales
+import squad
+import stadium
+import staff
+import team
+import training
+import transfer
+import version
+import view
+import widgets
+
+
+class Window(Gtk.Window):
+    def __init__(self):
+        iconpath = os.path.join("resources", "logo.svg")
+
+        Gtk.Window.__init__(self)
+        self.set_title("Open Soccer Manager")
+        self.set_default_size(780, 480)
+        self.set_icon_from_file(iconpath)
+        self.connect("delete-event", exit_game)
+
+        game.accelgroup = Gtk.AccelGroup()
+        self.add_accel_group(game.accelgroup)
+
+    def run(self):
+        self.add(screenmain)
+        self.show_all()
+
+        prefs.readfile()
+        fileio.check_config()
+
+        if game.music:
+            game.player.play()
+
+
+class ScreenMain(Gtk.Grid):
+    def __init__(self):
+        Gtk.Grid.__init__(self)
+        self.set_row_spacing(40)
+        self.set_border_width(5)
+
+        buttonbox = Gtk.ButtonBox()
+        buttonbox.set_hexpand(True)
+        buttonbox.set_vexpand(True)
+        buttonbox.set_orientation(Gtk.Orientation.VERTICAL)
+        buttonbox.set_layout(Gtk.ButtonBoxStyle.EXPAND)
+        buttonbox.set_border_width(25)
+        self.attach(buttonbox, 1, 1, 1, 1)
+
+        buttonNewGame = widgets.Button("_New Game")
+        buttonNewGame.connect("clicked", self.new_game_clicked)
+        buttonbox.add(buttonNewGame)
+        buttonLoadGame = widgets.Button("_Load Game")
+        buttonLoadGame.connect("clicked", self.load_game_clicked)
+        buttonbox.add(buttonLoadGame)
+        buttonDeleteGame = widgets.Button("_Delete Game")
+        buttonDeleteGame.connect("clicked", lambda a: dialogs.delete_dialog())
+        buttonbox.add(buttonDeleteGame)
+        buttonPreferences = widgets.Button("_Preferences")
+        buttonPreferences.connect("clicked", lambda a: dialogs.preferences_dialog())
+        buttonbox.add(buttonPreferences)
+        buttonQuit = widgets.Button("_Quit")
+        buttonQuit.connect("clicked", lambda q: Gtk.main_quit())
+        buttonbox.add(buttonQuit)
+
+        label = widgets.AlignedLabel("Version %s (Build %s)" % (version.VERSION, version.DATE))
+        self.attach(label, 0, 2, 1, 1)
+
+        label = Gtk.Label()
+        label.set_markup("<a href='%s'>Open Soccer Manager Website</a>" % (version.WEBSITE))
+        label.set_alignment(1, 0.5)
+        self.attach(label, 2, 2, 1, 1)
+
+    def new_game_clicked(self, button):
+        game.window.remove(screenmain)
+        game.window.add(screendetails)
+
+        data.datainit()
+        screendetails.run()
+
+    def load_game_clicked(self, button):
+        state = dialogs.file_dialog(0)
+
+        if state:
+            game.window.remove(screenmain)
+            game.window.add(screengame)
+            screengame.run()
+
+            screen_loader(game.active_screen_id)
+
+
+class ScreenDetails(Gtk.Grid):
+    '''
+    Grab the details for the game including manager name, selected club,
+    and finances.
+    '''
+    def __init__(self):
+        Gtk.Grid.__init__(self)
+        self.set_row_spacing(5)
+        self.set_column_spacing(5)
+        self.set_border_width(5)
+
+        self.liststoreName = Gtk.ListStore(str)
+        self.liststoreClubs = Gtk.ListStore(int, str)
+
+        treemodelsort = Gtk.TreeModelSort(self.liststoreClubs)
+        treemodelsort.set_sort_column_id(1, Gtk.SortType.ASCENDING)
+
+        label = widgets.AlignedLabel("Name")
+        self.attach(label, 0, 0, 1, 1)
+        self.comboboxName = Gtk.ComboBoxText.new_with_entry()
+        self.comboboxName.set_model(self.liststoreName)
+        self.entryName = self.comboboxName.get_child()
+        self.entryName.connect("changed", self.continue_status)
+        self.attach(self.comboboxName, 1, 0, 1, 1)
+
+        label = widgets.AlignedLabel("Club")
+        self.attach(label, 0, 1, 1, 1)
+        cellrenderertext = Gtk.CellRendererText()
+        self.comboboxClub = Gtk.ComboBox()
+        self.comboboxClub.set_model(treemodelsort)
+        self.comboboxClub.pack_start(cellrenderertext, True)
+        self.comboboxClub.add_attribute(cellrenderertext, "text", 1)
+        self.attach(self.comboboxClub, 1, 1, 1, 1)
+
+        label = widgets.AlignedLabel("Finances")
+        self.attach(label, 0, 2, 1, 1)
+        self.radiobuttonFinancesRep = Gtk.RadioButton("Reputation-Based Finances")
+        self.radiobuttonFinancesRep.connect("toggled", self.finances_changed)
+        self.attach(self.radiobuttonFinancesRep, 1, 2, 1, 1)
+        self.radiobuttonFinancesUSM = Gtk.RadioButton("USM-Based Finances")
+        self.radiobuttonFinancesUSM.join_group(self.radiobuttonFinancesRep)
+        self.radiobuttonFinancesUSM.connect("toggled", self.finances_changed)
+        self.attach(self.radiobuttonFinancesUSM, 2, 2, 1, 1)
+        self.comboboxFinances = Gtk.ComboBoxText()
+        self.comboboxFinances.set_sensitive(False)
+        self.attach(self.comboboxFinances, 1, 3, 2, 1)
+
+        buttonbox = Gtk.ButtonBox()
+        buttonbox.set_spacing(5)
+        buttonbox.set_layout(Gtk.ButtonBoxStyle.END)
+        self.attach(buttonbox, 0, 5, 3, 1)
+        buttonBack = widgets.Button("_Back")
+        buttonBack.connect("clicked", self.back_button_clicked)
+        buttonbox.add(buttonBack)
+        self.buttonContinue = widgets.Button("_Continue")
+        self.buttonContinue.set_sensitive(False)
+        self.buttonContinue.connect("clicked", self.continue_button_clicked)
+        buttonbox.add(self.buttonContinue)
+
+    def run(self):
+        # Load financials
+        self.comboboxFinances.remove_all()
+
+        for key, item in constants.money.items():
+            amount = display.currency(item[0])
+            self.comboboxFinances.append(str(key), "%s (%s)" % (item[1], amount))
+
+        # Load manager names
+        self.liststoreName.clear()
+
+        names = fileio.read_names()
+        [self.liststoreName.append([name]) for name in names]
+
+        # Load list of clubs
+        self.liststoreClubs.clear()
+
+        [self.liststoreClubs.append([clubid, club.name]) for clubid, club in game.clubs.items()]
+
+        self.entryName.set_text("")
+        self.comboboxClub.set_active(0)
+        self.radiobuttonFinancesRep.set_active(True)
+        self.comboboxFinances.set_active(0)
+
+        self.show_all()
+        self.entryName.grab_focus()
+
+    def finances_changed(self, radiobutton):
+        state = self.radiobuttonFinancesUSM.get_active()
+        self.comboboxFinances.set_sensitive(state)
+
+    def continue_status(self, entry):
+        if entry.get_text_length() > 0:
+            self.buttonContinue.set_sensitive(True)
+        else:
+            self.buttonContinue.set_sensitive(False)
+
+    def back_button_clicked(self, button):
+        game.window.remove(screendetails)
+        game.window.add(screenmain)
+
+    def continue_button_clicked(self, button):
+        # Get club ID number from combobox
+        treeiter = self.comboboxClub.get_active_iter()
+        model = self.comboboxClub.get_model()
+        game.teamid = model[treeiter][0]
+
+        # Save manager name entered by player
+        game.clubs[game.teamid].manager = self.entryName.get_text()
+
+        add = True
+
+        for count, item in enumerate(self.liststoreName):
+            if item[0] == game.clubs[game.teamid].manager:
+                add = False
+
+                del(self.liststoreName[count])
+                self.liststoreName.prepend([game.clubs[game.teamid].manager])
+
+        if add:
+            self.liststoreName.prepend([game.clubs[game.teamid].manager])
+
+        names = [key[0] for key in self.liststoreName]
+        fileio.write_names(names)
+
+        self.complete_data_load()
+
+        game.window.remove(screendetails)
+        game.window.add(screengame)
+        screen_loader(game.start_screen)
+        screengame.run()
+
+    def complete_data_load(self):
+        '''
+        Used to load remaining data and populate game with usable values
+        '''
+        data.dataloader()
+
+        club = game.clubs[game.teamid]
+
+        # Generate initial finances
+        if self.radiobuttonFinancesUSM.get_active():
+            selected = int(self.comboboxFinances.get_active_id())
+            club.balance = constants.money[selected][0]
+        else:
+            club.balance = club.reputation ** 3 * random.randint(985, 1025) * 3
+
+        money.calculate_loan()
+        money.calculate_overdraft()
+        money.calculate_grant()
+        money.flotation()
+        events.expectation(club.reputation)
+        events.update_records()
+
+        # AI-related
+        ai.transfer_list()
+        ai.loan_list()
+        ai.team_training()
+
+        game.database.disconnect()
+
+
+class ScreenGame(Gtk.Grid):
+    def __init__(self):
+        Gtk.Grid.__init__(self)
+
+        menubar = Gtk.MenuBar()
+        game.menu = menubar
+        self.attach(menubar, 0, 0, 1, 1)
+        menuitem = widgets.MenuItem("_File")
+        menubar.append(menuitem)
+        menu = Gtk.Menu()
+        menuitem.set_submenu(menu)
+        menuitemNew = widgets.MenuItem("_New Game")
+        key, mod = Gtk.accelerator_parse("<CONTROL>N")
+        menuitemNew.add_accelerator("activate", game.accelgroup, key, mod, Gtk.AccelFlags.VISIBLE)
+        menuitemNew.connect("activate", self.new_game_clicked)
+        menu.append(menuitemNew)
+        menuitemLoad = widgets.MenuItem("_Load Game")
+        key, mod = Gtk.accelerator_parse("<CONTROL>O")
+        menuitemLoad.add_accelerator("activate", game.accelgroup, key, mod, Gtk.AccelFlags.VISIBLE)
+        menuitemLoad.connect("activate", self.load_game_clicked)
+        menu.append(menuitemLoad)
+        menuitemSave = widgets.MenuItem("_Save Game")
+        key, mod = Gtk.accelerator_parse("<CONTROL>S")
+        menuitemSave.add_accelerator("activate", game.accelgroup, key, mod, Gtk.AccelFlags.VISIBLE)
+        menuitemSave.connect("activate", lambda a: dialogs.file_dialog(1))
+        menu.append(menuitemSave)
+        menuitemDelete = widgets.MenuItem("_Delete Game")
+        menuitemDelete.connect("activate", lambda a: dialogs.delete_dialog())
+        menu.append(menuitemDelete)
+        separator = Gtk.SeparatorMenuItem()
+        menu.append(separator)
+        menuitemQuit = widgets.MenuItem("_Quit")
+        key, mod = Gtk.accelerator_parse("<CONTROL>Q")
+        menuitemQuit.add_accelerator("activate", game.accelgroup, key, mod, Gtk.AccelFlags.VISIBLE)
+        menuitemQuit.connect("activate", exit_game)
+        menu.append(menuitemQuit)
+
+        menuitem = widgets.MenuItem("_Edit")
+        menubar.append(menuitem)
+        menu = Gtk.Menu()
+        menuitem.set_submenu(menu)
+        menuitemManager = widgets.MenuItem("_Manager Name")
+        menuitemManager.connect("activate", lambda i: dialogs.name_change())
+        menu.append(menuitemManager)
+        menuitemPreferences = widgets.MenuItem("_Preferences")
+        menuitemPreferences.connect("activate", lambda i: dialogs.preferences_dialog())
+        menu.append(menuitemPreferences)
+
+        menuitem = widgets.MenuItem("_View")
+        menubar.append(menuitem)
+        menu = Gtk.Menu()
+        menuitem.set_submenu(menu)
+        menuitemPlayers = widgets.MenuItem("_Players")
+        menuitemPlayers.connect("activate", lambda i: screen_loader(20))
+        menu.append(menuitemPlayers)
+        menuitemComparison = widgets.MenuItem("C_omparison")
+        menuitemComparison.connect("activate", self.player_comparison)
+        menu.append(menuitemComparison)
+        separator = Gtk.SeparatorMenuItem()
+        menu.append(separator)
+        menuitemNews = widgets.MenuItem("_News")
+        menuitemNews.connect("activate", lambda i: screen_loader(3))
+        menu.append(menuitemNews)
+        menuitemFixtures = widgets.MenuItem("_Fixtures")
+        menuitemFixtures.connect("activate", lambda i: screen_loader(2))
+        menu.append(menuitemFixtures)
+        menuitemResults = widgets.MenuItem("_Results")
+        menuitemResults.connect("activate", lambda i: screen_loader(6))
+        menu.append(menuitemResults)
+        menuitemStandings = widgets.MenuItem("_Standings")
+        menuitemStandings.connect("activate", lambda i: screen_loader(5))
+        menu.append(menuitemStandings)
+        menuitemCharts = widgets.MenuItem("_Charts")
+        menuitemCharts.connect("activate", lambda i: screen_loader(30))
+        menu.append(menuitemCharts)
+        menuitemEvaluation = widgets.MenuItem("_Evaluation")
+        menuitemEvaluation.connect("activate", lambda i: screen_loader(25))
+        menu.append(menuitemEvaluation)
+        separator = Gtk.SeparatorMenuItem()
+        menu.append(separator)
+        menuitemNegotiations = widgets.MenuItem("Ne_gotiations")
+        menuitemNegotiations.connect("activate", lambda i: screen_loader(21))
+        menu.append(menuitemNegotiations)
+        menuitemShortlist = widgets.MenuItem("Short_list")
+        menuitemShortlist.connect("activate", lambda i: screen_loader(22))
+        menu.append(menuitemShortlist)
+        separator = Gtk.SeparatorMenuItem()
+        menu.append(separator)
+        menuitemStatistics = widgets.MenuItem("_Statistics")
+        menuitemStatistics.connect("activate", lambda i: screen_loader(29))
+        menu.append(menuitemStatistics)
+
+        menuitem = widgets.MenuItem("_Business")
+        menubar.append(menuitem)
+        menu = Gtk.Menu()
+        menuitem.set_submenu(menu)
+        menuitemStadium = widgets.MenuItem("_Stadium")
+        menuitemStadium.connect("activate", lambda i: screen_loader(10))
+        menu.append(menuitemStadium)
+        menuitemBuildings = widgets.MenuItem("_Buildings")
+        menuitemBuildings.connect("activate", lambda i: screen_loader(14))
+        menu.append(menuitemBuildings)
+        separator = Gtk.SeparatorMenuItem()
+        menu.append(separator)
+        menuitemTickets = widgets.MenuItem("_Tickets")
+        menuitemTickets.connect("activate", lambda i: screen_loader(19))
+        menu.append(menuitemTickets)
+        menuitemSponsorship = widgets.MenuItem("S_ponsorship")
+        menuitemSponsorship.connect("activate", lambda i: dialogs.sponsorship())
+        menu.append(menuitemSponsorship)
+        menuitemAdvertising = widgets.MenuItem("_Advertising")
+        menuitemAdvertising.connect("activate", lambda i: screen_loader(16))
+        menu.append(menuitemAdvertising)
+        menuitemMerchandise = widgets.MenuItem("_Merchandise")
+        menuitemMerchandise.connect("activate", lambda i: screen_loader(17))
+        menu.append(menuitemMerchandise)
+        menuitemCatering = widgets.MenuItem("_Catering")
+        menuitemCatering.connect("activate", lambda i: screen_loader(18))
+        menu.append(menuitemCatering)
+        separator = Gtk.SeparatorMenuItem()
+        menu.append(separator)
+        menuitemFinances = widgets.MenuItem("_Finances")
+        menuitemFinances.connect("activate", lambda i: screen_loader(11))
+        menu.append(menuitemFinances)
+        menuitemAccounts = widgets.MenuItem("A_ccounts")
+        menuitemAccounts.connect("activate", lambda i: screen_loader(12))
+        menu.append(menuitemAccounts)
+
+        menuitem = widgets.MenuItem("_Team")
+        menubar.append(menuitem)
+        menu = Gtk.Menu()
+        menuitem.set_submenu(menu)
+        menuitemSquad = widgets.MenuItem("_Squad")
+        menuitemSquad.connect("activate", lambda i: screen_loader(1))
+        menu.append(menuitemSquad)
+        menuitemTactics = widgets.MenuItem("_Tactics")
+        menuitemTactics.connect("activate", lambda i: screen_loader(4))
+        menu.append(menuitemTactics)
+        menuitem = widgets.MenuItem("T_raining")
+        menu.append(menuitem)
+        menuTraining = Gtk.Menu()
+        menuitem.set_submenu(menuTraining)
+        menuitemTeamTraining = widgets.MenuItem("_Team Training")
+        menuitemTeamTraining.connect("activate", lambda i: screen_loader(7))
+        menuTraining.append(menuitemTeamTraining)
+        menuitemIndTraining = widgets.MenuItem("_Individual Training")
+        menuitemIndTraining.connect("activate", lambda i: screen_loader(9))
+        menuTraining.append(menuitemIndTraining)
+        menuitemTrainingCamp = widgets.MenuItem("Training _Camp")
+        menuitemTrainingCamp.connect("activate", lambda i: screen_loader(8))
+        menuTraining.append(menuitemTrainingCamp)
+        menuitemInjSus = widgets.MenuItem("Injuries & _Suspensions")
+        menuitemInjSus.connect("activate", lambda i: screen_loader(24))
+        menu.append(menuitemInjSus)
+        separator = Gtk.SeparatorMenuItem()
+        menu.append(separator)
+        menuitemStaff = widgets.MenuItem("_Staff")
+        menuitemStaff.connect("activate", lambda i: screen_loader(23))
+        menu.append(menuitemStaff)
+
+        menuitem = widgets.MenuItem("_Help")
+        menubar.append(menuitem)
+        menu = Gtk.Menu()
+        menuitem.set_submenu(menu)
+        menuitemContents = widgets.MenuItem("_Contents")
+        key, mod = Gtk.accelerator_parse("F1")
+        menuitemContents.add_accelerator("activate", game.accelgroup, key, mod, Gtk.AccelFlags.VISIBLE)
+        menuitemContents.connect("activate", lambda a: dialogs.help_content())
+        menu.append(menuitemContents)
+        menuitemInformation = widgets.MenuItem("_Information")
+        menuitemInformation.connect("activate", lambda a: dialogs.information_dialog())
+        menu.append(menuitemInformation)
+        menuitemAbout = widgets.MenuItem("_About")
+        menuitemAbout.connect("activate", lambda a: dialogs.about())
+        menu.append(menuitemAbout)
+
+        grid = Gtk.Grid()
+        grid.set_border_width(1)
+        grid.set_column_spacing(5)
+        self.attach(grid, 0, 2, 1, 1)
+
+        widgets.date.set_text("%i/%i/%i" % (game.year, game.month, game.date))
+        grid.attach(widgets.date, 0, 0, 1, 1)
+
+        widgets.news.connect("clicked", self.news_activated)
+        grid.attach(widgets.news, 1, 0, 1, 1)
+
+        label = Gtk.Label()  # Intentional blank label
+        label.set_hexpand(True)
+        grid.attach(label, 2, 0, 1, 1)
+
+        game.labelNextMatch = Gtk.Label()
+        grid.attach(game.labelNextMatch, 3, 0, 1, 1)
+
+        widgets.continuegame = widgets.Button("_Continue Game")
+        widgets.continuegame.connect("clicked", continuegame.continue_game)
+        grid.attach(widgets.continuegame, 4, 0, 1, 1)
+
+    def run(self):
+        self.show_all()
+
+    def news_activated(self, button):
+        screen_loader(3)
+
+    def player_comparison(self, menuitem):
+        if game.comparison == [None, None]:
+            dialogs.error(3)
+        elif game.comparison[0] is None or game.comparison[1] is None:
+            dialogs.error(5)
+        else:
+            dialogs.comparison()
+
+    def new_game_clicked(self, menuitem):
+        state = dialogs.exit_game(leave=True)
+
+        if state:
+            game.window.remove(screengame)
+            game.window.add(screenmain)
+
+            # Reset teamid to zero to prevent having to confirm quit
+            game.teamid = 0
+
+    def load_game_clicked(self, menuitem):
+        state = dialogs.file_dialog(0)
+
+        if state:
+            screen_loader(game.active_screen_id)
+
+
+class ContinueGame:
+    def continue_game(self, widget):
+        update_valid = True
+
+        current_date = "%i/%i" % (game.date, game.month)
+
+        if game.week == len(constants.dates):
+            if game.dateindex == len(constants.dates[game.week - 1]) - 1:
+                # End of season events
+                events.end_of_season()
+
+        if game.eventindex <= len(constants.events) - 1:
+            event = constants.events[game.eventindex]
+        else:
+            event = None
+
+        if current_date == event:
+            # Team names to be passed to proceed dialog
+            for count, item in enumerate(game.fixtures[game.fixturesindex]):
+                if game.teamid in (item[0], item[1]):
+                    match = item
+
+            if game.teamid == match[0]:
+                team = match[1]
+            else:
+                team = match[0]
+
+            opposition = game.clubs[team].name
+            proceed = dialogs.proceed_to_game(opposition)
+
+            error = True
+
+            if proceed:
+                error = self.check_squad()
+
+                if error:
+                    update_valid = False
+            else:
+                update_valid = False
+
+            if not error:
+                game.eventindex += 1
+                self.initiate_game()
+                game.proceed = False
+        elif game.proceed and update_valid:
+            self.update_date()
+        elif not game.proceed:
+            screen_loader(1)
+
+            game.menu.set_sensitive(True)
+            widgets.news.set_sensitive(True)
+            game.proceed = True
+
+        # Unread news status
+        if game.unreadnews:
+            widgets.news.show()
+
+        # Display next match
+        if "%i/%i" % (game.date, game.month) == constants.events[game.fixturesindex]:
+            for match in game.fixtures[game.fixturesindex]:
+                if game.teamid in match:
+                    team1 = game.clubs[match[0]].name
+                    team2 = game.clubs[match[1]].name
+                    game.labelNextMatch.set_text("Today's Game: %s - %s" % (team1, team2))
+        else:
+            game.labelNextMatch.set_text("")
+
+    def update_date(self):
+        display.find_champion()
+
+        game.date = constants.dates[game.week - 1][game.dateindex]
+
+        if game.dateprev > game.date:
+            game.dateprev = 0
+
+            if game.month == 12:
+                game.month = 1
+                game.year += 1
+            else:
+                game.month += 1
+
+        if len(constants.dates[game.week - 1]) - 1 > game.dateindex:
+            game.dateindex += 1
+        else:
+            game.dateprev = constants.dates[game.week - 1][game.dateindex]
+            game.dateindex = 0
+            game.week += 1
+
+            # Process end of week events
+            events.reset_accounts()
+            events.pay_wages()
+            events.update_contracts()
+            events.update_advertising()
+            events.update_sponsorship()
+            events.refresh_staff()
+            events.team_training()
+            events.individual_training()
+            transfer.process_loan()
+            ai.renew_contract()
+            events.injury_period()
+            events.update_condition()
+            events.update_maintenance()
+            money.pay_overdraft()
+            money.pay_loan()
+            money.process_grant()
+
+        # Process everyday events
+        transfer.transfer()
+        events.injury()
+        transfer.ai_enquiry()
+        ai.advertising()
+
+        # Age players
+        for playerid, player in game.players.items():
+            player.age = events.age(player.date_of_birth)
+
+        # Initiate first sponsorship offer
+        if (game.date, game.month) == (4, 8):
+            events.update_sponsorship()
+
+        # Stop sale of season tickets
+        if (game.date, game.month) == (16, 8):
+            if game.season_tickets_status == 0:
+                game.season_tickets_status = 1
+
+            sales.season_tickets()
+
+        for playerid, player in game.players.items():
+            player.value = calculator.value(playerid)
+
+        widgets.date.set_text("%i/%i/%i" % (game.year, game.month, game.date))
+
+        # Comment to prevent screen refresh on continue game - FASTER!
+        screen_loader(game.active_screen_id)
+
+    def initiate_game(self):
+        screen_loader(99)
+
+        # Match only related events
+        events.pay_bonus()
+
+    def check_squad(self):
+        '''
+        Check whether the squad has been selected, determine the numbers
+        and return whether the game can proceed or not.
+        '''
+        team_count = 0
+        sub_count = 0
+
+        for count, item in enumerate(game.clubs[game.teamid].team.items()):
+            if item[1] != 0:
+                if count < 11:
+                    team_count += 1
+
+                if count >= 11:
+                    sub_count += 1
+
+        error = False
+
+        for position, playerid in game.clubs[game.teamid].team.items():
+            if playerid != 0:
+                player = game.players[playerid]
+
+                if player.injury_type != 0:
+                    dialogs.error(6)
+                    error = True
+
+                if player.suspension_type != 0 and not error:
+                    dialogs.error(7)
+                    error = True
+
+        if team_count + 1 < 11:
+            dialogs.not_enough_players(team_count)
+            error = True
+        elif sub_count + 1 < 5:
+            answer = dialogs.not_enough_subs(sub_count)
+
+            if not answer:
+                error = True
+
+        return error
+
+
+def screen_loader(index):
+    # Screen to load and name of the screen to use for help file
+    screens = {1: (obj_squad, "squad"),
+               2: (obj_fixtures, "fixtures"),
+               3: (obj_news, "news"),
+               4: (obj_tactics, "tactics"),
+               5: (obj_standings, "standings"),
+               6: (obj_results, "results"),
+               7: (obj_teamtraining, "teamtraining"),
+               8: (obj_trainingcamp, "trainingcamp"),
+               9: (obj_individualtraining, "individualtraining"),
+               10: (obj_stadium, "stadium"),
+               11: (obj_finances, "finances"),
+               12: (obj_accounts, "accounts"),
+               14: (obj_buildings, "buildings"),
+               16: (obj_advertising, "advertising"),
+               17: (obj_merchandise, "merchandise"),
+               18: (obj_catering, "catering"),
+               19: (obj_tickets, "tickets"),
+               20: (obj_players, "players"),
+               21: (obj_negotiations, "negotiations"),
+               22: (obj_shortlist, "shortlist"),
+               23: (obj_staff, "staff"),
+               24: (obj_injsus, "injsus"),
+               25: (obj_evaluation, "evaluation"),
+               29: (obj_statistics, "statistics"),
+               30: (obj_charts, "charts"),
+               99: (obj_match, "match"),
+               }
+
+    if game.active_screen is not None:
+        if game.active_screen_id == index:
+            game.active_screen.run()
+
+            return
+        else:
+            screengame.remove(game.active_screen)
+
+    screen = screens[index]
+    game.active_screen = screen[0]
+    game.active_screen.__name__ = screen[1]
+    game.active_screen_id = index
+    screengame.attach(game.active_screen, 0, 1, 1, 1)
+    game.active_screen.run()
+
+
+def exit_game(window, event=None):
+    if game.teamid == 0:
+        Gtk.main_quit()
+    else:
+        state = dialogs.exit_game()
+        state = not state
+
+        return state
+
+
+game.database = database.DB()
+continuegame = ContinueGame()
+prefs = preferences.Preferences()
+game.player = music.Player()
+
+widgets.date = widgets.Date()
+widgets.news = widgets.News()
+
+game.window = Window()
+screenmain = ScreenMain()
+screendetails = ScreenDetails()
+screengame = ScreenGame()
+
+obj_news = information.News()
+obj_evaluation = information.Evaluation()
+obj_charts = information.Charts()
+obj_statistics = information.Statistics()
+obj_fixtures = information.Fixtures()
+obj_results = information.Results()
+obj_standings = information.Standings()
+obj_negotiations = view.Negotiations()
+obj_shortlist = view.Shortlist()
+obj_injsus = view.InjSus()
+obj_teamtraining = training.TeamTraining()
+obj_individualtraining = training.IndividualTraining()
+obj_trainingcamp = training.TrainingCamp()
+obj_tickets = business.Tickets()
+obj_squad = squad.Squad()
+obj_staff = team.Staff()
+obj_tactics = team.Tactics()
+obj_accounts = finances.Accounts()
+obj_match = match.Match()
+obj_advertising = business.Advertising()
+obj_merchandise = business.Merchandise()
+obj_catering = business.Catering()
+obj_buildings = stadium.Buildings()
+obj_players = view.Players()
+obj_finances = finances.Finances()
+obj_stadium = stadium.Stadium()
+
+game.window.run()
+
+
+if __name__ == "__main__":
+    Gtk.main()
