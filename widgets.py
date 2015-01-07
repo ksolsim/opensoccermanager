@@ -110,6 +110,6 @@ class SpinButton(Gtk.SpinButton):
     def __init__(self, maximum):
         Gtk.SpinButton.__init__(self)
         self.set_range(0, maximum)
-        self.set_increments(100, 1000)
+        self.set_increments(10, 100)
         self.set_snap_to_ticks(True)
         self.set_numeric(True)
