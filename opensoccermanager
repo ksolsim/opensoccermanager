@@ -115,7 +115,7 @@ class ScreenMain(Gtk.Grid):
         self.attach(label, 0, 2, 1, 1)
 
         label = Gtk.Label()
-        label.set_markup("<a href='%s'>Open Soccer Manager Website</a>" % (version.WEBSITE))
+        label.set_markup("<a href='%s'>OpenSoccerManager Website</a>" % (version.WEBSITE))
         label.set_alignment(1, 0.5)
         self.attach(label, 2, 2, 1, 1)
 
