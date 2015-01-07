@@ -104,3 +104,12 @@ class Button(Gtk.Button):
         Gtk.Button.__init__(self)
         self.set_label(label)
         self.set_use_underline(True)
+
+
+class SpinButton(Gtk.SpinButton):
+    def __init__(self, maximum):
+        Gtk.SpinButton.__init__(self)
+        self.set_range(0, maximum)
+        self.set_increments(100, 1000)
+        self.set_snap_to_ticks(True)
+        self.set_numeric(True)

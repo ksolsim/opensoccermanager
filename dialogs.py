@@ -400,7 +400,17 @@ def renew_player_contract(playerid):
     wage = wage * 1.1
     wage = calculator.wage_rounder(wage)
     leaguewin, leaguerunnerup, winbonus, goalbonus = calculator.bonus(wage)
-    contract = random.randint(2, 4)
+
+    if player.age < 25:
+        contract = 5
+    elif player.age < 29:
+        contract = 4
+    elif player.age < 33:
+        contract = 3
+    elif player.age < 35:
+        contract = 2
+    else:
+        contract = 1
 
     dialog = Gtk.Dialog()
     dialog.set_transient_for(game.window)
@@ -425,38 +435,32 @@ def renew_player_contract(playerid):
 
     label = widgets.AlignedLabel("Weekly Wage")
     grid.attach(label, 0, 0, 1, 1)
-    spinbuttonWage = Gtk.SpinButton.new_with_range(0, 100000, 100)
-    spinbuttonWage.set_snap_to_ticks(True)
+    spinbuttonWage = widgets.SpinButton(maximum=100000)
     spinbuttonWage.set_value(wage)
     grid.attach(spinbuttonWage, 1, 0, 1, 1)
     label = widgets.AlignedLabel("League Champions Bonus")
     grid.attach(label, 0, 1, 1, 1)
-    spinbuttonLeagueChampions = Gtk.SpinButton.new_with_range(0, 200000, 100)
-    spinbuttonLeagueChampions.set_snap_to_ticks(True)
+    spinbuttonLeagueChampions = widgets.SpinButton(maximum=200000)
     spinbuttonLeagueChampions.set_value(leaguewin)
     grid.attach(spinbuttonLeagueChampions, 1, 1, 1, 1)
     label = widgets.AlignedLabel("League Runner Up Bonus")
     grid.attach(label, 0, 2, 1, 1)
-    spinbuttonLeagueRunnerUp = Gtk.SpinButton.new_with_range(0, 200000, 100)
-    spinbuttonLeagueRunnerUp.set_snap_to_ticks(True)
+    spinbuttonLeagueRunnerUp = widgets.SpinButton(maximum=200000)
     spinbuttonLeagueRunnerUp.set_value(leaguerunnerup)
     grid.attach(spinbuttonLeagueRunnerUp, 1, 2, 1, 1)
     label = widgets.AlignedLabel("Win Bonus")
     grid.attach(label, 0, 3, 1, 1)
-    spinbuttonWinBonus = Gtk.SpinButton.new_with_range(0, 100000, 100)
-    spinbuttonWinBonus.set_snap_to_ticks(True)
+    spinbuttonWinBonus = widgets.SpinButton(maximum=10000)
     spinbuttonWinBonus.set_value(winbonus)
     grid.attach(spinbuttonWinBonus, 1, 3, 1, 1)
     label = widgets.AlignedLabel("Goal Bonus")
     grid.attach(label, 0, 4, 1, 1)
-    spinbuttonGoalBonus = Gtk.SpinButton.new_with_range(0, 100000, 100)
-    spinbuttonGoalBonus.set_snap_to_ticks(True)
+    spinbuttonGoalBonus = widgets.SpinButton(maximum=10000)
     spinbuttonGoalBonus.set_value(goalbonus)
     grid.attach(spinbuttonGoalBonus, 1, 4, 1, 1)
     label = widgets.AlignedLabel("Contract Length")
     grid.attach(label, 0, 5, 1, 1)
-    spinbuttonContract = Gtk.SpinButton.new_with_range(1, 5, 1)
-    spinbuttonContract.set_snap_to_ticks(True)
+    spinbuttonContract = widgets.SpinButton.new_with_range(1, 5, 1)
     spinbuttonContract.set_value(contract)
     grid.attach(spinbuttonContract, 1, 5, 1, 1)
 
@@ -465,15 +469,13 @@ def renew_player_contract(playerid):
     state = False
 
     if dialog.run() == Gtk.ResponseType.OK:
-        wage = spinbuttonWage.get_value_as_int()
-        wage = calculator.wage_rounder(wage)
-        player.wage = wage
+        player.wage = spinbuttonWage.get_value_as_int()
 
         leaguechampions = spinbuttonLeagueChampions.get_value_as_int()
         leaguerunnerup = spinbuttonLeagueRunnerUp.get_value_as_int()
         winbonus = spinbuttonWinBonus.get_value_as_int()
         goalbonus = spinbuttonGoalBonus.get_value_as_int()
-        player.bonus = (leaguechampions, leaguerunnerup, winbonus, goalbonus)
+        player.bonus = leaguechampions, leaguerunnerup, winbonus, goalbonus
         player.contract = spinbuttonContract.get_value_as_int() * 52
 
         player.morale += 15
