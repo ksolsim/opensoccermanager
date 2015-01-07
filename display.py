@@ -204,9 +204,11 @@ def currency(amount, mode=0):
     return amount
 
 
-def contract(contract):
-    if contract > 0:
-        text = "%i Weeks" % (contract)
+def contract(period):
+    if period > 1:
+        text = "%i Weeks" % (period)
+    elif contract == 1:
+        text = "%i Week" % (period)
     elif contract == 0:
         text = "Out of Contract"
 
