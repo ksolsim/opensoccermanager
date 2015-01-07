@@ -65,7 +65,7 @@ def open_file(filename):
     game.fixturespage = data[9]
     game.active_screen_id = data[10]
 
-    widgets.date.set_text("%i/%i/%i" % (game.year, game.month, game.date))
+    widgets.date.update()
 
     # Nation
     for item in cursor.execute("SELECT * FROM nation"):

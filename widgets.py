@@ -50,6 +50,9 @@ class Date(Gtk.Label):
         self.set_has_tooltip(True)
         self.connect("query-tooltip", tooltip)
 
+    def update(self):
+        self.set_text("%i/%i/%i" % (game.year, game.month, game.date))
+
 
 class News(Gtk.Button):
     '''

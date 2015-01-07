@@ -941,7 +941,7 @@ def end_of_season():
     game.season = "%s/%s" % (game.year, game.year + 1)
     game.week = 1
 
-    widgets.date.set_text("%i/%i/%i" % (game.year, game.month, game.date))
+    widgets.date.update()
 
     game.eventindex = 0
     game.dateindex = 1

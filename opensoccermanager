@@ -2,7 +2,7 @@
 
 #  OpenSoccerManager
 #
-#  Copyright 2014 Andrew Steele <andrew@andrewsteele.me.uk>
+#  Copyright 2015 Andrew Steele <andrew.steele@opensoccermanager.org>
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -479,7 +479,7 @@ class ScreenGame(Gtk.Grid):
         grid.set_column_spacing(5)
         self.attach(grid, 0, 2, 1, 1)
 
-        widgets.date.set_text("%i/%i/%i" % (game.year, game.month, game.date))
+        widgets.date.update()
         grid.attach(widgets.date, 0, 0, 1, 1)
 
         widgets.news.connect("clicked", self.news_activated)
@@ -657,7 +657,7 @@ class ContinueGame:
         for playerid, player in game.players.items():
             player.value = calculator.value(playerid)
 
-        widgets.date.set_text("%i/%i/%i" % (game.year, game.month, game.date))
+        widgets.date.update()
 
         # Comment to prevent screen refresh on continue game - FASTER!
         screen_loader(game.active_screen_id)
