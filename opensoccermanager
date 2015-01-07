@@ -62,7 +62,7 @@ class Window(Gtk.Window):
         iconpath = os.path.join("resources", "logo.svg")
 
         Gtk.Window.__init__(self)
-        self.set_title("Open Soccer Manager")
+        self.set_title(version.NAME)
         self.set_default_size(780, 480)
         self.set_icon_from_file(iconpath)
         self.connect("delete-event", exit_game)
@@ -115,7 +115,7 @@ class ScreenMain(Gtk.Grid):
         self.attach(label, 0, 2, 1, 1)
 
         label = Gtk.Label()
-        label.set_markup("<a href='%s'>OpenSoccerManager Website</a>" % (version.WEBSITE))
+        label.set_markup("<a href='%s'>%s Website</a>" % (version.WEBSITE, version.NAME))
         label.set_alignment(1, 0.5)
         self.attach(label, 2, 2, 1, 1)
 
