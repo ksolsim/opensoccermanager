@@ -442,11 +442,7 @@ class Players(Gtk.Grid):
             loan_list = player.transfer[1]
             appearances = "%i (%i)" % (player.appearances, player.substitute)
             cards = "%i/%i" % (player.yellow_cards, player.red_cards)
-
-            if player.rating != []:
-                rating = "%.1f" % (statistics.mean(player.rating))
-            else:
-                rating = "0.0"
+            rating = display.rating(player)
 
             self.liststorePlayers.append([item,
                                           name,
@@ -782,10 +778,8 @@ class Shortlist(Gtk.Grid):
             name = display.name(player)
             club = display.club(player.club)
             nation = game.nations[player.nationality].name
-            value = calculator.value_rounder(player.value)
-            display_value = display.value(value)
-            wage = calculator.wage_rounder(player.wage)
-            display_wage = display.wage(wage)
+            value = display.value(player.value)
+            wage = display.wage(player.wage)
 
             self.liststorePlayers.append([playerid,
                                           name,
@@ -793,8 +787,8 @@ class Shortlist(Gtk.Grid):
                                           club,
                                           nation,
                                           player.position,
-                                          display_value,
-                                          display_wage])
+                                          value,
+                                          wage])
 
     def run(self):
         self.populate_data()

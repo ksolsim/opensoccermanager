@@ -620,11 +620,7 @@ class Squad(Gtk.Grid):
             morale = display.player_morale(player.morale)
             appearances = "%i (%i)" % (player.appearances, player.substitute)
             cards = "%i/%i" % (player.yellow_cards, player.red_cards)
-
-            if player.rating != []:
-                rating = "%.1f" % (statistics.mean(player.rating))
-            else:
-                rating = "0.0"
+            rating = display.rating(player)
 
             self.liststoreSquad.append([playerid,
                                         name,

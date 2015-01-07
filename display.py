@@ -249,6 +249,15 @@ def suspension(value):
     return text
 
 
+def rating(player):
+    if player.rating != []:
+        rating = "%.1f" % (statistics.mean(player.rating))
+    else:
+        rating = "0.0"
+
+    return rating
+
+
 def season():
     season = "%i/%i" % (game.year, game.year + 1)
 
