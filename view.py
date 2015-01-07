@@ -759,7 +759,7 @@ class Shortlist(Gtk.Grid):
         player = game.players[playerid]
 
         status = scout.individual(playerid)
-        name = display.name(player.name, mode=1)
+        name = display.name(player, mode=1)
 
         dialogs.scout_report(name, status)
 

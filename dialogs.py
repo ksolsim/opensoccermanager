@@ -488,14 +488,13 @@ def renew_player_contract(playerid):
 
 
 def scout_report(player, status):
-    if status == 0:
-        text = "The scouting team report that %s would not be a good signing." % (player)
-    elif status == 1:
-        text = "%s would be considered a good signing by the scouting team." % (player)
-    elif status == 2:
-        text = "After some scouting, %s would be an excellent addition to the squad." % (player)
-    elif status == 3:
-        text = "The scouts report that %s would be a top prospect for the future." % (player)
+    message = {0: "The scouting team report that %s would not be a good signing." % (player),
+              1: "%s would be considered a good signing by the scouting team." % (player),
+              2: "After some scouting, %s would be an excellent addition to the squad." % (player),
+              3: "The scouts report that %s would be a top prospect for the future." % (player),
+              }
+
+    text = message[status]
 
     messagedialog = Gtk.MessageDialog(message_format=text)
     messagedialog.set_transient_for(game.window)
