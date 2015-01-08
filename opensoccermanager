@@ -287,8 +287,8 @@ class ScreenDetails(Gtk.Grid):
         money.calculate_overdraft()
         money.calculate_grant()
         money.flotation()
-        events.expectation(club.reputation)
         events.update_records()
+        events.expectation()
 
         # AI-related
         ai.transfer_list()

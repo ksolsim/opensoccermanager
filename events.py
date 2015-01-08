@@ -902,17 +902,62 @@ def training_camp(options):
         player.morale += morale
 
 
-def expectation(reputation):
+def expectation():
     '''
-    Determine the expectations for the season, publishing news article
-    to notify player at the beginning of the season.
+    Determine the expectations for the season by comparing to other club
+    reputations and then publishing news article to notify player at the
+    beginning of each season.
     '''
-    if reputation >= 17:
-        news.publish("EX01")
-    elif reputation >= 14:
-        news.publish("EX02")
-    elif reputation >= 10:
-        news.publish("EX03")
+    team_count = len(game.clubs)
+    team_ids = [item for item in game.clubs.keys()]
+
+    positions = [[], [], []]
+
+    high_value = 0
+    high_id = 0
+    low_value = 20
+    low_id = 0
+
+    for clubid, club in game.clubs.items():
+        if club.reputation > high_value:
+            high_value = club.reputation
+            high_id = clubid
+            positions[0] = [clubid]
+
+    for clubid, club in game.clubs.items():
+        if club.reputation < low_value:
+            low_value = club.reputation
+            low_id = clubid
+            positions[2] = [clubid]
+
+    midpoint = 20 - (high_value - low_value) / 2
+
+    team_ids.remove(high_id)
+    team_ids.remove(low_id)
+
+    for item in team_ids:
+        if game.clubs[item].reputation == midpoint:
+            positions[1].append(item)
+        elif game.clubs[item].reputation > midpoint:
+            if game.clubs[item].reputation > high_value - (high_value - midpoint) * .5:
+                positions[0].append(item)
+            else:
+                positions[1].append(item)
+        elif game.clubs[item].reputation < midpoint:
+            if game.clubs[item].reputation < midpoint - (midpoint - low_value) * .5:
+                positions[2].append(item)
+            else:
+                positions[1].append(item)
+
+    publish = ("EX01", "EX02", "EX03")
+    category = 0
+
+    for idlist in positions:
+        for clubid in idlist:
+            if clubid == game.teamid:
+                news.publish(publish[category], chairman=game.clubs[game.teamid].chairman)
+
+        category += 1
 
 
 def reset_accounts():

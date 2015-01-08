@@ -79,7 +79,7 @@ def datainit():
 
     game.year, database.version = database.importer("about")[0]
 
-    widgets.date.set_text("%i/%i/%i" % (game.year, game.month, game.date))
+    widgets.date.update()
 
     # Import clubs and populate club data structure
     clubs = database.importer("club")
@@ -273,7 +273,7 @@ def datainit():
     # Import surnames for staff
     surnames = database.importer("staff")
 
-    [game.surnames.append(name[0]) for name in surnames]
+    game.surnames = [name[0] for name in surnames]
 
     # Import referees
     referees = database.importer("referee")
