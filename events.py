@@ -825,7 +825,7 @@ def team_training():
                 news.publish("TT03")
 
 
-def individual_training(increment=0.4):
+def individual_training():
     club = game.clubs[game.teamid]
 
     for playerid in club.individual_training:
@@ -839,20 +839,47 @@ def individual_training(increment=0.4):
 
         coach = club.coaches_hired[coachid]
 
-        if coach[1] == "Average":
+        if coach.skill == "Average":
             ability = 1
-        elif coach[1] == "Good":
+        elif coach.skill == "Good":
             ability = 2
-        elif coach[1] == "Superb":
+        elif coach.skill == "Superb":
             ability = 3
 
-        speciality = 1  # Obtain from coach / position comparison
+        # Speciality
+        if coach.speciality == "Goalkeeping":
+            if skill == 0:
+                speciality = 1
+            else:
+                speciality = 0.1
+        elif coach.speciality == "Defensive":
+            if skill in (1, 6):
+                speciality = 1
+            else:
+                speciality = 0.1
+        elif coach.speciality == "Midfield":
+            if skill in (2, 7):
+                speciality = 1
+            else:
+                speciality = 0.1
+        elif coach.speciality == "Attacking":
+            if skill == 3:
+                speciality = 1
+            else:
+                speciality = 0.1
+        elif coach.speciality == "Fitness":
+            if skill in (9, 6, 7):
+                speciality = 1
+            else:
+                speciality = 0.1
+        elif coach.speciality == "All":
+            speciality = 1
 
         sessions = 0.0
 
         for value in club.team_training:
             if value == 1:
-                sessions += increment
+                sessions += 0.4
 
         points = (ability * intensity * speciality * sessions) * (player.training * 0.1)
 
@@ -868,6 +895,18 @@ def individual_training(increment=0.4):
                 player.passing += 1
             elif skill == 3:
                 player.shooting += 1
+            elif skill == 4:
+                player.heading += 1
+            elif skill == 5:
+                player.pace += 1
+            elif skill == 6:
+                player.stamina += 1
+            elif skill == 7:
+                player.ball_control += 1
+            elif skill == 8:
+                player.set_pieces += 1
+            elif skill == 9:
+                player.fitness += 1
 
             player.training_points -= 100
 

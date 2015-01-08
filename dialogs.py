@@ -674,19 +674,18 @@ def add_individual_training(playerid=None):
         coachid = model[active][0]
 
         coach = game.clubs[game.teamid].coaches_hired[coachid]
-        speciality = None
 
-        if coach[2] == "Goalkeeping":
+        if coach.speciality == "Goalkeeping":
             speciality = "Keeping"
-        elif coach[2] == "Defensive":
-            speciality = "Tackling, Strength"
-        elif coach[2] == "Midfield":
+        elif coach.speciality == "Defensive":
+            speciality = "Tackling, Stamina"
+        elif coach.speciality == "Midfield":
             speciality = "Passing, Ball Control"
-        elif coach[2] == "Attacking":
+        elif coach.speciality == "Attacking":
             speciality = "Shooting"
-        elif coach[2] == "Fitness":
+        elif coach.speciality == "Fitness":
             speciality = "Fitness, Pace, Stamina"
-        elif coach[2] == "All":
+        elif coach.speciality == "All":
             speciality = "All"
 
         labelSpeciality.set_text(speciality)
@@ -702,6 +701,7 @@ def add_individual_training(playerid=None):
     dialog.set_default_response(Gtk.ResponseType.OK)
 
     liststorePlayer = Gtk.ListStore(int, str)
+
     for item in game.clubs[game.teamid].squad:
         name = game.players[item]
         name = display.name(name)
@@ -709,8 +709,9 @@ def add_individual_training(playerid=None):
         liststorePlayer.append([item, name])
 
     liststoreCoach = Gtk.ListStore(int, str)
-    for key, item in game.clubs[game.teamid].coaches_hired.items():
-        liststoreCoach.append([key, item[0]])
+
+    for coachid, coach in game.clubs[game.teamid].coaches_hired.items():
+        liststoreCoach.append([coachid, coach.name])
 
     grid = Gtk.Grid()
     grid.set_border_width(5)
@@ -722,14 +723,15 @@ def add_individual_training(playerid=None):
         label = widgets.AlignedLabel("%s" % (text))
         grid.attach(label, 0, count + 1, 1, 1)
 
-    if playerid == None:
+    cellrenderertext = Gtk.CellRendererText()
+
+    if playerid is None:
         label = widgets.AlignedLabel("Player")
         grid.attach(label, 0, 0, 1, 1)
 
         comboboxPlayer = Gtk.ComboBox()
         comboboxPlayer.set_model(liststorePlayer)
         comboboxPlayer.set_active(0)
-        cellrenderertext = Gtk.CellRendererText()
         comboboxPlayer.pack_start(cellrenderertext, True)
         comboboxPlayer.add_attribute(cellrenderertext, "text", 1)
         grid.attach(comboboxPlayer, 1, 0, 1, 1)
@@ -737,7 +739,6 @@ def add_individual_training(playerid=None):
     comboboxCoach = Gtk.ComboBox()
     comboboxCoach.set_model(liststoreCoach)
     comboboxCoach.connect("changed", update_speciality)
-    cellrenderertext = Gtk.CellRendererText()
     comboboxCoach.pack_start(cellrenderertext, True)
     comboboxCoach.add_attribute(cellrenderertext, "text", 1)
     grid.attach(comboboxCoach, 1, 1, 1, 1)
@@ -748,8 +749,10 @@ def add_individual_training(playerid=None):
     grid.attach(labelSpeciality, 3, 1, 1, 1)
 
     comboboxSkill = Gtk.ComboBoxText()
+
     for count, item in enumerate(constants.skill):
         comboboxSkill.append(str(count), item)
+
     comboboxSkill.append("9", "Fitness")
     comboboxSkill.set_active(0)
     grid.attach(comboboxSkill, 1, 2, 1, 1)
@@ -797,11 +800,9 @@ def add_individual_training(playerid=None):
     training = None
 
     if dialog.run() == Gtk.ResponseType.OK:
-        if playerid == None:
+        if playerid is None:
             active = comboboxPlayer.get_active()
-            player = liststorePlayer[active][0]
-        else:
-            player = playerid
+            playerid = liststorePlayer[active][0]
 
         # Coach
         active = comboboxCoach.get_active()
@@ -819,7 +820,7 @@ def add_individual_training(playerid=None):
         else:
             intensity = 2
 
-        training = (player, coach, skill, intensity)
+        training = (playerid, coach, skill, intensity)
 
     dialog.destroy()
 
@@ -838,11 +839,17 @@ def remove_individual_training(playerid):
     messagedialog.add_button("_Remove", Gtk.ResponseType.OK)
     messagedialog.set_default_response(Gtk.ResponseType.CANCEL)
 
+    state = False
+
     if messagedialog.run() == Gtk.ResponseType.OK:
         training = game.clubs[game.teamid].individual_training
         del(training[playerid])
 
+        state = True
+
     messagedialog.destroy()
+
+    return state
 
 
 def withdraw_transfer(negotiationid):

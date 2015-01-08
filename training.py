@@ -220,6 +220,7 @@ class IndividualTraining(Gtk.Grid):
 
         if training is not None:
             player = game.players[training[0]]
+            coach = training[1]
 
             skills = (player.keeping,
                       player.tackling,
@@ -231,21 +232,20 @@ class IndividualTraining(Gtk.Grid):
                       player.ball_control,
                       player.set_pieces)
 
-            coach = training[1]
-
             if training[2] != 9:
                 skill = training[2]
                 start_value = skills[skill]
             else:
                 skill = 9
+                start_value = player.fitness
 
             intensity = training[3]
 
             training_dict = game.clubs[game.teamid].individual_training
-            training_dict[training[0]] = [coach,
+            training_dict[training[0]] = (coach,
                                           skill,
                                           intensity,
-                                          start_value]
+                                          start_value)
 
             self.populate_data()
 
@@ -253,9 +253,10 @@ class IndividualTraining(Gtk.Grid):
         model, treeiter = self.treeselection.get_selected()
         playerid = model[treeiter][0]
 
-        dialogs.remove_individual_training(playerid)
+        state = dialogs.remove_individual_training(playerid)
 
-        self.populate_data()
+        if state:
+            self.populate_data()
 
     def populate_data(self):
         self.liststore.clear()
@@ -264,12 +265,6 @@ class IndividualTraining(Gtk.Grid):
 
         for playerid, item in training.items():
             player = game.players[playerid]
-            name = display.name(player)
-            coachid = item[0]
-            coach = game.clubs[game.teamid].coaches_hired[coachid][0]
-            skill = constants.skill[item[1]]
-            intensity = constants.intensity[item[2]]
-            start = item[3]
 
             skills = (player.keeping,
                       player.tackling,
@@ -281,9 +276,27 @@ class IndividualTraining(Gtk.Grid):
                       player.ball_control,
                       player.set_pieces)
 
-            current = skills[item[1]]
+            name = display.name(player)
+            coachid = item[0]
+            coach = game.clubs[game.teamid].coaches_hired[coachid].name
 
-            self.liststore.append([playerid, name, coach, skill, intensity, start, current])
+            if item[1] == 9:
+                skill = "Fitness"
+                current = player.fitness
+            else:
+                skill = constants.skill[item[1]]
+                current = skills[item[1]]
+
+            intensity = constants.intensity[item[2]]
+            start = item[3]
+
+            self.liststore.append([playerid,
+                                   name,
+                                   coach,
+                                   skill,
+                                   intensity,
+                                   start,
+                                   current])
 
     def run(self):
         self.populate_data()
