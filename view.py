@@ -423,8 +423,7 @@ class Players(Gtk.Grid):
 
         self.liststorePlayers.clear()
 
-        for item in data:
-            player = game.players[item]
+        for playerid, player in data.items():
             name = display.name(player)
             age = player.age
             clubid = player.club
@@ -444,7 +443,7 @@ class Players(Gtk.Grid):
             cards = "%i/%i" % (player.yellow_cards, player.red_cards)
             rating = display.rating(player)
 
-            self.liststorePlayers.append([item,
+            self.liststorePlayers.append([playerid,
                                           name,
                                           age,
                                           clubid,
