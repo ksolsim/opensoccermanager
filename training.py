@@ -327,6 +327,7 @@ class IndividualTraining(Gtk.Grid):
 class TrainingCamp(Gtk.Grid):
     def __init__(self):
         self.subtotals = [1, 0, 0, 0, 0]
+        self.options = [0, 0, 0, 0, 0]
         self.cost_per_player = 0
         self.cost = 0
         self.defaults = []
@@ -447,24 +448,28 @@ class TrainingCamp(Gtk.Grid):
     def update_days(self, combobox):
         index = int(combobox.get_active_id())
         self.subtotals[0] = index
+        self.options[0] = index
 
         self.update_total()
 
     def update_quality(self, radiobutton, index):
         if radiobutton.get_active():
             self.subtotals[1] = (index * 300) + (index * 2300)
+            self.options[1] = index
 
             self.update_total()
 
     def update_location(self, radiobutton, index):
         if radiobutton.get_active():
             self.subtotals[2] = (index * 800) + (index * 3700)
+            self.options[2] = index
 
             self.update_total()
 
     def update_purpose(self, radiobutton, index):
         if radiobutton.get_active():
             self.subtotals[3] = (index * 1000) + (index * 1200) * index
+            self.options[3] = index
 
             schedule = False
 
@@ -509,6 +514,7 @@ class TrainingCamp(Gtk.Grid):
                 self.buttonSquadWarning.hide()
 
             self.subtotals[4] = index
+            self.options[4] = index
 
             self.update_total()
 
@@ -526,8 +532,7 @@ class TrainingCamp(Gtk.Grid):
 
             squad_count = players
         elif squad_index == 2:
-            players = len(game.clubs[game.teamid].squad)
-            squad_count = players
+            squad_count = len(game.clubs[game.teamid].squad)
 
         self.cost_per_player = (self.subtotals[0] * 500) + sum(self.subtotals[1:4])
         self.cost = self.cost_per_player * squad_count
@@ -554,7 +559,7 @@ class TrainingCamp(Gtk.Grid):
             if money.request(self.cost):
                 money.withdraw(self.cost, 18)
 
-                events.training_camp(self.subtotals)
+                events.training_camp(self.options)
 
             self.revert_training()
 

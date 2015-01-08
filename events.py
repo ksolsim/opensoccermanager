@@ -497,10 +497,17 @@ def injury():
             if clubid == game.teamid:
                 news.publish("IN01", player=name, weeks=period, injury=injury[0])
 
-    # Begin to restore player fitness once recovered from injury
+    adjust_fitness()
+
+
+def adjust_fitness(recovery=0):
+    '''
+    Restore player fitness by specified amount, or by a random amount.
+    '''
     for playerid, player in game.players.items():
         if player.injury_type == 0 and player.fitness < 100:
-            recovery = random.randint(1, 5)
+            if recovery == 0:
+                recovery = random.randint(1, 5)
 
             player.fitness += recovery
 
@@ -620,7 +627,7 @@ def pay_bonus():
             if playerid != 0:
                 total += game.players[playerid].wage
 
-        bonus = total * (game.clubs[game.teamid].tactics[8] / 10)
+        bonus = total * (game.clubs[game.teamid].tactics[8] * 0.1)
         money.withdraw(bonus, 12)
 
         game.clubs[game.teamid].tactics[8] = 0
@@ -926,19 +933,29 @@ def training_camp(options):
             if playerid not in game.clubs[game.teamid].team.values():
                 squad.append(playerid)
     else:
-        for playerid in game.clubs[game.teamid].squad:
-            squad.append(playerid)
+        squad = [playerid for playerid in game.clubs[game.teamid].squad]
 
-    if options[3] == 1:
-        morale = (options[1] * 1) + (options[2] * 1) * days
+    if options[3] == 0:
+        # Leisure
+        morale = (options[1] + 1) + (options[2] + 1) * days
         morale = morale * 3
-    elif options[3] == 3:
-        morale = (options[1] * 1) + (options[2] * 1) * days
+        fitness = 1
+    elif options[3] == 1:
+        # Schedule
+        morale = (options[1] + 1) + (options[2] + 1) * days
+        morale = morale * 1.5
+        individual_training()
+        fitness = 3
+    elif options[3] == 2:
+        # Intensive
+        morale = (-options[1] + 1) + (-options[2] + 1) * -days
         morale = -morale * 2
+        fitness = 8
 
     for playerid in squad:
         player = game.players[playerid]
         player.morale += morale
+        adjust_fitness(fitness)
 
 
 def expectation():
