@@ -131,39 +131,36 @@ class Tickets(Gtk.Grid):
         stadium = game.stadiums[stadiumid]
 
         # Determine standing / seating configurations
-        standing = False
-        seating = False
-        uncovered = False
-        covered = False
+        uncovered_standing = False
+        uncovered_seating = False
+        covered_standing = False
+        covered_seating = False
         box = False
-
-        for stand in stadium.main:
-            if stand.box > 0:
-                box = True
 
         for count, stand in enumerate(stadium.main):
             if stand.capacity > 0:
-                if stand.seating == True:
-                    seating = True
-                else:
-                    standing = True
+                if stand.seating and stand.roof:
+                    covered_seating = True
+                elif stand.seating and not stand.roof:
+                    uncovered_seating = True
+                elif not stand.seating and stand.roof:
+                    covered_standing = True
+                elif not stand.seating and not stand.roof:
+                    uncovered_standing = True
 
-                if stand.roof == True:
-                    covered = True
-                else:
-                    uncovered = True
+                if stand.box > 0:
+                    box = True
 
         for count, stand in enumerate(stadium.corner):
             if stand.capacity > 0:
-                if stand.seating == True:
-                    seating = True
-                else:
-                    standing = True
-
-                if stand.roof == True:
-                    covered = True
-                else:
-                    uncovered = True
+                if stand.seating and stand.roof:
+                    covered_seating = True
+                elif stand.seating and not stand.roof:
+                    uncovered_seating = True
+                elif not stand.seating and stand.roof:
+                    covered_standing = True
+                elif not stand.seating and not stand.roof:
+                    uncovered_standing = True
 
         count = 0
 
@@ -174,23 +171,15 @@ class Tickets(Gtk.Grid):
                 self.scales[count].set_range(0, price * 2)
                 self.scales[count].set_value(price)
 
-                if row in (1, 2):
-                    if self.scales[count].get_sensitive():
-                        self.scales[count].set_sensitive(standing)
-
-                if row in (3, 4):
-                    if self.scales[count].get_sensitive():
-                        self.scales[count].set_sensitive(seating)
-
-                if row in (1, 3):
-                    if self.scales[count].get_sensitive():
-                        self.scales[count].set_sensitive(uncovered)
-
-                if row in (2, 4):
-                    if self.scales[count].get_sensitive():
-                        self.scales[count].set_sensitive(covered)
-
-                if row == 5:
+                if row == 1:
+                    self.scales[count].set_sensitive(uncovered_standing)
+                elif row == 2:
+                    self.scales[count].set_sensitive(covered_standing)
+                elif row == 3:
+                    self.scales[count].set_sensitive(uncovered_seating)
+                elif row == 4:
+                    self.scales[count].set_sensitive(covered_seating)
+                elif row == 5:
                     self.scales[count].set_sensitive(box)
 
                 count += 1

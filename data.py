@@ -219,6 +219,10 @@ def datainit():
                     stand.box = item[count + 10]
                 else:
                     stand.box = 0
+            else:
+                stand.seating = False
+                stand.roof = False
+                stand.box = 0
 
             stand.adjacent = adjacent[count]
 
@@ -232,10 +236,14 @@ def datainit():
                 stand.seating = bool(item[count + 18])
                 stand.roof = bool(item[count + 26])
                 stand.available = [False, False]
+            else:
+                stand.seating = False
+                stand.roof = False
+                stand.available = [False, False]
 
             stadium.corner.append(stand)
 
-        stadium.buildings = list(item[29:38])
+        stadium.buildings = list(item[30:38])
 
     # Import injuries
     injuries = database.importer("injury")
