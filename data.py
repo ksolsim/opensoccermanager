@@ -300,21 +300,20 @@ def dataloader(finances):
     club.coaches_available = staff.generate(5, "coach")
     club.scouts_available = staff.generate(5, "scout")
 
-    # Generate advertising for hoardings/programmes
-    if club.reputation > 10:
-        club.hoardings[2] = 48
-        club.programmes[2] = 24
-    else:
-        club.hoardings[2] = 48
-        club.programmes[2] = 18
-
     # Generate sponsorship offer
     club.sponsor_status = 0
     club.sponsor_offer = events.generate_sponsor(game.companies)
 
-    # Generate advertising offers
-    events.generate_advertisement(game.companies)
-    game.advertising_timeout = random.randint(16, 24)
+    # Generate advertising offers for hoardings/programmes
+    club.hoardings[2] = 48
+
+    if club.reputation > 10:
+        club.programmes[2] = 24
+    else:
+        club.programmes[2] = 18
+
+    events.generate_advertisement()
+    game.advertising_timeout = random.randint(8, 12)
 
     # Produce initial interest rates
     game.bankloan = Loan()
@@ -337,6 +336,8 @@ def dataloader(finances):
     # Flotation
     game.flotation = Flotation()
     game.flotation.amount = 0
+    game.flotation.timeout = 0
+    game.flotation.status = 0
 
     # Initiate season ticket sales based on percentage of capacity
     club.season_tickets = events.season_tickets(game.teamid)

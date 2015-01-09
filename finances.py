@@ -267,6 +267,7 @@ class Finances(Gtk.Grid):
         state = dialogs.float_club(game.flotation.amount)
 
         if state:
+            game.flotation.status = 1
             game.flotation.timeout = random.randint(12, 16)
 
             button.set_sensitive(False)

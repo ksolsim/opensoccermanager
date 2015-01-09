@@ -404,7 +404,7 @@ class Advertising(Gtk.Grid):
 
                 amount = item[3]
                 self.hoardings_quantity += item[1]
-                self.labelHoardingsCount.set_text("Used %i of %i hoarding spaces" % (self.hoardings_quantity, game.clubs[game.teamid].hoardings[2]))
+                self.update_totals()
 
                 model.remove(treeiter)
 
@@ -421,7 +421,7 @@ class Advertising(Gtk.Grid):
 
                 amount = item[3]
                 self.programmes_quantity += item[1]
-                self.labelProgrammesCount.set_text("Used %i of %i programme spaces" % (self.programmes_quantity, game.clubs[game.teamid].programmes[2]))
+                self.update_totals()
 
                 model.remove(treeiter)
 
@@ -432,6 +432,9 @@ class Advertising(Gtk.Grid):
 
                 money.deposit(amount, 2)
 
+        if game.advertising_timeout == 0:
+            game.advertising_timeout = random.randint(8, 12)
+
     def advertising_add_dnd(self, model, treepath, index):
         treeiter = model.get_iter(treepath)
         item = model[treeiter]
@@ -440,9 +443,11 @@ class Advertising(Gtk.Grid):
 
         quantity = item[1]
 
+        club = game.clubs[game.teamid]
+
         if index == 0:
-            if quantity + self.hoardings_quantity <= game.clubs[game.teamid].hoardings[2]:
-                game.clubs[game.teamid].hoardings[1].append(item[0:4])
+            if quantity + self.hoardings_quantity <= club.hoardings[2]:
+                club.hoardings[1].append(item[0:4])
 
                 amount = item[3]
                 money.deposit(amount, 2)
@@ -451,17 +456,17 @@ class Advertising(Gtk.Grid):
 
                 self.hoardings_quantity += quantity
 
-                game.clubs[game.teamid].hoardings[0] = []
+                club.hoardings[0] = []
 
                 for item in self.liststoreHoardingsAvailable:
-                    game.clubs[game.teamid].hoardings[0].append(item[0:])
+                    club.hoardings[0].append(item[0:])
 
-                self.labelHoardingsCount.set_text("Used %i of %i hoarding spaces" % (self.hoardings_quantity, game.clubs[game.teamid].hoardings[2]))
+                self.update_totals()
 
                 state = True
         else:
-            if quantity + self.programmes_quantity <= game.clubs[game.teamid].programmes[2]:
-                game.clubs[game.teamid].programmes[1].append(item[0:4])
+            if quantity + self.programmes_quantity <= club.programmes[2]:
+                club.programmes[1].append(item[0:4])
 
                 amount = item[3]
                 money.deposit(amount, 2)
@@ -470,16 +475,25 @@ class Advertising(Gtk.Grid):
 
                 self.programmes_quantity += item[1]
 
-                game.clubs[game.teamid].programmes[0] = []
+                club.programmes[0] = []
 
                 for item in self.liststoreProgrammesAvailable:
-                    game.clubs[game.teamid].programmes[0].append(item[0:])
+                    club.programmes[0].append(item[0:])
 
-                self.labelProgrammesCount.set_text("Used %i of %i programme spaces" % (self.programmes_quantity, game.clubs[game.teamid].programmes[2]))
+                self.update_totals()
 
                 state = True
 
+        if game.advertising_timeout == 0:
+            game.advertising_timeout = random.randint(8, 12)
+
         return state
+
+    def update_totals(self):
+        club = game.clubs[game.teamid]
+
+        self.labelHoardingsCount.set_text("Used %i of %i hoarding spaces" % (self.hoardings_quantity, club.hoardings[2]))
+        self.labelProgrammesCount.set_text("Used %i of %i programme spaces" % (self.programmes_quantity, club.programmes[2]))
 
     def populate_data(self):
         self.liststoreHoardingsAvailable.clear()
@@ -512,8 +526,7 @@ class Advertising(Gtk.Grid):
         for item in club.programmes[1]:
             self.programmes_quantity += item[1]
 
-        self.labelHoardingsCount.set_text("Used %i of %i hoarding spaces" % (self.hoardings_quantity, club.hoardings[2]))
-        self.labelProgrammesCount.set_text("Used %i of %i programme spaces" % (self.programmes_quantity, club.programmes[2]))
+        self.update_totals()
 
     def run(self):
         self.populate_data()

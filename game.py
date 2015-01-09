@@ -68,8 +68,7 @@ team_training_alert = 0
 team_training_timeout = 12
 sponsor_timeout = 0
 advertising_alert = 4
-float_timeout = 0
-float_status = 1
+advertising_timeout = 0
 
 statistics = [[None, [0, 0]], [None, [0, 0]]]
 advertising_assistant = False  # Toggle assistant handling advertising

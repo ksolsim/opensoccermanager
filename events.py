@@ -717,6 +717,11 @@ def update_sponsorship():
 
 
 def update_advertising():
+    '''
+    Decrease number of weeks on purchased advertisements, and remove
+    any that have expired. Also periodically refresh the advertisements
+    that are available.
+    '''
     for clubid, club in game.clubs.items():
         for advert in club.hoardings[1]:
             advert[2] -= 1
@@ -730,10 +735,7 @@ def update_advertising():
             if advert[2] == 0:
                 club.programmes[1].remove(advert)
 
-    '''
-    Generate a news alert if the number of adverts over a period is not
-    sufficient and the user should pay more attention to them.
-    '''
+    # Generate news alert if advertising needs looking at by user
     if game.advertising_alert == 0:
         club = game.clubs[game.teamid]
 
@@ -744,6 +746,13 @@ def update_advertising():
         game.advertising_alert = random.randint(10, 16)
 
     game.advertising_alert -= 1
+
+    if game.advertising_timeout > 0:
+        game.advertising_timeout -= 1
+
+        if game.advertising_timeout == 0:
+            generate_advertisement()
+            game.advertising_timeout = random.randint(8, 12)
 
 
 def generate_sponsor(companies):
@@ -757,26 +766,31 @@ def generate_sponsor(companies):
     return company, period, cost
 
 
-def generate_advertisement(companies):
-    reputation = game.clubs[game.teamid].reputation
+def generate_advertisement():
+    club = game.clubs[game.teamid]
 
-    random.shuffle(companies)
-    for item in companies[0:30]:
+    club.hoardings[0] = []
+    club.programmes[0] = []
+
+    random.shuffle(game.companies)
+
+    for item in game.companies[0:30]:
         name = item[0]
         amount = random.randint(1, 6)
         period = random.randint(4, 12)
-        cost = (reputation + random.randint(-5, 5)) * 100
+        cost = (club.reputation + random.randint(-5, 5)) * 100
 
-        game.clubs[game.teamid].hoardings[0].append([name, amount, period, cost])
+        club.hoardings[0].append([name, amount, period, cost])
 
-    random.shuffle(companies)
-    for item in companies[0:20]:
+    random.shuffle(game.companies)
+
+    for item in game.companies[0:20]:
         name = item[0]
         amount = random.randint(1, 6)
         period = random.randint(4, 12)
-        cost = (reputation + random.randint(-5, 5)) * 50
+        cost = (club.reputation + random.randint(-5, 5)) * 50
 
-        game.clubs[game.teamid].programmes[0].append([name, amount, period, cost])
+        club.programmes[0].append([name, amount, period, cost])
 
 
 def season_tickets(clubid):
@@ -1251,7 +1265,7 @@ def float_club():
     '''
     Complete floating of club once timeout has been reached.
     '''
-    if game.flotation.timeout > 0:
+    if game.flotation.timeout > 0 and game.flotation.status == 1:
         game.flotation.timeout -= 1
 
         if game.flotation.timeout == 0:
