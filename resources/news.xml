@@ -325,4 +325,9 @@
         <message>The stadium improvement grant for _AMOUNT_ has now been received. The amount can be used to improve the stadium, or the shops outside.</message>
         <category>1</category>
     </article>
+    <article id="FL01">
+        <title>Club flotation on stock market completed</title>
+        <message>The board have now confirmed that the public offering on the club has now been completed and all the shares have been purchased. We are also pleased to announce that the club made more money than was originally estimated.</message>
+        <category>5</category>
+    </article>
 </news>

@@ -282,8 +282,13 @@ def datainit():
         game.referees[item[0]] = [item[1], 0, 0, 0, 0]
 
 
-def dataloader():
+def dataloader(finances):
     club = game.clubs[game.teamid]
+
+    if finances == -1:
+        club.balance = club.reputation ** 3 * random.randint(985, 1025) * 3
+    else:
+        club.balance = constants.money[finances][0]
 
     # Set amount of real estate available for buildings
     if club.reputation > 12:

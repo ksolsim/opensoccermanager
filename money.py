@@ -11,18 +11,20 @@ import calculator
 import news
 
 
-def deposit(amount, category):
+def deposit(amount, category=None):
     '''
     Increases the amount of money in the bank account.
     '''
     club = game.clubs[game.teamid]
-    club.accounts[category][0] += amount
-    club.accounts[category][1] += amount
 
-    club.income = 0
+    if category is not None:
+        club.accounts[category][0] += amount
+        club.accounts[category][1] += amount
 
-    for item in club.accounts[0:7]:
-        club.income += item[1]
+        club.income = 0
+
+        for item in club.accounts[0:7]:
+            club.income += item[1]
 
     club.balance += amount
 

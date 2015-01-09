@@ -22,7 +22,6 @@
 
 from gi.repository import Gtk
 from gi.repository import GdkPixbuf
-from lxml import etree as ET
 import random
 import os
 
@@ -272,16 +271,13 @@ class ScreenDetails(Gtk.Grid):
         '''
         Used to load remaining data and populate game with usable values
         '''
-        data.dataloader()
-
-        club = game.clubs[game.teamid]
-
-        # Generate initial finances
+        # Grab finance setup
         if self.radiobuttonFinancesUSM.get_active():
-            selected = int(self.comboboxFinances.get_active_id())
-            club.balance = constants.money[selected][0]
+            finances = int(self.comboboxFinances.get_active_id())
         else:
-            club.balance = club.reputation ** 3 * random.randint(985, 1025) * 3
+            finances = -1
+
+        data.dataloader(finances)
 
         money.calculate_loan()
         money.calculate_overdraft()
@@ -629,6 +625,7 @@ class ContinueGame:
             events.injury_period()
             events.update_condition()
             events.update_maintenance()
+            events.float_club()
             money.pay_overdraft()
             money.pay_loan()
             money.process_grant()

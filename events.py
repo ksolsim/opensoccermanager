@@ -308,15 +308,9 @@ def cards(club1, club2):
     def generate(clubid):
         cards = [{}, {}]
 
-        if game.clubs[clubid].tactics[6] == 0:
-            multipler = 1
-        elif game.clubs[clubid].tactics[6] == 1:
-            multiplier = 2
-        elif game.clubs[clubid].tactics[6] == 2:
-            multiplier = 3
+        multiplier = game.clubs[clubid].tactics[6] + 1
 
         fouls = random.randint(0, multiplier * 6) * 10
-
         yellow = random.randint(0, int(fouls * 0.5))
         red = random.randint(0, int(fouls / 8))
 
@@ -1254,5 +1248,12 @@ def update_maintenance():
 
 
 def float_club():
-    if game.float_timeout == 0 and game.float_status == 0:
-        money.deposit(amount)
+    '''
+    Complete floating of club once timeout has been reached.
+    '''
+    if game.flotation.timeout > 0:
+        game.flotation.timeout -= 1
+
+        if game.flotation.timeout == 0:
+            money.deposit(game.flotation.amount)
+            news.publish("FL01")

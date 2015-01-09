@@ -267,8 +267,7 @@ class Finances(Gtk.Grid):
         state = dialogs.float_club(game.flotation.amount)
 
         if state:
-            game.float_status = 0
-            game.float_timeout = random.randint(12, 16)
+            game.flotation.timeout = random.randint(12, 16)
 
             button.set_sensitive(False)
 
@@ -380,6 +379,7 @@ class Finances(Gtk.Grid):
             amount = display.currency(game.grant.maximum)
         else:
             amount = "Not Available"
+
         self.labelGrant.set_label("%s" % (amount))
 
         amount = display.currency(game.flotation.amount)
