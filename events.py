@@ -65,7 +65,7 @@ def increment_appearances(team1, team2):
     for playerid in selection1[0]:
         player = game.players[playerid]
         player.appearances += 1
-        player.morale += 3
+        evaluation.morale(playerid, 3)
 
     for playerid in selection1[1]:
         player = game.players[playerid]
@@ -75,7 +75,7 @@ def increment_appearances(team1, team2):
         if playerid not in selection1[0] and playerid not in selection1[1]:
             player = game.players[playerid]
             player.missed += 1
-            player.morale -= 3
+            evaluation.morale(playerid, 3)
 
     # Team 2
     selection2 = [[], []]
@@ -97,7 +97,7 @@ def increment_appearances(team1, team2):
     for playerid in selection2[0]:
         player = game.players[playerid]
         player.appearances += 1
-        player.morale += 3
+        evaluation.morale(playerid, 3)
 
     for playerid in selection2[1]:
         player = game.players[playerid]
@@ -107,7 +107,7 @@ def increment_appearances(team1, team2):
         if playerid not in selection2[0] and playerid not in selection2[1]:
             player = game.players[playerid]
             player.missed += 1
-            player.morale -= 3
+            evaluation.morale(playerid, 3)
 
     return selection1, selection2
 
@@ -122,7 +122,7 @@ def increment_goalscorers(scorers1, scorers2):
     for playerid in scorers:
         player = game.players[playerid]
         player.goals += 1
-        player.morale += 3
+        evaluation.morale(playerid, 3)
 
         if playerid in game.goalscorers:
             game.goalscorers[playerid] += 1
@@ -139,7 +139,7 @@ def increment_assists(assists1, assists2):
     for playerid in assists:
         player = game.players[playerid]
         player.assists += 1
-        player.morale += 1
+        evaluation.morale(playerid, 1)
 
         if playerid in game.assists:
             game.assists[playerid] += 1
@@ -837,7 +837,7 @@ def team_training():
             game.team_training_alert = random.randint(12, 18)
 
             for playerid, player in game.players.items():
-                player.morale -= 5
+                evaluation.morale(playerid, -5)
     else:
         game.team_training_alert -= 1
 
@@ -970,7 +970,7 @@ def training_camp(options):
 
     for playerid in squad:
         player = game.players[playerid]
-        player.morale += morale
+        evaluation.morale(playerid, morale)
         adjust_fitness(recovery=fitness)
 
 
@@ -1228,17 +1228,11 @@ def update_morale(clubid, amount):
     Increase or decrease player morale based on result.
     '''
     for playerid in game.clubs[clubid].squad:
-        player = game.players[playerid]
-        player.morale += amount
+        evaluation.morale(playerid, amount)
 
-        # Increase for captain regardless of result
+        # Add two points for captain
         if playerid == int(game.clubs[clubid].tactics[1]):
-            player.morale += 2
-
-        if player.morale > 100:
-            player.morale = 100
-        elif player.morale < -100:
-            player.morale = -100
+            evaluation.morale(playerid, 2)
 
 
 def update_condition():

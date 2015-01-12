@@ -3,6 +3,17 @@
 import game
 
 
+def morale(playerid, amount):
+    player = game.players[playerid]
+
+    player.morale += amount
+
+    if player.morale > 100:
+        player.morale = 100
+    elif player.morale < -100:
+        player.morale = -100
+
+
 def value(amount, category):
     '''
     Update evaluation category value by specified amount, ensuring that

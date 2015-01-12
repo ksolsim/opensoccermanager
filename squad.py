@@ -596,7 +596,8 @@ class Squad(Gtk.Grid):
 
             # Decrease morale
             if player.transfer[0]:
-               player.morale -= random.randint(15, 25)
+                value = random.randint(15, 25)
+                evaluation.morale(playerid, value)
         elif index == 1:
             player.transfer[1] = not loan
 

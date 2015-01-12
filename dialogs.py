@@ -7,11 +7,11 @@ import os
 import platform
 import random
 import glob
-import fileio
 
 import calculator
 import constants
 import display
+import evaluation
 import fileio
 import game
 import money
@@ -478,7 +478,7 @@ def renew_player_contract(playerid):
         player.bonus = leaguechampions, leaguerunnerup, winbonus, goalbonus
         player.contract = spinbuttonContract.get_value_as_int() * 52
 
-        player.morale += 15
+        evaluation.morale(playerid, 15)
 
         state = True
 
