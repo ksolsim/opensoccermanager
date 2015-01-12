@@ -127,6 +127,9 @@ def loan_list():
 
 
 def generate_team(clubid):
+    '''
+    Determine players in squad for all other clubs.
+    '''
     formationid = random.randint(0, 6)
     game.clubs[clubid].tactics[0] = formationid
     formation = constants.formations[formationid]
@@ -218,40 +221,62 @@ def generate_team(clubid):
         team[count] = player
 
 
+def home_advantage(clubid):
+    '''
+    Calculate home advantage based on form of club.
+    '''
+    club = game.clubs[clubid]
+
+    points = 0
+
+    for item in club.form:
+        if item == "W":
+            points += 3
+        elif item == "D":
+            points += 1
+
+    return points
+
+
 def generate_result(clubid1, clubid2):
+    '''
+    Generate the winner, loser or whether its a draw, and determine the
+    number of goals scored by both teams.
+    '''
     club1 = game.clubs[clubid1]
     club2 = game.clubs[clubid2]
 
-    team1 = club1.team
-    team2 = club2.team
-
-    reputation1 = club1.reputation
-    reputation2 = club2.reputation
-
     sums = [0, 0]
+    count = 0
 
-    for positionid, playerid in team1.items():
-        if playerid != 0:
-            player = game.players[playerid]
+    for team in (club1.team, club2.team):
+        for positionid, playerid in team.items():
+            if playerid != 0:
+                player = game.players[playerid]
 
-            skills = (player.keeping, player.tackling, player.passing, player.shooting, player.heading, player.pace, player.stamina, player.ball_control, player.set_pieces)
-            sums[0] = sum(skills)
+                skills = (player.keeping,
+                          player.tackling,
+                          player.passing,
+                          player.shooting,
+                          player.heading,
+                          player.pace,
+                          player.stamina,
+                          player.ball_control,
+                          player.set_pieces)
+                sums[count] = sum(skills)
 
-    for positionid, playerid in team2.items():
-        if playerid != 0:
-            player = game.players[playerid]
-
-            skills = (player.keeping, player.tackling, player.passing, player.shooting, player.heading, player.pace, player.stamina, player.ball_control, player.set_pieces)
-            sums[1] = sum(skills)
+        count += 1
 
     total_score = sum(sums)
 
-    home_adv = random.randint(1, 5)
+    advantage = home_advantage(clubid1)
 
-    percent1 = round((sums[0] / total_score) * 100)
-    percent1 = ((percent1 + home_adv) / 20) * reputation1
-    percent2 = round((sums[1] / total_score) * 100)
-    percent2 = ((percent2 - home_adv) / 20) * reputation2
+    percent1 = (sums[0] / total_score) * 100
+    percent1 = ((percent1 + advantage) * 0.05) * club1.reputation
+    percent2 = (sums[1] / total_score) * 100
+    percent2 = ((percent2 - advantage) * 0.05) * club2.reputation
+    percent1 = round(percent1)
+    percent2 = round(percent2)
 
     if percent1 > percent2:
         draw = percent1 - percent2
@@ -263,14 +288,12 @@ def generate_result(clubid1, clubid2):
     draw += 100 - draw - percent1 - percent2
 
     ranges = [[], [], []]
-    ranges[0] = [0.0, percent1]
+    ranges[0] = [0, percent1]
     ranges[1] = [ranges[0][1], percent1 + draw]
     ranges[2] = [ranges[1][1], ranges[1][1] + percent2]
 
-    for item in ranges:
-        list(map(int, item))
+    [list(map(int, item)) for item in ranges]
 
-    # Score
     def generate_score(ranges):
         def generate_goals(club):
             score1 = 1
@@ -285,7 +308,7 @@ def generate_result(clubid1, clubid2):
             for x in range(2, 9):
                 if random.randint(0, 100) < start:
                     score1 += 1
-                    start = int(start / 2)
+                    start = int(start * 0.5)
 
                     if start < 1:
                         start = 1

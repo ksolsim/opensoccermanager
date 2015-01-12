@@ -694,7 +694,7 @@ class ContinueGame:
                     dialogs.error(7)
                     error = True
 
-        if team_count + 1 < 11:
+        if team_count + 1 < 1:
             dialogs.not_enough_players(team_count)
             error = True
         elif sub_count + 1 < 5:

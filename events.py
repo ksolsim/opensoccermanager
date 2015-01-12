@@ -65,6 +65,7 @@ def increment_appearances(team1, team2):
     for playerid in selection1[0]:
         player = game.players[playerid]
         player.appearances += 1
+        player.morale += 3
 
     for playerid in selection1[1]:
         player = game.players[playerid]
@@ -74,6 +75,7 @@ def increment_appearances(team1, team2):
         if playerid not in selection1[0] and playerid not in selection1[1]:
             player = game.players[playerid]
             player.missed += 1
+            player.morale -= 3
 
     # Team 2
     selection2 = [[], []]
@@ -111,11 +113,14 @@ def increment_appearances(team1, team2):
 
 
 def increment_goalscorers(scorers1, scorers2):
+    '''
+    Increment goals total for each player who scored, and increase the
+    morale
+    '''
     scorers = scorers1 + scorers2  # Cat lists, not a sum
 
     for playerid in scorers:
         player = game.players[playerid]
-
         player.goals += 1
         player.morale += 3
 
@@ -126,6 +131,9 @@ def increment_goalscorers(scorers1, scorers2):
 
 
 def increment_assists(assists1, assists2):
+    '''
+    Increments assists for players, and increase morale
+    '''
     assists = assists1 + assists2  # Cat lists, not a sum
 
     for playerid in assists:
@@ -963,7 +971,7 @@ def training_camp(options):
     for playerid in squad:
         player = game.players[playerid]
         player.morale += morale
-        adjust_fitness(fitness)
+        adjust_fitness(recovery=fitness)
 
 
 def expectation():
