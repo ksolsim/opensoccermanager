@@ -1205,19 +1205,17 @@ def attendance(team1, team2):
 
 def renew_contract(playerid):
     '''
-    Logic for whether player wants to renew contract or not.
-
-    Needs to take into account player morale, number of games played,
-    evaluation values of club, in the future.
+    Logic for whether player is willing to agree to a new contract.
     '''
     points = 0
 
     player = game.players[playerid]
     club = game.clubs[player.club]
 
-    print(club.evaluation)
-
     points += player.morale
+
+    overall = evaluation.calculate_overall()
+    points += overall - 50
 
     if points > 0:
         return True
