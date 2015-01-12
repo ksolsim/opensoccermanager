@@ -720,7 +720,7 @@ def update_sponsorship():
             game.clubs[game.teamid].sponsor_status = 0
 
             news.publish("BS03")
-            evaluation.value(0, -5)
+            evaluation.value(-5, 0)
             game.sponsor_timeout = random.randint(4, 6)
 
 
@@ -1174,25 +1174,23 @@ def update_statistics(result):
 
 
 def attendance(team1, team2):
-    club1 = game.clubs[team1]
-    club2 = game.clubs[team2]
+    club = game.clubs[team1]
 
-    stadiumid = club1.stadium
-    capacity = game.stadiums[stadiumid].capacity
+    capacity = game.stadiums[club.stadium].capacity
 
     amount = 0
-    amount += club1.reputation ** 2 * 100
-    amount += club2.reputation ** 2 * 100
+    amount += club.reputation ** 2 * 100
+    amount += game.clubs[team2].reputation ** 2 * 100
 
     points = 0
 
-    for form in club1.form:
+    for form in club.form:
         if form == "W":
             points += 3
         elif form == "D":
             points += 1
 
-    value = points / len(club1.form) * 3
+    value = points / len(club.form) * 3
 
     amount += value * 1000
     amount += random.randint(-amount * 0.1, amount * 0.1)
@@ -1212,9 +1210,16 @@ def renew_contract(playerid):
     Needs to take into account player morale, number of games played,
     evaluation values of club, in the future.
     '''
-    player = game.players[playerid]
+    points = 0
 
-    if player.morale > 0:
+    player = game.players[playerid]
+    club = game.clubs[player.club]
+
+    print(club.evaluation)
+
+    points += player.morale
+
+    if points > 0:
         return True
     else:
         return False

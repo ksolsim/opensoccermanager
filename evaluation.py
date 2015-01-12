@@ -39,3 +39,18 @@ def indexer(index):
         value = 6
 
     return value
+
+
+def calculate_overall():
+    club = game.clubs[game.teamid]
+
+    total = sum(club.evaluation)
+
+    if club.evaluation[4] == 0:
+        multiplier = 0.25
+    else:
+        multiplier = 0.2
+
+    total = total * multiplier
+
+    return total

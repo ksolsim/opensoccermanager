@@ -690,9 +690,8 @@ class Evaluation(Gtk.Grid):
             self.labelStaff.set_label('"%s"' % (random.choice(constants.evaluation[3][value])))
             self.labelStaffPercent.set_markup("<b>%i%%</b>" % (points))
 
-            overall = sum(club.evaluation[0:5])
-            overall = (overall / 500) * 100
-            self.labelOverallPercent.set_markup("<b>%i%%</b>" % (overall))
+        overall = evaluation.calculate_overall()
+        self.labelOverallPercent.set_markup("<b>%i%%</b>" % (overall))
 
         self.show_all()
 
