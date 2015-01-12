@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 NAME = "OpenSoccerManager"
 VERSION = 0.01
