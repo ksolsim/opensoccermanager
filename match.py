@@ -318,12 +318,6 @@ class Match(Gtk.Grid):
             events.update_morale(result[0], 1)
             events.update_morale(result[3], 1)
 
-        # Update chairman evaluation
-        if result[1] > result[2]:
-            diff = result[1] - result[2]
-        elif result[2] > result[1]:
-            diff = result[2] - result[1]
-
         # Communication from chairman about result
         if result[0] == game.teamid:
             if result[1] - result[2] > 3:
@@ -343,6 +337,14 @@ class Match(Gtk.Grid):
                 club = game.clubs[result[0]].name
                 score = "%i - %i" % (result[1], result[2])
                 news.publish("RE02", result=score, team=club)
+
+        # Pay player bonus
+        if result[0] == game.teamid:
+            if result[1] > result[2]:
+                events.pay_bonus()
+        elif result[3] == game.teamid:
+            if result[2] > result[1]:
+                events.pay_bonus()
 
         events.increment_goalscorers(scorers[0], scorers[1])
         events.increment_assists(assists[0], assists[1])

@@ -663,9 +663,6 @@ class ContinueGame:
     def initiate_game(self):
         screen_loader(99)
 
-        # Match only related events
-        events.pay_bonus()
-
     def check_squad(self):
         '''
         Check whether the squad has been selected, determine the numbers
