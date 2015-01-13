@@ -93,7 +93,11 @@ def calculate_loan_repayment(amount, weeks):
 
 def pay_loan():
     if game.bankloan.amount > 0:
+        if game.bankloan.repayment > game.bankloan.amount:
+            game.bankloan.repayment = game.bankloan.amount
+
         game.bankloan.amount -= game.bankloan.repayment
+
         withdraw(game.bankloan.repayment, 16)
 
 
