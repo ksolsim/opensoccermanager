@@ -4,11 +4,12 @@ from gi.repository import Gtk
 import random
 import math
 
-import game
-import dialogs
-import stadium
 import calculator
+import dialogs
+import evaluation
+import game
 import news
+import stadium
 
 
 def deposit(amount, category=None):

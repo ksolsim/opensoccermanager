@@ -60,7 +60,7 @@ def catering(attendance):
         multiplier = constants.catering[count][2]
         potential_sales = attendance * (multiplier * 0.01)
         sale_percentage = 100 - (profit_percentage - 100)
-        sales = (potential_sales / 0.01) * sale_percentage
+        sales = (potential_sales * 0.01) * sale_percentage
 
         revenue = sales * constants.merchandise[count][1]
         cost = (revenue / (100 + profit_percentage)) * 100

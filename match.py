@@ -321,10 +321,8 @@ class Match(Gtk.Grid):
         # Update chairman evaluation
         if result[1] > result[2]:
             diff = result[1] - result[2]
-            evaluation.value(diff, 0)
         elif result[2] > result[1]:
             diff = result[2] - result[1]
-            evaluation.value(diff, 0)
 
         # Communication from chairman about result
         if result[0] == game.teamid:
@@ -332,23 +330,19 @@ class Match(Gtk.Grid):
                 club = game.clubs[result[3]].name
                 score = "%i - %i" % (result[1], result[2])
                 news.publish("RE01", result=score, team=club)
-                evaluation.value(5, 0)
             elif result[1] - result[2] < -3:
                 club = game.clubs[result[3]].name
                 score = "%i - %i" % (result[1], result[2])
                 news.publish("RE02", result=score, team=club)
-                evaluation.value(-5, 0)
         elif result[3] == game.teamid:
             if result[2] - result[1] > 3:
                 club = game.clubs[result[0]].name
                 score = "%i - %i" % (result[1], result[2])
                 news.publish("RE01", result=score, team=club)
-                evaluation.value(5, 0)
             elif result[2] - result[1] < -3:
                 club = game.clubs[result[0]].name
                 score = "%i - %i" % (result[1], result[2])
                 news.publish("RE02", result=score, team=club)
-                evaluation.value(-5, 0)
 
         events.increment_goalscorers(scorers[0], scorers[1])
         events.increment_assists(assists[0], assists[1])

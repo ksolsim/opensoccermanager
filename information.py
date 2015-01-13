@@ -632,63 +632,38 @@ class Evaluation(Gtk.Grid):
         self.attach(self.labelOverallPercent, 2, 11, 1, 1)
 
     def run(self):
+        evaluation.update()
+
         club = game.clubs[game.teamid]
-        value = evaluation.indexer(club.evaluation[0])
 
         # Chairman
+        value = evaluation.indexer(club.evaluation[0])
         self.labelChairman.set_label('"%s"' % (random.choice(constants.evaluation[0][value])))
         self.labelChairmanPercent.set_markup("<b>%i%%</b>" % (club.evaluation[0]))
 
         # Fans
+        value = evaluation.indexer(club.evaluation[1])
         self.labelFans.set_label('"%s"' % (random.choice(constants.evaluation[1][value])))
         self.labelFansPercent.set_markup("<b>%i%%</b>" % (club.evaluation[1]))
 
         # Finances
-        balance = club.balance
-        amount = (club.reputation ** 3 * 1005 * 3) * 2
-
-        points = (balance / amount) * 100
-
-        if points < 0:
-            points = 0
-        elif points > 100:
-            points = 100
-
+        value = evaluation.indexer(club.evaluation[2])
         self.labelFinances.set_label('"%s"' % (random.choice(constants.evaluation[2][value])))
-        self.labelFinancesPercent.set_markup("<b>%i%%</b>" % (points))
+        self.labelFinancesPercent.set_markup("<b>%i%%</b>" % (club.evaluation[2]))
 
         # Players
-        points = 0
-
-        for playerid in club.squad:
-            player = game.players[playerid]
-            points += player.morale
-
-        maximum = len(club.squad) * 100
-        total = maximum * 2
-
-        points = ((points + maximum) / total) * 100
-
-        self.labelPlayers.set_label('"%s"' % (random.choice(constants.evaluation[4][value])))
-        self.labelPlayersPercent.set_markup("<b>%i%%</b>" % (points))
+        value = evaluation.indexer(club.evaluation[3])
+        self.labelPlayers.set_label('"%s"' % (random.choice(constants.evaluation[3][value])))
+        self.labelPlayersPercent.set_markup("<b>%i%%</b>" % (club.evaluation[3]))
 
         # Staff
-        if len(club.scouts_hired) + len(club.coaches_hired) == 0:
-            self.labelStaff.set_label('"There are no scouts or coaches on staff."')
+        if len(club.scouts_hired) + len(club.coaches_hired) > 0:
+            value = evaluation.indexer(club.evaluation[4])
+            self.labelStaff.set_label('"%s"' % (random.choice(constants.evaluation[4][value])))
+            self.labelStaffPercent.set_markup("<b>%i%%</b>" % (club.evaluation[4]))
         else:
-            points = 0
-
-            for coachid, coach in club.coaches_hired.items():
-                points += coach[5]
-
-            for scoutid, scout in club.scouts_hired.items():
-                points += scout[4]
-
-            maximum = (len(club.coaches_hired) + len(club.scouts_hired)) * 10
-            points = (points / maximum) * 100
-
-            self.labelStaff.set_label('"%s"' % (random.choice(constants.evaluation[3][value])))
-            self.labelStaffPercent.set_markup("<b>%i%%</b>" % (points))
+            self.labelStaff.set_label('"There are no scouts or coaches on staff."')
+            self.labelStaffPercent.set_label("")
 
         overall = evaluation.calculate_overall()
         self.labelOverallPercent.set_markup("<b>%i%%</b>" % (overall))

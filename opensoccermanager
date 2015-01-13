@@ -32,6 +32,7 @@ import data
 import database
 import dialogs
 import display
+import evaluation
 import events
 import fileio
 import finances
@@ -634,6 +635,7 @@ class ContinueGame:
         events.injury()
         transfer.ai_enquiry()
         ai.advertising()
+        evaluation.update()
 
         # Age players
         for playerid, player in game.players.items():

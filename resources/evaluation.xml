@@ -34,16 +34,6 @@
         <message id="6">The current financial situation is the best the club has even seen.</message>
         <message id="6">The club has never been more secure in its financial position.</message>
     </finances>
-    <staff>
-        <message id="0">The staff are very unhappy with the current working conditions.</message>
-        <message id="1">The staff want to see notable improvements in working conditions.</message>
-        <message id="2">Some staff believe they are not listened to or appreciated.</message>
-        <message id="3">Staff report that they are reasonably happy at the club.</message>
-        <message id="4">Most staff believe the club is heading in the right direction.</message>
-        <message id="5">The staff are very happy with the current situation at the club.</message>
-        <message id="6">Currently, the staff are delighted to be a part of the club.</message>
-        <message id="6">The club is regarded as having some of the best working conditions.</message>
-    </staff>
     <players>
         <message id="0">A majority of players are calling for your immediate departure.</message>
         <message id="1">Some players believe it would be best if you left the club.</message>
@@ -54,4 +44,14 @@
         <message id="6">The squad is delighted with the job you are currently doing.</message>
         <message id="6">Many players in the team believe you are the best manager in the world.</message>
     </players>
+    <staff>
+        <message id="0">The staff are very unhappy with the current working conditions.</message>
+        <message id="1">The staff want to see notable improvements in working conditions.</message>
+        <message id="2">Some staff believe they are not listened to or appreciated.</message>
+        <message id="3">Staff report that they are reasonably happy at the club.</message>
+        <message id="4">Most staff believe the club is heading in the right direction.</message>
+        <message id="5">The staff are very happy with the current situation at the club.</message>
+        <message id="6">Currently, the staff are delighted to be a part of the club.</message>
+        <message id="6">The club is regarded as having some of the best working conditions.</message>
+    </staff>
 </evaluation>

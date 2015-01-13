@@ -6,6 +6,7 @@ import random
 
 import game
 import database
+import evaluation
 import events
 import constants
 import calculator
@@ -119,7 +120,7 @@ def datainit():
         club.shortlist = set()
         club.merchandise = []
         club.catering = []
-        club.evaluation = [75, 62, 75, 80, 0]
+        club.evaluation = [0, 0, 0, 0, 0]
         club.statistics = [0] * 3
         club.form = []
 
@@ -381,6 +382,8 @@ def dataloader(finances):
     # Import resources
     resources.import_news()
     resources.import_evaluation()
+
+    evaluation.update()
 
     # Retrieve first three fixtures for news
     initial_fixtures = []

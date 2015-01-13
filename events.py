@@ -720,7 +720,6 @@ def update_sponsorship():
             game.clubs[game.teamid].sponsor_status = 0
 
             news.publish("BS03")
-            evaluation.value(-5, 0)
             game.sponsor_timeout = random.randint(4, 6)
 
 
@@ -748,7 +747,6 @@ def update_advertising():
         club = game.clubs[game.teamid]
 
         if len(club.hoardings[1]) + len(club.programmes[1]) < 12:
-            evaluation.value(-3, 0)
             news.publish("BS04")
 
         game.advertising_alert = random.randint(10, 16)
