@@ -140,8 +140,8 @@ class Tactics(Gtk.Grid):
         self.comboboxWinBonus = Gtk.ComboBoxText()
         self.comboboxWinBonus.append("0", "No Bonus")
         self.comboboxWinBonus.append("1", "10%")
-        self.comboboxWinBonus.append("2", "30%")
-        self.comboboxWinBonus.append("3", "50%")
+        self.comboboxWinBonus.append("3", "30%")
+        self.comboboxWinBonus.append("5", "50%")
         self.comboboxWinBonus.connect("changed", self.bonus_changed)
         grid.attach(self.comboboxWinBonus, 1, 8, 1, 1)
 
@@ -175,9 +175,8 @@ class Tactics(Gtk.Grid):
 
     def bonus_changed(self, combobox):
         bonusid = combobox.get_active_id()
-        bonusid = int(bonusid)
 
-        game.clubs[game.teamid].tactics[8] = bonusid
+        game.clubs[game.teamid].tactics[8] = int(bonusid)
 
     def run(self):
         self.liststoreFormation.clear()
