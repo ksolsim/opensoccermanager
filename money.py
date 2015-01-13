@@ -88,9 +88,6 @@ def calculate_loan_repayment(amount, weeks):
     repayment = (amount * (game.bankloan.rate * 0.01 + 1)) / weeks
     repayment = math.ceil(repayment)
 
-    if repayment > game.bankloan.amount:
-        repayment = game.bankloan.amount
-
     return repayment
 
 
@@ -185,7 +182,7 @@ def process_grant():
 def flotation():
     club = game.clubs[game.teamid]
 
-    amount = club.reputation * (club.reputation * 100000)
+    amount = club.reputation ** 2 * 100000
 
     form_affected = amount * 0.25
     amount -= form_affected

@@ -84,6 +84,9 @@ def indexer(index):
 
 
 def calculate_overall():
+    '''
+    Calculate overall evaluation percentage.
+    '''
     club = game.clubs[game.teamid]
 
     if club.evaluation[4] == 0:
