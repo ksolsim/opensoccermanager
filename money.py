@@ -46,6 +46,48 @@ def withdraw(amount, category):
     club.balance -= amount
 
 
+def pay_wages():
+    '''
+    Pay wages for both players and staff.
+    '''
+    total = 0
+
+    club = game.clubs[game.teamid]
+
+    for playerid in club.squad:
+        total += game.players[playerid].wage
+
+    withdraw(total, 12)
+
+    total = 0
+
+    for staffid in club.coaches_hired:
+        total += club.coaches_hired[staffid].wage
+
+    for staffid in club.scouts_hired:
+        total += club.scouts_hired[staffid].wage
+
+    withdraw(total, 11)
+
+
+def pay_bonus():
+    '''
+    Calculates the win bonus on top of wages, then resets the bonus
+    statement.
+    '''
+    if game.clubs[game.teamid].tactics[8] != 0:
+        total = 0
+
+        for playerid in game.clubs[game.teamid].team:
+            if playerid != 0:
+                total += game.players[playerid].wage
+
+        bonus = total * (game.clubs[game.teamid].tactics[8] * 0.1)
+        withdraw(bonus, 12)
+
+        game.clubs[game.teamid].tactics[8] = 0
+
+
 def request(amount):
     '''
     Requests amount to withdraw and return whether transaction is valid.
@@ -184,6 +226,9 @@ def process_grant():
 
 
 def flotation():
+    '''
+    Calculate estimated flotation amount for club.
+    '''
     club = game.clubs[game.teamid]
 
     amount = club.reputation ** 2 * 100000
@@ -207,3 +252,15 @@ def flotation():
         amount += (form_affected / form_length) * ((form_length * 3) - points)
 
     game.flotation.amount = amount
+
+
+def float_club():
+    '''
+    Complete floating of club once timeout has been reached.
+    '''
+    if game.flotation.timeout > 0 and game.flotation.status == 1:
+        game.flotation.timeout -= 1
+
+        if game.flotation.timeout == 0:
+            deposit(game.flotation.amount)
+            news.publish("FL01")

@@ -362,16 +362,14 @@ class Match(Gtk.Grid):
         self.labelAttendance.set_text("%s" % (attendance))
 
         # Matchday ticket sales
-        if game.teamid == self.team1:
+        if self.team1 == game.teamid:
             club = game.clubs[self.team1]
+            stadium = game.stadiums[club.stadium]
 
             available = 100 - club.season_tickets
-            total = available / 100
+            total = available * 0.01
 
-            stadium = game.stadiums[club.stadium]
-            capacity = stadium.capacity
-
-            amount = club.tickets[10] * (capacity * total)
+            amount = club.tickets[10] * (stadium.capacity * total)
             money.deposit(amount, 5)
 
             sales.merchandise(attendance)

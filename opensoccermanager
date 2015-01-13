@@ -613,7 +613,7 @@ class ContinueGame:
 
             # Process end of week events
             events.reset_accounts()
-            events.pay_wages()
+            money.pay_wages()
             events.update_contracts()
             events.update_advertising()
             events.update_sponsorship()
@@ -625,7 +625,7 @@ class ContinueGame:
             events.injury_period()
             events.update_condition()
             events.update_maintenance()
-            events.float_club()
+            money.float_club()
             money.pay_overdraft()
             money.pay_loan()
             money.process_grant()
