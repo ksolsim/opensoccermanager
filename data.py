@@ -349,27 +349,11 @@ def dataloader(finances):
     game.flotation.status = 0
 
     # Initiate season ticket sales based on percentage of capacity
-    club.season_tickets = events.season_tickets(game.teamid)
+    club.season_tickets = events.season_tickets()
     game.season_tickets_status = 0
 
-    # Calculate ticket prices
-    base = 1, 2, 3, 4, 30
-    club.tickets[0] = base[0] + club.reputation
-    club.tickets[1] = base[0] + club.reputation + (club.reputation * 0.25)
-    club.tickets[2] = (base[0] + club.reputation) * 15
-    club.tickets[3] = base[1] + club.reputation
-    club.tickets[4] = base[1] + club.reputation + (club.reputation * 0.25)
-    club.tickets[5] = (base[1] + club.reputation) * 15
-    club.tickets[6] = base[2] + club.reputation
-    club.tickets[7] = base[2] + club.reputation + (club.reputation * 0.25)
-    club.tickets[8] = (base[2] + club.reputation) * 15
-    club.tickets[9] = base[3] + club.reputation
-    club.tickets[10] = base[3] + club.reputation + (club.reputation * 0.25)
-    club.tickets[11] = (base[3] + club.reputation) * 15
-    club.tickets[12] = base[4] + club.reputation
-    club.tickets[13] = base[4] + club.reputation + (club.reputation * 0.25)
-    club.tickets[14] = (base[4] + club.reputation) * 15
-    list(map(int, club.tickets))
+    # Calculate base ticket prices
+    club.tickets = calculator.ticket_prices()
 
     # Calculate free school tickets
     tickets = int((20 - club.reputation) * 0.25) + 1  # Leave int to round

@@ -190,6 +190,32 @@ def wage_rounder(value):
     return value - (value % divisor)
 
 
+def ticket_prices():
+    club = game.clubs[game.teamid]
+
+    tickets = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+    tickets[0] = 1 + club.reputation
+    tickets[1] = 1 + club.reputation + (club.reputation * 0.25)
+    tickets[2] = (1 + club.reputation) * 15
+    tickets[3] = 2 + club.reputation
+    tickets[4] = 2 + club.reputation + (club.reputation * 0.25)
+    tickets[5] = (2 + club.reputation) * 15
+    tickets[6] = 3 + club.reputation
+    tickets[7] = 3 + club.reputation + (club.reputation * 0.25)
+    tickets[8] = (3 + club.reputation) * 15
+    tickets[9] = 4 + club.reputation
+    tickets[10] = 4 + club.reputation + (club.reputation * 0.25)
+    tickets[11] = (4 + club.reputation) * 15
+    tickets[12] = 30 + club.reputation
+    tickets[13] = 30 + club.reputation + (club.reputation * 0.25)
+    tickets[14] = (30 + club.reputation) * 15
+
+    tickets = list(map(int, tickets))
+
+    return tickets
+
+
 def maintenance():
     club = game.clubs[game.teamid]
     stadium = game.stadiums[club.stadium]

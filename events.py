@@ -757,12 +757,12 @@ def generate_advertisement():
         club.programmes[0].append([name, amount, period, cost])
 
 
-def season_tickets(clubid):
+def season_tickets():
     '''
     Calculate the default percentage of season tickets to be sold based
     on reputation of the club.
     '''
-    percentage = game.clubs[clubid].reputation + 40
+    percentage = game.clubs[game.teamid].reputation + 40
 
     return percentage
 
@@ -1133,11 +1133,18 @@ def attendance(team1, team2):
     club = game.clubs[team1]
 
     capacity = game.stadiums[club.stadium].capacity
+    base_capacity = (74000 / 20) * club.reputation
 
-    amount = 0
-    amount += club.reputation ** 2 * 100
-    amount += game.clubs[team2].reputation ** 2 * 100
+    capacity -= club.school_tickets
 
+    attendance = 0
+
+    if base_capacity > capacity:
+        attendance += capacity * 0.5
+    else:
+        attendance += base_capacity * 0.5
+
+    # Form
     points = 0
 
     for form in club.form:
@@ -1146,17 +1153,24 @@ def attendance(team1, team2):
         elif form == "D":
             points += 1
 
-    value = points / len(club.form) * 3
+    attendance += (points / (len(club.form) * 3)) * (base_capacity * 0.5)
 
-    amount += value * 1000
-    amount += random.randint(-amount * 0.1, amount * 0.1)
+    # Reputation
+    diff = club.reputation - game.clubs[team2].reputation
 
-    if amount > capacity:
-        amount = capacity
+    if diff == 0:
+        diff = 1
 
-    amount = int(amount)
+    attendance += (base_capacity * 0.5) / diff
 
-    return amount
+    if attendance > capacity:
+        attendance = capacity
+
+    attendance += club.school_tickets
+
+    attendance = int(attendance)
+
+    return attendance
 
 
 def renew_contract(playerid):

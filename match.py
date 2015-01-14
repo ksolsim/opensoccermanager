@@ -341,10 +341,10 @@ class Match(Gtk.Grid):
         # Pay player bonus
         if result[0] == game.teamid:
             if result[1] > result[2]:
-                events.pay_bonus()
+                money.pay_bonus()
         elif result[3] == game.teamid:
             if result[2] > result[1]:
-                events.pay_bonus()
+                money.pay_bonus()
 
         events.increment_goalscorers(scorers[0], scorers[1])
         events.increment_assists(assists[0], assists[1])

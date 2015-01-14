@@ -111,9 +111,7 @@ class Tickets(Gtk.Grid):
         grid.attach(self.labelStatus, 0, 2, 2, 1)
 
     def value_changed(self, scale, index):
-        value = scale.get_value()
-
-        game.clubs[game.teamid].tickets[index] = value
+        game.clubs[game.teamid].tickets[index] = int(scale.get_value())
 
     def format_value(self, scale, value, index):
         value = display.currency(value)

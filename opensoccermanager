@@ -205,13 +205,10 @@ class ScreenDetails(Gtk.Grid):
 
         # Load manager names
         self.liststoreName.clear()
-
-        names = fileio.read_names()
-        [self.liststoreName.append([name]) for name in names]
+        [self.liststoreName.append([name]) for name in fileio.read_names()]
 
         # Load list of clubs
         self.liststoreClubs.clear()
-
         [self.liststoreClubs.append([clubid, club.name]) for clubid, club in game.clubs.items()]
 
         self.entryName.set_text("")
@@ -693,7 +690,7 @@ class ContinueGame:
                     dialogs.error(7)
                     error = True
 
-        if team_count + 1 < 11:
+        if team_count + 1 < 1:
             dialogs.not_enough_players(team_count)
             error = True
         elif sub_count + 1 < 5:

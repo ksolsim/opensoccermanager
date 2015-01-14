@@ -121,13 +121,13 @@ def calculate_loan():
     Calculate maximum amount club is allowed to borrow as part of loan.
     '''
     club = game.clubs[game.teamid]
-    amount = 10000 * club.reputation * club.reputation
+    amount = 10000 * (club.reputation ** 2)
     amount = calculator.value_rounder(amount)
     game.bankloan.maximum = amount
 
 
 def calculate_loan_repayment(amount, weeks):
-    repayment = (amount * (game.bankloan.rate * 0.01 + 1)) / weeks
+    repayment = amount * (game.bankloan.rate * 0.01 + 1) / weeks
     repayment = math.ceil(repayment)
 
     return repayment
