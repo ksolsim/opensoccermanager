@@ -328,6 +328,10 @@ def read_names():
     filepath = os.path.join(game.data_location, "users.txt")
     names = []
 
+    # Create username file if it does not already exist
+    if not os.path.isfile(filepath):
+        open(filepath, "w")
+
     with open(filepath, "r") as fp:
         for item in fp.readlines():
             item = item.strip("\n")

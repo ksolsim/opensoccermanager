@@ -221,7 +221,7 @@ def maintenance():
     stadium = game.stadiums[club.stadium]
 
     # Stadium maintenance cost
-    cost = (game.maintenance * 0.01) * stadium.capacity * 0.5
+    cost = (stadium.maintenance * 0.01) * stadium.capacity * 0.5
 
     # Building maintenance cost
     for count, item in enumerate(constants.buildings):

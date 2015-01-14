@@ -239,6 +239,10 @@ def preferences_dialog():
 
         game.save_location = directory[7:]
 
+    def clear_names(button):
+        filepath = os.path.join(game.data_location, "users.txt")
+        open(filepath, "w")
+
     dialog = Gtk.Dialog()
     dialog.set_title("Preferences")
     dialog.set_transient_for(game.window)
@@ -287,6 +291,17 @@ def preferences_dialog():
     filechooserLocation.set_filename(game.save_location)
     filechooserLocation.connect("file-set", change_save_location)
     grid.attach(filechooserLocation, 1, 3, 3, 1)
+
+    frame = widgets.CommonFrame("Manager Names")
+    grid.attach(frame, 0, 4, 2, 1)
+    grid1 = Gtk.Grid()
+    grid1.set_column_spacing(5)
+    frame.insert(grid1)
+    label = widgets.AlignedLabel("Clear previously entered manager names:")
+    grid1.attach(label, 0, 0, 1, 1)
+    buttonClear = widgets.Button("_Clear Names")
+    buttonClear.connect("clicked", clear_names)
+    grid1.attach(buttonClear, 1, 0, 1, 1)
 
     dialog.show_all()
     dialog.run()
@@ -1550,11 +1565,19 @@ def name_change():
     label = Gtk.Label("Change your manager name:")
     grid.attach(label, 0, 0, 1, 1)
 
-    entry = Gtk.Entry()
+    liststoreName = Gtk.ListStore(str)
+
+    combobox = Gtk.ComboBoxText.new_with_entry()
+    combobox.set_model(liststoreName)
+    entry = combobox.get_child()
     entry.set_text(game.clubs[game.teamid].manager)
-    grid.attach(entry, 1, 0, 1, 1)
+    grid.attach(combobox, 1, 0, 1, 1)
+
+    [liststoreName.append([name]) for name in fileio.read_names()]
 
     dialog.show_all()
+
+    state = False
 
     if dialog.run() == Gtk.ResponseType.APPLY:
         name = entry.get_text()
@@ -1562,7 +1585,26 @@ def name_change():
         game.clubs[game.teamid].manager = name
         fileio.write_names(name, "a")
 
+        add = True
+
+        for count, item in enumerate(liststoreName):
+            if item[0] == game.clubs[game.teamid].manager:
+                add = False
+
+                del(liststoreName[count])
+                liststoreName.prepend([game.clubs[game.teamid].manager])
+
+        if add:
+            liststoreName.prepend([game.clubs[game.teamid].manager])
+
+        names = [key[0] for key in liststoreName]
+        fileio.write_names(names)
+
+        state = True
+
     dialog.destroy()
+
+    return state
 
 
 def loan_period():

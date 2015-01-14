@@ -333,7 +333,7 @@ class ScreenGame(Gtk.Grid):
         menu = Gtk.Menu()
         menuitem.set_submenu(menu)
         menuitemManager = widgets.MenuItem("_Manager Name")
-        menuitemManager.connect("activate", lambda i: dialogs.name_change())
+        menuitemManager.connect("activate", self.name_change)
         menu.append(menuitemManager)
         menuitemPreferences = widgets.MenuItem("_Preferences")
         menuitemPreferences.connect("activate", lambda i: dialogs.preferences_dialog())
@@ -491,6 +491,22 @@ class ScreenGame(Gtk.Grid):
 
     def run(self):
         self.show_all()
+
+    def name_change(self, menuitem):
+        club = game.clubs[game.teamid]
+        previous = club.manager
+
+        state = dialogs.name_change()
+
+        if state:
+            for item in game.news:
+                new = club.manager
+
+                if previous in item[1]:
+                    item[1] = item[1].replace(previous, new)
+
+                if previous in item[2]:
+                    item[2] = item[2].replace(previous, new)
 
     def news_activated(self, button):
         screen_loader(3)

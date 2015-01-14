@@ -60,10 +60,6 @@ cleansheets = {}
 cards = {}
 transfers = []
 
-# Stadium
-maxplots = 0                 # Maximum number of building plots permissible
-maintenance = 100            # Stadium maintenance percentage set by user
-
 team_training_alert = 0
 team_training_timeout = 12
 sponsor_timeout = 0

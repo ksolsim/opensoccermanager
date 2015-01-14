@@ -246,6 +246,14 @@ def datainit():
 
         stadium.buildings = list(item[30:38])
 
+    for clubid, club in game.clubs.items():
+        stadium = game.stadiums[club.stadium]
+
+        if club.reputation > 12:
+            stadium.plots = 60
+        else:
+            stadium.plots = 40
+
     # Import injuries
     injuries = database.importer("injury")
 
@@ -298,12 +306,6 @@ def dataloader(finances):
         club.balance = club.reputation ** 3 * random.randint(985, 1025) * 3
     else:
         club.balance = constants.money[finances][0]
-
-    # Set amount of real estate available for buildings
-    if club.reputation > 12:
-        game.maxplots = 60
-    else:
-        game.maxplots = 40
 
     # Generate coaches and scouts
     club.coaches_available = staff.generate(5, "coach")

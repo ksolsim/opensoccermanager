@@ -1213,7 +1213,7 @@ def update_condition():
     stadium = game.stadiums[club.stadium]
 
     # Adjust stadium condition
-    stadium.condition = game.maintenance + random.randint(-1, 2)
+    stadium.condition = stadium.maintenance + random.randint(-1, 2)
 
     if stadium.condition > 100:
         stadium.condition = 100

@@ -2,15 +2,16 @@
 
 import random
 
+import calculator
+import constants
 import game
 import money
-import constants
 
 
 def season_tickets():
     '''
     Determine number of season tickets to be sold prior to first game of
-    the season.
+    the season, and calculate the amount of income from those sales.
     '''
     club = game.clubs[game.teamid]
     stadium = game.stadiums[club.stadium]
@@ -23,7 +24,27 @@ def season_tickets():
     for stand in stadium.corner:
         capacity += stand.capacity
 
-    sales = (capacity * 0.01) * club.season_tickets * club.tickets[11]
+    max_season_tickets = (capacity * 0.01) * club.season_tickets
+
+    base_tickets = calculator.ticket_prices()
+    minmax = base_tickets[11] * 0.1
+
+    upper = minmax + base_tickets[11]
+    lower = base_tickets[11] - minmax
+
+    if club.tickets[11] > upper:
+        diff = (club.tickets[11] - base_tickets[11]) / minmax
+        sold = (capacity * 0.01 * club.season_tickets) / diff
+    elif club.tickets[11] < lower:
+        diff = (base_tickets[11] - club.tickets[11]) / minmax
+        sold = ((capacity * 0.01) * (club.season_tickets * (10 / diff)))
+    else:
+        sold = max_season_tickets
+
+    if sold > max_season_tickets:
+        sold = max_season_tickets
+
+    sales = sold * club.tickets[11]
 
     capacity = 0
 

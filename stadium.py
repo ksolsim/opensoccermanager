@@ -157,7 +157,7 @@ class Stadium(Gtk.Grid):
         cost = display.currency(self.cost)
         self.labelCost.set_text("%s" % (cost))
 
-        self.spinbuttonMaintenance.set_value(game.maintenance)
+        self.spinbuttonMaintenance.set_value(stadium.maintenance)
 
         cost = calculator.maintenance()
         cost = display.currency(cost)
@@ -168,7 +168,10 @@ class Stadium(Gtk.Grid):
         self.show_all()
 
     def maintenance_changed(self, spinbutton):
-        game.maintenance = spinbutton.get_value_as_int()
+        stadiumid = game.clubs[game.teamid].stadium
+        stadium = game.stadiums[stadiumid]
+
+        stadium.maintenance = spinbutton.get_value_as_int()
 
         cost = calculator.maintenance()
         cost = display.currency(cost)
@@ -534,13 +537,16 @@ class Buildings(Gtk.Grid):
         self.buttonConfirm.connect("clicked", self.confirm_building)
         buttonbox.add(self.buttonConfirm)
 
-        self.labelFuturePlots = widgets.AlignedLabel("Planned number of plots: %i" % (self.futureplots))
+        self.labelFuturePlots = widgets.AlignedLabel()
         self.attach(self.labelFuturePlots, 0, 11, 1, 1)
-        self.labelCurrentPlots = widgets.AlignedLabel("Used %i out of total %i plots available" % (self.plots, game.maxplots))
+        self.labelCurrentPlots = widgets.AlignedLabel()
         self.attach(self.labelCurrentPlots, 0, 12, 1, 1)
 
     def value_changed(self, spinbutton, index):
         self.futureplots = 0
+
+        stadiumid = game.clubs[game.teamid].stadium
+        stadium = game.stadiums[stadiumid]
 
         amount = spinbutton.get_value_as_int()
         buildings = self.buildings[index]
@@ -582,7 +588,7 @@ class Buildings(Gtk.Grid):
         else:
             self.buttonConfirm.set_sensitive(False)
 
-        if self.futureplots > game.maxplots:
+        if self.futureplots > stadium.plots:
             self.buttonConfirm.set_sensitive(False)
 
     def confirm_building(self, button):
@@ -612,7 +618,7 @@ class Buildings(Gtk.Grid):
             cost = display.currency(self.total)
             self.labelTotal.set_markup("<b>%s</b>" % (cost))
             self.labelFuturePlots.set_text("Planned number of plots: %i" % (self.futureplots))
-            self.labelCurrentPlots.set_text("Used %i out of total %i plots available" % (self.plots, game.maxplots))
+            self.labelCurrentPlots.set_text("Used %i out of total %i plots available" % (self.plots, stadium.plots))
 
             for item in self.labels:
                 cost = display.currency(0)
@@ -623,6 +629,9 @@ class Buildings(Gtk.Grid):
             self.spins[count].set_value(item)
 
     def run(self):
+        stadiumid = game.clubs[game.teamid].stadium
+        stadium = game.stadiums[stadiumid]
+
         self.buildings = []
         self.plots = 0
 
@@ -637,9 +646,6 @@ class Buildings(Gtk.Grid):
             cost = display.currency(0)
             self.labels[count].set_text("%s" % (cost))
 
-            stadiumid = game.clubs[game.teamid].stadium
-            stadium = game.stadiums[stadiumid]
-
             self.buildings.append(stadium.buildings[0 + count])
             self.spins[count].set_value(stadium.buildings[0 + count])
             self.spins[count].connect("value-changed", self.value_changed, count)
@@ -647,7 +653,8 @@ class Buildings(Gtk.Grid):
             # Total number of plots in use
             self.plots += stadium.buildings[0 + count] * item[1]
 
-        self.labelCurrentPlots.set_text("Used %i out of total %i plots available" % (self.plots, game.maxplots))
+        self.labelFuturePlots.set_text("Planned number of plots: %i" % (self.futureplots))
+        self.labelCurrentPlots.set_text("Used %i out of total %i plots available" % (self.plots, stadium.plots))
 
         cost = display.currency(0)
         self.labelTotal.set_markup("<b>%s</b>" % (cost))
