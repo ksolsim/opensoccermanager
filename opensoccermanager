@@ -665,17 +665,6 @@ class ContinueGame:
         Check whether the squad has been selected, determine the numbers
         and return whether the game can proceed or not.
         '''
-        team_count = 0
-        sub_count = 0
-
-        for count, item in enumerate(game.clubs[game.teamid].team.items()):
-            if item[1] != 0:
-                if count < 11:
-                    team_count += 1
-
-                if count >= 11:
-                    sub_count += 1
-
         error = False
 
         for position, playerid in game.clubs[game.teamid].team.items():
@@ -690,14 +679,26 @@ class ContinueGame:
                     dialogs.error(7)
                     error = True
 
-        if team_count + 1 < 1:
-            dialogs.not_enough_players(team_count)
-            error = True
-        elif sub_count + 1 < 5:
-            answer = dialogs.not_enough_subs(sub_count)
+        if not error:
+            team_count = 0
+            sub_count = 0
 
-            if not answer:
+            for count, item in enumerate(game.clubs[game.teamid].team.items()):
+                if item[1] != 0:
+                    if count < 11:
+                        team_count += 1
+
+                    if count >= 11:
+                        sub_count += 1
+
+            if team_count + 1 < 11:
+                dialogs.not_enough_players(team_count)
                 error = True
+            elif sub_count + 1 < 5:
+                answer = dialogs.not_enough_subs(sub_count)
+
+                if not answer:
+                    error = True
 
         return error
 
