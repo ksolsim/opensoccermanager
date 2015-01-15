@@ -23,6 +23,8 @@
 from gi.repository import Gtk
 import random
 import os
+import sys
+import subprocess
 
 import ai
 import business
@@ -106,6 +108,9 @@ class ScreenMain(Gtk.Grid):
         buttonPreferences = widgets.Button("_Preferences")
         buttonPreferences.connect("clicked", lambda a: dialogs.preferences_dialog())
         buttonbox.add(buttonPreferences)
+        buttonEditor = widgets.Button("_Data Editor")
+        buttonEditor.connect("clicked", self.editor_clicked)
+        buttonbox.add(buttonEditor)
         buttonQuit = widgets.Button("_Quit")
         buttonQuit.connect("clicked", lambda q: Gtk.main_quit())
         buttonbox.add(buttonQuit)
@@ -134,6 +139,12 @@ class ScreenMain(Gtk.Grid):
             screengame.run()
 
             screen_loader(game.active_screen_id)
+
+    def editor_clicked(self, button):
+        try:
+            subprocess.Popen("editor/editor.py", shell=False)
+        except FileNotFoundError:
+            dialogs.file_not_found_error()
 
 
 class ScreenDetails(Gtk.Grid):

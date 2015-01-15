@@ -1618,6 +1618,17 @@ def loan_period():
     messagedialog.destroy()
 
 
+def file_not_found_error():
+    messagedialog = Gtk.MessageDialog()
+    messagedialog.set_transient_for(game.window)
+    messagedialog.set_title("Editor Not Available")
+    messagedialog.add_button("_Close", Gtk.ResponseType.CLOSE)
+    messagedialog.set_markup("Data Editor is not installed.")
+    messagedialog.format_secondary_text("Place the editor folder into this directory.")
+    messagedialog.run()
+    messagedialog.destroy()
+
+
 def error(errorid):
     error = constants.errors[errorid]
 
