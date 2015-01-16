@@ -663,7 +663,7 @@ def rejection(negotiationid, transfer, index):
     player = game.players[playerid]
     name = display.name(player, mode=1)
 
-    message = (("Your enquiry into the availability of %s has been turned down, as the club does wish to transfer him at this moment in time." % (name), "The transfer negotiations for %s have broken down, as the club believe he is worth more than has been offered." % (name), "%s has rejected the contract offered\nto him as he wishes to stay at his current club." % (name)), ("The enquiry lodged into the loan availability of %s has been rejected as the club does not wish to loan him." % (name), "Negotiations for the loan move of %s have been cancelled as the club do not wish to loan for that length of time." % (name)))
+    message = (("Your enquiry into the availability of %s has been turned down, as the club does wish to transfer him at this moment in time." % (name), "The transfer negotiations for %s have broken down, as the club believe he is worth more than has been offered." % (name), "%s has rejected the contract offered to him as he wishes to stay at his current club." % (name)), ("The enquiry lodged into the loan availability of %s has been rejected as the club does not wish to loan him." % (name), "Negotiations for the loan move of %s have been cancelled as the club do not wish to loan for that length of time." % (name)))
     title = ("Transfer Offer", "Loan Offer")[transfer]
 
     messagedialog = Gtk.MessageDialog(type=Gtk.MessageType.INFO)
