@@ -171,8 +171,7 @@ def delete_dialog():
     scrolledwindow.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
     dialog.vbox.add(scrolledwindow)
 
-    buttonDelete = Gtk.Button("_Delete")
-    buttonDelete.set_use_underline(True)
+    buttonDelete = widgets.Button("_Delete")
     buttonDelete.set_sensitive(False)
     buttonDelete.connect("clicked", delete_file)
 
