@@ -62,7 +62,7 @@ class Players(Gtk.Grid):
         comboboxView.append("0", "Personal")
         comboboxView.append("1", "Skills")
         comboboxView.append("2", "Form")
-        comboboxView.set_active(0)
+        comboboxView.set_active(1)
         comboboxView.connect("changed", self.view_changed)
         buttonbox.add(comboboxView)
         buttonFilter = Gtk.Button("_Filter")
@@ -122,28 +122,20 @@ class Players(Gtk.Grid):
         treeviewcolumn = Gtk.TreeViewColumn("Contract", cellrenderertext, text=21)
         self.tree_columns[0].append(treeviewcolumn)
 
-        [(x.set_expand(True), self.treeviewPlayers.append_column(x)) for x in self.tree_columns[0]]
+        [(column.set_expand(True),
+          column.set_visible(False),
+          self.treeviewPlayers.append_column(column)) for column in self.tree_columns[0]]
 
-        treeviewcolumn = Gtk.TreeViewColumn("KP", cellrenderertext, text=7)
-        self.tree_columns[1].append(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("TK", cellrenderertext, text=8)
-        self.tree_columns[1].append(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("PS", cellrenderertext, text=9)
-        self.tree_columns[1].append(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("SH", cellrenderertext, text=10)
-        self.tree_columns[1].append(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("HD", cellrenderertext, text=11)
-        self.tree_columns[1].append(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("PC", cellrenderertext, text=12)
-        self.tree_columns[1].append(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("ST", cellrenderertext, text=13)
-        self.tree_columns[1].append(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("BC", cellrenderertext, text=14)
-        self.tree_columns[1].append(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("SP", cellrenderertext, text=15)
-        self.tree_columns[1].append(treeviewcolumn)
+        for count, item in enumerate(("KP", "TK", "PS", "SH", "HD", "PC", "ST", "BC", "SP"), start=7):
+            label = Gtk.Label("%s" % (item))
+            label.set_tooltip_text(constants.skill[count - 7])
+            label.show()
+            treeviewcolumn = Gtk.TreeViewColumn(None, cellrenderertext, text=count)
+            treeviewcolumn.set_widget(label)
+            self.tree_columns[1].append(treeviewcolumn)
 
-        [(x.set_expand(True), x.set_visible(False), self.treeviewPlayers.append_column(x)) for x in self.tree_columns[1]]
+        [(column.set_expand(True),
+          self.treeviewPlayers.append_column(column)) for column in self.tree_columns[1]]
 
         treeviewcolumn = Gtk.TreeViewColumn("Games", cellrenderertext, text=24)
         self.tree_columns[2].append(treeviewcolumn)
@@ -158,7 +150,9 @@ class Players(Gtk.Grid):
         treeviewcolumn = Gtk.TreeViewColumn("Rating", cellrenderertext, text=29)
         self.tree_columns[2].append(treeviewcolumn)
 
-        [(x.set_expand(True), x.set_visible(False), self.treeviewPlayers.append_column(x)) for x in self.tree_columns[2]]
+        [(column.set_expand(True),
+          column.set_visible(False),
+          self.treeviewPlayers.append_column(column)) for column in self.tree_columns[2]]
 
         self.contextmenu1 = Gtk.Menu()
         self.menuitemTransfer = widgets.MenuItem("Make _Transfer Offer")

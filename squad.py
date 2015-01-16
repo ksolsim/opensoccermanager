@@ -111,34 +111,24 @@ class Squad(Gtk.Grid):
         treeviewcolumn = Gtk.TreeViewColumn("Morale", cellrenderertext, text=17)
         self.tree_columns[0].append(treeviewcolumn)
 
-        [(col.set_expand(True),
-          col.set_visible(False),
-          treeviewSquad.append_column(col)) for col in self.tree_columns[0]]
+        [(column.set_expand(True),
+          column.set_visible(False),
+          treeviewSquad.append_column(column)) for column in self.tree_columns[0]]
 
         # Skills
-        treeviewcolumn = Gtk.TreeViewColumn("KP", cellrenderertext, text=3)
-        self.tree_columns[1].append(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("TK", cellrenderertext, text=4)
-        self.tree_columns[1].append(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("PS", cellrenderertext, text=5)
-        self.tree_columns[1].append(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("SH", cellrenderertext, text=6)
-        self.tree_columns[1].append(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("HD", cellrenderertext, text=7)
-        self.tree_columns[1].append(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("PC", cellrenderertext, text=8)
-        self.tree_columns[1].append(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("ST", cellrenderertext, text=9)
-        self.tree_columns[1].append(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("BC", cellrenderertext, text=10)
-        self.tree_columns[1].append(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("SP", cellrenderertext, text=11)
-        self.tree_columns[1].append(treeviewcolumn)
+        for count, item in enumerate(("KP", "TK", "PS", "SH", "HD", "PC", "ST", "BC", "SP"), start=3):
+            label = Gtk.Label("%s" % (item))
+            label.set_tooltip_text(constants.skill[count - 3])
+            label.show()
+            treeviewcolumn = Gtk.TreeViewColumn(None, cellrenderertext, text=count)
+            treeviewcolumn.set_widget(label)
+            self.tree_columns[1].append(treeviewcolumn)
+
         treeviewcolumn = Gtk.TreeViewColumn("Fitness", cellrenderertext, text=12)
         self.tree_columns[1].append(treeviewcolumn)
 
-        [(col.set_expand(True),
-          treeviewSquad.append_column(col)) for col in self.tree_columns[1]]
+        [(column.set_expand(True),
+          treeviewSquad.append_column(column)) for column in self.tree_columns[1]]
 
         # Form
         treeviewcolumn = Gtk.TreeViewColumn("Games", cellrenderertext, text=18)
@@ -154,10 +144,10 @@ class Squad(Gtk.Grid):
         treeviewcolumn = Gtk.TreeViewColumn("Rating", cellrenderertext, text=23)
         self.tree_columns[2].append(treeviewcolumn)
 
-        [(col.set_expand(True),
-          col.set_visible(False),
-          col.set_fixed_width(50),
-          treeviewSquad.append_column(col)) for col in self.tree_columns[2]]
+        [(column.set_expand(True),
+          column.set_visible(False),
+          column.set_fixed_width(50),
+          treeviewSquad.append_column(column)) for column in self.tree_columns[2]]
 
         self.notebook = Gtk.Notebook()
         self.notebook.set_hexpand(False)
