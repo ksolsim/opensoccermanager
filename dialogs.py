@@ -76,44 +76,94 @@ def about():
     aboutdialog.destroy()
 
 
-def file_dialog(mode):
-    if mode == 0:
-        title = "Open File"
-        action = "_Open"
-        mode = Gtk.FileChooserAction.OPEN
-    elif mode == 1:
-        title = "Save File"
-        action = "_Save"
-        mode = Gtk.FileChooserAction.SAVE
+class SaveDialog(Gtk.FileChooserDialog):
+    def __init__(self):
+        Gtk.FileChooserDialog.__init__(self)
+        self.set_transient_for(game.window)
+        self.set_title("Save File")
+        self.set_action(Gtk.FileChooserAction.SAVE)
+        self.add_button("_Cancel", Gtk.ResponseType.CANCEL)
+        self.add_button("_Save", Gtk.ResponseType.OK)
+        self.connect("response", self.response_handler)
+
+        filefilter = Gtk.FileFilter()
+        filefilter.set_name("Saved Game")
+        filefilter.add_pattern("*.osm")
+        self.add_filter(filefilter)
+
+    def display(self):
+        self.set_current_folder(game.save_location)
+
+        self.show_all()
+
+    def response_handler(self, filechooserdialog, response):
+        if response == Gtk.ResponseType.OK:
+            confirmation = self.confirm_overwrite()
+
+            if confirmation == Gtk.FileChooserConfirmation.ACCEPT_FILENAME:
+                self.hide()
+        else:
+            self.hide()
+
+    def confirm_overwrite(self):
+        folder, filename = self.file_extension()
+
+        items = folder.split(os.sep)
+        count = len(items) - 1
+        foldername = items[count]
+
+        filepath = os.path.join(folder, filename)
+
+        if not os.path.isfile(filepath):
+            fileio.save_file(filepath)
+            return Gtk.FileChooserConfirmation.ACCEPT_FILENAME
+
+        dialog = Gtk.MessageDialog(type=Gtk.MessageType.QUESTION)
+        dialog.set_transient_for(game.window)
+        dialog.set_markup("""<span size='12000'><b>A file named "%s" already exists. Do you want to replace it?</b></span>""" % (filename))
+        dialog.format_secondary_text("""The file already exists in "%s". Replacing it will overwrite its content.""" % (foldername))
+        dialog.add_button("_Cancel", Gtk.ResponseType.CANCEL)
+        dialog.add_button("_Replace", Gtk.ResponseType.OK)
+        dialog.set_default_response(Gtk.ResponseType.CANCEL)
+        response = dialog.run()
+        dialog.destroy()
+
+        if response == Gtk.ResponseType.OK:
+            fileio.save_file(filepath)
+            return Gtk.FileChooserConfirmation.ACCEPT_FILENAME
+        else:
+            return Gtk.FileChooserConfirmation.SELECT_AGAIN
+
+    def file_extension(self):
+        folder = self.get_current_folder()
+        filename = self.get_current_name()
+
+        if not filename.endswith(".osm"):
+            filename = "%s.osm" % (filename)
+
+        return folder, filename
+
+
+def file_dialog():
+    dialog = Gtk.FileChooserDialog()
+    dialog.set_transient_for(game.window)
+    dialog.set_title("Open File")
+    dialog.add_button("_Cancel", Gtk.ResponseType.CANCEL)
+    dialog.add_button("_Open", Gtk.ResponseType.OK)
+    dialog.set_action(Gtk.FileChooserAction.OPEN)
+    dialog.set_do_overwrite_confirmation(True)
+    dialog.set_current_folder(game.save_location)
 
     filefilter = Gtk.FileFilter()
     filefilter.set_name("Saved Game")
     filefilter.add_pattern("*.osm")
-
-    dialog = Gtk.FileChooserDialog()
-    dialog.set_transient_for(game.window)
-    dialog.set_title(title)
-    dialog.add_button("_Cancel", Gtk.ResponseType.CANCEL)
-    dialog.add_button(action, Gtk.ResponseType.OK)
     dialog.add_filter(filefilter)
-    dialog.set_action(mode)
-    dialog.set_do_overwrite_confirmation(True)
-    dialog.set_current_folder(game.save_location)
-
-    response = dialog.run()
 
     state = False
 
-    if response == Gtk.ResponseType.OK:
+    if dialog.run() == Gtk.ResponseType.OK:
         filename = dialog.get_filename()
-
-        if mode == 0:
-            fileio.open_file(filename)
-        elif mode == 1:
-            if not filename.endswith(".osm"):
-                filename = "%s.osm" % (filename)
-
-            fileio.save_file(filename)
+        fileio.open_file(filename)
 
         state = True
 

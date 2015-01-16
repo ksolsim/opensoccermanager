@@ -131,7 +131,7 @@ class ScreenMain(Gtk.Grid):
         screendetails.run()
 
     def load_game_clicked(self, button):
-        state = dialogs.file_dialog(0)
+        state = dialogs.file_dialog()
 
         if state:
             game.window.remove(screenmain)
@@ -326,7 +326,7 @@ class ScreenGame(Gtk.Grid):
         menuitemSave = widgets.MenuItem("_Save Game")
         key, mod = Gtk.accelerator_parse("<CONTROL>S")
         menuitemSave.add_accelerator("activate", game.accelgroup, key, mod, Gtk.AccelFlags.VISIBLE)
-        menuitemSave.connect("activate", lambda a: dialogs.file_dialog(1))
+        menuitemSave.connect("activate", self.save_game_clicked)
         menu.append(menuitemSave)
         menuitemDelete = widgets.MenuItem("_Delete Game")
         menuitemDelete.connect("activate", lambda a: dialogs.delete_dialog())
@@ -541,10 +541,14 @@ class ScreenGame(Gtk.Grid):
             game.teamid = 0
 
     def load_game_clicked(self, menuitem):
-        state = dialogs.file_dialog(0)
+        state = dialogs.file_dialog()
 
         if state:
             screen_loader(game.active_screen_id)
+
+    def save_game_clicked(self, menuitem):
+        save_dialog = dialogs.SaveDialog()
+        save_dialog.display()
 
 
 class ContinueGame:
