@@ -310,17 +310,20 @@ def save_file(filename):
 
 
 def check_config():
+    # Create data directory
     if not os.path.isdir(game.data_location):
         os.makedirs(game.data_location)
 
-        # Create username file
-        path = os.path.join(game.data_location, "users.txt")
-        open(path, "w")
+    # Create username file
+    filepath = os.path.join(game.data_location, "users.txt")
 
-    path = os.path.join(game.data_location, "saves")
+    if not os.path.isfile(filepath):
+        open(filepath, "w")
 
-    if not os.path.isdir(path):
-        # Create saves directory
+    # Create saves directory
+    filepath = os.path.join(game.data_location, "saves")
+
+    if not os.path.isdir(filepath):
         os.makedirs(path)
 
 
@@ -329,13 +332,11 @@ def read_names():
     names = []
 
     # Create username file if it does not already exist
-    if not os.path.isfile(filepath):
-        open(filepath, "w")
-    else:
-        with open(filepath, "r") as fp:
-            for item in fp.readlines():
-                item = item.strip("\n")
-                names.append(item)
+
+    with open(filepath, "r") as fp:
+        for item in fp.readlines():
+            item = item.strip("\n")
+            names.append(item)
 
     return names
 
