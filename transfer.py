@@ -60,7 +60,8 @@ def ai_enquiry():
 
 def enquiry_dialog(playerid, index):
     '''
-    Initiate transfer enquiry dialog for both transfer and loan.
+    Initiate transfer enquiry dialog for transfers, loans and free
+    transfers.
     '''
     player = game.players[playerid]
     name = display.name(player, mode=1)
@@ -75,7 +76,7 @@ def enquiry_dialog(playerid, index):
     messagedialog.set_default_response(Gtk.ResponseType.OK)
 
     if index == 2:
-        messagedialog.set_markup("Approach %s for free transfer?" % (name))
+        messagedialog.set_markup("Approach %s for %s?" % (name, transfer))
     else:
         messagedialog.set_markup("Approach %s for %s from %s?" % (name, transfer, club))
 
@@ -89,23 +90,26 @@ def enquiry_dialog(playerid, index):
     return state
 
 
-def check(old_club, new_club):
+def check(negotiationid):
     '''
     Check whether both teams meet the minimum required and maximum
     allowed prior to transfer completion.
-
-    The 'old' club is the club selling the player, or owning club in
-    regards to a loan move. The 'new' club is the purchasing club, or
-    the club which will be borrowing the loan player.
-
-    Return True or False, with False meaning that the transfer fails.
     '''
     error = 0
 
-    if len(game.clubs[old_club].squad) <= 16:
-        error = 1
+    negotiation = game.negotiations[negotiationid]
 
-    if len(game.clubs[old_club].squad) >= 30:
+    if negotiation.transfer_type != 2:
+        player = game.players[negotiation.playerid]
+
+        if len(game.clubs[player.club].squad) <= 16:
+            error = 1
+        elif len(game.clubs[player.club].squad) >= 30:
+            error = 2
+
+    if len(game.clubs[negotiation.club].squad) <= 16:
+        error = 1
+    elif len(game.clubs[negotiation.club].squad) >= 30:
         error = 2
 
     return error
@@ -123,6 +127,7 @@ def move(negotiationid):
     old_club = player.club
     new_club = negotiation.club
 
+    # Remove from squad
     if negotiation.transfer_type == 0:
         game.clubs[old_club].squad.remove(playerid)
     elif negotiation.transfer_type == 1:
@@ -179,7 +184,7 @@ def transfer():
                     consider_enquiry(negotiationid)
                 elif negotiation.timeout == 0 and negotiation.status == 3:
                     consider_offer(negotiationid)
-                elif negotiation.timeout == 0 and negotiation.status == 6:
+                elif negotiation.timeout == 0 and negotiation.status == 6 or negotiation.status == 9:
                     consider_contract(negotiationid)
             else:
                 if negotiation.timeout == 0 and negotiation.status == 0:
@@ -188,7 +193,7 @@ def transfer():
                     consider_contract(negotiationid)
 
         if negotiation.timeout == 0:
-            if negotiation.status in (1, 4, 7):
+            if negotiation.status in (1, 4, 7, 10):
                 remove.append(negotiationid)
 
     for key in remove:
@@ -211,11 +216,8 @@ def consider_enquiry(negotiationid):
         points = game.clubs[game.teamid].reputation - club.reputation
         points += random.randint(-3, 3)
 
-        squad_count = len(game.clubs[player.club].squad)
-
         # Prevent club from selling/loaning if they do not meet minimum
-        if squad_count <= 16 or squad_count >= 30:
-            points = -1
+        if check(negotiationid) != 0:
             news.publish("TE01", player=name, team=club.name)
         else:
             if negotiation.transfer_type == 0:
@@ -239,12 +241,12 @@ def consider_enquiry(negotiationid):
         points = random.randint(1, 3)  ## Needs proper AI
 
         if points <= 0:
-            negotiation.status = 4
+            negotiation.status = 9
+            news.publish("TO09", player=name)
+        else:
+            negotiation.status = 10
             negotiation.timeout = random.randint(1, 4)
             news.publish("TO10", player=name)
-        else:
-            negotiation.status = 5
-            news.publish("TO09", player=name)
 
 
 def consider_offer(negotiationid):
@@ -286,7 +288,7 @@ def consider_contract(negotiationid):
 
         if points >= 0:
             negotiation.status = 8
-            news.publish("TO08", player=name, team=club.name)
+            news.publish("TO08", player=name)
         else:
             negotiation.status = 7
             negotiation.timeout = random.randint(1, 4)
@@ -294,7 +296,7 @@ def consider_contract(negotiationid):
     elif negotiation.transfer_type == 2:
         if points >= 0:
             negotiation.status = 8
-            news.publish("TO11", player=name)
+            news.publish("TO08", player=name)
         else:
             negotiation.status = 7
             negotiation.timeout = random.randint(1, 4)
@@ -458,12 +460,11 @@ def transfer_contract_accepted(negotiationid):
     response = messagedialog.run()
 
     if response == Gtk.ResponseType.OK:
-        if negotiation.transfer_type == 0:
-            if check(player.club, game.teamid) == 0:
-                move(negotiationid)
-                money.withdraw(amount, 13)
-        elif negotiation.transfer_type == 2:
+        if check(negotiationid) == 0:
             move(negotiationid)
+
+            if negotiation.transfer_type == 0:
+                money.withdraw(amount, 13)
     elif response == Gtk.ResponseType.CANCEL:
         del game.negotiations[negotiationid]
 
@@ -476,10 +477,8 @@ def loan_enquiry_accepted(negotiationid):
 
     playerid = game.negotiations[negotiationid].playerid
     player = game.players[playerid]
-
     name = display.name(player, mode=1)
-    clubid = game.players[playerid].club
-    club = game.clubs[clubid].name
+    club = game.clubs[player.club].name
     amount = game.players[playerid].value
 
     dialog = Gtk.Dialog()
@@ -514,7 +513,7 @@ def loan_enquiry_accepted(negotiationid):
 
     if response == Gtk.ResponseType.ACCEPT:
         if player.contract < spinbuttonWeeks.get_value_as_int():
-            dialogs.loan_period()
+            dialogs.error(14)
 
         game.negotiations[negotiationid].status = 3
         game.negotiations[negotiationid].timeout = random.randint(1, 4)
@@ -547,7 +546,8 @@ def loan_offer_accepted(negotiationid):
     response = messagedialog.run()
 
     if response == Gtk.ResponseType.OK:
-        move(negotiationid)
+        if check(negotiationid) == 0:
+            move(negotiationid)
     elif response == Gtk.ResponseType.CANCEL:
         del game.negotiations[negotiationid]
 
@@ -586,16 +586,32 @@ def extend_loan(playerid):
     dialog.show_all()
 
     if dialog.run() == Gtk.ResponseType.OK:
-        ## Needs replacing for proper AI
+        state = consider_extension(playerid)
 
-        value = random.randint(1, 4)
-
-        if value == 1:
+        if state:
             game.loans[playerid][1] += spinbutton.get_value_as_int()
-        else:
-            dialogs.error(11)
 
     dialog.destroy()
+
+
+def consider_extension(playerid):
+    '''
+    Determine whether the parent club of the player will agree to a
+    loan extension.
+    '''
+    state = 0
+
+    if game.loans[playerid][1] == -1:
+        dialogs.error(11)
+        state = 1
+    else:
+        points = 0
+
+        if points <= 0:
+            dialogs.error(11)
+            state = 1
+
+    return state
 
 
 def end_loan(playerid):

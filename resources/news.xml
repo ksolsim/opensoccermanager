@@ -150,19 +150,19 @@
         <message>_PLAYER_ is delighted with the contract offer made and is ready to transfer to our club. We just need to confirm the signing to complete the transfer.</message>
         <category>4</category>
     </article>
-    <article id="TO09">
-        <title>_PLAYER_ has accepted our transfer enquiry</title>
-        <message>_PLAYER_ has accepted the offer of a free transfer and is willing to open contract negotiations to join the club.</message>
+    <article id="TO08">
+        <title>_PLAYER_ agrees to contract offering</title>
+        <message>The contract for _PLAYER_ has now been finalised. The player will join up with the team on confirmation by us of the transfer.</message>
         <category>4</category>
     </article>
-    <article id="TO10">
+    <article id="TO09">
         <title>_PLAYER_ rejects our contract offer</title>
         <message>The contract offered to _PLAYER_ has been rejected as the player believes he is worth more than the offer.</message>
         <category>4</category>
     </article>
-    <article id="TO11">
-        <title>_PLAYER_ agrees to contract offering</title>
-        <message>The contract for _PLAYER_ has now been finalised. The player will join up with the team on confirmation by us of the transfer.</message>
+    <article id="TO10">
+        <title>_PLAYER_ has accepted our transfer enquiry</title>
+        <message>_PLAYER_ has accepted the offer of a free transfer and is willing to open contract negotiations to join the club.</message>
         <category>4</category>
     </article>
     <article id="LO01">

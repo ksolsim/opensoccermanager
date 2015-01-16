@@ -1606,17 +1606,6 @@ def name_change():
     return state
 
 
-def loan_period():
-    messagedialog = Gtk.MessageDialog(type=Gtk.MessageType.WARNING)
-    messagedialog.set_transient_for(game.window)
-    messagedialog.set_title("Loan Period Warning")
-    messagedialog.add_button("_Close", Gtk.ResponseType.CLOSE)
-    messagedialog.set_markup("The loan period entered is longer than the players remaining contract length. The loan negotiations will continue however the players contract may expire before the agreed end of the loan period if his parent club and the player do not agree a new contract.")
-
-    messagedialog.run()
-    messagedialog.destroy()
-
-
 def file_not_found_error():
     messagedialog = Gtk.MessageDialog()
     messagedialog.set_transient_for(game.window)

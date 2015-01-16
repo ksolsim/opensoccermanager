@@ -53,6 +53,8 @@ transfer_status = {0: "Awaiting response to your enquiry",
                    6: "Awaiting reponse to your contract offer",
                    7: "Offer rejected by player",
                    8: "Offer accepted by player",
+                   9: "Enquiry rejected by player",
+                   10: "Enquiry accepted by player",
                    }
 
 money = {0: (20000000, "Grandmother"),
@@ -67,10 +69,10 @@ currency = {0: ("£", 1), 1: ("$", 1.6), 2: ("€", 1.25),}
 
 intensity = {0: "Low", 1: "Medium", 2: "High",}
 
-errors = {1: ("The club needs a minimum of 16 players in the squad", "Transfer Error", Gtk.MessageType.ERROR),
-          2: ("The club is restricted to a maximum of 30 players in the squad", "Transfer Error", Gtk.MessageType.ERROR),
-          3: ("There are no players specified for comparison.", "Comparison Error", Gtk.MessageType.ERROR),
-          4: ("The club does not have enough money\nto complete this transaction.", "Not Enough Money", Gtk.MessageType.ERROR),
+errors = {1: ("The club needs a minimum of 16 players in the squad.", "Transfer Error", Gtk.MessageType.ERROR),
+          2: ("The club is restricted to a maximum of 30 players in the squad.", "Transfer Error", Gtk.MessageType.ERROR),
+          3: ("No players have been selected for comparison.", "Comparison Error", Gtk.MessageType.ERROR),
+          4: ("The club does not have enough money to complete this transaction.", "Not Enough Money", Gtk.MessageType.ERROR),
           5: ("Only one player has been selected for comparison.", "Comparison Error", Gtk.MessageType.ERROR),
           6: ("The current team selection contains an injured player.", "Injured Player", Gtk.MessageType.ERROR),
           7: ("A suspended player is currently listed in the team.", "Suspended Player", Gtk.MessageType.ERROR),
@@ -80,6 +82,7 @@ errors = {1: ("The club needs a minimum of 16 players in the squad", "Transfer E
           11: ("The club do not wish to extend the loan at this time.", "Loan Extension", Gtk.MessageType.ERROR),
           12: ("There is currently no training schedule setup. The training camp can still be booked, however the players will not achieve the most out of the session.", "Training Camp", Gtk.MessageType.WARNING),
           13: ("There is not a full selection of first team and substitute players selected. The training camp can still be booked for the listed players at the cost of all sixteen.", "Training Camp", Gtk.MessageType.WARNING),
+          14: ("The loan period entered is longer than the players remaining contract length. The loan negotiations will continue, however if the contract expires before the agreed end of the loan period, the loan will end.", "Loan Period Warning", Gtk.MessageType.WARNING),
           }
 
 team_training = ("No Training", "Individual", ("Attacking",
