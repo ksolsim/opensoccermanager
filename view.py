@@ -523,7 +523,7 @@ class Negotiations(Gtk.Grid):
 
         treeviewOutbound = Gtk.TreeView()
         treeviewOutbound.set_model(self.liststoreOutbound)
-        treeviewOutbound.connect("row-activated", self.row_activated)
+        treeviewOutbound.connect("row-activated", self.outbound_activated)
         treeviewOutbound.connect("button-release-event", self.context_menu)
         self.treeselectionOutbound = treeviewOutbound.get_selection()
         scrolledwindow.add(treeviewOutbound)
@@ -540,12 +540,12 @@ class Negotiations(Gtk.Grid):
         treeviewOutbound.append_column(treeviewcolumn)
 
         self.contextmenu = Gtk.Menu()
-        menuitem = widgets.MenuItem("_Withdraw Transfer")
-        menuitem.connect("activate", self.withdraw_transfer)
+        menuitem = widgets.MenuItem("_Cancel Transfer")
+        menuitem.connect("activate", self.end_transfer)
         self.contextmenu.append(menuitem)
 
-    def withdraw_transfer(self, menuitem):
-        model, treeiter = self.treeselectionInbound.get_selected()
+    def end_transfer(self, menuitem):
+        model, treeiter = self.treeselection.get_selected()
         negotiationid = model[treeiter][0]
 
         state = dialogs.withdraw_transfer(negotiationid)
@@ -553,60 +553,73 @@ class Negotiations(Gtk.Grid):
         if state:
             del game.negotiations[negotiationid]
 
-        self.populate_data()
+            self.populate_data()
 
     def row_activated(self, treeview, path, column):
         model = treeview.get_model()
         negotiationid = model[path][0]
-        playerid = model[path][1]
 
         negotiation = game.negotiations[negotiationid]
 
-        if negotiation.status != 0:
-            if negotiation.transfer_type == 0:
-                if negotiation.status == 1:
-                    transfer.rejection(negotiationid, transfer=0, index=0)
-                    del game.negotiations[negotiationid]
-                elif negotiation.status == 2:
-                    transfer.transfer_enquiry_accepted(negotiationid)
-                elif negotiation.status == 4:
-                    transfer.rejection(negotiationid, transfer=0, index=1)
-                    del game.negotiations[negotiationid]
-                elif negotiation.status == 5:
-                    transfer.transfer_offer_accepted(negotiationid)
-                elif negotiation.status == 7:
-                    transfer.rejection(negotiationid, transfer=0, index=2)
-                    del game.negotiations[negotiationid]
-                elif negotiation.status == 8:
-                    transfer.transfer_contract_accepted(negotiationid)
-            elif negotiation.transfer_type == 1:
-                if negotiation.status == 1:
-                    transfer.rejection(negotiationid, transfer=1, index=0)
-                    del game.negotiations[negotiationid]
-                elif negotiation.status == 2:
-                    transfer.loan_enquiry_accepted(negotiationid)
-                elif negotiation.status == 4:
-                    transfer.rejection(negotiationid, transfer=1, index=1)
-                    del game.negotiations[negotiationid]
-                elif negotiation.status == 5:
-                    transfer.loan_offer_accepted(negotiationid)
-            elif negotiation.transfer_type == 2:
-                if negotiation.status in (4, 7, 9):
-                    del game.negotiations[negotiationid]
-                elif negotiation.status == 10:
-                    transfer.transfer_offer_accepted(negotiationid)
-                elif negotiation.status == 8:
-                    transfer.transfer_contract_accepted(negotiationid)
+        if negotiation.transfer_type == 0:
+            if negotiation.status == 1:
+                transfer.rejection(negotiationid, transfer=0, index=0)
+                del game.negotiations[negotiationid]
+            elif negotiation.status == 2:
+                transfer.transfer_enquiry_accepted(negotiationid)
+            elif negotiation.status == 4:
+                transfer.rejection(negotiationid, transfer=0, index=1)
+                del game.negotiations[negotiationid]
+            elif negotiation.status == 5:
+                transfer.transfer_offer_accepted(negotiationid)
+            elif negotiation.status == 7:
+                transfer.rejection(negotiationid, transfer=0, index=2)
+                del game.negotiations[negotiationid]
+            elif negotiation.status == 8:
+                transfer.transfer_contract_accepted(negotiationid)
+        elif negotiation.transfer_type == 1:
+            if negotiation.status == 1:
+                transfer.rejection(negotiationid, transfer=1, index=0)
+                del game.negotiations[negotiationid]
+            elif negotiation.status == 2:
+                transfer.loan_enquiry_accepted(negotiationid)
+            elif negotiation.status == 4:
+                transfer.rejection(negotiationid, transfer=1, index=1)
+                del game.negotiations[negotiationid]
+            elif negotiation.status == 5:
+                transfer.loan_offer_accepted(negotiationid)
+        elif negotiation.transfer_type == 2:
+            if negotiation.status in (4, 7, 9):
+                del game.negotiations[negotiationid]
+            elif negotiation.status == 10:
+                transfer.transfer_offer_accepted(negotiationid)
+            elif negotiation.status == 8:
+                transfer.transfer_contract_accepted(negotiationid)
 
-            self.populate_data()
+        self.populate_data()
+
+    def outbound_activated(self, treeview, path, column):
+        model = treeview.get_model()
+        negotiationid = model[path][0]
+        negotiation = game.negotiations[negotiationid]
+
+        if negotiation.transfer_type == 0:
+            if negotiation.status == 0:
+                transfer.transfer_enquiry_respond(negotiationid)
+            elif negotiation.status == 2:
+                transfer.transfer_offer_respond(negotiationid)
+            elif negotiation.status == 4:
+                transfer.transfer_confirm_respond(negotiationid)
+
+        self.populate_data()
 
     def context_menu(self, treeview, event):
-        treeselection = treeview.get_selection()
-
         if event.button == 3:
+            treeselection = treeview.get_selection()
             model, treeiter = treeselection.get_selected()
 
             if treeiter:
+                self.treeselection = treeselection
                 self.contextmenu.show_all()
                 self.contextmenu.popup(None, None, None, None, event.button, event.time)
 
@@ -618,14 +631,20 @@ class Negotiations(Gtk.Grid):
             playerid = negotiation.playerid
             player = game.players[playerid]
 
-            if player.club != game.teamid:
-                name = display.name(player, mode=1)
-                date = negotiation.date
+            name = display.name(player, mode=1)
+            date = negotiation.date
+            transfer = ("Purchase", "Loan", "Free Transfer")[negotiation.transfer_type]
+
+            if negotiation.club == game.teamid:
                 club = display.club(player.club)
-                transfer = ("Purchase", "Loan", "Free Transfer")[negotiation.transfer_type]
                 status = constants.transfer_status[negotiation.status]
 
                 self.liststoreInbound.append([negotiationid, name, date, transfer, club, status])
+            elif player.club == game.teamid:
+                club = display.club(negotiation.club)
+                status = constants.transfer_outbound_status[negotiation.status]
+
+                self.liststoreOutbound.append([negotiationid, name, date, transfer, club, status])
 
     def run(self):
         self.populate_data()

@@ -57,6 +57,14 @@ transfer_status = {0: "Awaiting response to your enquiry",
                    10: "Enquiry accepted by player",
                    }
 
+transfer_outbound_status = {0: "Awaiting your response to enquiry",
+                            1: "Awaiting offer from club",
+                            2: "Awaiting your response to offer",
+                            3: "Player is negotiating with club",
+                            4: "Player has accepted the offer",
+                            5: "Player has rejected the offer",
+                            }
+
 money = {0: (20000000, "Grandmother"),
          1: (10000000, "Very Easy"),
          2: (5000000, "Easy"),

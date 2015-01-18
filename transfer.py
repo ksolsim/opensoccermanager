@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from gi.repository import Gtk
+from gi.repository import Pango
 import random
 
 import calculator
@@ -118,7 +119,7 @@ def check(negotiationid):
 def move(negotiationid):
     '''
     Move player between clubs when completing transfer, loan or free
-    transfer
+    transfer.
     '''
     negotiation = game.negotiations[negotiationid]
 
@@ -550,6 +551,119 @@ def loan_offer_accepted(negotiationid):
             move(negotiationid)
     elif response == Gtk.ResponseType.CANCEL:
         del game.negotiations[negotiationid]
+
+    messagedialog.destroy()
+
+
+def transfer_enquiry_respond(negotiationid):
+    negotiation = game.negotiations[negotiationid]
+    club = game.clubs[negotiation.club].name
+    player = game.players[negotiation.playerid]
+    name = display.name(player, mode=1)
+
+    dialog = Gtk.Dialog()
+    dialog.set_border_width(5)
+    dialog.set_transient_for(game.window)
+    dialog.set_title("Transfer Enquiry")
+    dialog.add_button("_Reject", Gtk.ResponseType.REJECT)
+    dialog.add_button("_Accept", Gtk.ResponseType.ACCEPT)
+    dialog.set_default_response(Gtk.ResponseType.REJECT)
+
+    grid = Gtk.Grid()
+    grid.set_row_spacing(5)
+    grid.set_column_spacing(5)
+    dialog.vbox.add(grid)
+
+    label = widgets.AlignedLabel()
+    label.set_markup("<b>%s</b> have submitted an enquiry for <b>%s</b>." % (club, name))
+    label.set_use_markup(True)
+    grid.attach(label, 0, 0, 3, 1)
+
+    label = widgets.AlignedLabel()
+    label.set_label("The enquiry can be rejected, or you can specify a fee to sell the player for?")
+    grid.attach(label, 0, 1, 3, 1)
+
+    label = widgets.AlignedLabel("Sale Amount")
+    grid.attach(label, 0, 2, 1, 1)
+    spinbuttonAmount = Gtk.SpinButton.new_with_range(0, 99999999, 100000)
+    grid.attach(spinbuttonAmount, 1, 2, 1, 1)
+
+    dialog.show_all()
+    response = dialog.run()
+
+    if response == Gtk.ResponseType.ACCEPT:
+        negotiation.amount = spinbuttonAmount.get_value_as_int()
+        negotiation.status = 1
+        negotiation.timeout = random.randint(1, 4)
+    else:
+        del(game.negotiations[negotiationid])
+
+    dialog.destroy()
+
+
+def transfer_offer_respond(negotiationid):
+    negotiation = game.negotiations[negotiationid]
+    club = game.clubs[negotiation.club].name
+    player = game.players[negotiation.playerid]
+    name = display.name(player, mode=1)
+
+    dialog = Gtk.Dialog()
+    dialog.set_border_width(5)
+    dialog.set_transient_for(game.window)
+    dialog.set_title("Transfer Offer")
+    dialog.add_button("_Reject", Gtk.ResponseType.REJECT)
+    dialog.add_button("_Negotiate", Gtk.ResponseType.OK)
+    dialog.add_button("_Accept", Gtk.ResponseType.ACCEPT)
+    dialog.set_default_response(Gtk.ResponseType.REJECT)
+
+    grid = Gtk.Grid()
+    grid.set_row_spacing(5)
+    grid.set_column_spacing(5)
+    dialog.vbox.add(grid)
+
+    label = widgets.AlignedLabel()
+    label.set_label("<b>%s</b> have made an offer for <b>%s</b>." % (club, name))
+    grid.attach(label, 0, 0, 2, 1)
+    label = widgets.AlignedLabel()
+    label.set_label("The club have offered:")
+    grid.attach(label, 0, 1, 1, 1)
+    spinbuttonAmount = Gtk.SpinButton.new_with_range(0, 99999999, 100000)
+    spinbuttonAmount.set_value(player.value)
+    grid.attach(spinbuttonAmount, 1, 1, 1, 1)
+
+    dialog.show_all()
+    response = dialog.run()
+
+    if response == Gtk.ResponseType.ACCEPT:
+        negotiation.status = 3
+        negotiation.timeout = random.randint(1, 4)
+    elif response == Gtk.ResponseType.OK:
+        negotiation.status = 1
+        negotiation.timeout = random.randint(1, 4)
+    else:
+        del(game.negotiations[negotiationid])
+
+    dialog.destroy()
+
+
+def transfer_confirm_respond(negotiationid):
+    negotiation = game.negotiations[negotiationid]
+    club = game.clubs[negotiation.club].name
+    player = game.players[negotiation.playerid]
+    name = display.name(player, mode=1)
+
+    messagedialog = Gtk.MessageDialog()
+    messagedialog.set_title("Transfer Completion")
+    messagedialog.set_transient_for(game.window)
+    messagedialog.add_button("C_ancel Transfer", Gtk.ResponseType.CANCEL)
+    messagedialog.add_button("_Complete Transfer", Gtk.ResponseType.OK)
+    messagedialog.set_markup("Complete transfer of %s to %s?" % (name, club))
+
+    if messagedialog.run() == Gtk.ResponseType.OK:
+        if check(negotiationid) == 0:
+            move(negotiationid)
+    else:
+        del(game.negotiations[game.negotiationid])
 
     messagedialog.destroy()
 
