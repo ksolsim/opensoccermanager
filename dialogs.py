@@ -34,7 +34,7 @@ def exit_game(leave=False):
     messagedialog = Gtk.MessageDialog(type=Gtk.MessageType.QUESTION)
     messagedialog.set_transient_for(game.window)
     messagedialog.set_title("Exit Game")
-    messagedialog.set_markup("The game has not been saved.")
+    messagedialog.set_markup("<span size='12000'><b>The game has not been saved.</b></span>")
     messagedialog.format_secondary_text("Do you want to save before closing?")
     messagedialog.add_button("_Cancel", Gtk.ResponseType.CANCEL)
     messagedialog.add_button("_Do Not Save", Gtk.ResponseType.REJECT)
@@ -120,8 +120,8 @@ class SaveDialog(Gtk.FileChooserDialog):
 
         dialog = Gtk.MessageDialog(type=Gtk.MessageType.QUESTION)
         dialog.set_transient_for(game.window)
-        dialog.set_markup("""<span size='12000'><b>A file named "%s" already exists. Do you want to replace it?</b></span>""" % (filename))
-        dialog.format_secondary_text("""The file already exists in "%s". Replacing it will overwrite its content.""" % (foldername))
+        dialog.set_markup("<span size='12000'><b>A file named '%s' already exists. Do you want to replace it?</b></span>" % (filename))
+        dialog.format_secondary_text("The file already exists in '%s'. Replacing it will overwrite its content." % (foldername))
         dialog.add_button("_Cancel", Gtk.ResponseType.CANCEL)
         dialog.add_button("_Replace", Gtk.ResponseType.OK)
         dialog.set_default_response(Gtk.ResponseType.CANCEL)
@@ -429,13 +429,13 @@ def help_content():
 
 
 def quick_sell(name, club, amount):
-    messagedialog = Gtk.MessageDialog(message_format="Sell %s to %s for %s?" % (name, club, amount),
-                                      type=Gtk.MessageType.QUESTION)
+    messagedialog = Gtk.MessageDialog(type=Gtk.MessageType.QUESTION)
     messagedialog.set_transient_for(game.window)
     messagedialog.set_title("Quick Sell")
     messagedialog.add_button("_Cancel", Gtk.ResponseType.CANCEL)
     messagedialog.add_button("C_onfirm", Gtk.ResponseType.OK)
     messagedialog.set_default_response(Gtk.ResponseType.CANCEL)
+    messagedialog.set_markup("Sell %s to %s for %s?" % (name, club, amount))
 
     state = False
 
@@ -558,14 +558,11 @@ def scout_report(player, status):
               3: "The scouts report that %s would be a top prospect for the future." % (player),
               }
 
-    text = message[status]
-
-    messagedialog = Gtk.MessageDialog(message_format=text)
+    messagedialog = Gtk.MessageDialog(type=Gtk.MessageType.INFO)
     messagedialog.set_transient_for(game.window)
     messagedialog.set_title("Scout Report")
     messagedialog.add_button("_Close", Gtk.ResponseType.CLOSE)
-    messagedialog.set_default_response(Gtk.ResponseType.CLOSE)
-
+    messagedialog.set_markup(message[status])
     messagedialog.run()
     messagedialog.destroy()
 
@@ -667,32 +664,29 @@ def not_enough_players(number):
     else:
         text = "Currently there are only %i players chosen." % (number)
 
-    messagedialog = Gtk.MessageDialog(message_format="You have not selected enough players\nto proceed to the next game.",
-                                      type=Gtk.MessageType.ERROR)
+    messagedialog = Gtk.MessageDialog(type=Gtk.MessageType.ERROR)
     messagedialog.format_secondary_text(text)
     messagedialog.set_transient_for(game.window)
     messagedialog.set_title("Not Enough Players")
     messagedialog.add_button("_Close", Gtk.ResponseType.CLOSE)
-
+    messagedialog.set_markup("You have not selected enough players to proceed to the next game.")
     messagedialog.run()
     messagedialog.destroy()
 
 
 def not_enough_subs(number):
-    messagedialog = Gtk.MessageDialog(message_format="You have only selected %i out of a possible 5 subs." % (number),
-                                      type=Gtk.MessageType.WARNING)
-    messagedialog.format_secondary_text("Do you wish to continue to the game?")
+    messagedialog = Gtk.MessageDialog(type=Gtk.MessageType.WARNING)
     messagedialog.set_transient_for(game.window)
     messagedialog.set_title("Not Enough Subs")
     messagedialog.add_button("_No", Gtk.ResponseType.NO)
     messagedialog.add_button("_Yes", Gtk.ResponseType.YES)
     messagedialog.set_default_response(Gtk.ResponseType.NO)
-
-    response = messagedialog.run()
+    messagedialog.set_markup("<span size='12000'><b>You have only selected %i out of a possible 5 subs.</b></span>" % (number))
+    messagedialog.format_secondary_text("Do you wish to continue to the game?")
 
     answer = False
 
-    if response == Gtk.ResponseType.YES:
+    if messagedialog.run() == Gtk.ResponseType.YES:
         answer = True
 
     messagedialog.destroy()
@@ -701,14 +695,14 @@ def not_enough_subs(number):
 
 
 def proceed_to_game(team):
-    messagedialog = Gtk.MessageDialog(message_format="Proceed to next match?",
-                                      type=Gtk.MessageType.QUESTION)
-    messagedialog.format_secondary_text("Your next match is against %s." % (team))
+    messagedialog = Gtk.MessageDialog(type=Gtk.MessageType.QUESTION)
     messagedialog.set_title("Proceed To Next Match")
     messagedialog.set_transient_for(game.window)
     messagedialog.add_button("_No", Gtk.ResponseType.NO)
     messagedialog.add_button("_Yes", Gtk.ResponseType.YES)
     messagedialog.set_default_response(Gtk.ResponseType.NO)
+    messagedialog.set_markup("<span size='12000'><b>Proceed to next match?</b></span>")
+    messagedialog.format_secondary_text("Your next match is against %s." % (team))
 
     response = messagedialog.run()
 
@@ -758,6 +752,7 @@ def add_individual_training(playerid=None):
     dialog.set_title("Individual Training")
     dialog.set_transient_for(game.window)
     dialog.add_button("_Cancel", Gtk.ResponseType.CANCEL)
+
     if playerid == None:
         dialog.add_button("_Add", Gtk.ResponseType.OK)
     else:
@@ -895,13 +890,13 @@ def remove_individual_training(playerid):
     player = game.players[playerid]
     name = display.name(player, mode=1)
 
-    messagedialog = Gtk.MessageDialog(message_format="Remove %s from individual training?" % (name),
-                                      type=Gtk.MessageType.QUESTION)
+    messagedialog = Gtk.MessageDialog(type=Gtk.MessageType.QUESTION)
     messagedialog.set_title("Individual Training")
     messagedialog.set_transient_for(game.window)
     messagedialog.add_button("_Cancel", Gtk.ResponseType.CANCEL)
     messagedialog.add_button("_Remove", Gtk.ResponseType.OK)
     messagedialog.set_default_response(Gtk.ResponseType.CANCEL)
+    messagedialog.set_markup("Remove %s from individual training?" % (name))
 
     state = False
 
@@ -964,19 +959,17 @@ def remove_from_shortlist(playerid):
 def confirm_stadium(cost):
     cost = display.currency(cost)
 
-    messagedialog = Gtk.MessageDialog(message_format="Begin the construction of upgrades to the stadium at cost of %s?" % (cost),
-                                      type=Gtk.MessageType.QUESTION)
+    messagedialog = Gtk.MessageDialog(type=Gtk.MessageType.QUESTION)
     messagedialog.set_transient_for(game.window)
     messagedialog.set_title("Upgrade Stadium")
     messagedialog.add_button("_Cancel", Gtk.ResponseType.CANCEL)
     messagedialog.add_button("_Build", Gtk.ResponseType.OK)
     messagedialog.set_default_response(Gtk.ResponseType.CANCEL)
-
-    response = messagedialog.run()
+    messagedialog.set_markup("Begin the construction of upgrades to the stadium at cost of %s?" % (cost))
 
     state = False
 
-    if response == Gtk.ResponseType.OK:
+    if messagedialog.run() == Gtk.ResponseType.OK:
         state = True
 
     messagedialog.destroy()
@@ -987,13 +980,13 @@ def confirm_stadium(cost):
 def confirm_building(cost):
     cost = display.currency(cost)
 
-    messagedialog = Gtk.MessageDialog(message_format="Begin the construction of new buildings at a cost of %s?" % (cost),
-                                      type=Gtk.MessageType.QUESTION)
+    messagedialog = Gtk.MessageDialog(type=Gtk.MessageType.QUESTION)
     messagedialog.set_transient_for(game.window)
     messagedialog.set_title("Upgrade Building")
     messagedialog.add_button("_Cancel", Gtk.ResponseType.CANCEL)
     messagedialog.add_button("_Build", Gtk.ResponseType.OK)
     messagedialog.set_default_response(Gtk.ResponseType.CANCEL)
+    messagedialog.set_markup("Begin the construction of new buildings at a cost of %s?" % (cost))
 
     state = False
 
@@ -1008,13 +1001,13 @@ def confirm_building(cost):
 def confirm_training(cost):
     display_cost = display.currency(cost)
 
-    messagedialog = Gtk.MessageDialog(message_format="Arrange for trip to training camp at a cost of %s?" % (display_cost),
-                                      type=Gtk.MessageType.QUESTION)
+    messagedialog = Gtk.MessageDialog(type=Gtk.MessageType.QUESTION)
     messagedialog.set_transient_for(game.window)
     messagedialog.set_title("Confirm Training")
     messagedialog.add_button("_Cancel", Gtk.ResponseType.CANCEL)
     messagedialog.add_button("C_onfirm", Gtk.ResponseType.OK)
     messagedialog.set_default_response(Gtk.ResponseType.CANCEL)
+    messagedialog.set_markup("Arrange for trip to training camp at a cost of %s?" % (display_cost))
 
     state = False
 
@@ -1071,11 +1064,11 @@ def fire_staff(index, name, payout):
 
 
 def fire_staff_error(name, number):
-    messagedialog = Gtk.MessageDialog(message_format="Unable to fire %s as he is currently individual training %i players.\n\nPlease reassign the players to other coaches and try again." % (name, number), type=Gtk.MessageType.ERROR)
+    messagedialog = Gtk.MessageDialog(type=Gtk.MessageType.ERROR)
     messagedialog.set_title("Fire Staff")
     messagedialog.set_transient_for(game.window)
-    messagedialog.add_button("_OK", Gtk.ResponseType.OK)
-
+    messagedialog.add_button("_Close", Gtk.ResponseType.CLOSE)
+    messagedialog.set_markup("Unable to fire %s as he is currently individual training %i players. Please reassign the players to other coaches and try again." % (name, number))
     messagedialog.run()
     messagedialog.destroy()
 
@@ -1083,13 +1076,13 @@ def fire_staff_error(name, number):
 def renew_staff_contract(name, year, amount):
     amount = display.currency(amount)
 
-    messagedialog = Gtk.MessageDialog(message_format="%s is requesting a %i year contract and %s per week." % (name, year, amount),
-                                      type=Gtk.MessageType.QUESTION)
+    messagedialog = Gtk.MessageDialog(type=Gtk.MessageType.QUESTION)
     messagedialog.set_transient_for(game.window)
     messagedialog.set_title("Renew Contract")
     messagedialog.add_button("_Reject", Gtk.ResponseType.REJECT)
     messagedialog.add_button("_Accept", Gtk.ResponseType.ACCEPT)
     messagedialog.set_default_response(Gtk.ResponseType.REJECT)
+    messagedialog.set_markup("%s is requesting a %i year contract and %s per week." % (name, year, amount))
 
     state = False
 
@@ -1104,13 +1097,13 @@ def renew_staff_contract(name, year, amount):
 def improve_wage(name, amount):
     amount = display.currency(amount)
 
-    messagedialog = Gtk.MessageDialog(message_format="Increase wages for %s to %s per week?" % (name, amount),
-                                      type=Gtk.MessageType.QUESTION)
+    messagedialog = Gtk.MessageDialog(type=Gtk.MessageType.QUESTION)
     messagedialog.set_transient_for(game.window)
     messagedialog.set_title("Improve Wage")
     messagedialog.add_button("_Reject", Gtk.ResponseType.REJECT)
     messagedialog.add_button("_Accept", Gtk.ResponseType.ACCEPT)
     messagedialog.set_default_response(Gtk.ResponseType.REJECT)
+    messagedialog.set_markup("Increase wages for %s to %s per week?" % (name, amount))
 
     state = False
 
@@ -1123,14 +1116,14 @@ def improve_wage(name, amount):
 
 
 def cancel_loan(name):
-    messagedialog = Gtk.MessageDialog(message_format="Cancel loan contract for %s?" % (name),
-                                      type=Gtk.MessageType.QUESTION)
-    messagedialog.format_secondary_text("The player will be returned to his parent club.")
+    messagedialog = Gtk.MessageDialog(type=Gtk.MessageType.QUESTION)
     messagedialog.set_transient_for(game.window)
     messagedialog.set_title("Cancel Loan")
     messagedialog.add_button("_Do Not Cancel", Gtk.ResponseType.REJECT)
     messagedialog.add_button("_Cancel Loan", Gtk.ResponseType.ACCEPT)
     messagedialog.set_default_response(Gtk.ResponseType.REJECT)
+    messagedialog.set_markup("<span size='12000'><b>Cancel loan contract for %s?</b></span>" % (name))
+    messagedialog.format_secondary_text("The player will be returned to his parent club.")
 
     state = False
 
@@ -1429,14 +1422,14 @@ def sponsorship():
 def float_club(amount):
     amount = display.currency(amount)
 
-    messagedialog = Gtk.MessageDialog(message_format="Are you sure you want to float the club publically?",
-                                      type=Gtk.MessageType.QUESTION)
-    messagedialog.format_secondary_text("The amount raised will be in the region of %s." % (amount))
+    messagedialog = Gtk.MessageDialog(type=Gtk.MessageType.QUESTION)
     messagedialog.set_title("Float Club")
     messagedialog.set_transient_for(game.window)
     messagedialog.add_button("_No", Gtk.ResponseType.NO)
     messagedialog.add_button("_Yes", Gtk.ResponseType.YES)
     messagedialog.set_default_response(Gtk.ResponseType.NO)
+    messagedialog.set_markup("<span size='12000'><b>Are you sure you want to float the club publically?</b></span>")
+    messagedialog.format_secondary_text("The amount raised will be in the region of %s." % (amount))
 
     state = False
 
@@ -1661,7 +1654,7 @@ def file_not_found_error():
     messagedialog.set_transient_for(game.window)
     messagedialog.set_title("Editor Not Available")
     messagedialog.add_button("_Close", Gtk.ResponseType.CLOSE)
-    messagedialog.set_markup("Data Editor is not installed.")
+    messagedialog.set_markup("<span size='12000'><b>Data Editor is not installed.</b></span>")
     messagedialog.format_secondary_text("Place the editor folder into this directory.")
     messagedialog.run()
     messagedialog.destroy()
@@ -1669,7 +1662,6 @@ def file_not_found_error():
 
 def error(errorid):
     error = constants.errors[errorid]
-
     message_text = error[0]
     message_title = error[1]
     message_type = error[2]
@@ -1680,6 +1672,5 @@ def error(errorid):
     messagedialog.add_button("_Close", Gtk.ResponseType.CLOSE)
     messagedialog.set_default_response(Gtk.ResponseType.CLOSE)
     messagedialog.set_markup(message_text)
-
     messagedialog.run()
     messagedialog.destroy()
