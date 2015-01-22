@@ -543,6 +543,20 @@ class Merchandise(Gtk.Grid):
         label.set_use_markup(True)
         self.attach(label, 3, 0, 1, 1)
 
+        separator = Gtk.Separator()
+        separator.set_orientation(Gtk.Orientation.VERTICAL)
+        self.attach(separator, 4, 1, 1, 12)
+
+        label = Gtk.Label("<b>Quantity Sold</b>")
+        label.set_use_markup(True)
+        self.attach(label, 5, 0, 1, 1)
+        label = Gtk.Label("<b>Revenue</b>")
+        label.set_use_markup(True)
+        self.attach(label, 6, 0, 1, 1)
+        label = Gtk.Label("<b>Cost</b>")
+        label.set_use_markup(True)
+        self.attach(label, 7, 0, 1, 1)
+
         for index in range(0, 12):
             label1 = widgets.AlignedLabel()
             self.attach(label1, 0, index + 1, 1, 1)
@@ -550,7 +564,6 @@ class Merchandise(Gtk.Grid):
             self.attach(label2, 1, index + 1, 1, 1)
             label3 = Gtk.Label()
             self.attach(label3, 3, index + 1, 1, 1)
-            self.display.append([label1, label2, label3])
 
             spinbutton = Gtk.SpinButton.new_with_range(-100, 1000, 10)
             spinbutton.set_snap_to_ticks(True)
@@ -560,23 +573,34 @@ class Merchandise(Gtk.Grid):
             self.attach(spinbutton, 2, index + 1, 1, 1)
             self.spins.append(spinbutton)
 
+            label4 = Gtk.Label()
+            self.attach(label4, 5, index + 1, 1, 1)
+            label5 = Gtk.Label()
+            self.attach(label5, 6, index + 1, 1, 1)
+            label6 = Gtk.Label()
+            self.attach(label6, 7, index + 1, 1, 1)
+
+            self.display.append([label1, label2, label3, label4, label5, label6])
+
     def format_output(self, spinbutton):
         value = spinbutton.get_value_as_int()
-
         spinbutton.set_text("%i%%" % (value))
 
         return True
 
     def value_changed(self, spinbutton, index):
-        game.clubs[game.teamid].merchandise[index] = spinbutton.get_value()
+        club = game.clubs[game.teamid]
+
+        club.merchandise[index] = spinbutton.get_value()
 
         cost = constants.merchandise[index][1]
-
-        profit = (self.spins[index].get_value() / 100.0) * cost + cost
+        profit = (self.spins[index].get_value() * 0.01) * cost + cost
         profit = display.currency(profit, mode=1)
         self.display[index][2].set_text("%s" % (profit))
 
     def run(self):
+        club = game.clubs[game.teamid]
+
         for count, item in enumerate(constants.merchandise):
             self.display[count][0].set_text(item[0])
             cost = display.currency(item[1], mode=1)
@@ -585,9 +609,26 @@ class Merchandise(Gtk.Grid):
             value = game.clubs[game.teamid].merchandise[count]
             self.spins[count].set_value(value)
 
-            profit = (self.spins[count].get_value() / 100.0) * item[1] + item[1]
+            profit = (self.spins[count].get_value() * 0.01) * item[1] + item[1]
             profit = display.currency(profit, mode=1)
             self.display[count][2].set_text("%s" % (profit))
+
+            if len(club.sales[0]) > 0:
+                sales = "%i" % club.sales[0][count][0]
+
+                revenue = club.sales[0][count][1]
+                cost = club.sales[0][count][2]
+                profit = revenue - cost
+
+                revenue = display.currency(revenue)
+                self.display[count][4].set_text(revenue)
+
+                profit = display.currency(profit)
+                self.display[count][5].set_text(profit)
+            else:
+                sales = "No Sales"
+
+            self.display[count][3].set_text(sales)
 
         self.show_all()
 
@@ -614,17 +655,27 @@ class Catering(Gtk.Grid):
         label.set_use_markup(True)
         self.attach(label, 3, 0, 1, 1)
 
+        separator = Gtk.Separator()
+        separator.set_orientation(Gtk.Orientation.VERTICAL)
+        self.attach(separator, 4, 1, 1, 12)
+
+        label = Gtk.Label("<b>Quantity Sold</b>")
+        label.set_use_markup(True)
+        self.attach(label, 5, 0, 1, 1)
+        label = Gtk.Label("<b>Revenue</b>")
+        label.set_use_markup(True)
+        self.attach(label, 6, 0, 1, 1)
+        label = Gtk.Label("<b>Cost</b>")
+        label.set_use_markup(True)
+        self.attach(label, 7, 0, 1, 1)
+
         for index in range(0, 9):
             label1 = widgets.AlignedLabel()
             self.attach(label1, 0, index + 1, 1, 1)
-
             label2 = Gtk.Label()
             self.attach(label2, 1, index + 1, 1, 1)
-
             label3 = Gtk.Label()
             self.attach(label3, 3, index + 1, 1, 1)
-
-            self.display.append([label1, label2, label3])
 
             spinbutton = Gtk.SpinButton.new_with_range(-100, 1000, 10)
             spinbutton.set_snap_to_ticks(True)
@@ -633,6 +684,15 @@ class Catering(Gtk.Grid):
             spinbutton.connect("value-changed", self.value_changed, index)
             self.attach(spinbutton, 2, index + 1, 1, 1)
             self.spins.append(spinbutton)
+
+            label4 = Gtk.Label()
+            self.attach(label4, 5, index + 1, 1, 1)
+            label5 = Gtk.Label()
+            self.attach(label5, 6, index + 1, 1, 1)
+            label6 = Gtk.Label()
+            self.attach(label6, 7, index + 1, 1, 1)
+
+            self.display.append([label1, label2, label3, label4, label5, label6])
 
     def format_output(self, spinbutton):
         value = spinbutton.get_value_as_int()
@@ -646,11 +706,13 @@ class Catering(Gtk.Grid):
 
         cost = constants.catering[index][1]
 
-        profit = (self.spins[index].get_value() / 100.0) * cost + cost
+        profit = (self.spins[index].get_value() * 0.01) * cost + cost
         profit = display.currency(profit, mode=1)
         self.display[index][2].set_text("%s" % (profit))
 
     def run(self):
+        club = game.clubs[game.teamid]
+
         for count, item in enumerate(constants.catering):
             self.display[count][0].set_text(item[0])
             cost = display.currency(item[1], mode=1)
@@ -659,8 +721,25 @@ class Catering(Gtk.Grid):
             value = game.clubs[game.teamid].catering[count]
             self.spins[count].set_value(value)
 
-            profit = (self.spins[count].get_value() / 100.0) * item[1] + item[1]
+            profit = (self.spins[count].get_value() * 0.01) * item[1] + item[1]
             profit = display.currency(profit, mode=1)
             self.display[count][2].set_text("%s" % (profit))
+
+            if len(club.sales[1]) > 0:
+                sales = "%i" % club.sales[1][count][0]
+
+                revenue = club.sales[1][count][1]
+                cost = club.sales[1][count][2]
+                profit = revenue - cost
+
+                revenue = display.currency(revenue)
+                self.display[count][4].set_text(revenue)
+
+                profit = display.currency(profit)
+                self.display[count][5].set_text(profit)
+            else:
+                sales = "No Sales"
+
+            self.display[count][3].set_text(sales)
 
         self.show_all()

@@ -120,6 +120,7 @@ def datainit():
         club.shortlist = set()
         club.merchandise = []
         club.catering = []
+        club.sales = [[], []]
         club.evaluation = [0, 0, 0, 0, 0]
         club.statistics = [0] * 3
         club.form = []

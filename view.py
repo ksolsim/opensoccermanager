@@ -230,10 +230,10 @@ class Players(Gtk.Grid):
         if criteria is not "":
             data = {}
 
-            for playerid in game.players:
-                player = game.players[playerid]
+            for playerid, player in game.players.items():
+                both = "%s %s" % (player.first_name, player.second_name)
 
-                for search in (player.second_name, player.common_name, player.first_name):
+                for search in (player.second_name, player.common_name, player.first_name, both):
                     search = ''.join((c for c in unicodedata.normalize('NFD', search) if unicodedata.category(c) != 'Mn'))
 
                     if re.findall(criteria, search, re.IGNORECASE):
@@ -253,7 +253,7 @@ class Players(Gtk.Grid):
                 model.append([criteria])
 
     def backspace_activated(self, entry):
-        if entry.get_text() is "":
+        if entry.get_text_length() == 0:
             self.reset_activated()
 
     def reset_activated(self, widget=None, position=None, event=None):
