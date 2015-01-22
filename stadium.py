@@ -153,15 +153,15 @@ class Stadium(Gtk.Grid):
 
         self.cost = 0
         cost = display.currency(self.cost)
-        self.labelCost.set_text("%s" % (cost))
+        self.labelCost.set_label("%s" % (cost))
 
         self.spinbuttonMaintenance.set_value(stadium.maintenance)
 
         cost = calculator.maintenance()
         cost = display.currency(cost)
-        self.labelMaintenanceCost.set_text("%s" % (cost))
+        self.labelMaintenanceCost.set_label("%s" % (cost))
 
-        self.labelCondition.set_text("%i%%" % (stadium.condition))
+        self.labelCondition.set_label("%i%%" % (stadium.condition))
 
         self.show_all()
 
@@ -173,7 +173,7 @@ class Stadium(Gtk.Grid):
 
         cost = calculator.maintenance()
         cost = display.currency(cost)
-        self.labelMaintenanceCost.set_text("%s" % (cost))
+        self.labelMaintenanceCost.set_label("%s" % (cost))
 
     def update_capacity(self):
         stadiumid = game.clubs[game.teamid].stadium
@@ -190,7 +190,7 @@ class Stadium(Gtk.Grid):
 
         stadium.capacity = capacity
 
-        self.labelCurrentCapacity.set_text("%i" % (capacity))
+        self.labelCurrentCapacity.set_label("%i" % (capacity))
 
     def main_changed(self, spinbutton, index):
         capacity = spinbutton.get_value_as_int()
@@ -320,9 +320,9 @@ class Stadium(Gtk.Grid):
                         self.cost += 800000
 
         cost = display.currency(self.cost)
-        self.labelCost.set_text("%s" % (cost))
+        self.labelCost.set_label("%s" % (cost))
 
-        self.labelUpgradeCapacity.set_text("%i" % (upgrade_capacity))
+        self.labelUpgradeCapacity.set_label("%i" % (upgrade_capacity))
 
         if self.cost > 0:
             self.buttonConfirm.set_sensitive(True)
@@ -381,7 +381,7 @@ class Stadium(Gtk.Grid):
 
                 self.cost = 0
                 cost = display.currency(self.cost)
-                self.labelCost.set_text("%s" % (cost))
+                self.labelCost.set_label("%s" % (cost))
 
                 self.buttonConfirm.set_sensitive(False)
 
@@ -575,9 +575,9 @@ class Buildings(Gtk.Grid):
         # Update labels
         subtotal = display.currency(subtotal)
         total = display.currency(self.total)
-        self.labels[index].set_text("%s" % (subtotal))
+        self.labels[index].set_label("%s" % (subtotal))
         self.labelTotal.set_markup("<b>%s</b>" % (total))
-        self.labelFuturePlots.set_text("Planned number of plots: %i" % (self.futureplots))
+        self.labelFuturePlots.set_label("Planned number of plots: %i" % (self.futureplots))
 
         if self.total > 0:
             self.buttonConfirm.set_sensitive(True)
@@ -613,12 +613,12 @@ class Buildings(Gtk.Grid):
 
             cost = display.currency(self.total)
             self.labelTotal.set_markup("<b>%s</b>" % (cost))
-            self.labelFuturePlots.set_text("Planned number of plots: %i" % (self.futureplots))
-            self.labelCurrentPlots.set_text("Used %i out of total %i plots available" % (self.plots, stadium.plots))
+            self.labelFuturePlots.set_label("Planned number of plots: %i" % (self.futureplots))
+            self.labelCurrentPlots.set_label("Used %i out of total %i plots available" % (self.plots, stadium.plots))
 
             for item in self.labels:
                 cost = display.currency(0)
-                item.set_text("%s" % (cost))
+                item.set_label("%s" % (cost))
 
     def revert_building(self, button):
         for count, item in enumerate(self.buildings):
@@ -633,14 +633,14 @@ class Buildings(Gtk.Grid):
 
         # Populate buildings, plot sizes and costs
         for count, item in enumerate(constants.buildings):
-            self.display[count][0].set_text(item[0])
-            self.display[count][1].set_text(str(item[1]))
+            self.display[count][0].set_label(item[0])
+            self.display[count][1].set_label(str(item[1]))
 
             cost = display.currency(item[2])
-            self.display[count][2].set_text(cost)
+            self.display[count][2].set_label(cost)
 
             cost = display.currency(0)
-            self.labels[count].set_text("%s" % (cost))
+            self.labels[count].set_label("%s" % (cost))
 
             self.buildings.append(stadium.buildings[0 + count])
             self.spins[count].set_value(stadium.buildings[0 + count])
@@ -649,8 +649,8 @@ class Buildings(Gtk.Grid):
             # Total number of plots in use
             self.plots += stadium.buildings[0 + count] * item[1]
 
-        self.labelFuturePlots.set_text("Planned number of plots: %i" % (self.futureplots))
-        self.labelCurrentPlots.set_text("Used %i out of total %i plots available" % (self.plots, stadium.plots))
+        self.labelFuturePlots.set_label("Planned number of plots: %i" % (self.futureplots))
+        self.labelCurrentPlots.set_label("Used %i out of total %i plots available" % (self.plots, stadium.plots))
 
         cost = display.currency(0)
         self.labelTotal.set_markup("<b>%s</b>" % (cost))

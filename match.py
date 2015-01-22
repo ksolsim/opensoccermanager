@@ -359,7 +359,7 @@ class Match(Gtk.Grid):
 
         # Declare attendance
         attendance = events.attendance(self.team1, self.team2)
-        self.labelAttendance.set_text("%s" % (attendance))
+        self.labelAttendance.set_label("%s" % (attendance))
 
         # Matchday ticket sales
         if self.team1 == game.teamid:

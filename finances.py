@@ -270,10 +270,10 @@ class Finances(Gtk.Grid):
     def update_finances(self, index):
         if index == 0:
             amount = display.currency(game.bankloan.amount)
-            self.labelLoan.set_text("%s" % (amount))
+            self.labelLoan.set_label("%s" % (amount))
         elif index == 1:
             amount = display.currency(game.overdraft.amount)
-            self.labelOverdraft.set_text("%s" % (amount))
+            self.labelOverdraft.set_label("%s" % (amount))
 
     def update_amount_button(self, spinbutton):
         if spinbutton.get_value_as_int() > 0:
@@ -287,7 +287,7 @@ class Finances(Gtk.Grid):
 
         repayment = money.calculate_loan_repayment(amount, weeks)
         repayment = display.currency(repayment)
-        self.labelWeekly.set_text("%s" % (repayment))
+        self.labelWeekly.set_label("%s" % (repayment))
 
     def update_repay_button(self, spinbutton):
         if spinbutton.get_value_as_int() > 0:
@@ -335,7 +335,7 @@ class Finances(Gtk.Grid):
 
         # Overdraft
         amount = display.currency(game.overdraft.maximum)
-        self.labelOverdraftMaximum.set_text("%s" % (amount))
+        self.labelOverdraftMaximum.set_label("%s" % (amount))
 
         self.labelOverdraftInterest.set_label("%i%%" % (game.overdraft.rate))
 
@@ -505,17 +505,17 @@ class Accounts(Gtk.Grid):
 
         for item in range(0, 9):
             amount = display.currency(club.accounts[item][0])
-            self.labels_week[item].set_text("%s" % (amount))
+            self.labels_week[item].set_label("%s" % (amount))
 
             amount = display.currency(club.accounts[item][1])
-            self.labels_season[item].set_text("%s" % (amount))
+            self.labels_season[item].set_label("%s" % (amount))
 
         for item in range(9, 19):
             amount = display.currency(club.accounts[item][0])
-            self.labels_week[item].set_text("%s" % (amount))
+            self.labels_week[item].set_label("%s" % (amount))
 
             amount = display.currency(club.accounts[item][1])
-            self.labels_season[item].set_text("%s" % (amount))
+            self.labels_season[item].set_label("%s" % (amount))
 
         amount = display.currency(club.income)
         self.labelIncome.set_label("<b>%s</b>" % (amount))

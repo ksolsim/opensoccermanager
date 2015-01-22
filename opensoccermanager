@@ -614,9 +614,9 @@ class ContinueGame:
                 if game.teamid in match:
                     team1 = game.clubs[match[0]].name
                     team2 = game.clubs[match[1]].name
-                    game.labelNextMatch.set_text("Today's Game: %s - %s" % (team1, team2))
+                    game.labelNextMatch.set_label("Today's Game: %s - %s" % (team1, team2))
         else:
-            game.labelNextMatch.set_text("")
+            game.labelNextMatch.set_label("")
 
     def update_date(self):
         display.find_champion()

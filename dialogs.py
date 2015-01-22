@@ -746,7 +746,7 @@ def add_individual_training(playerid=None):
         elif coach.speciality == "All":
             speciality = "All"
 
-        labelSpeciality.set_text(speciality)
+        labelSpeciality.set_label(speciality)
 
     dialog = Gtk.Dialog()
     dialog.set_title("Individual Training")

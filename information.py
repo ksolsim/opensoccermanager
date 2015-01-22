@@ -907,14 +907,14 @@ class Statistics(Gtk.Grid):
         if game.statistics[0][0] is not None:
             clubid = game.statistics[0][0]
             opposition = game.clubs[clubid].name
-            self.labelWin.set_text("%i - %i (against %s)" % (game.statistics[0][1][0],
+            self.labelWin.set_label("%i - %i (against %s)" % (game.statistics[0][1][0],
                                                 game.statistics[0][1][1],
                                                 opposition))
 
         if game.statistics[1][0] is not None:
             clubid = game.statistics[1][0]
             opposition = game.clubs[clubid].name
-            self.labelLoss.set_text("%i - %i (against %s)" % (game.statistics[1][1][0],
+            self.labelLoss.set_label("%i - %i (against %s)" % (game.statistics[1][1][0],
                                                  game.statistics[1][1][1],
                                                  opposition))
 
@@ -931,9 +931,9 @@ class Statistics(Gtk.Grid):
         if top[0] != 0:
             player = game.players[top[0]]
             name = display.name(player, mode=1)
-            self.labelGoalscorer.set_text("%s (%i goals)" % (name, top[1]))
+            self.labelGoalscorer.set_label("%s (%i goals)" % (name, top[1]))
         else:
-            self.labelGoalscorer.set_text("Not applicable")
+            self.labelGoalscorer.set_label("Not applicable")
 
         # Top assister
         top = [0, 0]
@@ -948,9 +948,9 @@ class Statistics(Gtk.Grid):
         if top[0] != 0:
             player = game.players[top[0]]
             name = display.name(player, mode=1)
-            self.labelAssister.set_text("%s (%i assists)" % (name, top[1]))
+            self.labelAssister.set_label("%s (%i assists)" % (name, top[1]))
         else:
-            self.labelAssister.set_text("Not applicable")
+            self.labelAssister.set_label("Not applicable")
 
         # Highest wage / player value
         wage = [game.players[key].wage for key in game.clubs[game.teamid].squad]

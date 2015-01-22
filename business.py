@@ -194,7 +194,7 @@ class Tickets(Gtk.Grid):
             status = "Season tickets can not be purchased at this time."
             self.spinbuttonSeasonTickets.set_sensitive(False)
 
-        self.labelStatus.set_text(status)
+        self.labelStatus.set_label(status)
 
         self.show_all()
 
@@ -479,8 +479,8 @@ class Advertising(Gtk.Grid):
     def update_totals(self):
         club = game.clubs[game.teamid]
 
-        self.labelHoardingsCount.set_text("Used %i of %i hoarding spaces" % (self.hoardings_quantity, club.hoardings[2]))
-        self.labelProgrammesCount.set_text("Used %i of %i programme spaces" % (self.programmes_quantity, club.programmes[2]))
+        self.labelHoardingsCount.set_label("Used %i of %i hoarding spaces" % (self.hoardings_quantity, club.hoardings[2]))
+        self.labelProgrammesCount.set_label("Used %i of %i programme spaces" % (self.programmes_quantity, club.programmes[2]))
 
     def populate_data(self):
         self.liststoreHoardingsAvailable.clear()
@@ -596,39 +596,39 @@ class Merchandise(Gtk.Grid):
         cost = constants.merchandise[index][1]
         profit = (self.spins[index].get_value() * 0.01) * cost + cost
         profit = display.currency(profit, mode=1)
-        self.display[index][2].set_text("%s" % (profit))
+        self.display[index][2].set_label("%s" % (profit))
 
     def run(self):
         club = game.clubs[game.teamid]
 
         for count, item in enumerate(constants.merchandise):
-            self.display[count][0].set_text(item[0])
+            self.display[count][0].set_label(item[0])
             cost = display.currency(item[1], mode=1)
-            self.display[count][1].set_text("%s" % (cost))
+            self.display[count][1].set_label("%s" % (cost))
 
             value = game.clubs[game.teamid].merchandise[count]
             self.spins[count].set_value(value)
 
             profit = (self.spins[count].get_value() * 0.01) * item[1] + item[1]
             profit = display.currency(profit, mode=1)
-            self.display[count][2].set_text("%s" % (profit))
+            self.display[count][2].set_label("%s" % (profit))
 
             if len(club.sales[0]) > 0:
-                sales = "%i" % club.sales[0][count][0]
+                sales = "%i" % (club.sales[0][count][0])
 
                 revenue = club.sales[0][count][1]
                 cost = club.sales[0][count][2]
                 profit = revenue - cost
 
                 revenue = display.currency(revenue)
-                self.display[count][4].set_text(revenue)
+                self.display[count][4].set_label(revenue)
 
                 profit = display.currency(profit)
-                self.display[count][5].set_text(profit)
+                self.display[count][5].set_label(profit)
             else:
                 sales = "No Sales"
 
-            self.display[count][3].set_text(sales)
+            self.display[count][3].set_label(sales)
 
         self.show_all()
 
@@ -696,7 +696,6 @@ class Catering(Gtk.Grid):
 
     def format_output(self, spinbutton):
         value = spinbutton.get_value_as_int()
-
         spinbutton.set_text("%i%%" % (value))
 
         return True
@@ -708,38 +707,38 @@ class Catering(Gtk.Grid):
 
         profit = (self.spins[index].get_value() * 0.01) * cost + cost
         profit = display.currency(profit, mode=1)
-        self.display[index][2].set_text("%s" % (profit))
+        self.display[index][2].set_label("%s" % (profit))
 
     def run(self):
         club = game.clubs[game.teamid]
 
         for count, item in enumerate(constants.catering):
-            self.display[count][0].set_text(item[0])
+            self.display[count][0].set_label(item[0])
             cost = display.currency(item[1], mode=1)
-            self.display[count][1].set_text("%s" % (cost))
+            self.display[count][1].set_label("%s" % (cost))
 
             value = game.clubs[game.teamid].catering[count]
             self.spins[count].set_value(value)
 
             profit = (self.spins[count].get_value() * 0.01) * item[1] + item[1]
             profit = display.currency(profit, mode=1)
-            self.display[count][2].set_text("%s" % (profit))
+            self.display[count][2].set_label("%s" % (profit))
 
             if len(club.sales[1]) > 0:
-                sales = "%i" % club.sales[1][count][0]
+                sales = "%i" % (club.sales[1][count][0])
 
                 revenue = club.sales[1][count][1]
                 cost = club.sales[1][count][2]
                 profit = revenue - cost
 
                 revenue = display.currency(revenue)
-                self.display[count][4].set_text(revenue)
+                self.display[count][4].set_label(revenue)
 
                 profit = display.currency(profit)
-                self.display[count][5].set_text(profit)
+                self.display[count][5].set_label(profit)
             else:
                 sales = "No Sales"
 
-            self.display[count][3].set_text(sales)
+            self.display[count][3].set_label(sales)
 
         self.show_all()

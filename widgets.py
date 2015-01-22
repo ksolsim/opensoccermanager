@@ -2,10 +2,16 @@
 
 from gi.repository import Gtk
 
+import display
 import game
 
 
 class InfoTip(Gtk.Grid):
+    name = ""
+    nickname = ""
+    chairman = ""
+    balance = ""
+
     def __init__(self):
         Gtk.Grid.__init__(self)
         self.set_row_spacing(5)
@@ -13,24 +19,30 @@ class InfoTip(Gtk.Grid):
 
         label = AlignedLabel("Name:")
         self.attach(label, 0, 0, 1, 1)
-        label = AlignedLabel("%s" % (game.clubs[game.teamid].name))
-        self.attach(label, 1, 0, 1, 1)
+        self.labelName = AlignedLabel(self.name)
+        self.attach(self.labelName, 1, 0, 1, 1)
         label = AlignedLabel("Nickame:")
         self.attach(label, 0, 1, 1, 1)
-        label = AlignedLabel("%s" % (game.clubs[game.teamid].nickname))
-        self.attach(label, 1, 1, 1, 1)
+        self.labelNickname = AlignedLabel(self.nickname)
+        self.attach(self.labelNickname, 1, 1, 1, 1)
         label = AlignedLabel("Chairman:")
         self.attach(label, 0, 2, 1, 1)
-        label = AlignedLabel("%s" % (game.clubs[game.teamid].chairman))
-        self.attach(label, 1, 2, 1, 1)
+        self.labelChairman = AlignedLabel(self.chairman)
+        self.attach(self.labelChairman, 1, 2, 1, 1)
 
         separator = Gtk.Separator()
         self.attach(separator, 0, 3, 3, 1)
 
         label = AlignedLabel("Balance:")
         self.attach(label, 0, 4, 1, 1)
-        label = AlignedLabel("£%.0f" % (game.clubs[game.teamid].balance))
-        self.attach(label, 1, 4, 1, 1)
+        self.labelBalance = AlignedLabel()
+        self.attach(self.labelBalance, 1, 4, 1, 1)
+
+    def show(self):
+        self.labelName.set_label(self.name)
+        self.labelNickname.set_label(self.nickname)
+        self.labelChairman.set_label(self.chairman)
+        self.labelBalance.set_label(self.balance)
 
         self.show_all()
 
@@ -41,17 +53,29 @@ class Date(Gtk.Label):
     '''
     def __init__(self):
         def tooltip(item, x, y, keyboard_mode, tooltip):
-            infotip = InfoTip()
+            club = game.clubs[game.teamid]
+
+            infotip.name = "%s" % (club.name)
+            infotip.nickname = "%s" % (club.nickname)
+            infotip.chairman = "%s" % (club.chairman)
+
+            balance = display.currency(club.balance)
+            infotip.balance = "%s" % (balance)
+
+            infotip.show()
+
             tooltip.set_custom(infotip)
 
             return True
+
+        infotip = InfoTip()
 
         Gtk.Label.__init__(self)
         self.set_has_tooltip(True)
         self.connect("query-tooltip", tooltip)
 
     def update(self):
-        self.set_text("%i/%i/%i" % (game.year, game.month, game.date))
+        self.set_label("%i/%i/%i" % (game.year, game.month, game.date))
 
 
 class News(Gtk.Button):
