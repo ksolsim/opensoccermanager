@@ -275,6 +275,8 @@ class Advertising(Gtk.Grid):
 
         treeviewHoardings1 = Gtk.TreeView()
         treeviewHoardings1.set_model(self.liststoreHoardingsAvailable)
+        treeviewHoardings1.set_enable_search(False)
+        treeviewHoardings1.set_search_column(-1)
         treeviewHoardings1.enable_model_drag_source(Gdk.ModifierType.BUTTON1_MASK, targets, Gdk.DragAction.MOVE)
         treeviewHoardings1.drag_source_set(Gdk.ModifierType.BUTTON1_MASK, [(target)], Gdk.DragAction.MOVE)
         treeviewHoardings1.connect("row-activated", self.advertising_add, 0)
@@ -297,6 +299,8 @@ class Advertising(Gtk.Grid):
 
         treeviewHoardings2 = Gtk.TreeView()
         treeviewHoardings2.set_model(self.liststoreHoardingsCurrent)
+        treeviewHoardings2.set_enable_search(False)
+        treeviewHoardings2.set_search_column(-1)
         treeviewHoardings2.enable_model_drag_dest(targets, Gdk.DragAction.MOVE)
         treeviewHoardings2.connect("drag-data-received", on_drag_data_received, 0)
         scrolledwindow.add(treeviewHoardings2)
@@ -331,6 +335,8 @@ class Advertising(Gtk.Grid):
 
         treeviewProgrammes1 = Gtk.TreeView()
         treeviewProgrammes1.set_model(self.liststoreProgrammesAvailable)
+        treeviewProgrammes1.set_enable_search(False)
+        treeviewProgrammes1.set_search_column(-1)
         treeviewProgrammes1.enable_model_drag_source(Gdk.ModifierType.BUTTON1_MASK, targets, Gdk.DragAction.MOVE)
         treeviewProgrammes1.drag_source_set(Gdk.ModifierType.BUTTON1_MASK, [(target)], Gdk.DragAction.MOVE)
         treeviewProgrammes1.connect("row-activated", self.advertising_add, 1)
@@ -353,6 +359,8 @@ class Advertising(Gtk.Grid):
 
         treeviewProgrammes2 = Gtk.TreeView()
         treeviewProgrammes2.set_model(self.liststoreProgrammesCurrent)
+        treeviewProgrammes2.set_enable_search(False)
+        treeviewProgrammes2.set_search_column(-1)
         treeviewProgrammes2.enable_model_drag_dest(targets, Gdk.DragAction.MOVE)
         treeviewProgrammes2.connect("drag-data-received", on_drag_data_received, 1)
         scrolledwindow.add(treeviewProgrammes2)

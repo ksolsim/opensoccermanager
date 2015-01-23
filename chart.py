@@ -13,9 +13,11 @@ class GoalScorers(Gtk.ScrolledWindow):
         self.liststore = Gtk.ListStore(str, str, int)
 
         treeview = Gtk.TreeView()
+        treeview.set_model(self.liststore)
+        treeview.set_enable_search(False)
+        treeview.set_search_column(-1)
         treeselection = treeview.get_selection()
         treeselection.set_mode(Gtk.SelectionMode.NONE)
-        treeview.set_model(self.liststore)
         self.add(treeview)
 
         cellrenderertext = Gtk.CellRendererText()
@@ -49,6 +51,8 @@ class Assists(Gtk.ScrolledWindow):
 
         treeview = Gtk.TreeView()
         treeview.set_model(self.liststore)
+        treeview.set_enable_search(False)
+        treeview.set_search_column(-1)
         treeselection = treeview.get_selection()
         treeselection.set_mode(Gtk.SelectionMode.NONE)
         self.add(treeview)
@@ -81,12 +85,15 @@ class Cards(Gtk.ScrolledWindow):
         Gtk.ScrolledWindow.__init__(self)
 
         self.liststore = Gtk.ListStore(str, str, int, int, int)
-
         treemodelsort = Gtk.TreeModelSort(self.liststore)
         treemodelsort.set_sort_column_id(4, Gtk.SortType.DESCENDING)
 
         treeview = Gtk.TreeView()
         treeview.set_model(treemodelsort)
+        treeview.set_enable_search(False)
+        treeview.set_search_column(-1)
+        treeselection = treeview.get_selection()
+        treeselection.set_mode(Gtk.SelectionMode.NONE)
         self.add(treeview)
 
         cellrenderertext = Gtk.CellRendererText()
@@ -126,17 +133,16 @@ class Transfers(Gtk.Grid):
         self.set_column_spacing(5)
 
         self.liststore = Gtk.ListStore(str, str, str, str)
-
         treemodelsort = Gtk.TreeModelSort(self.liststore)
         treemodelsort.set_sort_column_id(3, Gtk.SortType.DESCENDING)
 
         treeview = Gtk.TreeView()
-        treeview.set_vexpand(True)
-        treeview.set_hexpand(True)
         treeview.set_model(treemodelsort)
-        self.attach(treeview, 0, 0, 2, 1)
+        treeview.set_enable_search(False)
+        treeview.set_search_column(-1)
         treeselection = treeview.get_selection()
         treeselection.set_mode(Gtk.SelectionMode.NONE)
+        self.attach(treeview, 0, 0, 2, 1)
 
         cellrenderertext = Gtk.CellRendererText()
         treeviewcolumn = Gtk.TreeViewColumn("Name", cellrenderertext, text=0)
@@ -166,9 +172,11 @@ class Referees(Gtk.ScrolledWindow):
 
         treeview = Gtk.TreeView()
         treeview.set_model(self.treemodelsort)
-        self.add(treeview)
+        treeview.set_enable_search(False)
+        treeview.set_search_column(-1)
         treeselection = treeview.get_selection()
         treeselection.set_mode(Gtk.SelectionMode.NONE)
+        self.add(treeview)
 
         cellrenderertext = Gtk.CellRendererText()
         treeviewcolumn = Gtk.TreeViewColumn("Name", cellrenderertext, text=0)

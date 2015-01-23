@@ -163,6 +163,8 @@ class IndividualTraining(Gtk.Grid):
 
         self.treeview = Gtk.TreeView()
         self.treeview.set_model(self.liststore)
+        self.treeview.set_enable_search(False)
+        self.treeview.set_search_column(-1)
         self.treeselection = self.treeview.get_selection()
         self.treeselection.connect("changed", self.selection_changed)
         self.overlay.add(self.treeview)

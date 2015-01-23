@@ -889,6 +889,38 @@ def individual_training():
 
             player.training_points -= 100
 
+    # Reduce player skill when not individual training
+    for playerid in club.squad:
+        if playerid not in club.individual_training:
+            player = game.players[playerid]
+
+            reduction = random.randint(1, 3)
+            player.training_points -= reduction
+
+            if player.training_points <= 0:
+                skill = random.randint(0, 9)
+
+                if skill == 0:
+                    player.keeping -= 1
+                elif skill == 1:
+                    player.tackling -= 1
+                elif skill == 2:
+                    player.passing -= 1
+                elif skill == 3:
+                    player.shooting -= 1
+                elif skill == 4:
+                    player.heading -= 1
+                elif skill == 5:
+                    player.pace -= 1
+                elif skill == 6:
+                    player.stamina -= 1
+                elif skill == 7:
+                    player.ball_control -= 1
+                elif skill == 8:
+                    player.set_pieces -= 1
+
+                player.training_points = 99
+
 
 def training_camp(options):
     days = options[0]

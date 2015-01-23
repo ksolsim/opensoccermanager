@@ -82,6 +82,7 @@ class Squad(Gtk.Grid):
         treeviewSquad.set_model(self.treemodelfilter)
         treeviewSquad.set_vexpand(True)
         treeviewSquad.set_hexpand(True)
+        treeviewSquad.set_search_column(1)
         treeviewSquad.enable_model_drag_source(Gdk.ModifierType.BUTTON1_MASK, targets, Gdk.DragAction.COPY)
         treeviewSquad.connect("row-activated", self.row_activated)
         treeviewSquad.connect("button-release-event", self.context_menu)

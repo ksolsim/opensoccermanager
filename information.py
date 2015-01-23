@@ -65,6 +65,8 @@ class News(Gtk.Grid):
         treeviewNews = Gtk.TreeView()
         treeviewNews.set_model(self.treefilter)
         treeviewNews.set_activate_on_single_click(True)
+        treeviewNews.set_enable_search(False)
+        treeviewNews.set_search_column(-1)
         treeviewNews.connect("row-activated", self.item_selected)
         scrolledwindow.add(treeviewNews)
 
@@ -207,6 +209,8 @@ class Fixtures(Gtk.Grid):
         self.treeviewClubFixtures.set_headers_visible(False)
         self.treeviewClubFixtures.set_model(self.liststoreClubFixtures)
         self.treeviewClubFixtures.set_vexpand(True)
+        self.treeviewClubFixtures.set_enable_search(False)
+        self.treeviewClubFixtures.set_search_column(-1)
         scrolledwindow.add(self.treeviewClubFixtures)
 
         cellrenderertext = Gtk.CellRendererText()
@@ -231,10 +235,12 @@ class Fixtures(Gtk.Grid):
 
         treeviewFixtures = Gtk.TreeView()
         treeviewFixtures.set_model(self.liststoreFixtures)
-        treeselection = treeviewFixtures.get_selection()
-        treeselection.set_mode(Gtk.SelectionMode.NONE)
+        treeviewFixtures.set_enable_search(False)
+        treeviewFixtures.set_search_column(-1)
         treeviewFixtures.set_vexpand(True)
         treeviewFixtures.set_hexpand(True)
+        treeselection = treeviewFixtures.get_selection()
+        treeselection.set_mode(Gtk.SelectionMode.NONE)
         self.attach(treeviewFixtures, 1, 1, 2, 1)
 
         cellrenderertext = Gtk.CellRendererText()
@@ -415,11 +421,13 @@ class Standings(Gtk.Grid):
         self.treemodelsort.set_sort_func(0, self.standings_sort)
 
         treeviewStandings = Gtk.TreeView()
-        treeselection = treeviewStandings.get_selection()
-        treeselection.set_mode(Gtk.SelectionMode.NONE)
         treeviewStandings.set_model(self.treemodelsort)
+        treeviewStandings.set_enable_search(False)
+        treeviewStandings.set_search_column(-1)
         treeviewStandings.set_vexpand(True)
         treeviewStandings.set_hexpand(True)
+        treeselection = treeviewStandings.get_selection()
+        treeselection.set_mode(Gtk.SelectionMode.NONE)
         scrolledwindow.add(treeviewStandings)
 
         cellrenderertext = Gtk.CellRendererText()
@@ -794,6 +802,8 @@ class Statistics(Gtk.Grid):
         treeview.set_hexpand(True)
         treeview.set_model(self.liststoreRecordCurrent)
         treeview.set_fixed_height_mode(True)
+        treeview.set_enable_search(False)
+        treeview.set_search_column(-1)
         commonframe.insert(treeview)
         treeselection = treeview.get_selection()
         treeselection.set_mode(Gtk.SelectionMode.NONE)
@@ -849,6 +859,8 @@ class Statistics(Gtk.Grid):
 
         treeview = Gtk.TreeView()
         treeview.set_model(self.liststoreRecordPrevious)
+        treeview.set_enable_search(False)
+        treeview.set_search_column(-1)
         treeselection = treeview.get_selection()
         treeselection.set_mode(Gtk.SelectionMode.NONE)
         scrolledwindow.add(treeview)
