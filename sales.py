@@ -62,49 +62,49 @@ def merchandise(attendance):
     club = game.clubs[game.teamid]
     club.sales[0] = []
 
-    data = []
-
     for count, profit_percentage in enumerate(club.merchandise):
         multiplier = constants.merchandise[count][2]
+        multiplier += random.randint(-3, 3)
+
         potential_sales = attendance * (multiplier * 0.01)
-        sale_percentage = 100 - (profit_percentage - 100)
-        sales = (potential_sales * 0.01) * sale_percentage
-        sales = int(sales)
+        sale_percentage = 200 - profit_percentage
 
-        revenue = sales * constants.merchandise[count][1]
-        revenue = int(revenue)
-        cost = (revenue / (100 + profit_percentage)) * 100
-        cost = int(cost)
+        if sale_percentage < 0:
+            sale_percentage = 0
 
-        money.deposit(revenue, 3)
+        sales = int((potential_sales * 0.01) * sale_percentage)
+
+        income = sales * (constants.merchandise[count][1] + (constants.merchandise[count][1] * (profit_percentage * 0.01)))
+        profit = income - (sales * constants.merchandise[count][1])
+        cost = income - profit
+
+        club.sales[0].append([sales, income, profit])
+
+        money.deposit(income, 3)
         money.withdraw(cost, 14)
-
-        data.append([sales, revenue, cost])
-
-    club.sales[0] = data
 
 
 def catering(attendance):
     club = game.clubs[game.teamid]
     club.sales[1] = []
 
-    data = []
-
     for count, profit_percentage in enumerate(club.catering):
         multiplier = constants.catering[count][2]
+        multiplier += random.randint(-3, 3)
+
         potential_sales = attendance * (multiplier * 0.01)
-        sale_percentage = 100 - (profit_percentage - 100)
-        sales = (potential_sales * 0.01) * sale_percentage
-        sales = int(sales)
+        sale_percentage = 200 - profit_percentage
 
-        revenue = sales * constants.merchandise[count][1]
-        revenue = int(revenue)
-        cost = (revenue / (100 + profit_percentage)) * 100
-        cost = int(cost)
+        if sale_percentage < 0:
+            sale_percentage = 0
 
-        money.deposit(revenue, 4)
+        sales = int((potential_sales * 0.01) * sale_percentage)
+
+        income = sales * (constants.catering[count][1] + (constants.catering[count][1] * (profit_percentage * 0.01)))
+        profit = income - (sales * constants.catering[count][1])
+        cost = income - profit
+
+        club.sales[1].append([sales, income, profit])
+
+        money.deposit(income, 4)
         money.withdraw(cost, 15)
-
-        data.append([sales, revenue, cost])
-
-    club.sales[1] = data
