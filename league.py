@@ -3,11 +3,13 @@
 import game
 
 
-def league_update(result, standings):
+def league_update(result):
     '''
     Received both the teams and results of each game, along with the standings
     list which is to be updated.
     '''
+    standings = game.standings
+
     team1 = result[0]
     team2 = result[3]
 
@@ -63,4 +65,4 @@ def league_update(result, standings):
     if len(game.clubs[team2].form) > 6:
         game.clubs[team2].form.pop(0)
 
-    return standings
+    game.standings = standings

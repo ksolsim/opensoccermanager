@@ -245,7 +245,7 @@ class Match(Gtk.Grid):
                     player.suspension_type = 0
 
         # Standings
-        game.standings = league.league_update(result, game.standings)
+        league.league_update(result)
         game.results[game.fixturesindex].append(result)
 
         selection1, selection2 = events.increment_appearances(self.team1, self.team2)
@@ -373,7 +373,7 @@ class Match(Gtk.Grid):
                 ai.generate_team(item[0])
                 ai.generate_team(item[1])
                 result = ai.generate_result(item[0], item[1])
-                game.standings = league.league_update(result, game.standings)
+                league.league_update(result)
                 game.results[game.fixturesindex].append(result)
 
                 selection1, selection2 = events.increment_appearances(item[0], item[1])
