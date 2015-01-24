@@ -58,6 +58,54 @@ def season_tickets():
     money.deposit(total, 5)
 
 
+def matchday_tickets(attendance):
+    club = game.clubs[game.teamid]
+    stadium = game.stadiums[club.stadium]
+
+    percentage = 100 - club.season_tickets
+
+    amount = 0
+
+    # Calculate sales
+    capacity = [0, 0, 0, 0]
+
+    for stand in stadium.main:
+        if not stand.seating and not stand.roof:
+            capacity[0] += stand.capacity
+        elif not stand.seating and stand.roof:
+            capacity[1] += stand.capacity
+        elif stand.seating and not stand.roof:
+            capacity[2] += stand.capacity
+        elif stand.seating and stand.roof:
+            capacity[3] += stand.capacity
+
+    for stand in stadium.corner:
+        if not stand.seating and not stand.roof:
+            capacity[0] += stand.capacity
+        elif not stand.seating and stand.roof:
+            capacity[1] += stand.capacity
+        elif stand.seating and not stand.roof:
+            capacity[2] += stand.capacity
+        elif stand.seating and stand.roof:
+            capacity[3] += stand.capacity
+
+    for count, value in enumerate(capacity):
+        available = (percentage * 0.01) * value
+
+        amount += club.tickets[count * 3] * available
+
+    # Calculate box sales
+    capacity = 0
+
+    for stand in stadium.main:
+        capacity += stand.box
+
+    available = (percentage * 0.01) * capacity
+    amount += club.tickets[12] * available
+
+    money.deposit(amount, 5)
+
+
 def merchandise(attendance):
     club = game.clubs[game.teamid]
     club.sales[0] = []

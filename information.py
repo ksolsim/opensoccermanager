@@ -21,7 +21,6 @@ class News(Gtk.Grid):
         self.set_row_spacing(5)
 
         self.liststoreNews = Gtk.ListStore(str, str, str, int, str, bool, int)
-
         self.treefilter = self.liststoreNews.filter_new()
         self.treefilter.set_visible_func(self.filter_visible, game.clubs)
 

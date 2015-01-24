@@ -510,14 +510,17 @@ class ScreenGame(Gtk.Grid):
         state = dialogs.name_change()
 
         if state:
+            news = []
+
             for item in game.news:
                 new = club.manager
 
-                if previous in item[1]:
-                    item[1] = item[1].replace(previous, new)
+                item[1] = item[1].replace(previous, new)
+                item[2] = item[2].replace(previous, new)
 
-                if previous in item[2]:
-                    item[2] = item[2].replace(previous, new)
+                news.append(item)
+
+            game.news = news
 
     def news_activated(self, button):
         screen_loader(3)
@@ -721,7 +724,7 @@ class ContinueGame:
                     if count >= 11:
                         sub_count += 1
 
-            if team_count + 1 < 11:
+            if team_count + 1 < 1:
                 dialogs.not_enough_players(team_count)
                 error = True
             elif sub_count + 1 < 5:

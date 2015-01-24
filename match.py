@@ -363,15 +363,7 @@ class Match(Gtk.Grid):
 
         # Matchday ticket sales
         if self.team1 == game.teamid:
-            club = game.clubs[self.team1]
-            stadium = game.stadiums[club.stadium]
-
-            available = 100 - club.season_tickets
-            total = available * 0.01
-
-            amount = club.tickets[10] * (stadium.capacity * total)
-            money.deposit(amount, 5)
-
+            sales.matchday_tickets(attendance)
             sales.merchandise(attendance)
             sales.catering(attendance)
 
