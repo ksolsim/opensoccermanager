@@ -309,8 +309,8 @@ def dataloader(finances):
         club.balance = constants.money[finances][0]
 
     # Generate coaches and scouts
-    club.coaches_available = staff.generate(5, "coach")
-    club.scouts_available = staff.generate(5, "scout")
+    club.coaches_available = staff.generate(role=0, number=5)
+    club.scouts_available = staff.generate(role=1, number=5)
 
     # Generate sponsorship offer
     club.sponsor_status = 0

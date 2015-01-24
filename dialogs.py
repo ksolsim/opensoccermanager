@@ -733,17 +733,17 @@ def add_individual_training(playerid=None):
 
         coach = game.clubs[game.teamid].coaches_hired[coachid]
 
-        if coach.speciality == "Goalkeeping":
+        if coach.speciality == 0:
             speciality = "Keeping"
-        elif coach.speciality == "Defensive":
+        elif coach.speciality == 1:
             speciality = "Tackling, Stamina"
-        elif coach.speciality == "Midfield":
+        elif coach.speciality == 2:
             speciality = "Passing, Ball Control"
-        elif coach.speciality == "Attacking":
+        elif coach.speciality == 3:
             speciality = "Shooting"
-        elif coach.speciality == "Fitness":
+        elif coach.speciality == 4:
             speciality = "Fitness, Pace, Stamina"
-        elif coach.speciality == "All":
+        elif coach.speciality == 5:
             speciality = "All"
 
         labelSpeciality.set_label(speciality)
@@ -757,13 +757,14 @@ def add_individual_training(playerid=None):
         dialog.add_button("_Add", Gtk.ResponseType.OK)
     else:
         dialog.add_button("_Edit", Gtk.ResponseType.OK)
+
     dialog.set_default_response(Gtk.ResponseType.OK)
 
     liststorePlayer = Gtk.ListStore(int, str)
 
-    for item in game.clubs[game.teamid].squad:
-        name = game.players[item]
-        name = display.name(name)
+    for playerid in game.clubs[game.teamid].squad:
+        player = game.players[playerid]
+        name = display.name(player)
 
         liststorePlayer.append([item, name])
 

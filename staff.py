@@ -3,6 +3,7 @@
 import random
 import string
 
+import constants
 import game
 
 
@@ -10,7 +11,7 @@ class Staff:
     pass
 
 
-def generate(number, role):
+def generate(role, number):
     '''
     Generates names for use as scouts and coaches. Takes a number, as in
     the number of staff names to generate when run.
@@ -23,11 +24,8 @@ def generate(number, role):
     around every three months.
     '''
     def name():
-        # Generate the first (name) letter
         letters = list(string.ascii_letters[26:])
         initial = random.choice(letters)
-
-        # Random surname
         surname = random.choice(game.surnames)
         name = "%s. %s" % (initial, surname)
 
@@ -38,37 +36,30 @@ def generate(number, role):
 
         return age
 
-    def skill():
-        def salary(level):
-            if level == "Average":
-                lower = 335
-                upper = 380
-            elif level == "Good":
-                lower = 370
-                upper = 555
-            elif level == "Superb":
-                lower = 545
-                upper = 730
+    def salary(level):
+        if level == 0:
+            lower = 335
+            upper = 380
+        elif level == 1:
+            lower = 370
+            upper = 555
+        elif level == 2:
+            lower = 545
+            upper = 730
 
-            wage = random.randrange(lower, upper, 5)
+        wage = random.randrange(lower, upper, 5)
 
-            return wage
+        return wage
 
-        skill = ("Average", "Good", "Superb")
-        level = random.choice(skill)
+    def ability():
+        keys = list(constants.ability.keys())
+        level = random.choice(keys)
 
-        wage = salary(level)
-
-        return level, wage
+        return level
 
     def speciality():
-        speciality = ("Goalkeeping",
-                      "Defensive",
-                      "Midfield",
-                      "Attacking",
-                      "Fitness",
-                      "All")
-        speciality = random.choice(speciality)
+        keys = list(constants.speciality.keys())
+        speciality = random.choice(keys)
 
         return speciality
 
@@ -83,11 +74,12 @@ def generate(number, role):
         staff = Staff()
         staff.name = name()
         staff.age = age()
-        staff.skill, staff.wage = skill()
+        staff.ability = ability()
+        staff.wage = salary(staff.ability)
         staff.contract = contract()
         staff.retiring = False
 
-        if role == "coach":
+        if role == 0:
             staff.speciality = speciality()
             members[game.coachid] = staff
             game.coachid += 1

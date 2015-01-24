@@ -77,6 +77,15 @@ currency = {0: ("£", 1), 1: ("$", 1.6), 2: ("€", 1.25),}
 
 intensity = {0: "Low", 1: "Medium", 2: "High",}
 
+ability = {0: "Average", 1: "Good", 2: "Superb",}
+
+speciality = {0: "Goalkeeping",
+              1: "Defensive",
+              2: "Midfield",
+              3: "Attacking",
+              4: "Fitness",
+              5: "All",}
+
 errors = {1: ("The club needs a minimum of 16 players in the squad.", "Transfer Error", Gtk.MessageType.ERROR),
           2: ("The club is restricted to a maximum of 30 players in the squad.", "Transfer Error", Gtk.MessageType.ERROR),
           3: ("No players have been selected for comparison.", "Comparison Error", Gtk.MessageType.ERROR),

@@ -359,9 +359,7 @@ class Staff(Gtk.Grid):
                 coachid = model[treeiter][0]
                 coach = game.clubs[game.teamid].coaches_available[coachid]
 
-                state = dialogs.hire_staff(0, coach.name)
-
-                if state:
+                if dialogs.hire_staff(0, coach.name):
                     # Set coach morale to "delighted"
                     coach.morale = 9
 
@@ -389,9 +387,7 @@ class Staff(Gtk.Grid):
                     coach = game.clubs[game.teamid].coaches_hired[staffid]
                     payout = coach.wage * coach.contract
 
-                    state = dialogs.fire_staff(0, coach.name, payout)
-
-                    if state:
+                    if dialogs.fire_staff(0, coach.name, payout):
                         del game.clubs[game.teamid].coaches_hired[staffid]
                         money.withdraw(payout, 10)
 
@@ -406,9 +402,7 @@ class Staff(Gtk.Grid):
                 year = random.randint(2, 4)
                 amount = coach.wage * 0.055 + coach.wage
 
-                state = dialogs.renew_staff_contract(coach.name, year, amount)
-
-                if state:
+                if dialogs.renew_staff_contract(coach.name, year, amount):
                     coach.wage = amount
                     coach.contract = year * 52
 
@@ -422,9 +416,7 @@ class Staff(Gtk.Grid):
                 coach = game.clubs[game.teamid].coaches_hired[staffid]
                 amount = coach.wage * 0.025 + coach.wage
 
-                state = dialogs.improve_wage(coach.name, amount)
-
-                if state:
+                if dialogs.improve_wage(coach.name, amount):
                     coach.wage = amount
 
                     self.populate_data()
@@ -433,26 +425,35 @@ class Staff(Gtk.Grid):
             self.liststoreAvailable.clear()
             self.liststoreCurrent.clear()
 
-            for key, coach in game.clubs[game.teamid].coaches_available.items():
-                name = coach.name
-                age = coach.age
-                skill = coach.skill
-                speciality = coach.speciality
+            for coachid, coach in game.clubs[game.teamid].coaches_available.items():
+                ability = constants.ability[coach.ability]
+                speciality = constants.speciality[coach.speciality]
                 wage = "%s" % (display.currency(coach.wage))
                 contract = "%i Weeks" % (coach.contract)
 
-                self.liststoreAvailable.append([key, name, age, skill, speciality, wage, contract])
+                self.liststoreAvailable.append([coachid,
+                                                coach.name,
+                                                coach.age,
+                                                ability,
+                                                speciality,
+                                                wage,
+                                                contract])
 
-            for key, coach in game.clubs[game.teamid].coaches_hired.items():
-                name = coach.name
-                age = coach.age
-                skill = coach.skill
-                speciality = coach.speciality
+            for coachid, coach in game.clubs[game.teamid].coaches_hired.items():
+                ability = constants.ability[coach.ability]
+                speciality = constants.speciality[coach.speciality]
                 wage = "%s" % (display.currency(coach.wage))
                 contract = "%i Weeks" % (coach.contract)
                 morale = display.staff_morale(coach.morale)
 
-                self.liststoreCurrent.append([key, name, age, skill, speciality, wage, contract, morale])
+                self.liststoreCurrent.append([coachid,
+                                              coach.name,
+                                              coach.age,
+                                              ability,
+                                              speciality,
+                                              wage,
+                                              contract,
+                                              morale])
 
         def run(self):
             self.populate_data()
@@ -572,9 +573,7 @@ class Staff(Gtk.Grid):
                 staffid = model[treeiter][0]
                 scout = game.clubs[game.teamid].scouts_available[staffid]
 
-                state = dialogs.hire_staff(1, scout.name)
-
-                if state:
+                if dialogs.hire_staff(1, scout.name):
                     scoutid = model[treeiter][0]
 
                     scout.morale = 9
@@ -592,9 +591,7 @@ class Staff(Gtk.Grid):
                 scout = game.clubs[game.teamid].scouts_hired[staffid]
                 payout = scout.wage * scout.contract
 
-                state = dialogs.fire_staff(0, scout.name, payout)
-
-                if state:
+                if dialogs.fire_staff(0, scout.name, payout):
                     del game.clubs[game.teamid].scouts_hired[staffid]
                     money.withdraw(payout, 10)
 
@@ -609,9 +606,7 @@ class Staff(Gtk.Grid):
                 year = random.randint(2, 4)
                 amount = scout.wage * 0.055 + scout.wage
 
-                state = dialogs.renew_staff_contract(scout.name, year, amount)
-
-                if state:
+                if dialogs.renew_staff_contract(scout.name, year, amount):
                     scout.wage = amount
                     scout.contract = year * 52
 
@@ -625,9 +620,7 @@ class Staff(Gtk.Grid):
                 scout = game.clubs[game.teamid].scouts_hired[staffid]
                 amount = scout.wage * 0.025 + scout.wage
 
-                state = dialogs.improve_wage(scout.name, amount)
-
-                if state:
+                if dialogs.improve_wage(scout.name, amount):
                     scout.wage = amount
 
                     self.populate_data()
@@ -635,26 +628,33 @@ class Staff(Gtk.Grid):
         def populate_data(self):
             self.liststoreAvailable.clear()
 
-            for key, scout in game.clubs[game.teamid].scouts_available.items():
-                name = scout.name
-                age = scout.age
-                skill = scout.skill
+            for scoutid, scout in game.clubs[game.teamid].scouts_available.items():
+                ability = constants.ability[scout.ability]
                 wage = "%s" % (display.currency(scout.wage))
                 contract = "%i Weeks" % (scout.contract)
 
-                self.liststoreAvailable.append([key, name, age, skill, wage, contract])
+                self.liststoreAvailable.append([scoutid,
+                                                scout.name,
+                                                scout.age,
+                                                ability,
+                                                wage,
+                                                contract])
 
             self.liststoreCurrent.clear()
 
-            for key, scout in game.clubs[game.teamid].scouts_hired.items():
-                name = scout.name
-                age = scout.age
-                skill = scout.skill
+            for scoutid, scout in game.clubs[game.teamid].scouts_hired.items():
+                ability = constants.ability[scout.ability]
                 wage = "%s" % (display.currency(scout.wage))
-                contract = "%i Weeks" % (scout.wage)
+                contract = "%i Weeks" % (scout.contract)
                 morale = display.staff_morale(scout.morale)
 
-                self.liststoreCurrent.append([key, name, age, skill, wage, contract, morale])
+                self.liststoreCurrent.append([scoutid,
+                                              scout.name,
+                                              scout.age,
+                                              ability,
+                                              wage,
+                                              contract,
+                                              morale])
 
         def run(self):
             self.populate_data()
