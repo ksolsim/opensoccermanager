@@ -42,6 +42,13 @@ class Stand:
     roof = False
 
 
+class Referee:
+    matches = 0
+    fouls = 0
+    yellows = 0
+    reds = 0
+
+
 class Overdraft:
     pass
 
@@ -297,7 +304,10 @@ def datainit():
     referees = database.importer("referee")
 
     for item in referees:
-        game.referees[item[0]] = [item[1], 0, 0, 0, 0]
+        referee = Referee()
+        refereeid = item[0]
+        referee.name = item[1]
+        game.referees[refereeid] = referee
 
 
 def dataloader(finances):

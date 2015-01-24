@@ -201,14 +201,14 @@ class Match(Gtk.Grid):
         self.referee = []
 
         for refereeid, referee in game.referees.items():
-            self.referee.append([refereeid, referee[0]])
+            self.referee.append(refereeid)
 
         random.shuffle(self.referee)
 
         stadiumid = game.clubs[self.team1].stadium
         venue = game.stadiums[stadiumid].name
         self.labelStadium.set_label("Venue: %s" % (venue))
-        self.labelReferee.set_label("Referee: %s" % (self.referee[0][1]))
+        self.labelReferee.set_label("Referee: %s" % (game.referees[self.referee[0]].name))
 
         game.menu.set_sensitive(False)
         widgets.continuegame.set_sensitive(False)
@@ -256,11 +256,8 @@ class Match(Gtk.Grid):
         yellows, reds = events.cards(self.team1, self.team2)
         events.match_injury(self.team1, self.team2)
 
-        refereeid = self.referee[0][0]
-        match = game.referees[refereeid][0]
-        game.referees[refereeid][1] += 1
-        game.referees[refereeid][3] += yellows
-        game.referees[refereeid][4] += reds
+        refereeid = self.referee[0]
+        events.increment_referee(refereeid, yellows, reds)
 
         # Player match ratings
         ratings = [{}, {}]
@@ -367,6 +364,17 @@ class Match(Gtk.Grid):
             sales.merchandise(attendance)
             sales.catering(attendance)
 
+        self.process_remaining()
+
+        widgets.continuegame.set_sensitive(True)
+        self.buttonStart.set_sensitive(False)
+        self.notebook.set_show_tabs(True)
+        self.notebook.set_current_page(1)
+
+        game.fixturesindex += 1
+        game.fixturespage = game.fixturesindex
+
+    def process_remaining(self):
         # Update league table for all other matches
         for index, item in enumerate(game.fixtures[game.fixturesindex]):
             if index != self.player_match:
@@ -384,21 +392,10 @@ class Match(Gtk.Grid):
                 yellows, reds = events.cards(item[0], item[1])
                 events.match_injury(item[0], item[1])
 
-                refereeid = self.referee[index + 1][0]
-                match = game.referees[refereeid][0]
-                game.referees[refereeid][1] += 1
-                game.referees[refereeid][3] += yellows
-                game.referees[refereeid][4] += reds
+                refereeid = self.referee[index + 1]
+                events.increment_referee(refereeid, yellows, reds)
 
                 events.increment_goalscorers(scorers[0], scorers[1])
                 events.increment_assists(assists[0], assists[1])
                 events.update_statistics(result)
                 events.update_records()
-
-        widgets.continuegame.set_sensitive(True)
-        self.buttonStart.set_sensitive(False)
-        self.notebook.set_show_tabs(True)
-        self.notebook.set_current_page(1)
-
-        game.fixturesindex += 1
-        game.fixturespage = game.fixturesindex

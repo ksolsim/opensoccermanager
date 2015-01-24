@@ -507,16 +507,12 @@ class ScreenGame(Gtk.Grid):
         club = game.clubs[game.teamid]
         previous = club.manager
 
-        state = dialogs.name_change()
-
-        if state:
+        if dialogs.name_change():
             news = []
 
             for item in game.news:
-                new = club.manager
-
-                item[1] = item[1].replace(previous, new)
-                item[2] = item[2].replace(previous, new)
+                item[1] = item[1].replace(previous, club.manager)
+                item[2] = item[2].replace(previous, club.manager)
 
                 news.append(item)
 
@@ -624,7 +620,7 @@ class ContinueGame:
                 if game.teamid in match:
                     team1 = game.clubs[match[0]].name
                     team2 = game.clubs[match[1]].name
-                    game.labelNextMatch.set_label("Today's Game: %s - %s" % (team1, team2))
+                    game.labelNextMatch.set_label("Today's Match: %s - %s" % (team1, team2))
         else:
             game.labelNextMatch.set_label("")
 
@@ -681,12 +677,12 @@ class ContinueGame:
         if (game.date, game.month) == (4, 8):
             events.update_sponsorship()
 
-        # Stop sale of season tickets
+        # Stop sale of season tickets and deposit earnings
         if (game.date, game.month) == (16, 8):
             if game.season_tickets_status == 0:
                 game.season_tickets_status = 1
 
-            sales.season_tickets()
+                sales.season_tickets()
 
         # Player value adjustments
         for playerid, player in game.players.items():

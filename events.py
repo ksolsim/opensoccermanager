@@ -423,6 +423,14 @@ def cards(club1, club2):
     return yellows, reds
 
 
+def increment_referee(refereeid, fouls=0, yellows=0, reds=0):
+    referee = game.referees[refereeid]
+    referee.matches += 1
+    referee.fouls += fouls
+    referee.yellows += yellows
+    referee.reds += reds
+
+
 def age(date_of_birth):
     '''
     Determine the age of player at the start of the game.

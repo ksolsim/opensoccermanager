@@ -126,11 +126,9 @@ class Cards(Gtk.ScrolledWindow):
         self.show_all()
 
 
-class Transfers(Gtk.Grid):
+class Transfers(Gtk.ScrolledWindow):
     def __init__(self):
-        Gtk.Grid.__init__(self)
-        self.set_row_spacing(5)
-        self.set_column_spacing(5)
+        Gtk.ScrolledWindow.__init__(self)
 
         self.liststore = Gtk.ListStore(str, str, str, str)
         treemodelsort = Gtk.TreeModelSort(self.liststore)
@@ -142,7 +140,7 @@ class Transfers(Gtk.Grid):
         treeview.set_search_column(-1)
         treeselection = treeview.get_selection()
         treeselection.set_mode(Gtk.SelectionMode.NONE)
-        self.attach(treeview, 0, 0, 2, 1)
+        self.add(treeview)
 
         cellrenderertext = Gtk.CellRendererText()
         treeviewcolumn = Gtk.TreeViewColumn("Name", cellrenderertext, text=0)
@@ -157,8 +155,8 @@ class Transfers(Gtk.Grid):
     def run(self):
         self.liststore.clear()
 
-        for item in game.transfers:
-            self.liststore.append(item)
+        for transfer in game.transfers:
+            self.liststore.append(transfer)
 
         self.show_all()
 
@@ -203,11 +201,10 @@ class Referees(Gtk.ScrolledWindow):
             self.treemodelsort.set_sort_column_id(1, Gtk.SortType.DESCENDING)
 
         for refereeid, referee in game.referees.items():
-            name = referee[0]
-            matches = referee[1]
-            yellows = referee[3]
-            reds = referee[4]
-
-            self.liststore.append([name, matches, 0, yellows, reds])
+            self.liststore.append([referee.name,
+                                   referee.matches,
+                                   referee.fouls,
+                                   referee.yellows,
+                                   referee.reds])
 
         self.show_all()
