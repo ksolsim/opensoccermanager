@@ -347,7 +347,7 @@ class ScreenGame(Gtk.Grid):
         menuitemManager.connect("activate", self.name_change)
         menu.append(menuitemManager)
         menuitemPreferences = widgets.MenuItem("_Preferences")
-        menuitemPreferences.connect("activate", lambda i: dialogs.preferences_dialog())
+        menuitemPreferences.connect("activate", self.preferences_dialog)
         menu.append(menuitemPreferences)
 
         menuitem = widgets.MenuItem("_View")
@@ -522,6 +522,8 @@ class ScreenGame(Gtk.Grid):
 
             game.news = news
 
+            screen_loader(game.active_screen_id)
+
     def news_activated(self, button):
         screen_loader(3)
 
@@ -552,6 +554,11 @@ class ScreenGame(Gtk.Grid):
     def save_game_clicked(self, menuitem):
         save_dialog = dialogs.SaveDialog()
         save_dialog.display()
+
+    def preferences_dialog(self, menuitem):
+        dialogs.preferences_dialog()
+
+        screen_loader(game.active_screen_id)
 
 
 class ContinueGame:
