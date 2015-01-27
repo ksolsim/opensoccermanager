@@ -1263,8 +1263,22 @@ def update_condition():
     # Publish news article
     if stadium.condition <= 25:
         news.publish("SM01")
+
+        stadium.warnings += 1
     elif stadium.condition <= 50:
         news.publish("SM02")
+
+        stadium.warnings += 1
+
+    # Issue FA fine
+    if stadium.warnings == 3:
+        fine = (stadium.capacity * 3) * (stadium.fines + 1)
+        money.withdraw(fine, 9)
+
+        news.publish("SM03", amount=fine)
+
+        stadium.fines += 1
+        stadium.warnings = 0
 
 
 def update_maintenance():

@@ -317,7 +317,12 @@
     </article>
     <article id="SM02">
         <title>Fans complaining about state of stadium</title>
-        <message>Due to our recent cuts to the stadium maintenance budget, a number of fans have voiced their concerns at the state of the stadium, and have suggested that we should make improvements to keep up attendances.</message>
+        <message>Due to recent cuts to the stadium maintenance budget, a number of fans have voiced their concerns at the state of the stadium, and have suggested that we should make improvements to keep up attendances.</message>
+        <category>11</category>
+    </article>
+    <article id="SM03">
+        <title>Fine received from FA over stadium condition</title>
+        <message>The Football Association have issued a fine for _AMOUNT_ due to the extremely poor condition of our stadium. The FA state that immediate repairs must be made before a serious injury occurs.</message>
         <category>11</category>
     </article>
     <article id="SG01">

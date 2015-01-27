@@ -34,6 +34,8 @@ class Stadium:
     maintenance = 100
     main = []
     corner = []
+    fines = 0
+    warnings = 0
 
 
 class Stand:
