@@ -35,6 +35,7 @@ class Negotiation:
 
 
 def open_file(filename):
+    # Clear existing data structures
     game.clubs = {}
     game.players = {}
     game.nations = {}
@@ -44,6 +45,10 @@ def open_file(filename):
     game.negotiations = {}
     game.loans = {}
     game.televised = []
+    game.news = []
+    game.transers = []
+    game.fixtures = []
+    game.results = []
 
     connection = sqlite3.connect(filename)
     connection.execute("PRAGMA foreign_keys = on")
@@ -75,6 +80,15 @@ def open_file(filename):
 
         nation.name = item[1]
         nation.denonym = item[2]
+
+    # Stadium
+    for item in cursor.execute("SELECT * FROM stadium"):
+        stadium = Stadium()
+        stadiumid = item[0]
+        game.stadiums[stadiumid] = stadium
+
+        stadium.name = item[1]
+        stadium.capacity = item[2]
 
     # Club
     for item in cursor.execute("SELECT * FROM club"):
@@ -179,7 +193,11 @@ def open_file(filename):
         player.man_of_the_match = item[40]
         player.yellow_cards = item[41]
         player.red_cards = item[42]
-        player.rating = []  ## item[43] - list
+
+        if item[43] == "":
+            player.rating = []
+        else:
+            player.rating = item[43].split(",")
 
         player.age = events.age(item[4])
 
@@ -238,6 +256,8 @@ def open_file(filename):
     resources.import_news()
     resources.import_evaluation()
 
+    connection.close()
+
 
 def save_file(filename):
     # Delete existing file if it exists
@@ -248,22 +268,22 @@ def save_file(filename):
     connection.execute("PRAGMA foreign_keys = on")
     cursor = connection.cursor()
 
-    cursor.execute("CREATE TABLE main (teamid INTEGER, year INTEGER, month INTEGER, date INTEGER, week INTEGER, eventindex INTEGER, dateindex INTEGER, dateprev INTEGER, fixturesindex INTEGER, fixturespage INTEGER, active_screen INTEGER)")
-    cursor.execute("CREATE TABLE nation (id INTEGER PRIMARY KEY, name TEXT, denonym TEXT)")
-    cursor.execute("CREATE TABLE stadium (id INTEGER PRIMARY KEY, name TEXT, capacity INTEGER, condition INTEGER, plots INTEGER)")
-    cursor.execute("CREATE TABLE club (id INTEGER PRIMARY KEY, name TEXT, nickname TEXT, manager TEXT, chairman TEXT, stadium INTEGER, reputation INTEGER, tactics1 INTEGER, tactics2 TEXT, tactics3 TEXT, tactics4 TEXT, tactics5 TEXT, tactics6 INTEGER, tactics7 INTEGER, tactics8 INTEGER, tactics9 INTEGER, seasontickets INTEGER, schooltickets INTEGER, income INTEGER, expenditure INTEGER, balance INTEGER, eval1 INTEGER, eval2 INTEGER, eval3 INTEGER, eval4 INTEGER, eval5 INTEGER)")
-    cursor.execute("CREATE TABLE player (id INTEGER PRIMARY KEY, firstname TEXT, secondname TEXT, commonname TEXT, dateofbirth TEXT, nation INTEGER, position TEXT, keeping INTEGER, tackling INTEGER, passing INTEGER, shooting INTEGER, heading INTEGER, pace INTEGER, stamina INTEGER, ballcontrol INTEGER, setpieces INTEGER, fitness INTEGER, training INTEGER, trainingpoints INTEGER, morale INTEGER, injurytype INTEGER, injuryperiod INTEGER, suspensiontype INTEGER, suspensionperiod INTEGER, suspensionpoints INTEGER, value INTEGER, wage INTEGER, bonus0 INTEGER, bonus1 INTEGER, bonus2 INTEGER, bonus3 INTEGER, contract INTEGER, transfer1 BOOLEAN, transfer2 BOOLEAN, notforsale BOOLEAN, appearances INTEGER, substitute INTEGER, missed INTEGER, goals INTEGER, assists INTEGER, manofthematch INTEGER, yellowcards INTEGER, redcards INTEGER, rating FLOAT, FOREIGN KEY(nation) REFERENCES nation(id))")
-    cursor.execute("CREATE TABLE squad (clubid INTEGER, playerid INTEGER, FOREIGN KEY(clubid) REFERENCES club(id), FOREIGN KEY(playerid) REFERENCES player(id))")
-    cursor.execute("CREATE TABLE news (date TEXT, title TEXT, message TEXT, category INTEGER, unread INTEGER)")
-    cursor.execute("CREATE TABLE fixtures (week INTEGER, team1 INTEGER, team2 INTEGER)")
-    cursor.execute("CREATE TABLE results (week INTEGER, team1 INTEGER, result1 INTEGER, result2 INTEGER, team2 INTEGER)")
-    cursor.execute("CREATE TABLE standings (team INTEGER, played INTEGER, won INTEGER, drawn INTEGER, lost INTEGER, goalsfor INTEGER, goalsagainst INTEGER, goaldifference INTEGER, points INTEGER)")
-    cursor.execute("CREATE TABLE referee (refereeid INTEGER PRIMARY KEY, matches INTEGER, fouls INTEGER, yellow INTEGER, red INTEGER)")
-    cursor.execute("CREATE TABLE team (clubid INTEGER, pos1 INTEGER, pos2 INTEGER, pos3 INTEGER, pos4 INTEGER, pos5 INTEGER, pos6 INTEGER, pos7 INTEGER, pos8 INTEGER, pos9 INTEGER, pos10 INTEGER, pos11 INTEGER, pos12 INTEGER, pos13 INTEGER, pos14 INTEGER, pos15 INTEGER, pos16 INTEGER)")
-    cursor.execute("CREATE TABLE shortlist (clubid INTEGER, playerid INTEGER)")
-    cursor.execute("CREATE TABLE negotiations (negotiationid INTEGER, playerid INTEGER, transfertype INTEGER, timeout INTEGER, club INTEGER, status INTEGER, date TEXT)")
-    cursor.execute("CREATE TABLE loans (playerid INTEGER, club INTEGER, period INTEGER)")
-    cursor.execute("CREATE TABLE transfers (playerid INTEGER, oldclub INTEGER, newclub INTEGER, fee TEXT)")
+    cursor.execute("CREATE TABLE main (teamid, year, month, date, week, eventindex, dateindex, dateprev, fixturesindex, fixturespage, active_screen)")
+    cursor.execute("CREATE TABLE nation (id PRIMARY KEY, name, denonym)")
+    cursor.execute("CREATE TABLE stadium (id PRIMARY KEY, name, capacity, condition, plots, northcapacity, westcapacity, southcapacity, eastcapacity)")
+    cursor.execute("CREATE TABLE club (id PRIMARY KEY, name, nickname, manager, chairman, stadium, reputation, tactics1, tactics2, tactics3, tactics4, tactics5, tactics6, tactics7, tactics8, tactics9, seasontickets, schooltickets, income, expenditure, balance, eval1, eval2, eval3, eval4, eval5)")
+    cursor.execute("CREATE TABLE player (id PRIMARY KEY, firstname, secondname, commonname, dateofbirth, nation, position, keeping, tackling, passing, shooting, heading, pace, stamina, ballcontrol, setpieces, fitness, training, trainingpoints, morale, injurytype, injuryperiod, suspensiontype, suspensionperiod, suspensionpoints, value, wage, bonus0, bonus1, bonus2, bonus3, contract, transfer1, transfer2, notforsale, appearances, substitute, missed, goals, assists, manofthematch, yellowcards, redcards, rating FLOAT, FOREIGN KEY(nation) REFERENCES nation(id))")
+    cursor.execute("CREATE TABLE squad (clubid, playerid, FOREIGN KEY(clubid) REFERENCES club(id), FOREIGN KEY(playerid) REFERENCES player(id))")
+    cursor.execute("CREATE TABLE news (date, title, message, category, unread)")
+    cursor.execute("CREATE TABLE fixtures (week, team1, team2)")
+    cursor.execute("CREATE TABLE results (week, team1, result1, result2, team2)")
+    cursor.execute("CREATE TABLE standings (team, played, won, drawn, lost, goalsfor, goalsagainst, goaldifference, points)")
+    cursor.execute("CREATE TABLE referee (refereeid PRIMARY KEY, matches, fouls, yellow, red)")
+    cursor.execute("CREATE TABLE team (clubid, pos1, pos2, pos3, pos4, pos5, pos6, pos7, pos8, pos9, pos10, pos11, pos12, pos13, pos14, pos15, pos16)")
+    cursor.execute("CREATE TABLE shortlist (clubid, playerid)")
+    cursor.execute("CREATE TABLE negotiations (negotiationid, playerid, transfertype, timeout, club, status, date)")
+    cursor.execute("CREATE TABLE loans (playerid, club, period)")
+    cursor.execute("CREATE TABLE transfers (playerid, oldclub, newclub, fee)")
 
     cursor.execute("INSERT INTO main VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (game.teamid, game.year, game.month, game.date, game.week, game.eventindex, game.dateindex, game.dateprev, game.fixturesindex, game.fixturespage, game.active_screen_id))
 
@@ -271,13 +291,15 @@ def save_file(filename):
         cursor.execute("INSERT INTO nation VALUES (?, ?, ?)", (nationid, nation.name, nation.denonym))
 
     for stadiumid, stadium in game.stadiums.items():
-        for stand in stadium.main:
-            pass
+        details = []
 
-        cursor.execute("INSERT INTO stadium VALUES (?, ?, ?, ?, ?)", (stadiumid, stadium.name, stadium.capacity, stadium.condition, stadium.plots))
+        for stand in stadium.main:
+            details.append(stand.capacity)
+
+        cursor.execute("INSERT INTO stadium VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", (stadiumid, stadium.name, stadium.capacity, stadium.condition, stadium.plots, details[0], details[1], details[2], details[3]))
 
     for playerid, player in game.players.items():
-        rating = ','.join(map(str, player.rating))
+        rating = ",".join(map(str, player.rating))
 
         cursor.execute("INSERT INTO player VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (playerid, player.first_name, player.second_name, player.common_name, player.date_of_birth, player.nationality, player.position, player.keeping, player.tackling, player.passing, player.shooting, player.heading, player.pace, player.stamina, player.ball_control, player.set_pieces, player.fitness, player.training, player.training_points, player.morale, player.injury_type, player.injury_period, player.suspension_type, player.suspension_period, player.suspension_points, player.value, player.wage, player.bonus[0], player.bonus[1], player.bonus[2], player.bonus[3], player.contract, player.transfer[0], player.transfer[1], player.not_for_sale, player.appearances, player.substitute, player.missed, player.goals, player.assists, player.man_of_the_match, player.yellow_cards, player.red_cards, rating))
 
@@ -316,6 +338,7 @@ def save_file(filename):
         cursor.execute("INSERT INTO transfers VALUES (?, ?, ?, ?)", item)
 
     connection.commit()
+    connection.close()
 
 
 def check_config():
@@ -333,7 +356,7 @@ def check_config():
     filepath = os.path.join(game.data_location, "saves")
 
     if not os.path.isdir(filepath):
-        os.makedirs(path)
+        os.makedirs(filepath)
 
 
 def read_names():

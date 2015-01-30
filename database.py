@@ -7,12 +7,12 @@ import game
 import preferences
 
 
-prefs = preferences.Preferences()
-
-
 class DB:
+    def __init__(self):
+        self.prefs = preferences.Preferences()
+
     def connect(self):
-        prefs.readfile()
+        self.prefs.readfile()
 
         filepath = os.path.join("databases", game.database_filename)
 
@@ -23,8 +23,9 @@ class DB:
 
     def importer(self, table):
         self.cursor.execute("SELECT * FROM %s" % (table))
+        data = self.cursor.fetchall()
 
-        return self.cursor.fetchall()
+        return data
 
     def disconnect(self):
         self.connection.close()

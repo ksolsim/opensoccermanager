@@ -259,11 +259,11 @@ class Squad(Gtk.Grid):
 
             liststore = Gtk.ListStore(str, str)
             liststore.append([str(0), "Not Selected"])
-            for item in game.clubs[game.teamid].squad:
-                player = game.players[item]
+            for playerid in game.clubs[game.teamid].squad:
+                player = game.players[playerid]
                 name = display.name(player)
 
-                liststore.append([str(item), name])
+                liststore.append([str(playerid), name])
 
             combobox = self.comboSquadList[count]
             combobox.set_model(liststore)
