@@ -80,7 +80,7 @@ def value(playerid):
     else:
         age_multiplier = 0.5
 
-    value = ((average * 1000) * average) * value_multiplier / 4
+    value = ((average * 1000) * average) * value_multiplier * 0.25
     value = value * age_multiplier
     value = value_rounder(value)
 
@@ -169,7 +169,9 @@ def bonus(wage):
 
 
 def value_rounder(value):
-    if value >= 10000:
+    if value >= 100000:
+        divisor = 100000
+    elif value >= 10000:
         divisor = 10000
     elif value >= 1000:
         divisor = 1000
