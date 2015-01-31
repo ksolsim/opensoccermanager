@@ -398,6 +398,8 @@ class Stadium(Gtk.Grid):
             widget.set_value(capacity)
             widget.set_range(capacity, 15000)
 
+
+
             if capacity > 0:
                 self.roof_widget[count].set_sensitive(True)
                 self.standing_widget[count][0].set_sensitive(True)
@@ -413,6 +415,9 @@ class Stadium(Gtk.Grid):
                 self.roof_widget[count].set_sensitive(True)
                 self.standing_widget[count][0].set_sensitive(True)
                 self.standing_widget[count][1].set_sensitive(True)
+
+                if capacity == 3000:
+                    widget.set_sensitive(False)
 
         # Roof
         for count, widget in enumerate(self.roof_widget):
@@ -445,7 +450,7 @@ class Stadium(Gtk.Grid):
                 capacity = stadium.corner[count - 4].capacity
 
             if capacity > 0:
-                widget[seating].set_active(True)
+                widget[1].set_active(True)
             else:
                 widget[0].set_active(True)
 
