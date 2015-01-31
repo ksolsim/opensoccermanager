@@ -323,9 +323,11 @@ class Results(Gtk.Grid):
         self.attach(buttonbox, 0, 0, 1, 1)
 
         self.buttonPrevious = widgets.Button("_Previous")
+        self.buttonPrevious.set_sensitive(False)
         self.buttonPrevious.connect("clicked", self.change_page, 0)
         buttonbox.add(self.buttonPrevious)
         self.buttonNext = widgets.Button("_Next")
+        self.buttonNext.set_sensitive(False)
         self.buttonNext.connect("clicked", self.change_page, 1)
         buttonbox.add(self.buttonNext)
 
@@ -371,16 +373,25 @@ class Results(Gtk.Grid):
             self.labelNoResults.hide()
             self.treeviewResults.set_sensitive(True)
 
-            if len(game.results) > 1:
-                self.buttonNext.set_sensitive(True)
+        if len(game.results) > 1:
+            self.buttonNext.set_sensitive(True)
+            self.buttonPrevious.set_sensitive(True)
+
+            if self.page == 0:
+                self.buttonPrevious.set_sensitive(False)
+            elif self.page == len(game.results) - 1:
+                self.buttonNext.set_sensitive(False)
+        else:
+            self.buttonNext.set_sensitive(False)
+            self.buttonPrevious.set_sensitive(False)
 
     def change_page(self, button, mode):
-        if mode == 1:
-            if self.page < len(game.results) - 1:
-                self.page += 1
-        elif mode == 0:
+        if mode == 0:
             if self.page > 0:
                 self.page -= 1
+        elif mode == 1:
+            if self.page < len(game.results) - 1:
+                self.page += 1
 
         self.liststoreResults.clear()
 
@@ -390,20 +401,20 @@ class Results(Gtk.Grid):
 
             self.liststoreResults.append([team1, result[1], result[2], team2])
 
-        if mode == 1:
-            if self.page < len(game.results) - 1:
-                self.buttonPrevious.set_sensitive(True)
-                self.buttonNext.set_sensitive(True)
-            else:
-                self.buttonPrevious.set_sensitive(True)
-                self.buttonNext.set_sensitive(False)
-        elif mode == 0:
+        if mode == 0:
             if self.page > 0:
                 self.buttonNext.set_sensitive(True)
                 self.buttonPrevious.set_sensitive(True)
             else:
                 self.buttonNext.set_sensitive(True)
                 self.buttonPrevious.set_sensitive(False)
+        elif mode == 1:
+            if self.page < len(game.results) - 1:
+                self.buttonPrevious.set_sensitive(True)
+                self.buttonNext.set_sensitive(True)
+            else:
+                self.buttonPrevious.set_sensitive(True)
+                self.buttonNext.set_sensitive(False)
 
 
 class Standings(Gtk.Grid):
