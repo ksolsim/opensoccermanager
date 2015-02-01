@@ -92,9 +92,7 @@ def datainit():
     widgets.date.update()
 
     # Import clubs and populate club data structure
-    clubs = database.importer("club")
-
-    for item in clubs:
+    for item in database.importer("club"):
         club = Club()
         clubid = item[0]
         game.clubs[clubid] = club
@@ -141,9 +139,7 @@ def datainit():
         game.standings[clubid] = [0, 0, 0, 0, 0, 0, 0, 0]
 
     # Import players
-    players = database.importer("player")
-
-    for item in players:
+    for item in database.importer("player"):
         player = Player()
         playerid = item[0]
         game.players[playerid] = player
@@ -194,8 +190,7 @@ def datainit():
         game.clubs[player.club].squad.append(playerid)
 
     # Import nations
-    nations = database.importer("nation")
-    for item in nations:
+    for item in database.importer("nation"):
         nation = Nation()
         nationid = item[0]
         game.nations[nationid] = nation
@@ -206,8 +201,7 @@ def datainit():
     adjacent = (0, 1), (2, 0), (3, 2), (1, 3), # DO NOT REORDER/CHANGE!
 
     # Import stadiums
-    stadiums = database.importer("stadium")
-    for item in stadiums:
+    for item in database.importer("stadium"):
         stadium = Stadium()
         stadiumid = item[0]
         game.stadiums[stadiumid] = stadium
@@ -265,15 +259,11 @@ def datainit():
             stadium.plots = 40
 
     # Import injuries
-    injuries = database.importer("injury")
-
-    for item in injuries:
+    for item in database.importer("injury"):
         constants.injuries[item[0]] = item[1:]
 
     # Import suspensions
-    suspensions = database.importer("suspension")
-
-    for item in suspensions:
+    for item in database.importer("suspension"):
         constants.suspensions[item[0]] = item[1:]
 
     # Setup fixture list
@@ -299,13 +289,10 @@ def datainit():
 
     # Import surnames for staff
     surnames = database.importer("staff")
-
     game.surnames = [name[0] for name in surnames]
 
     # Import referees
-    referees = database.importer("referee")
-
-    for item in referees:
+    for item in database.importer("referee"):
         referee = Referee()
         refereeid = item[0]
         referee.name = item[1]
