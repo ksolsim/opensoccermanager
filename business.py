@@ -623,7 +623,6 @@ class Merchandise(Gtk.Grid):
 
             if len(club.sales[0]) > 0:
                 sales = "%i" % (club.sales[0][count][0])
-
                 revenue = club.sales[0][count][1]
                 cost = club.sales[0][count][2]
                 profit = revenue - cost

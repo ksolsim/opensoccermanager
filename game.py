@@ -2,7 +2,6 @@
 
 active_screen = None        # Track screen currently in view
 database = None
-window = None
 proceed = True
 unreadnews = False          # Unread news notification
 
@@ -65,6 +64,6 @@ team_training_timeout = 12
 sponsor_timeout = 0
 advertising_alert = 4
 advertising_timeout = 0
+advertising_assistant = False  # Toggle assistant handling advertising
 
 statistics = [[None, [0, 0]], [None, [0, 0]]]
-advertising_assistant = False  # Toggle assistant handling advertising
