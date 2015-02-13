@@ -31,6 +31,10 @@ class Stand:
     pass
 
 
+class Referee:
+    pass
+
+
 class Negotiation:
     pass
 
@@ -120,6 +124,8 @@ def open_file(filename):
     game.grant.timeout = 0
     game.grant.status = False
     game.grant.maximum = 0
+
+    game.season_tickets_status = 0
 
     widgets.date.update()
 
@@ -436,6 +442,17 @@ def open_file(filename):
         scoutid = item[0]
         club.scouts_hired[scoutid] = scout
 
+    for item in cursor.execute("SELECT * FROM referee"):
+        referee = Referee()
+        referee.name = item[1]
+        referee.matches = item[2]
+        referee.fouls = item[3]
+        referee.yellows = item[4]
+        referee.reds = item[5]
+
+        refereeid = item[0]
+        game.referees[refereeid] = referee
+
     resources.import_news()
     resources.import_evaluation()
 
@@ -461,7 +478,7 @@ def save_file(filename):
     cursor.execute("CREATE TABLE fixtures (week, team1, team2)")
     cursor.execute("CREATE TABLE results (week, team1, result1, result2, team2)")
     cursor.execute("CREATE TABLE standings (club, played, won, drawn, lost, goalsfor, goalsagainst, goaldifference, points, FOREIGN KEY(club) REFERENCES club(id))")
-    cursor.execute("CREATE TABLE referee (refereeid PRIMARY KEY, matches, fouls, yellow, red)")
+    cursor.execute("CREATE TABLE referee (refereeid PRIMARY KEY, name, matches, fouls, yellow, red)")
     cursor.execute("CREATE TABLE team (club, pos1, pos2, pos3, pos4, pos5, pos6, pos7, pos8, pos9, pos10, pos11, pos12, pos13, pos14, pos15, pos16, FOREIGN KEY(club) REFERENCES club(id))")
     cursor.execute("CREATE TABLE shortlist (club, player, FOREIGN KEY(club) REFERENCES club(id), FOREIGN KEY(player) REFERENCES player(id))")
     cursor.execute("CREATE TABLE negotiations (negotiationid, player, transfertype, timeout, club, status, date, FOREIGN KEY(player) REFERENCES player(id), FOREIGN KEY(club) REFERENCES club(id))")
@@ -546,6 +563,9 @@ def save_file(filename):
 
     for clubid, item in game.standings.items():
         cursor.execute("INSERT INTO standings VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", (clubid, item[0], item[1], item[2], item[3], item[4], item[5], item[6], item[7]))
+
+    for refereeid, referee in game.referees.items():
+        cursor.execute("INSERT INTO referee VALUES (?, ?, ?, ?, ?, ?)", (refereeid, referee.name, referee.matches, referee.fouls, referee.yellows, referee.reds))
 
     for key, negotiation in game.negotiations.items():
         cursor.execute("INSERT INTO negotiations VALUES (?, ?, ?, ?, ?, ?, ?)", (key, negotiation.playerid, negotiation.transfer_type, negotiation.timeout, negotiation.club, negotiation.status, negotiation.date))
