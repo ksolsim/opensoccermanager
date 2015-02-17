@@ -1383,8 +1383,10 @@ def squad_filter():
 
 
 def sponsorship():
-    status = game.clubs[game.teamid].sponsor_status
-    company, period, cost = game.clubs[game.teamid].sponsor_offer
+    club = game.clubs[game.teamid]
+
+    status = club.sponsor_status
+    company, period, cost = club.sponsor_offer
 
     display_cost = display.currency(cost)
 
@@ -1410,11 +1412,11 @@ def sponsorship():
     response = messagedialog.run()
 
     if response == Gtk.ResponseType.ACCEPT:
-        company, period, cost = game.clubs[game.teamid].sponsor_offer
-        game.clubs[game.teamid].sponsor_status = 2
+        company, period, cost = club.sponsor_offer
+        club.sponsor_status = 2
         money.deposit(cost, 1)
     elif response == Gtk.ResponseType.REJECT:
-        game.clubs[game.teamid].sponsor_status = 0
+        club.sponsor_status = 0
         game.sponsor_timeout = random.randint(4, 6)
 
     messagedialog.destroy()
