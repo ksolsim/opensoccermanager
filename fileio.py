@@ -241,7 +241,7 @@ def open_file(filename):
 
         club.sponsor_status = item[28]
 
-        if club.sponsor_status == 1:
+        if item[29] is not None:
             club.sponsor_offer = item[29].split(",")
             club.sponsor_offer[1] = int(club.sponsor_offer[1])
             club.sponsor_offer[2] = int(club.sponsor_offer[2])
