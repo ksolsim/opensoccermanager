@@ -638,16 +638,16 @@ def save_file(filename):
         cursor.execute("INSERT INTO scouthired VALUES (?, ?, ?, ?, ?, ?, ?, ?)", (scoutid, scout.name, scout.age, scout.ability, scout.wage, scout.contract, scout.morale, scout.retiring))
 
     for item in club.hoardings[0]:
-        cursor.execute("INSERT INTO hoardingsavailable VALUES (?, ?, ?, ?)", item[0:])
+        cursor.execute("INSERT INTO hoardingsavailable VALUES (?, ?, ?, ?)", item[0:4])
 
     for item in club.hoardings[1]:
-        cursor.execute("INSERT INTO hoardingscurrent VALUES (?, ?, ?", item[0:])
+        cursor.execute("INSERT INTO hoardingscurrent VALUES (?, ?, ?)", item[0:3])
 
     for item in club.programmes[0]:
-        cursor.execute("INSERT INTO programmesavailable VALUES (?, ?, ?, ?)", item[0:])
+        cursor.execute("INSERT INTO programmesavailable VALUES (?, ?, ?, ?)", item[0:4])
 
     for item in club.programmes[1]:
-        cursor.execute("INSERT INTO programmescurrent VALUES (?, ?, ?", item[0:])
+        cursor.execute("INSERT INTO programmescurrent VALUES (?, ?, ?)", item[0:3])
 
     connection.commit()
     connection.close()
