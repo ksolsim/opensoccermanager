@@ -443,6 +443,7 @@ def open_file(filename):
         scoutid = item[0]
         club.scouts_hired[scoutid] = scout
 
+    # Referees
     for item in cursor.execute("SELECT * FROM referee"):
         referee = Referee()
         referee.name = item[1]
@@ -453,6 +454,24 @@ def open_file(filename):
 
         refereeid = item[0]
         game.referees[refereeid] = referee
+
+    club = game.clubs[game.teamid]
+
+    # Advertising
+    for item in cursor.execute("SELECT * FROM hoardingsavailable"):
+        club.hoardings[0].append(item)
+
+    for item in cursor.execute("SELECT * FROM hoardingscurrent"):
+        club.hoardings[1].append(item)
+
+    for item in cursor.execute("SELECT * FROM programmesavailable"):
+        club.programmes[0].append(item)
+
+    for item in cursor.execute("SELECT * FROM programmescurrent"):
+        club.programmes[1].append(item)
+
+    club.hoardings[2] = 48
+    club.programmes[2] = 36
 
     resources.import_news()
     resources.import_evaluation()
@@ -469,7 +488,7 @@ def save_file(filename):
     connection.execute("PRAGMA foreign_keys = on")
     cursor = connection.cursor()
 
-    cursor.execute("CREATE TABLE main (teamid, year, month, date, week, eventindex, dateindex, dateprev, fixturesindex, fixturespage, active_screen)")
+    cursor.execute("CREATE TABLE main (teamid, year, month, date, week, eventindex, dateindex, dateprev, fixturesindex, fixturespage)")
     cursor.execute("CREATE TABLE nation (id PRIMARY KEY, name, denonym)")
     cursor.execute("CREATE TABLE stadium (id PRIMARY KEY, name, capacity, condition, warnings, plots, northcapacity, northroof, northseating, westcapacity, westroof, westseating, southcapacity, southroof, southseating, eastcapacity, eastroof, eastseating, northwestcapacity, northeastcapacity, southwestcapacity, southeastcapacity, northwestroof, northeastroof, southwestroof, southeastroof, northwestseating, northeastseating, southwestseating, southeastseating, stall, programme, smallshop, largeshop, bar, burgerbar, cafe, restaurant)")
     cursor.execute("CREATE TABLE club (id PRIMARY KEY, name, nickname, manager, chairman, stadium, reputation, tactics1, tactics2, tactics3, tactics4, tactics5, tactics6, tactics7, tactics8, tactics9, seasontickets, schooltickets, income, expenditure, balance, eval1, eval2, eval3, eval4, eval5, merchandise, catering, sponsorstatus, sponsoroffer, teamtraining)")
@@ -485,6 +504,10 @@ def save_file(filename):
     cursor.execute("CREATE TABLE negotiations (negotiationid, player, transfertype, timeout, club, status, date, FOREIGN KEY(player) REFERENCES player(id), FOREIGN KEY(club) REFERENCES club(id))")
     cursor.execute("CREATE TABLE loans (player, club, period, FOREIGN KEY(player) REFERENCES player(id), FOREIGN KEY(club) REFERENCES club(id))")
     cursor.execute("CREATE TABLE transfers (player, oldclub, newclub, fee, FOREIGN KEY(player) REFERENCES player(id), FOREIGN KEY(oldclub) REFERENCES club(id), FOREIGN KEY(newclub) REFERENCES club(id))")
+    cursor.execute("CREATE TABLE hoardingsavailable (name, quantity, period, cost)")
+    cursor.execute("CREATE TABLE programmesavailable (name, quantity, period, cost)")
+    cursor.execute("CREATE TABLE hoardingscurrent (name, quantity, period)")
+    cursor.execute("CREATE TABLE programmescurrent (name, quantity, period)")
     cursor.execute("CREATE TABLE buildings (name, size, cost)")
     cursor.execute("CREATE TABLE merchandise (name, cost, percentage)")
     cursor.execute("CREATE TABLE catering (name, cost, percentage)")
@@ -497,7 +520,7 @@ def save_file(filename):
     cursor.execute("CREATE TABLE coachhired (id PRIMARY KEY, name, age, rating, speciality, wage, contract, morale, retiring)")
     cursor.execute("CREATE TABLE scouthired (id PRIMARY KEY, name, age, rating, wage, contract, morale, retiring)")
 
-    cursor.execute("INSERT INTO main VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (game.teamid, game.year, game.month, game.date, game.week, game.eventindex, game.dateindex, game.dateprev, game.fixturesindex, game.fixturespage, game.active_screen_id))
+    cursor.execute("INSERT INTO main VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (game.teamid, game.year, game.month, game.date, game.week, game.eventindex, game.dateindex, game.dateprev, game.fixturesindex, game.fixturespage))
 
     for nationid, nation in game.nations.items():
         cursor.execute("INSERT INTO nation VALUES (?, ?, ?)", (nationid, nation.name, nation.denonym))
@@ -595,10 +618,10 @@ def save_file(filename):
         cursor.execute("INSERT INTO surnames VALUES (?)", (surname,))
 
     for item in constants.merchandise:
-        cursor.execute("INSERT INTO merchandise VALUES (?, ?, ?)", (item[0], item[1], item[2]))
+        cursor.execute("INSERT INTO merchandise VALUES (?, ?, ?)", item[0:])
 
     for item in constants.catering:
-        cursor.execute("INSERT INTO catering VALUES (?, ?, ?)", (item[0], item[1], item[2]))
+        cursor.execute("INSERT INTO catering VALUES (?, ?, ?)", item[0:])
 
     club = game.clubs[game.teamid]
 
@@ -613,6 +636,18 @@ def save_file(filename):
 
     for scoutid, scout in club.scouts_hired.items():
         cursor.execute("INSERT INTO scouthired VALUES (?, ?, ?, ?, ?, ?, ?, ?)", (scoutid, scout.name, scout.age, scout.ability, scout.wage, scout.contract, scout.morale, scout.retiring))
+
+    for item in club.hoardings[0]:
+        cursor.execute("INSERT INTO hoardingsavailable VALUES (?, ?, ?, ?)", item[0:])
+
+    for item in club.hoardings[1]:
+        cursor.execute("INSERT INTO hoardingscurrent VALUES (?, ?, ?", item[0:])
+
+    for item in club.programmes[0]:
+        cursor.execute("INSERT INTO programmesavailable VALUES (?, ?, ?, ?)", item[0:])
+
+    for item in club.programmes[1]:
+        cursor.execute("INSERT INTO programmescurrent VALUES (?, ?, ?", item[0:])
 
     connection.commit()
     connection.close()
