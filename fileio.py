@@ -98,7 +98,7 @@ def open_file(filename):
     game.dateprev = data[7]
     game.fixturesindex = data[8]
     game.fixturespage = data[9]
-    game.active_screen_id = data[10]
+    game.active_screen_id = game.start_screen
 
     '''
     The following variables in each class need correctly saving and
