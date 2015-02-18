@@ -762,8 +762,8 @@ def add_individual_training(playerid=None):
 
     liststorePlayer = Gtk.ListStore(int, str)
 
-    for playerid in game.clubs[game.teamid].squad:
-        player = game.players[playerid]
+    for item in game.clubs[game.teamid].squad:
+        player = game.players[item]
         name = display.name(player)
 
         liststorePlayer.append([item, name])
