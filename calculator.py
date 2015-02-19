@@ -167,8 +167,10 @@ def bonus(wage):
 
 
 def value_rounder(value):
-    if value >= 100000:
+    if value >= 1000000:
         divisor = 100000
+    elif value >= 100000:
+        divisor = 10000
     elif value >= 10000:
         divisor = 10000
     elif value >= 1000:
