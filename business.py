@@ -4,11 +4,9 @@ from gi.repository import Gtk
 from gi.repository import Gdk
 import random
 
-import finances
-import display
 import constants
+import display
 import game
-import database
 import money
 import widgets
 

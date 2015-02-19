@@ -2,20 +2,16 @@
 
 from gi.repository import Gtk
 from gi.repository import Gdk
-import random
 import unicodedata
 import re
-import statistics
 
-import game
-import dialogs
-import widgets
 import constants
+import dialogs
 import display
-import money
-import calculator
-import transfer
+import game
 import scout
+import transfer
+import widgets
 
 
 class Players(Gtk.Grid):

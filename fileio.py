@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 
-import sqlite3
 import os
+import sqlite3
 
 import constants
-import database
 import events
 import game
 import resources

@@ -7,7 +7,6 @@ import constants
 import dialogs
 import display
 import events
-import finances
 import game
 import money
 import widgets

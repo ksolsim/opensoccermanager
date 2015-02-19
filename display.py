@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
 
-from gi.repository import Gtk
 import operator
 import statistics
 
 import game
 import constants
 import calculator
-import money
 
 
 def name(player, mode=0):
@@ -59,8 +57,8 @@ def find_champion():
         standings.append(item)
 
     standings = sorted(standings,
-                       key = operator.itemgetter(8, 7, 5, 6),
-                       reverse = True)
+                       key=operator.itemgetter(8, 7, 5, 6),
+                       reverse=True)
 
     champion = standings[0][0]
 
@@ -78,8 +76,8 @@ def find_position(teamid, ordinal=True):
         standings.append(item)
 
     standings = sorted(standings,
-                       key = operator.itemgetter(8, 7, 5, 6),
-                       reverse = True)
+                       key=operator.itemgetter(8, 7, 5, 6),
+                       reverse=True)
 
     position = 1
 

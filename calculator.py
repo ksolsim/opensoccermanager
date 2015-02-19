@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 
-import game
-import news
 import constants
-import random
+import game
 
 
 def value(playerid):

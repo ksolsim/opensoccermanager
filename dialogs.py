@@ -15,10 +15,8 @@ import evaluation
 import fileio
 import game
 import money
-import music
 import preferences
 import version
-import view
 import widgets
 
 
@@ -1147,6 +1145,7 @@ def player_filter():
     dialog.add_button("_Filter", Gtk.ResponseType.OK)
     dialog.set_default_response(Gtk.ResponseType.OK)
     dialog.set_transient_for(game.window)
+    dialog.set_border_width(5)
     dialog.vbox.set_spacing(5)
 
     checkbuttonShowOwnPlayers = Gtk.CheckButton("Display %s players in player search" % (game.clubs[game.teamid].name))

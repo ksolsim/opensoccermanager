@@ -3,13 +3,11 @@
 from gi.repository import Gtk
 import random
 
-import game
-import constants
-import display
 import dialogs
-import widgets
+import display
+import game
 import money
-import calculator
+import widgets
 
 
 class Finances(Gtk.Grid):

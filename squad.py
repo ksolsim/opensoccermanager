@@ -2,16 +2,14 @@
 
 from gi.repository import Gtk
 from gi.repository import Gdk
-import statistics
 
-import game
+import constants
 import dialogs
 import display
+import events
+import game
 import money
 import transfer
-import calculator
-import constants
-import events
 import widgets
 
 

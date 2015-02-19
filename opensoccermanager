@@ -21,9 +21,7 @@
 
 
 from gi.repository import Gtk
-import random
 import os
-import sys
 import subprocess
 
 import ai
@@ -38,18 +36,15 @@ import evaluation
 import events
 import fileio
 import finances
-import fixtures
 import game
 import information
 import match
 import money
 import music
-import news
 import preferences
 import sales
 import squad
 import stadium
-import staff
 import team
 import training
 import transfer
@@ -773,7 +768,7 @@ def screen_loader(index):
                29: (obj_statistics, "statistics"),
                30: (obj_charts, "charts"),
                99: (obj_match, "match"),
-               }
+              }
 
     if game.active_screen is not None:
         if game.active_screen_id == index:

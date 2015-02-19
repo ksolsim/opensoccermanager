@@ -1,15 +1,12 @@
 #!/usr/bin/env python3
 
-from gi.repository import Gtk
-import random
 import math
+import random
 
 import calculator
 import dialogs
-import evaluation
 import game
 import news
-import stadium
 
 
 def deposit(amount, category=None):

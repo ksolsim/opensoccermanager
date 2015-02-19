@@ -1,19 +1,16 @@
 #!/usr/bin/env python3
 
-import lxml.etree as ET
-import os
 import random
 
-import game
-import database
+import calculator
+import constants
 import evaluation
 import events
-import constants
-import calculator
 import fixtures
-import staff
+import game
 import news
 import resources
+import staff
 import widgets
 
 

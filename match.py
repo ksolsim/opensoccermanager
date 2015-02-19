@@ -6,9 +6,7 @@ import random
 import ai
 import constants
 import display
-import evaluation
 import events
-import fixtures
 import game
 import league
 import money

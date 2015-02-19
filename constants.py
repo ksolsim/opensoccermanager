@@ -23,7 +23,7 @@ formations = (("4-4-2", ("GK", "DL", "DR", "DC", "DC", "ML", "MR", "MC", "MC", "
               ("4-3-3", ("GK", "DL", "DR", "DC", "DC", "MC", "MC", "MC", "AS", "AS", "AS")),
               ("5-4-1", ("GK", "DL", "DR", "DC", "DC", "DC", "ML", "MR", "MC", "MC", "AS")),
               ("5-3-2", ("GK", "DL", "DR", "DC", "DC", "DC", "MC", "MC", "MC", "AS", "AS")),
-              )
+             )
 
 dates = (1, 4, 7), (9, 11, 14), (16, 19, 21), (23, 25, 27), (30, 1, 4), (6, 9, 11), (13, 16, 18), (20, 22, 25), (27, 30, 1), (4, 6, 9), (11, 14, 16), (18, 21, 23), (25, 27, 30), (1, 4, 6), (8, 10, 13), (15, 17, 20), (22, 25, 27), (29, 2, 4), (6, 9, 11), (13, 16, 18), (20, 22, 24), (26, 28, 1), (3, 6, 8), (10, 12, 15), (17, 19, 22), (24, 27, 29), (31, 2, 5), (7, 10, 12), (14, 16, 19), (21, 24, 26), (28, 3, 5), (7, 9, 12), (14, 17, 19), (21, 23, 26), (28, 31, 2), (4, 6, 9), (11, 13, 16), (18, 21, 23), (25, 28, 30), (2, 4, 7), (9, 12, 14), (16, 19, 22), (24, 26, 29), (31, 2, 4), (6, 10, 12), (14, 16, 18), (20, 22, 25), (27, 30, 3),
 
@@ -42,7 +42,7 @@ category = {1: "Announcements",
             9: "Awards",
             10: "Contracts",
             11: "Stadium",
-            }
+           }
 
 transfer_status = {0: "Awaiting response to your enquiry",
                    1: "Enquiry rejected by club",
@@ -55,7 +55,7 @@ transfer_status = {0: "Awaiting response to your enquiry",
                    8: "Offer accepted by player",
                    9: "Enquiry rejected by player",
                    10: "Enquiry accepted by player",
-                   }
+                  }
 
 transfer_outbound_status = {0: "Awaiting your response to enquiry",
                             1: "Awaiting offer from club",
@@ -63,7 +63,7 @@ transfer_outbound_status = {0: "Awaiting your response to enquiry",
                             3: "Player is negotiating with club",
                             4: "Player has accepted the offer",
                             5: "Player has rejected the offer",
-                            }
+                           }
 
 money = {0: (20000000, "Grandmother"),
          1: (10000000, "Very Easy"),
@@ -71,7 +71,7 @@ money = {0: (20000000, "Grandmother"),
          3: (2500000, "Average"),
          4: (1000000, "Hard"),
          5: (0, "Very Hard"),
-         }
+        }
 
 currency = {0: ("£", 1), 1: ("$", 1.6), 2: ("€", 1.25),}
 
@@ -84,7 +84,8 @@ speciality = {0: "Goalkeeping",
               2: "Midfield",
               3: "Attacking",
               4: "Fitness",
-              5: "All",}
+              5: "All",
+             }
 
 errors = {1: ("The club needs a minimum of 16 players in the squad.", "Transfer Error", Gtk.MessageType.ERROR),
           2: ("The club is restricted to a maximum of 30 players in the squad.", "Transfer Error", Gtk.MessageType.ERROR),
@@ -100,7 +101,7 @@ errors = {1: ("The club needs a minimum of 16 players in the squad.", "Transfer 
           12: ("There is currently no training schedule setup. The training camp can still be booked, however the players will not achieve the most out of the session.", "Training Camp", Gtk.MessageType.WARNING),
           13: ("There is not a full selection of first team and substitute players selected. The training camp can still be booked for the listed players at the cost of all sixteen.", "Training Camp", Gtk.MessageType.WARNING),
           14: ("The loan period entered is longer than the players remaining contract length. The loan negotiations will continue, however if the contract expires before the agreed end of the loan period, the loan will end.", "Loan Period Warning", Gtk.MessageType.WARNING),
-          }
+         }
 
 team_training = ("No Training", "Individual", ("Attacking",
                                                "Ball Skills",
@@ -117,8 +118,8 @@ team_training = ("No Training", "Individual", ("Attacking",
                                                "Penalties",
                                                "Set Pieces",
                                                "Solo Runs",
-                                               "Throw-Ins",
-                                               ))
+                                               "Throw-Ins",)
+                )
 
 morale = ("Miserable",
           "Very Unhappy",
@@ -128,4 +129,5 @@ morale = ("Miserable",
           "Pleased",
           "Happy",
           "Very Happy",
-          "Delighted")
+          "Delighted",
+         )

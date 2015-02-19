@@ -28,7 +28,7 @@ def publish(newsid, **kwargs):
             "_POSITION_": kwargs.get("position"),
             "_SUSPENSION_": kwargs.get("suspension"),
             "_CARDS_": kwargs.get("cards"),
-            }
+           }
 
     item = random.choice(constants.news[newsid])
 
