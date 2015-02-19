@@ -137,7 +137,7 @@ def move(negotiationid):
     # Remove player from individual training
     if negotiation.transfer_type != 2:
         if playerid in game.clubs[old_club].individual_training:
-            del game.clubs[old_club].individual_training[playerid]
+            del(game.clubs[old_club].individual_training[playerid])
 
     player.club = new_club
     game.clubs[new_club].squad.append(playerid)
@@ -345,7 +345,7 @@ def transfer_enquiry_accepted(negotiationid):
             negotiation.status = 3
             negotiation.timeout = random.randint(1, 4)
     elif response == Gtk.ResponseType.REJECT:
-        del game.negotiations[negotiationid]
+        del(game.negotiations[negotiationid])
 
     dialog.destroy()
 
@@ -431,7 +431,7 @@ def transfer_offer_accepted(negotiationid):
         negotiation.status = 6
         negotiation.timeout = random.randint(1, 4)
     elif response == Gtk.ResponseType.CANCEL:
-        del game.negotiations[negotiationid]
+        del(game.negotiations[negotiationid])
 
     dialog.destroy()
 
@@ -466,7 +466,7 @@ def transfer_contract_accepted(negotiationid):
             if negotiation.transfer_type == 0:
                 money.withdraw(amount, 13)
     elif response == Gtk.ResponseType.CANCEL:
-        del game.negotiations[negotiationid]
+        del(game.negotiations[negotiationid])
 
     messagedialog.destroy()
 
@@ -523,7 +523,7 @@ def loan_enquiry_accepted(negotiationid):
         else:
             game.negotiations[negotiationid].weeks = spinbuttonWeeks.get_value_as_int()
     elif response == Gtk.ResponseType.REJECT:
-        del game.negotiations[negotiationid]
+        del(game.negotiations[negotiationid])
 
     dialog.destroy()
 
@@ -549,7 +549,7 @@ def loan_offer_accepted(negotiationid):
         if check(negotiationid) == 0:
             move(negotiationid)
     elif response == Gtk.ResponseType.CANCEL:
-        del game.negotiations[negotiationid]
+        del(game.negotiations[negotiationid])
 
     messagedialog.destroy()
 
@@ -735,13 +735,13 @@ def end_loan(playerid):
 
     # Remove from individual training if added
     if playerid in game.clubs[player.club].individual_training:
-        del game.clubs[player.club].individual_training[playerid]
+        del(game.clubs[player.club].individual_training[playerid])
 
     # Set club back to parent club
     player.club = game.loans[playerid][0]
 
     # Delete loan information
-    del game.loans[playerid]
+    del(game.loans[playerid])
 
     name = display.name(player, mode=1)
     club = game.clubs[player.club].name

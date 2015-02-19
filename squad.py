@@ -511,23 +511,23 @@ class Squad(Gtk.Grid):
         old_club = player.club
         new_club = transfer.quick_sell(player)
 
-        state = transfer.check(old_club, new_club)
+        club = game.clubs[new_club].name
+        state = dialogs.quick_sell(name, club, amount)
 
-        if state == 0:
-            club = game.clubs[new_club].name
-            state = dialogs.quick_sell(name, club, amount)
+        if state:
+            class Negotiation:
+                pass
 
-            if state:
-                class Negotiation:
-                    pass
+            negotiation = Negotiation()
+            negotiation.playerid = playerid
+            negotiation.club = new_club
+            negotiation.transfer_type = 0
+            negotiation.amount = value
+            game.negotiations[game.negotiationid] = negotiation
 
-                negotiation = Negotiation()
-                negotiation.playerid = playerid
-                negotiation.club = new_club
-                negotiation.transfer_type = 0
-                negotiation.amount = value
-                game.negotiations[game.negotiationid] = negotiation
+            valid = transfer.check(game.negotiationid)
 
+            if valid == 0:
                 transfer.move(game.negotiationid)
                 game.negotiationid += 1
 
@@ -539,8 +539,8 @@ class Squad(Gtk.Grid):
                 money.deposit(value, 6)
 
                 self.populate_data()
-        else:
-            dialogs.error(state)
+            else:
+                dialogs.error(state)
 
     def extend_loan(self, menuitem):
         model, treeiter = self.treeselection.get_selected()

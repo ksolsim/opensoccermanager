@@ -364,7 +364,7 @@ class Staff(Gtk.Grid):
                     coach.morale = 9
 
                     game.clubs[game.teamid].coaches_hired[coachid] = game.clubs[game.teamid].coaches_available[coachid]
-                    del game.clubs[game.teamid].coaches_available[coachid]
+                    del(game.clubs[game.teamid].coaches_available[coachid])
 
                     self.populate_data()
 
@@ -388,7 +388,7 @@ class Staff(Gtk.Grid):
                     payout = coach.wage * coach.contract
 
                     if dialogs.fire_staff(0, coach.name, payout):
-                        del game.clubs[game.teamid].coaches_hired[staffid]
+                        del(game.clubs[game.teamid].coaches_hired[staffid])
                         money.withdraw(payout, 10)
 
                         self.populate_data()
@@ -558,6 +558,7 @@ class Staff(Gtk.Grid):
             buttonFire.connect("clicked", self.staff_fire)
             buttonbox.add(buttonFire)
             buttonRenewContract = widgets.Button("_Renew Contract")
+            buttonRenewContract.set_sensitive(False)
             buttonRenewContract.connect("clicked", self.renew_contract)
             buttonbox.add(buttonRenewContract)
             buttonImproveWage = widgets.Button("_Improve Wage")
@@ -579,7 +580,7 @@ class Staff(Gtk.Grid):
                     scout.morale = 9
 
                     game.clubs[game.teamid].scouts_hired[scoutid] = game.clubs[game.teamid].scouts_available[scoutid]
-                    del game.clubs[game.teamid].scouts_available[scoutid]
+                    del(game.clubs[game.teamid].scouts_available[scoutid])
 
                     self.populate_data()
 
@@ -592,7 +593,7 @@ class Staff(Gtk.Grid):
                 payout = scout.wage * scout.contract
 
                 if dialogs.fire_staff(0, scout.name, payout):
-                    del game.clubs[game.teamid].scouts_hired[staffid]
+                    del(game.clubs[game.teamid].scouts_hired[staffid])
                     money.withdraw(payout, 10)
 
                     self.populate_data()
@@ -671,10 +672,12 @@ class Staff(Gtk.Grid):
         self.attach(notebook, 0, 0, 1, 1)
 
         self.coach = self.Coach()
-        label = Gtk.Label("Coach")
+        label = Gtk.Label("_Coach")
+        label.set_use_underline(True)
         notebook.append_page(self.coach, label)
         self.scout = self.Scout()
-        label = Gtk.Label("Scout")
+        label = Gtk.Label("_Scout")
+        label.set_use_underline(True)
         notebook.append_page(self.scout, label)
 
     def run(self):
