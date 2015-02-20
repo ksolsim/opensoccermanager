@@ -35,19 +35,16 @@ class Match(Gtk.Grid):
         self.attach(grid, 1, 0, 1, 1)
 
         # Score
-        self.labelTeam1 = Gtk.Label()
+        self.labelTeam1 = widgets.Label()
         self.labelTeam1.set_size_request(180, -1)
         self.labelTeam1.set_hexpand(True)
-        self.labelTeam1.set_use_markup(True)
         grid.attach(self.labelTeam1, 0, 0, 1, 1)
-        self.labelScore = Gtk.Label()
+        self.labelScore = widgets.Label()
         self.labelScore.set_hexpand(True)
-        self.labelScore.set_use_markup(True)
         grid.attach(self.labelScore, 1, 0, 1, 1)
-        self.labelTeam2 = Gtk.Label()
+        self.labelTeam2 = widgets.Label()
         self.labelTeam2.set_size_request(180, -1)
         self.labelTeam2.set_hexpand(True)
-        self.labelTeam2.set_use_markup(True)
         grid.attach(self.labelTeam2, 2, 0, 1, 1)
 
         # Events
@@ -87,7 +84,8 @@ class Match(Gtk.Grid):
         grid.set_column_spacing(5)
         grid.set_border_width(5)
         grid.set_column_homogeneous(True)
-        self.notebook.append_page(grid, Gtk.Label("Teams"))
+        label = widgets.Label("_Teams")
+        self.notebook.append_page(grid, label)
 
         cellrenderertext = Gtk.CellRendererText()
         self.liststoreHome = Gtk.ListStore(str, str)
@@ -101,6 +99,8 @@ class Match(Gtk.Grid):
             treeview.set_vexpand(True)
             treeview.set_hexpand(True)
             treeview.set_model(model)
+            treeview.set_enable_search(False)
+            treeview.set_search_column(-1)
             scrolledwindow.add(treeview)
             treeselection = treeview.get_selection()
             treeselection.set_mode(Gtk.SelectionMode.NONE)
@@ -115,7 +115,8 @@ class Match(Gtk.Grid):
         grid.set_row_spacing(5)
         grid.set_column_spacing(5)
         grid.set_border_width(5)
-        self.notebook.append_page(grid, Gtk.Label("Statistics"))
+        label = widgets.Label("_Statistics")
+        self.notebook.append_page(grid, label)
 
         label = widgets.AlignedLabel("Attendance")
         grid.attach(label, 0, 0, 1, 1)

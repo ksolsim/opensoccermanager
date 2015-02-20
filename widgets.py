@@ -111,11 +111,20 @@ class CommonFrame(Gtk.Frame):
         self.grid.attach(child, 0, 0, 1, 1)
 
 
+class Label(Gtk.Label):
+    def __init__(self, label=""):
+        Gtk.Label.__init__(self)
+        self.set_markup(label)
+        self.set_use_markup(True)
+        self.set_use_underline(True)
+
+
 class AlignedLabel(Gtk.Label):
     def __init__(self, label="", xalign=0, yalign=0.5):
         Gtk.Label.__init__(self)
         self.set_markup(label)
         self.set_use_markup(True)
+        self.set_use_underline(True)
         self.set_alignment(xalign, yalign)
 
 

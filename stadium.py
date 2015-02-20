@@ -62,7 +62,8 @@ class Stadium(Gtk.Grid):
         grid.set_border_width(5)
         grid.set_row_spacing(5)
         grid.set_column_spacing(5)
-        notebook.append_page(grid, Gtk.Label("Capacity"))
+        label = widgets.Label("_Capacity")
+        notebook.append_page(grid, label)
 
         # Stand labels
         for count, text in enumerate(("North", "West", "South", "East", "North West", "North East", "South West", "South East")):
@@ -132,7 +133,8 @@ class Stadium(Gtk.Grid):
         grid.set_border_width(5)
         grid.set_row_spacing(5)
         grid.set_column_spacing(5)
-        notebook.append_page(grid, Gtk.Label("Maintenance"))
+        label = widgets.Label("_Maintenance")
+        notebook.append_page(grid, label)
 
         label = widgets.AlignedLabel("Stadium Upkeep Percentage:")
         grid.attach(label, 0, 0, 1, 1)
