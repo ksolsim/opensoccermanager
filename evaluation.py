@@ -22,6 +22,24 @@ def update():
     '''
     club = game.clubs[game.teamid]
 
+    # Fans
+    points = 0
+
+    for item in club.form:
+        if item == "W":
+            points += 3
+        elif item == "D":
+            points += 1
+
+    if len(club.form) > 0:
+        percentage = points / (len(club.form) * 3) * 100
+    else:
+        percentage = 0
+
+    percentage = int(percentage)
+
+    club.evaluation[1] = percentage
+
     # Finances
     total = (club.reputation ** 3 * 1000 * 3) * 2
     percentage = (club.balance / total) * 100
@@ -59,6 +77,18 @@ def update():
         percentage = (points / maximum) * 100
 
         club.evaluation[4] = percentage
+
+    # Chairman
+    subtotal = sum(club.evaluation[1:])
+
+    if len(club.coaches_hired) + len(club.scouts_hired) > 0:
+        percentage = (subtotal / 400) * 100
+    else:
+        percentage = (subtotal / 300) * 100
+
+    percentage = int(percentage)
+
+    club.evaluation[0] = percentage
 
 
 def indexer(index):

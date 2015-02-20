@@ -66,7 +66,7 @@ class Stadium(Gtk.Grid):
         notebook.append_page(grid, label)
 
         # Stand labels
-        for count, text in enumerate(("North", "West", "South", "East", "North West", "North East", "South West", "South East")):
+        for count, text in enumerate(constants.stands):
             label = widgets.AlignedLabel("%s Stand" % (text))
             grid.attach(label, 0, count, 1, 1)
 
@@ -399,8 +399,6 @@ class Stadium(Gtk.Grid):
             capacity = stadium.main[count].capacity
             widget.set_value(capacity)
             widget.set_range(capacity, 15000)
-
-
 
             if capacity > 0:
                 self.roof_widget[count].set_sensitive(True)

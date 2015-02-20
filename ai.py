@@ -238,18 +238,15 @@ def home_advantage(clubid):
     return points
 
 
-def generate_result(clubid1, clubid2):
+def generate_result(club1, club2):
     '''
     Generate the winner, loser or whether its a draw, and determine the
     number of goals scored by both teams.
     '''
-    club1 = game.clubs[clubid1]
-    club2 = game.clubs[clubid2]
-
     sums = [0, 0]
     count = 0
 
-    for team in (club1.team, club2.team):
+    for team in (game.clubs[club1].team, game.clubs[club2].team):
         for positionid, playerid in team.items():
             if playerid != 0:
                 player = game.players[playerid]
@@ -269,12 +266,12 @@ def generate_result(clubid1, clubid2):
 
     total_score = sum(sums)
 
-    advantage = home_advantage(clubid1)
+    advantage = home_advantage(club1)
 
     percent1 = (sums[0] / total_score) * 100
-    percent1 = ((percent1 + advantage) * 0.05) * club1.reputation
+    percent1 = ((percent1 + advantage) * 0.05) * game.clubs[club1].reputation
     percent2 = (sums[1] / total_score) * 100
-    percent2 = ((percent2 - advantage) * 0.05) * club2.reputation
+    percent2 = ((percent2 - advantage) * 0.05) * game.clubs[club2].reputation
     percent1 = round(percent1)
     percent2 = round(percent2)
 
@@ -298,11 +295,11 @@ def generate_result(clubid1, clubid2):
         def generate_goals(club):
             score1 = 1
 
-            if club.tactics[5] == 0:
+            if game.clubs[game.teamid].tactics[5] == 0:
                 start = 35
-            elif club.tactics[5] == 1:
+            elif game.clubs[game.teamid].tactics[5] == 1:
                 start = 50
-            elif club.tactics[5] == 2:
+            elif game.clubs[game.teamid].tactics[5] == 2:
                 start = 65
 
             for x in range(2, 9):
@@ -331,7 +328,7 @@ def generate_result(clubid1, clubid2):
 
     result1, result2 = generate_score(ranges)
 
-    return clubid1, result1, result2, clubid2
+    return club1, result1, result2, club2
 
 
 def advertising():

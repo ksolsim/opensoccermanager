@@ -48,7 +48,7 @@ def increment_appearances(team1, team2):
     selection1 = [[], []]
     subs = []
 
-    for key, playerid in game.clubs[team1].team.items():
+    for key, playerid in game.clubs[team1.teamid].team.items():
         if playerid != 0 and key < 11:
             selection1[0].append(playerid)
 
@@ -70,7 +70,7 @@ def increment_appearances(team1, team2):
         player = game.players[playerid]
         player.substitute += 1
 
-    for playerid in game.clubs[team1].squad:
+    for playerid in game.clubs[team1.teamid].squad:
         if playerid not in selection1[0] and playerid not in selection1[1]:
             player = game.players[playerid]
             player.missed += 1
@@ -80,7 +80,7 @@ def increment_appearances(team1, team2):
     selection2 = [[], []]
     subs = []
 
-    for key, playerid in game.clubs[team2].team.items():
+    for key, playerid in game.clubs[team2.teamid].team.items():
         if playerid != 0 and key < 11:
             selection2[0].append(playerid)
 
@@ -102,7 +102,7 @@ def increment_appearances(team1, team2):
         player = game.players[playerid]
         player.substitute += 1
 
-    for playerid in game.clubs[team2].squad:
+    for playerid in game.clubs[team2.teamid].squad:
         if playerid not in selection2[0] and playerid not in selection2[1]:
             player = game.players[playerid]
             player.missed += 1
@@ -402,19 +402,19 @@ def cards(club1, club2):
 
     players = [[], []]
 
-    for positionid, playerid in game.clubs[club1].team.items():
+    for positionid, playerid in game.clubs[club1.teamid].team.items():
         if playerid != 0:
             players[0].append(playerid)
             players[1].append(playerid)
 
-    total1 = generate(club1)
+    total1 = generate(club1.teamid)
 
-    for positionid, playerid in game.clubs[club2].team.items():
+    for positionid, playerid in game.clubs[club2.teamid].team.items():
         if playerid != 0:
             players[0].append(playerid)
             players[1].append(playerid)
 
-    total2 = generate(club2)
+    total2 = generate(club2.teamid)
 
     yellows = total1[0] + total2[0]
     reds = total1[1] + total2[1]
@@ -525,7 +525,7 @@ def adjust_fitness(recovery=0):
 
 
 def match_injury(teamid1, teamid2):
-    for teamid in (teamid1, teamid2):
+    for teamid in (teamid1.teamid, teamid2.teamid):
         team = game.clubs[teamid].team
 
         selection = []
@@ -1185,10 +1185,10 @@ def update_statistics(result):
 
 
 def attendance(team1, team2):
-    club = game.clubs[team1]
+    club = game.clubs[team1.teamid]
 
     capacity = game.stadiums[club.stadium].capacity
-    base_capacity = (74000 / 20) * club.reputation
+    base_capacity = (74000 * 0.05) * club.reputation
 
     capacity -= club.school_tickets
 
@@ -1211,7 +1211,7 @@ def attendance(team1, team2):
     attendance += (points / (len(club.form) * 3)) * (base_capacity * 0.5)
 
     # Reputation
-    diff = club.reputation - game.clubs[team2].reputation
+    diff = club.reputation - game.clubs[team2.teamid].reputation
 
     if diff == 0:
         diff = 1

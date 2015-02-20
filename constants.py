@@ -16,6 +16,8 @@ catering = []
 injuries = {}
 suspensions = {}
 
+stands = ("North", "West", "South", "East", "North West", "North East", "South West", "South East")
+
 formations = (("4-4-2", ("GK", "DL", "DR", "DC", "DC", "ML", "MR", "MC", "MC", "AS", "AS")),
               ("3-5-2", ("GK", "DC", "DC", "DC", "ML", "MR", "MC", "MC", "MC", "AS", "AS")),
               ("3-4-3", ("GK", "DC", "DC", "DC", "ML", "MR", "MC", "MC", "AS", "AS", "AS")),

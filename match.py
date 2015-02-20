@@ -15,6 +15,23 @@ import sales
 import widgets
 
 
+class Team:
+    teamid = 0
+    name = ""
+    team = {}
+    substitutes = {}
+    shots_on_target = 0
+    shots_off_target = 0
+    throw_ins = 0
+    corner_kicks = 0
+    free_kicks = 0
+    penalty_kicks = 0
+    fouls = 0
+    yellow_cards = 0
+    red_cards = 0
+    possession = 0
+
+
 class Match(Gtk.Grid):
     def __init__(self):
         Gtk.Grid.__init__(self)
@@ -76,7 +93,6 @@ class Match(Gtk.Grid):
         self.notebook = Gtk.Notebook()
         self.notebook.set_hexpand(True)
         self.notebook.set_vexpand(True)
-        self.notebook.set_show_tabs(False)
         grid.attach(self.notebook, 0, 4, 4, 1)
 
         grid = Gtk.Grid()
@@ -122,30 +138,76 @@ class Match(Gtk.Grid):
         grid.attach(label, 0, 0, 1, 1)
         self.labelAttendance = widgets.AlignedLabel()
         grid.attach(self.labelAttendance, 1, 0, 1, 1)
+
         label = widgets.AlignedLabel("Shots On Target")
         grid.attach(label, 0, 1, 1, 1)
+        self.labelShotsOn1 = widgets.AlignedLabel()
+        grid.attach(self.labelShotsOn1, 1, 1, 1, 1)
+        self.labelShotsOn2 = widgets.AlignedLabel()
+        grid.attach(self.labelShotsOn2, 2, 1, 1, 1)
+
         label = widgets.AlignedLabel("Shots Off Target")
         grid.attach(label, 0, 2, 1, 1)
+        self.labelShotsOff1 = widgets.AlignedLabel()
+        grid.attach(self.labelShotsOff1, 1, 2, 1, 1)
+        self.labelShotsOff2 = widgets.AlignedLabel()
+        grid.attach(self.labelShotsOff2, 2, 2, 1, 1)
+
         label = widgets.AlignedLabel("Free Kicks")
         grid.attach(label, 0, 3, 1, 1)
+        self.labelFreeKicks1 = widgets.AlignedLabel()
+        grid.attach(self.labelFreeKicks1, 1, 3, 1, 1)
+        self.labelFreeKicks2 = widgets.AlignedLabel()
+        grid.attach(self.labelFreeKicks2, 2, 3, 1, 1)
+
         label = widgets.AlignedLabel("Corner Kicks")
         grid.attach(label, 0, 4, 1, 1)
+        self.labelCornerKicks1 = widgets.AlignedLabel()
+        grid.attach(self.labelCornerKicks1, 1, 4, 1, 1)
+        self.labelCornerKicks2 = widgets.AlignedLabel()
+        grid.attach(self.labelCornerKicks2, 2, 4, 1, 1)
+
         label = widgets.AlignedLabel("Throw-Ins")
         grid.attach(label, 0, 5, 1, 1)
+        self.labelThrowIns1 = widgets.AlignedLabel()
+        grid.attach(self.labelThrowIns1, 1, 5, 1, 1)
+        self.labelThrowIns2 = widgets.AlignedLabel()
+        grid.attach(self.labelThrowIns2, 2, 5, 1, 1)
+
         label = widgets.AlignedLabel("Fouls")
         grid.attach(label, 0, 6, 1, 1)
+        self.labelFouls1 = widgets.AlignedLabel()
+        grid.attach(self.labelFouls1, 1, 6, 1, 1)
+        self.labelFouls2 = widgets.AlignedLabel()
+        grid.attach(self.labelFouls2, 2, 6, 1, 1)
+
         label = widgets.AlignedLabel("Yellow Cards")
         grid.attach(label, 0, 7, 1, 1)
+        self.labelYellowCards1 = widgets.AlignedLabel()
+        grid.attach(self.labelYellowCards1, 1, 7, 1, 1)
+        self.labelYellowCards2 = widgets.AlignedLabel()
+        grid.attach(self.labelYellowCards2, 2, 7, 1, 1)
+
         label = widgets.AlignedLabel("Red Cards")
         grid.attach(label, 0, 8, 1, 1)
+        self.labelRedCards1 = widgets.AlignedLabel()
+        grid.attach(self.labelRedCards1, 1, 8, 1, 1)
+        self.labelRedCards2 = widgets.AlignedLabel()
+        grid.attach(self.labelRedCards2, 2, 8, 1, 1)
+
         label = widgets.AlignedLabel("Possession")
         grid.attach(label, 0, 9, 1, 1)
+        self.labelPossession1 = widgets.AlignedLabel()
+        grid.attach(self.labelPossession1, 1, 9, 1, 1)
+        self.labelPossession2 = widgets.AlignedLabel()
+        grid.attach(self.labelPossession2, 2, 9, 1, 1)
 
         self.player_match = 0
 
     def run(self):
         self.buttonStart.set_sensitive(True)
         self.notebook.set_show_tabs(False)
+        self.notebook.set_show_border(False)
         self.notebook.set_current_page(0)
 
         for count, item in enumerate(game.fixtures[game.fixturesindex]):
@@ -153,13 +215,17 @@ class Match(Gtk.Grid):
                 match = item
                 self.player_match = count
 
-        self.team1 = match[0]
-        self.team2 = match[1]
+        self.team1 = Team()
+        self.team1.teamid = match[0]
+        self.team1.name = game.clubs[self.team1.teamid].name
+        self.team2 = Team()
+        self.team2.teamid = match[1]
+        self.team2.name = game.clubs[self.team2.teamid].name
 
-        if self.team1 != game.teamid:
-            ai.generate_team(self.team1)
+        if self.team1.teamid != game.teamid:
+            ai.generate_team(self.team1.teamid)
         else:
-            ai.generate_team(self.team2)
+            ai.generate_team(self.team2.teamid)
 
         # Populate team lists
         self.liststoreHome.clear()
@@ -167,47 +233,41 @@ class Match(Gtk.Grid):
 
         model = 0
 
-        for team in (self.team1, self.team2):
+        for team in (self.team1.teamid, self.team2.teamid):
             count = 0
 
             for key, playerid in game.clubs[team].team.items():
-                # First team
                 if playerid != 0:
                     player = game.players[playerid]
                     name = display.name(player, mode=1)
 
                     if count < 11:
+                        # First Team
                         formationid = game.clubs[team].tactics[0]
                         position = constants.formations[formationid][1][count]
-
-                        (self.liststoreHome, self.liststoreAway)[model].append([position, name])
-
-                    # Substitutes
-                    if count >= 11:
+                    elif count >= 11:
+                        # Substitutes
                         position = "Sub %i" % (count - 10)
 
-                        (self.liststoreHome, self.liststoreAway)[model].append([position, name])
+                    (self.liststoreHome, self.liststoreAway)[model].append([position, name])
 
                     count += 1
 
             model = 1
 
-        self.labelTeam1.set_markup('<span size="16000"><b>%s</b></span>' % (game.clubs[match[0]].name))
-        self.labelTeam2.set_markup('<span size="16000"><b>%s</b></span>' % (game.clubs[match[1]].name))
+        self.labelTeam1.set_markup('<span size="16000"><b>%s</b></span>' % (self.team1.name))
+        self.labelTeam2.set_markup('<span size="16000"><b>%s</b></span>' % (self.team2.name))
         self.labelScore.set_markup('<span size="16000"><b>0 - 0</b></span>')
 
         # Determine referee
-        self.referee = []
-
-        for refereeid, referee in game.referees.items():
-            self.referee.append(refereeid)
-
+        self.referee = [refereeid for refereeid, referee in game.referees.items()]
         random.shuffle(self.referee)
 
-        stadiumid = game.clubs[self.team1].stadium
+        stadiumid = game.clubs[self.team1.teamid].stadium
         venue = game.stadiums[stadiumid].name
         self.labelStadium.set_label("Venue: %s" % (venue))
-        self.labelReferee.set_label("Referee: %s" % (game.referees[self.referee[0]].name))
+        referee = game.referees[self.referee[0]].name
+        self.labelReferee.set_label("Referee: %s" % (referee))
 
         game.menu.set_sensitive(False)
         widgets.continuegame.set_sensitive(False)
@@ -232,7 +292,7 @@ class Match(Gtk.Grid):
 
     def start_button_clicked(self, button):
         # Generate player match result and display
-        result = ai.generate_result(self.team1, self.team2)
+        result = ai.generate_result(self.team1.teamid, self.team2.teamid)
         self.labelScore.set_markup('<span size="16000"><b>%i - %i</b></span>' % (result[1], result[2]))
 
         # Decrement matches player is suspended for
@@ -368,6 +428,7 @@ class Match(Gtk.Grid):
         widgets.continuegame.set_sensitive(True)
         self.buttonStart.set_sensitive(False)
         self.notebook.set_show_tabs(True)
+        self.notebook.set_show_border(True)
         self.notebook.set_current_page(1)
 
         game.fixturesindex += 1
@@ -377,19 +438,24 @@ class Match(Gtk.Grid):
         # Update league table for all other matches
         for index, item in enumerate(game.fixtures[game.fixturesindex]):
             if index != self.player_match:
-                ai.generate_team(item[0])
-                ai.generate_team(item[1])
-                result = ai.generate_result(item[0], item[1])
+                club1 = Team()
+                club1.teamid = item[0]
+                club2 = Team()
+                club2.teamid = item[1]
+
+                ai.generate_team(club1.teamid)
+                ai.generate_team(club2.teamid)
+                result = ai.generate_result(club1.teamid, club2.teamid)
                 league.league_update(result)
                 game.results[game.fixturesindex].append(result)
 
-                selection1, selection2 = events.increment_appearances(item[0], item[1])
+                selection1, selection2 = events.increment_appearances(club1, club2)
 
                 # Events
                 scorers = events.goalscorers(result, selection1, selection2)
                 assists = events.assists(result, selection1, selection2, scorers)
-                yellows, reds = events.cards(item[0], item[1])
-                events.match_injury(item[0], item[1])
+                yellows, reds = events.cards(club1, club2)
+                events.match_injury(club1, club2)
 
                 refereeid = self.referee[index + 1]
                 events.increment_referee(refereeid, yellows, reds)
