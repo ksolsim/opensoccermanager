@@ -50,10 +50,10 @@ def update():
         points = 0
 
         for coachid, coach in club.coaches_hired.items():
-            points += coach[5]
+            points += coach.morale
 
         for scoutid, scout in club.scouts_hired.items():
-            points += scout[4]
+            points += scout.morale
 
         maximum = (len(club.coaches_hired) + len(club.scouts_hired)) * 10
         percentage = (points / maximum) * 100

@@ -790,6 +790,10 @@ def rejection(negotiationid, transfer, index):
 
 
 def quick_sell(player):
+    '''
+    Find club to transfer quick sell player to, with a focus on finding
+    a club of similar to the current owning club.
+    '''
     selection = []
 
     current_reputation = game.clubs[player.club].reputation

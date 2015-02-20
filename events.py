@@ -652,6 +652,9 @@ def update_contracts():
 
                 if coach.contract == 0:
                     news.publish("CC01", coach=coach.name)
+                    del(game.clubs[game.teamid].coaches_hired[coachid])
+                elif coach.contract == 1:
+                    news.publish("CC02", coach=coach.name)
 
         for scoutid, scout in club.scouts_hired.items():
             if scout.contract > 0:
@@ -659,6 +662,9 @@ def update_contracts():
 
                 if scout.contract == 0:
                     news.publish("SC01", scout=scout.name)
+                    del(game.clubs[game.teamid].scouts_hired[scoutid])
+                elif scout.contract == 1:
+                    news.publish("SC02", scout=scout.name)
 
 
 def update_sponsorship():
@@ -1096,6 +1102,16 @@ def end_of_season():
     for key, scout in game.clubs[game.teamid].scouts_hired.items():
         scout.age += 1
 
+        if scout.age > 60:
+            likeliness = (scout.age - 60) * 20
+            value = random.randint(0, 100)
+
+            if value <= likeliness:
+                scout.retiring = True
+
+        if scout.retiring and scout.contract == 0:
+            del(game.clubs[game.teamid].scouts_hired[scoutid])
+
     for key, coach in game.clubs[game.teamid].coaches_hired.items():
         coach.age += 1
 
@@ -1128,10 +1144,10 @@ def refresh_staff():
     '''
     if game.staff_timeout == 0:
         game.clubs[game.teamid].coaches_available = {}
-        game.clubs[game.teamid].coaches_available = staff.generate(5, "coach")
+        game.clubs[game.teamid].coaches_available = staff.generate(role=0, number=5)
 
         game.clubs[game.teamid].scouts_available = {}
-        game.clubs[game.teamid].scouts_available = staff.generate(5, "scout")
+        game.clubs[game.teamid].scouts_available = staff.generate(role=0, number=5)
 
         game.staff_timeout = random.randint(8, 12)
 

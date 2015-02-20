@@ -70,7 +70,7 @@ def generate(role, number):
 
     members = {}
 
-    for count in range(1, 6):
+    for count in range(0, number):
         staff = Staff()
         staff.name = name()
         staff.age = age()

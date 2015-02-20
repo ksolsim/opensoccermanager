@@ -25,31 +25,35 @@ prefs = preferences.Preferences()
 
 def exit_game(leave=False):
     '''
-    Leave allows this function to be used when simply restarting the
-    game from the main menu. When set to True, the game will never exit
-    but will prompt to save and then return to the main menu.
+    Setting 'leave' to True allows this save dialog to be reused for
+    starting new games from the File menu.
     '''
     messagedialog = Gtk.MessageDialog(type=Gtk.MessageType.QUESTION)
     messagedialog.set_transient_for(game.window)
     messagedialog.set_title("Exit Game")
-    messagedialog.set_markup("<span size='12000'><b>The game has not been saved.</b></span>")
-    messagedialog.format_secondary_text("Do you want to save before closing?")
     messagedialog.add_button("_Cancel", Gtk.ResponseType.CANCEL)
     messagedialog.add_button("_Do Not Save", Gtk.ResponseType.REJECT)
     messagedialog.add_button("_Save", Gtk.ResponseType.ACCEPT)
     messagedialog.set_default_response(Gtk.ResponseType.ACCEPT)
+    messagedialog.set_markup("<span size='12000'><b>The game has not been saved.</b></span>")
+
+    if leave:
+        message = "Do you want to save before starting a new game?"
+    else:
+        message = "Do you want to save before closing?"
+
+    messagedialog.format_secondary_text(message)
 
     response = messagedialog.run()
 
     state = True
 
     if response == Gtk.ResponseType.REJECT:
-        if not leave:
-            Gtk.main_quit()
+        state = False
     elif response == Gtk.ResponseType.ACCEPT:
-        state = file_dialog(1)
-    else:
-        state = not state
+        save_dialog = SaveDialog()
+        state = save_dialog.display()
+        save_dialog.destroy()
 
     messagedialog.destroy()
 
@@ -91,14 +95,18 @@ class SaveDialog(Gtk.FileChooserDialog):
 
     def display(self):
         self.set_current_folder(game.save_location)
-
         self.show_all()
+
+        state = True
+
+        if self.run() == Gtk.ResponseType.OK:
+            state = False
+
+        return state
 
     def response_handler(self, filechooserdialog, response):
         if response == Gtk.ResponseType.OK:
-            confirmation = self.confirm_overwrite()
-
-            if confirmation == Gtk.FileChooserConfirmation.ACCEPT_FILENAME:
+            if self.confirm_overwrite() == Gtk.FileChooserConfirmation.ACCEPT_FILENAME:
                 self.hide()
         else:
             self.hide()
@@ -1091,6 +1099,17 @@ def renew_staff_contract(name, year, amount):
     messagedialog.destroy()
 
     return state
+
+
+def renew_staff_contract_error(staff):
+    messagedialog = Gtk.MessageDialog(type=Gtk.MessageType.ERROR)
+    messagedialog.set_transient_for(game.window)
+    messagedialog.set_title("Renew Contract")
+    messagedialog.add_button("_Close", Gtk.ResponseType.CLOSE)
+    messagedialog.set_markup("%s has decided to retire once his current contract expires, and will not negotiate an extension." % (staff.name))
+
+    messagedialog.run()
+    messagedialog.destroy()
 
 
 def improve_wage(name, amount):

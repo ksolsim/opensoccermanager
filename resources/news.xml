@@ -250,9 +250,19 @@
         <message>Coach _COACH_ has left the club as his contract expired this week. He has said goodbye to the other members of staff and thanks you for his time at the club.</message>
         <category>3</category>
     </article>
+    <article id="CC02">
+        <title>_COACH_ is due to retire in one year</title>
+        <message>Coaching team member _COACH_ has decided that he will retire once his current contract has expired.</message>
+        <category>3</category>
+    </article>
     <article id="SC01">
         <title>_SCOUT_ has left the club</title>
         <message>Member of the scouting team _SCOUT_ has now left the club after his contract expired. He thanks you and the rest of the team here for his time with the club.</message>
+        <category>3</category>
+    </article>
+    <article id="SC02">
+        <title>_SCOUT_ is due to retire in one year</title>
+        <message>Scouting team member _SCOUT_ has decided that he will retire once his current contract has expired.</message>
         <category>3</category>
     </article>
     <article id="SH01">

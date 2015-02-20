@@ -39,9 +39,10 @@ class News(Gtk.Grid):
                                     Gtk.AccelFlags.VISIBLE)
         grid.attach(entrySearch, 0, 0, 1, 1)
 
-        label = Gtk.Label("Filter")
+        label = Gtk.Label("_Filter")
         label.set_hexpand(True)
         label.set_alignment(1, 0.5)
+        label.set_use_underline(True)
         grid.attach(label, 1, 0, 1, 1)
         self.comboboxFilter = Gtk.ComboBoxText()
         self.comboboxFilter.append("0", "All")
@@ -49,6 +50,7 @@ class News(Gtk.Grid):
             self.comboboxFilter.append(str(count), constants.category[item])
         self.comboboxFilter.set_active(0)
         self.comboboxFilter.connect("changed", self.filter_changed)
+        label.set_mnemonic_widget(self.comboboxFilter)
         grid.attach(self.comboboxFilter, 2, 0, 1, 1)
 
         paned = Gtk.Paned()

@@ -399,14 +399,18 @@ class Staff(Gtk.Grid):
             if treeiter:
                 staffid = model[treeiter][0]
                 coach = game.clubs[game.teamid].coaches_hired[staffid]
-                year = random.randint(2, 4)
-                amount = coach.wage * 0.055 + coach.wage
 
-                if dialogs.renew_staff_contract(coach.name, year, amount):
-                    coach.wage = amount
-                    coach.contract = year * 52
+                if coach.retiring:
+                    dialogs.renew_staff_contract_error(coach)
+                else:
+                    year = random.randint(2, 4)
+                    amount = coach.wage * 0.055 + coach.wage
 
-                    self.populate_data()
+                    if dialogs.renew_staff_contract(coach.name, year, amount):
+                        coach.wage = amount
+                        coach.contract = year * 52
+
+                        self.populate_data()
 
         def improve_wage(self, button):
             model, treeiter = self.treeselectionCurrent.get_selected()
@@ -604,14 +608,18 @@ class Staff(Gtk.Grid):
             if treeiter:
                 staffid = model[treeiter][0]
                 scout = game.clubs[game.teamid].scouts_hired[staffid]
-                year = random.randint(2, 4)
-                amount = scout.wage * 0.055 + scout.wage
 
-                if dialogs.renew_staff_contract(scout.name, year, amount):
-                    scout.wage = amount
-                    scout.contract = year * 52
+                if scout.retiring:
+                    dialogs.renew_staff_contract_error(scout)
+                else:
+                    year = random.randint(2, 4)
+                    amount = scout.wage * 0.055 + scout.wage
 
-                    self.populate_data()
+                    if dialogs.renew_staff_contract(scout.name, year, amount):
+                        scout.wage = amount
+                        scout.contract = year * 52
+
+                        self.populate_data()
 
         def improve_wage(self, button):
             model, treeiter = self.treeselectionCurrent.get_selected()

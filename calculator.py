@@ -180,7 +180,9 @@ def value_rounder(value):
     else:
         divisor = 10
 
-    return value - (value % divisor)
+    value = value - (value % divisor)
+
+    return value
 
 
 def wage_rounder(value):
@@ -189,13 +191,15 @@ def wage_rounder(value):
     else:
         divisor = 10
 
-    return value - (value % divisor)
+    value = value - (value % divisor)
+
+    return value
 
 
 def ticket_prices():
     club = game.clubs[game.teamid]
 
-    tickets = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    tickets = [0] * 15
 
     tickets[0] = 1 + club.reputation
     tickets[1] = 1 + club.reputation + (club.reputation * 0.25)

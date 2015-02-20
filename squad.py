@@ -45,7 +45,8 @@ class Squad(Gtk.Grid):
         grid.set_column_spacing(5)
         self.attach(grid, 0, 0, 1, 1)
 
-        label = Gtk.Label("View")
+        label = Gtk.Label("_View")
+        label.set_use_underline(True)
         label.set_alignment(1, 0.5)
         grid.attach(label, 0, 0, 1, 1)
         comboboxView = Gtk.ComboBoxText()
@@ -55,6 +56,7 @@ class Squad(Gtk.Grid):
         comboboxView.append("2", "Form")
         comboboxView.set_active(1)
         comboboxView.connect("changed", self.view_changed)
+        label.set_mnemonic_widget(comboboxView)
         grid.attach(comboboxView, 1, 0, 1, 1)
 
         label = Gtk.Label()
@@ -159,11 +161,14 @@ class Squad(Gtk.Grid):
         self.attach(self.notebook, 1, 0, 1, 2)
 
         # Team notebook page
+        label = Gtk.Label("_Team")
+        label.set_use_underline(True)
+
         self.gridTeam = Gtk.Grid()
         self.gridTeam.set_border_width(5)
         self.gridTeam.set_row_spacing(5)
         self.gridTeam.set_column_spacing(5)
-        self.notebook.append_page(self.gridTeam, Gtk.Label("Team"))
+        self.notebook.append_page(self.gridTeam, label)
 
         self.comboSquadList = []
         self.comboDCList = [None] * 16
@@ -175,11 +180,14 @@ class Squad(Gtk.Grid):
             self.labelTeam.append(label)
 
         # Subs notebook page
+        label = Gtk.Label("_Subs")
+        label.set_use_underline(True)
+
         self.gridSubs = Gtk.Grid()
         self.gridSubs.set_border_width(5)
         self.gridSubs.set_row_spacing(5)
         self.gridSubs.set_column_spacing(5)
-        self.notebook.append_page(self.gridSubs, Gtk.Label("Subs"))
+        self.notebook.append_page(self.gridSubs, label)
 
         self.labelSubs = []
         for count in range(0, 5):

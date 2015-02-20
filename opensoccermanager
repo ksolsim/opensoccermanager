@@ -535,7 +535,7 @@ class ScreenGame(Gtk.Grid):
     def new_game_clicked(self, menuitem):
         state = dialogs.exit_game(leave=True)
 
-        if state:
+        if not state:
             game.window.remove(screengame)
             game.window.add(screenmain)
 
@@ -551,6 +551,7 @@ class ScreenGame(Gtk.Grid):
     def save_game_clicked(self, menuitem):
         save_dialog = dialogs.SaveDialog()
         save_dialog.display()
+        save_dialog.destroy()
 
     def preferences_dialog(self, menuitem):
         dialogs.preferences_dialog()
@@ -791,7 +792,9 @@ def exit_game(window, event=None):
         Gtk.main_quit()
     else:
         state = dialogs.exit_game()
-        state = not state
+
+        if not state:
+            Gtk.main_quit()
 
         return state
 
