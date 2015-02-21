@@ -21,17 +21,25 @@ class GoalScorers(Gtk.ScrolledWindow):
         self.add(treeview)
 
         cellrenderertext = Gtk.CellRendererText()
-        treeviewcolumn = Gtk.TreeViewColumn("Name", cellrenderertext, text=0)
+        treeviewcolumn = Gtk.TreeViewColumn("Name",
+                                            cellrenderertext,
+                                            text=0)
         treeview.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Club", cellrenderertext, text=1)
+        treeviewcolumn = Gtk.TreeViewColumn("Club",
+                                            cellrenderertext,
+                                            text=1)
         treeview.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Goals", cellrenderertext, text=2)
+        treeviewcolumn = Gtk.TreeViewColumn("Goals",
+                                            cellrenderertext,
+                                            text=2)
         treeview.append_column(treeviewcolumn)
 
     def run(self):
         self.liststore.clear()
 
-        goalscorers = sorted(game.goalscorers, key=game.goalscorers.get, reverse=True)
+        goalscorers = sorted(game.goalscorers,
+                             key=game.goalscorers.get,
+                             reverse=True)
 
         for playerid in goalscorers[:25]:
             player = game.players[playerid]
@@ -58,17 +66,25 @@ class Assists(Gtk.ScrolledWindow):
         self.add(treeview)
 
         cellrenderertext = Gtk.CellRendererText()
-        treeviewcolumn = Gtk.TreeViewColumn("Name", cellrenderertext, text=0)
+        treeviewcolumn = Gtk.TreeViewColumn("Name",
+                                            cellrenderertext,
+                                            text=0)
         treeview.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Club", cellrenderertext, text=1)
+        treeviewcolumn = Gtk.TreeViewColumn("Club",
+                                            cellrenderertext,
+                                            text=1)
         treeview.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Assists", cellrenderertext, text=2)
+        treeviewcolumn = Gtk.TreeViewColumn("Assists",
+                                            cellrenderertext,
+                                            text=2)
         treeview.append_column(treeviewcolumn)
 
     def run(self):
         self.liststore.clear()
 
-        assists = sorted(game.assists, key=game.assists.get, reverse=True)
+        assists = sorted(game.assists,
+                         key=game.assists.get,
+                         reverse=True)
 
         for playerid in assists[:25]:
             player = game.players[playerid]
@@ -97,31 +113,43 @@ class Cards(Gtk.ScrolledWindow):
         self.add(treeview)
 
         cellrenderertext = Gtk.CellRendererText()
-        treeviewcolumn = Gtk.TreeViewColumn("Name", cellrenderertext, text=0)
+        treeviewcolumn = Gtk.TreeViewColumn("Name",
+                                            cellrenderertext,
+                                            text=0)
         treeview.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Club", cellrenderertext, text=1)
+        treeviewcolumn = Gtk.TreeViewColumn("Club",
+                                            cellrenderertext,
+                                            text=1)
         treeview.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Yellow Cards", cellrenderertext, text=2)
+        treeviewcolumn = Gtk.TreeViewColumn("Yellow Cards",
+                                            cellrenderertext,
+                                            text=2)
         treeview.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Red Cards", cellrenderertext, text=3)
+        treeviewcolumn = Gtk.TreeViewColumn("Red Cards",
+                                            cellrenderertext,
+                                            text=3)
         treeview.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Points", cellrenderertext, text=4)
+        treeviewcolumn = Gtk.TreeViewColumn("Points",
+                                            cellrenderertext,
+                                            text=4)
         treeview.append_column(treeviewcolumn)
 
     def run(self):
         self.liststore.clear()
 
-        cards = sorted(game.cards, key=game.cards.get, reverse=True)
+        players = [key for key in sorted(game.cards, key=lambda x: game.cards[x].points, reverse=True)]
 
-        for playerid in cards[:25]:
+        for playerid in players[:25]:
             player = game.players[playerid]
             name = display.name(player, mode=1)
             club = game.clubs[player.club].name
-            yellow = player.yellow_cards
-            red = player.red_cards
-            points = player.suspension_points
+            cards = game.cards[playerid]
 
-            self.liststore.append([name, club, yellow, red, points])
+            self.liststore.append([name,
+                                   club,
+                                   cards.yellow_cards,
+                                   cards.red_cards,
+                                   cards.points])
 
         self.show_all()
 
@@ -177,18 +205,28 @@ class Referees(Gtk.ScrolledWindow):
         self.add(treeview)
 
         cellrenderertext = Gtk.CellRendererText()
-        treeviewcolumn = Gtk.TreeViewColumn("Name", cellrenderertext, text=0)
+        treeviewcolumn = Gtk.TreeViewColumn("Name",
+                                            cellrenderertext,
+                                            text=0)
         treeview.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Matches", cellrenderertext, text=1)
+        treeviewcolumn = Gtk.TreeViewColumn("Matches",
+                                            cellrenderertext,
+                                            text=1)
         treeviewcolumn.set_fixed_width(75)
         treeview.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Fouls", cellrenderertext, text=2)
+        treeviewcolumn = Gtk.TreeViewColumn("Fouls",
+                                            cellrenderertext,
+                                            text=2)
         treeviewcolumn.set_fixed_width(75)
         treeview.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Yellow Cards", cellrenderertext, text=3)
+        treeviewcolumn = Gtk.TreeViewColumn("Yellow Cards",
+                                            cellrenderertext,
+                                            text=3)
         treeviewcolumn.set_fixed_width(75)
         treeview.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Red Cards", cellrenderertext, text=4)
+        treeviewcolumn = Gtk.TreeViewColumn("Red Cards",
+                                            cellrenderertext,
+                                            text=4)
         treeviewcolumn.set_fixed_width(75)
         treeview.append_column(treeviewcolumn)
 

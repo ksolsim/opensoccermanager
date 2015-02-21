@@ -15,6 +15,12 @@ import staff
 import widgets
 
 
+class Cards:
+    yellow_cards = 0
+    red_cards = 0
+    points = 0
+
+
 def rating(selection):
     '''
     Calculate player ratings for both teams at end of each match.
@@ -313,7 +319,7 @@ def cards(club1, club2):
     generated.
     '''
     def generate(clubid):
-        cards = [{}, {}]
+        match_cards = [{}, {}]
 
         multiplier = game.clubs[clubid].tactics[6] + 1
 
@@ -324,15 +330,15 @@ def cards(club1, club2):
         count = 0
 
         while count < int(yellow):
-            choice = random.randint(0, (100 * (10 - len(cards[0]))))
+            choice = random.randint(0, (100 * (10 - len(match_cards[0]))))
 
             if choice < int(yellow) and len(players[0]) > 0:
                 playerid = random.choice(players[0])
                 player = game.players[playerid]
 
-                if playerid in cards[0]:
-                    cards[0][playerid] += 1
-                    cards[1][playerid] = 1
+                if playerid in match_cards[0]:
+                    match_cards[0][playerid] += 1
+                    match_cards[1][playerid] = 1
                     player.yellow_cards += 1
                     player.red_cards += 1
 
@@ -346,7 +352,7 @@ def cards(club1, club2):
                         name = display.name(player, mode=1)
                         news.publish("SU01", player=name, period="1")
                 else:
-                    cards[0][playerid] = 1
+                    match_cards[0][playerid] = 1
                     player.yellow_cards += 1
 
                 # Ban player for one match if five/ten/etc yellows
@@ -358,19 +364,23 @@ def cards(club1, club2):
                         name = display.name(player, mode=1)
                         news.publish("SU03", player=name, period="1", cards=player.yellow_cards)
 
+                '''
                 # Add card to chart
-                if playerid in game.cards:
-                    game.cards[playerid][0] += 1
+                if playerid not in game.cards.keys():
+                    cards = Cards()
+                    game.cards[playerid] = cards
                 else:
-                    game.cards[playerid] = [0, 0]
-                    game.cards[playerid][0] = 1
+                    cards = game.cards[playerid]
+
+                cards.yellow_cards += 1
+                '''
 
             count += 1
 
         count = 0
 
         while count < int(red):
-            choice = random.randint(0, (100 * (10 - len(cards[0]))))
+            choice = random.randint(0, (100 * (10 - len(match_cards[0]))))
 
             if choice < int(red):
                 playerid = random.choice(players[1])
@@ -389,16 +399,41 @@ def cards(club1, club2):
                     name = display.name(player, mode=1)
                     news.publish("SU02", player=name, period=player.suspension_period, suspension=suspension[0])
 
+                '''
                 # Add card to chart
-                if playerid in game.cards:
-                    game.cards[playerid][1] += 1
+                if playerid not in game.cards.keys():
+                    cards = Cards()
+                    game.cards[playerid] = cards
                 else:
-                    game.cards[playerid] = [0, 0]
-                    game.cards[playerid][1] = 1
+                    cards = game.cards[playerid]
+
+                cards.red_cards += 1
+                '''
 
             count += 1
 
-        return len(cards[0]), len(cards[1])
+        # Process cards and add to chart
+        for playerid, amount in match_cards[0].items():
+            if playerid not in game.cards.keys():
+                cards = Cards()
+                game.cards[playerid] = cards
+            else:
+                cards = game.cards[playerid]
+
+            cards.yellow_cards += amount
+            cards.points += amount * 1
+
+        for playerid, amount in match_cards[1].items():
+            if playerid not in game.cards.keys():
+                cards = Cards()
+                game.cards[playerid] = cards
+            else:
+                cards = game.cards[playerid]
+
+            cards.red_cards += amount
+            cards.points += 3
+
+        return len(match_cards[0]), len(match_cards[1])
 
     players = [[], []]
 
