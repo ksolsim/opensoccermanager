@@ -28,9 +28,6 @@ class Tactics(Gtk.Grid):
         grid.set_row_homogeneous(True)
         self.attach(grid, 0, 0, 1, 1)
 
-        label = widgets.AlignedLabel("Formation")
-        grid.attach(label, 0, 0, 1, 1)
-
         self.liststoreFormation = Gtk.ListStore(int, str)
         self.liststoreCaptain = Gtk.ListStore(str, str)
         self.liststorePenaltyTaker = Gtk.ListStore(str, str)
@@ -39,14 +36,17 @@ class Tactics(Gtk.Grid):
 
         cellrenderertext = Gtk.CellRendererText()
 
+        label = widgets.AlignedLabel("_Formation")
+        grid.attach(label, 0, 0, 1, 1)
         self.comboboxFormation = Gtk.ComboBox()
         self.comboboxFormation.set_model(self.liststoreFormation)
         self.comboboxFormation.connect("changed", self.formation_changed)
         self.comboboxFormation.pack_start(cellrenderertext, True)
         self.comboboxFormation.add_attribute(cellrenderertext, "text", 1)
+        label.set_mnemonic_widget(self.comboboxFormation)
         grid.attach(self.comboboxFormation, 1, 0, 1, 1)
 
-        label = widgets.AlignedLabel("Captain")
+        label = widgets.AlignedLabel("_Captain")
         grid.attach(label, 0, 1, 1, 1)
         self.comboboxCaptain = Gtk.ComboBox()
         self.comboboxCaptain.set_model(self.liststoreCaptain)
@@ -55,9 +55,10 @@ class Tactics(Gtk.Grid):
         self.comboboxCaptain.pack_start(cellrenderertext, True)
         self.comboboxCaptain.add_attribute(cellrenderertext, "text", 1)
         self.comboboxCaptain.connect("changed", self.role_changed, 1)
+        label.set_mnemonic_widget(self.comboboxCaptain)
         grid.attach(self.comboboxCaptain, 1, 1, 2, 1)
 
-        label = widgets.AlignedLabel("Penalty Taker")
+        label = widgets.AlignedLabel("_Penalty Taker")
         grid.attach(label, 0, 2, 1, 1)
         self.comboboxPenaltyTaker = Gtk.ComboBox()
         self.comboboxPenaltyTaker.set_model(self.liststorePenaltyTaker)
@@ -66,9 +67,10 @@ class Tactics(Gtk.Grid):
         self.comboboxPenaltyTaker.pack_start(cellrenderertext, True)
         self.comboboxPenaltyTaker.add_attribute(cellrenderertext, "text", 1)
         self.comboboxPenaltyTaker.connect("changed", self.role_changed, 2)
+        label.set_mnemonic_widget(self.comboboxPenaltyTaker)
         grid.attach(self.comboboxPenaltyTaker, 1, 2, 2, 1)
 
-        label = widgets.AlignedLabel("Free Kick Taker")
+        label = widgets.AlignedLabel("Free _Kick Taker")
         grid.attach(label, 0, 3, 1, 1)
         self.comboboxFreeKickTaker = Gtk.ComboBox()
         self.comboboxFreeKickTaker.set_model(self.liststoreFreeKickTaker)
@@ -77,9 +79,10 @@ class Tactics(Gtk.Grid):
         self.comboboxFreeKickTaker.pack_start(cellrenderertext, True)
         self.comboboxFreeKickTaker.add_attribute(cellrenderertext, "text", 1)
         self.comboboxFreeKickTaker.connect("changed", self.role_changed, 3)
+        label.set_mnemonic_widget(self.comboboxFreeKickTaker)
         grid.attach(self.comboboxFreeKickTaker, 1, 3, 2, 1)
 
-        label = widgets.AlignedLabel("Corner Taker")
+        label = widgets.AlignedLabel("_Corner Taker")
         grid.attach(label, 0, 4, 1, 1)
         self.comboboxCornerTaker = Gtk.ComboBox()
         self.comboboxCornerTaker.set_model(self.liststoreCornerTaker)
@@ -88,12 +91,14 @@ class Tactics(Gtk.Grid):
         self.comboboxCornerTaker.pack_start(cellrenderertext, True)
         self.comboboxCornerTaker.add_attribute(cellrenderertext, "text", 1)
         self.comboboxCornerTaker.connect("changed", self.role_changed, 4)
+        label.set_mnemonic_widget(self.comboboxCornerTaker)
         grid.attach(self.comboboxCornerTaker, 1, 4, 2, 1)
 
-        label = widgets.AlignedLabel("Playing Style")
+        label = widgets.AlignedLabel("P_laying Style")
         grid.attach(label, 0, 5, 1, 1)
         radiobuttonStyleDefensive = Gtk.RadioButton("Defensive")
         radiobuttonStyleDefensive.connect("toggled", self.style_changed, 0)
+        label.set_mnemonic_widget(radiobuttonStyleDefensive)
         self.style.append(radiobuttonStyleDefensive)
         grid.attach(radiobuttonStyleDefensive, 1, 5, 1, 1)
         radiobuttonStyleNormal = Gtk.RadioButton("Normal", group=radiobuttonStyleDefensive)
@@ -105,10 +110,11 @@ class Tactics(Gtk.Grid):
         self.style.append(radiobuttonStyleAttacking)
         grid.attach(radiobuttonStyleAttacking, 3, 5, 1, 1)
 
-        label = widgets.AlignedLabel("Tackling Style")
+        label = widgets.AlignedLabel("_Tackling Style")
         grid.attach(label, 0, 6, 1, 1)
         radiobuttonTacklingSoft = Gtk.RadioButton("Soft")
         radiobuttonTacklingSoft.connect("toggled", self.tackling_changed, 0)
+        label.set_mnemonic_widget(radiobuttonTacklingSoft)
         self.tackling.append(radiobuttonTacklingSoft)
         grid.attach(radiobuttonTacklingSoft, 1, 6, 1, 1)
         radiobuttonTacklingNormal = Gtk.RadioButton("Normal", group=radiobuttonTacklingSoft)
@@ -120,10 +126,11 @@ class Tactics(Gtk.Grid):
         self.tackling.append(radiobuttonTacklingHard)
         grid.attach(radiobuttonTacklingHard, 3, 6, 1, 1)
 
-        label = widgets.AlignedLabel("Passing Style")
+        label = widgets.AlignedLabel("_Passing Style")
         grid.attach(label, 0, 7, 1, 1)
         radiobuttonPassingDirect = Gtk.RadioButton("Direct")
         radiobuttonPassingDirect.connect("toggled", self.passing_changed, 0)
+        label.set_mnemonic_widget(radiobuttonPassingDirect)
         self.passing.append(radiobuttonPassingDirect)
         grid.attach(radiobuttonPassingDirect, 1, 7, 1, 1)
         radiobuttonPassingLong = Gtk.RadioButton("Long Ball", group=radiobuttonPassingDirect)
@@ -135,7 +142,7 @@ class Tactics(Gtk.Grid):
         self.passing.append(radiobuttonPassingShort)
         grid.attach(radiobuttonPassingShort, 3, 7, 1, 1)
 
-        label = widgets.AlignedLabel("Win Bonus")
+        label = widgets.AlignedLabel("Win _Bonus")
         grid.attach(label, 0, 8, 1, 1)
         self.comboboxWinBonus = Gtk.ComboBoxText()
         self.comboboxWinBonus.append("0", "No Bonus")
@@ -143,6 +150,7 @@ class Tactics(Gtk.Grid):
         self.comboboxWinBonus.append("3", "30%")
         self.comboboxWinBonus.append("5", "50%")
         self.comboboxWinBonus.connect("changed", self.bonus_changed)
+        label.set_mnemonic_widget(self.comboboxWinBonus)
         grid.attach(self.comboboxWinBonus, 1, 8, 1, 1)
 
     def formation_changed(self, combobox):

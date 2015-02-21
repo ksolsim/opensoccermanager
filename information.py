@@ -27,12 +27,13 @@ class News(Gtk.Grid):
         grid = Gtk.Grid()
         grid.set_column_spacing(5)
         self.attach(grid, 0, 0, 1, 1)
+
         entrySearch = Gtk.SearchEntry()
         entrySearch.set_placeholder_text("Search")
         entrySearch.connect("activate", self.activate_search)
         entrySearch.connect("icon-press", self.icon_press)
         entrySearch.connect_after("backspace", self.backspace_pressed)
-        entrySearch.add_accelerator("grab_focus",
+        entrySearch.add_accelerator("grab-focus",
                                     game.accelgroup,
                                     102,
                                     Gdk.ModifierType.CONTROL_MASK,
@@ -72,7 +73,9 @@ class News(Gtk.Grid):
         scrolledwindow.add(treeviewNews)
 
         cellrenderertext = Gtk.CellRendererText()
-        treeviewcolumn = Gtk.TreeViewColumn("Date", cellrenderertext, text=0)
+        treeviewcolumn = Gtk.TreeViewColumn("Date",
+                                            cellrenderertext,
+                                            text=0)
         treeviewNews.append_column(treeviewcolumn)
 
         treeviewcolumn = Gtk.TreeViewColumn("Title")
@@ -84,11 +87,14 @@ class News(Gtk.Grid):
         treeviewcolumn.add_attribute(cellrendererTitle, "weight-set", 5)
         treeviewcolumn.add_attribute(cellrendererTitle, "weight", 6)
 
-        treeviewcolumn = Gtk.TreeViewColumn("Category", cellrenderertext, text=4)
+        treeviewcolumn = Gtk.TreeViewColumn("Category",
+                                            cellrenderertext,
+                                            text=4)
         treeviewNews.append_column(treeviewcolumn)
 
         scrolledwindow = Gtk.ScrolledWindow()
-        scrolledwindow.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.ALWAYS)
+        scrolledwindow.set_policy(Gtk.PolicyType.NEVER,
+                                  Gtk.PolicyType.ALWAYS)
         paned.add2(scrolledwindow)
 
         self.textviewNews = Gtk.TextView()
@@ -180,7 +186,13 @@ class News(Gtk.Grid):
             else:
                 weight = 400
 
-            self.liststoreNews.append([item[0], item[1], item[2], item[3], category, item[4], weight])
+            self.liststoreNews.append([item[0],
+                                       item[1],
+                                       item[2],
+                                       item[3],
+                                       category,
+                                       item[4],
+                                       weight])
 
     def run(self):
         self.populate_data(game.news)
@@ -199,7 +211,8 @@ class Fixtures(Gtk.Grid):
         self.liststoreFixtures = Gtk.ListStore(str, str, str)  # All fixtures
 
         scrolledwindow = Gtk.ScrolledWindow()
-        scrolledwindow.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+        scrolledwindow.set_policy(Gtk.PolicyType.NEVER,
+                                  Gtk.PolicyType.AUTOMATIC)
         self.attach(scrolledwindow, 0, 1, 1, 1)
 
         # Fixtures for players club
@@ -215,7 +228,9 @@ class Fixtures(Gtk.Grid):
         scrolledwindow.add(self.treeviewClubFixtures)
 
         cellrenderertext = Gtk.CellRendererText()
-        treeviewcolumn = Gtk.TreeViewColumn("", cellrenderertext, text=0)
+        treeviewcolumn = Gtk.TreeViewColumn(None,
+                                            cellrenderertext,
+                                            text=0)
         self.treeviewClubFixtures.append_column(treeviewcolumn)
 
         # Fixtures for all clubs
@@ -245,13 +260,19 @@ class Fixtures(Gtk.Grid):
         self.attach(treeviewFixtures, 1, 1, 2, 1)
 
         cellrenderertext = Gtk.CellRendererText()
-        treeviewcolumn = Gtk.TreeViewColumn("Home", cellrenderertext, text=0)
+        treeviewcolumn = Gtk.TreeViewColumn("Home",
+                                            cellrenderertext,
+                                            text=0)
         treeviewcolumn.set_expand(True)
         treeviewFixtures.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Away", cellrenderertext, text=1)
+        treeviewcolumn = Gtk.TreeViewColumn("Away",
+                                            cellrenderertext,
+                                            text=1)
         treeviewcolumn.set_expand(True)
         treeviewFixtures.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Venue", cellrenderertext, text=2)
+        treeviewcolumn = Gtk.TreeViewColumn("Venue",
+                                            cellrenderertext,
+                                            text=2)
         treeviewcolumn.set_expand(True)
         treeviewFixtures.append_column(treeviewcolumn)
 
@@ -344,18 +365,22 @@ class Results(Gtk.Grid):
         self.overlay.add(self.treeviewResults)
 
         cellrenderertext = Gtk.CellRendererText()
-        treeviewcolumn = Gtk.TreeViewColumn("Home", cellrenderertext, text=0)
+        treeviewcolumn = Gtk.TreeViewColumn("Home",
+                                            cellrenderertext,
+                                            text=0)
         treeviewcolumn.set_expand(True)
         self.treeviewResults.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn()
+        treeviewcolumn = Gtk.TreeViewColumn(None,
+                                            cellrenderertext,
+                                            text=1)
         self.treeviewResults.append_column(treeviewcolumn)
-        treeviewcolumn.pack_start(cellrenderertext, False)
-        treeviewcolumn.add_attribute(cellrenderertext, "text", 1)
-        treeviewcolumn = Gtk.TreeViewColumn()
+        treeviewcolumn = Gtk.TreeViewColumn(None,
+                                            cellrenderertext,
+                                            text=2)
         self.treeviewResults.append_column(treeviewcolumn)
-        treeviewcolumn.pack_start(cellrenderertext, False)
-        treeviewcolumn.add_attribute(cellrenderertext, "text", 2)
-        treeviewcolumn = Gtk.TreeViewColumn("Away", cellrenderertext, text=3)
+        treeviewcolumn = Gtk.TreeViewColumn("Away",
+                                            cellrenderertext,
+                                            text=3)
         treeviewcolumn.set_expand(True)
         self.treeviewResults.append_column(treeviewcolumn)
 
@@ -443,34 +468,66 @@ class Standings(Gtk.Grid):
         scrolledwindow.add(treeviewStandings)
 
         cellrenderertext = Gtk.CellRendererText()
-        treeviewcolumn = Gtk.TreeViewColumn("Team", cellrenderertext, text=0)
+        treeviewcolumn = Gtk.TreeViewColumn("Team",
+                                            cellrenderertext,
+                                            text=0)
         treeviewcolumn.set_expand(True)
         treeviewStandings.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Played", cellrenderertext, text=1)
+        treeviewcolumn = Gtk.TreeViewColumn("Played",
+                                            cellrenderertext,
+                                            text=1)
         treeviewcolumn.set_fixed_width(48)
         treeviewStandings.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Won", cellrenderertext, text=2)
+        treeviewcolumn = Gtk.TreeViewColumn("Won",
+                                            cellrenderertext,
+                                            text=2)
         treeviewcolumn.set_fixed_width(48)
         treeviewStandings.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Drawn", cellrenderertext, text=3)
+        treeviewcolumn = Gtk.TreeViewColumn("Drawn",
+                                            cellrenderertext,
+                                            text=3)
         treeviewcolumn.set_fixed_width(48)
         treeviewStandings.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Lost", cellrenderertext, text=4)
+        treeviewcolumn = Gtk.TreeViewColumn("Lost",
+                                            cellrenderertext,
+                                            text=4)
         treeviewcolumn.set_fixed_width(48)
         treeviewStandings.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("GF", cellrenderertext, text=5)
+        treeviewcolumn = Gtk.TreeViewColumn(None,
+                                            cellrenderertext,
+                                            text=5)
+        label = Gtk.Label("GF")
+        label.set_tooltip_text("Goals For")
+        label.show()
+        treeviewcolumn.set_widget(label)
         treeviewcolumn.set_fixed_width(48)
         treeviewStandings.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("GA", cellrenderertext, text=6)
+        treeviewcolumn = Gtk.TreeViewColumn(None,
+                                            cellrenderertext,
+                                            text=6)
+        label = Gtk.Label("GA")
+        label.set_tooltip_text("Goals Against")
+        label.show()
+        treeviewcolumn.set_widget(label)
         treeviewcolumn.set_fixed_width(48)
         treeviewStandings.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("GD", cellrenderertext, text=7)
+        treeviewcolumn = Gtk.TreeViewColumn(None,
+                                            cellrenderertext,
+                                            text=7)
+        label = Gtk.Label("GD")
+        label.set_tooltip_text("Goal Difference")
+        label.show()
+        treeviewcolumn.set_widget(label)
         treeviewcolumn.set_fixed_width(48)
         treeviewStandings.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Points", cellrenderertext, text=8)
+        treeviewcolumn = Gtk.TreeViewColumn("Points",
+                                            cellrenderertext,
+                                            text=8)
         treeviewcolumn.set_fixed_width(48)
         treeviewStandings.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Form", cellrenderertext, text=9)
+        treeviewcolumn = Gtk.TreeViewColumn("Form",
+                                            cellrenderertext,
+                                            text=9)
         treeviewcolumn.set_fixed_width(96)
         treeviewStandings.append_column(treeviewcolumn)
 

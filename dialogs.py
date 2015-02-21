@@ -78,6 +78,38 @@ def about():
     aboutdialog.destroy()
 
 
+class OpenDialog(Gtk.FileChooserDialog):
+    def __init__(self):
+        Gtk.FileChooserDialog.__init__(self)
+        self.set_transient_for(game.window)
+        self.set_title("Open File")
+        self.add_button("_Cancel", Gtk.ResponseType.CANCEL)
+        self.add_button("_Open", Gtk.ResponseType.OK)
+        self.set_action(Gtk.FileChooserAction.OPEN)
+        self.set_current_folder(game.save_location)
+        self.connect("response", self.response_handler)
+
+        filefilter = Gtk.FileFilter()
+        filefilter.set_name("Saved Game")
+        filefilter.add_pattern("*.osm")
+        self.add_filter(filefilter)
+
+    def display(self):
+        state = False
+
+        if self.run() == Gtk.ResponseType.OK:
+            state = True
+
+        return state
+
+    def response_handler(self, filechooserdialog, response):
+        if response == Gtk.ResponseType.OK:
+            filename = self.get_filename()
+            fileio.open_file(filename)
+
+        self.hide()
+
+
 class SaveDialog(Gtk.FileChooserDialog):
     def __init__(self):
         Gtk.FileChooserDialog.__init__(self)
@@ -150,34 +182,6 @@ class SaveDialog(Gtk.FileChooserDialog):
         return folder, filename
 
 
-def file_dialog():
-    dialog = Gtk.FileChooserDialog()
-    dialog.set_transient_for(game.window)
-    dialog.set_title("Open File")
-    dialog.add_button("_Cancel", Gtk.ResponseType.CANCEL)
-    dialog.add_button("_Open", Gtk.ResponseType.OK)
-    dialog.set_action(Gtk.FileChooserAction.OPEN)
-    dialog.set_do_overwrite_confirmation(True)
-    dialog.set_current_folder(game.save_location)
-
-    filefilter = Gtk.FileFilter()
-    filefilter.set_name("Saved Game")
-    filefilter.add_pattern("*.osm")
-    dialog.add_filter(filefilter)
-
-    state = False
-
-    if dialog.run() == Gtk.ResponseType.OK:
-        filename = dialog.get_filename()
-        fileio.open_file(filename)
-
-        state = True
-
-    dialog.destroy()
-
-    return state
-
-
 def delete_dialog():
     def load_directory(filechooserbutton=None, location=None):
         liststore.clear()
@@ -232,15 +236,19 @@ def delete_dialog():
     buttonDelete.connect("clicked", delete_file)
 
     liststore = Gtk.ListStore(str, str)
+    treemodelsort = Gtk.TreeModelSort(liststore)
+    treemodelsort.set_sort_column_id(1, Gtk.SortType.ASCENDING)
     load_directory(location=game.save_location)
 
     treeview = Gtk.TreeView()
+    treeview.set_vexpand(True)
+    treeview.set_model(treemodelsort)
+    treeview.set_search_column(1)
+    treeview.set_headers_visible(False)
+    treeview.set_rubber_banding(True)
     treeselection = treeview.get_selection()
     treeselection.set_mode(Gtk.SelectionMode.MULTIPLE)
     treeselection.connect("changed", selection_changed)
-    treeview.set_vexpand(True)
-    treeview.set_model(liststore)
-    treeview.set_headers_visible(False)
     scrolledwindow.add(treeview)
 
     cellrenderertext = Gtk.CellRendererText()
