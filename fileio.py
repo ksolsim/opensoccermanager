@@ -153,9 +153,8 @@ def open_file(filename):
         stadium.main = []
         stadium.corner = []
 
-        count = 0
-
         data = item[6:18]
+        count = 0
 
         for value in range(0, 4):
             stand = Stand()
@@ -168,9 +167,8 @@ def open_file(filename):
 
             count += 1
 
-        count = 0
-
         data = item[18:30]
+        count = 0
 
         for value in range(0, 4):
             stand = Stand()

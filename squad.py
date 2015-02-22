@@ -310,7 +310,6 @@ class Squad(Gtk.Grid):
         selection.set(selection.get_target(), 8, data)
 
     def on_drag_data_received(self, combobox, context, x, y, selection, info, time):
-        model = combobox.get_model()
         playerid = selection.get_data().decode("utf-8")
 
         combobox.set_active_id(playerid)
@@ -516,7 +515,6 @@ class Squad(Gtk.Grid):
         name = display.name(player, mode=1)
         value = player.value * 0.5
         amount = display.value(value)
-        old_club = player.club
         new_club = transfer.quick_sell(player)
 
         club = game.clubs[new_club].name
@@ -567,8 +565,6 @@ class Squad(Gtk.Grid):
 
         if state:
             transfer.end_loan(playerid)
-
-            count = 0
 
             for key, item in game.clubs[game.teamid].team.items():
                 if item == playerid:

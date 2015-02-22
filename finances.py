@@ -438,23 +438,23 @@ class Accounts(Gtk.Grid):
         self.labels_week = []
         self.labels_season = []
 
-        for x in range(0, 9):
+        for count in range(0, 9):
             label = widgets.AlignedLabel()
             self.labels_week.append(label)
-            self.attach(label, 1, x + 1, 1, 1)
+            self.attach(label, 1, count + 1, 1, 1)
 
             label = widgets.AlignedLabel()
             self.labels_season.append(label)
-            self.attach(label, 2, x + 1, 1, 1)
+            self.attach(label, 2, count + 1, 1, 1)
 
-        for x in range(9, 19):
+        for count in range(9, 19):
             label = widgets.AlignedLabel()
             self.labels_week.append(label)
-            self.attach(label, 5, x - 8, 1, 1)
+            self.attach(label, 5, count - 8, 1, 1)
 
             label = widgets.AlignedLabel()
             self.labels_season.append(label)
-            self.attach(label, 6, x - 8, 1, 1)
+            self.attach(label, 6, count - 8, 1, 1)
 
         label = Gtk.Label("<b>Income</b>")
         label.set_use_markup(True)

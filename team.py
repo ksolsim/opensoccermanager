@@ -161,8 +161,9 @@ class Tactics(Gtk.Grid):
             game.clubs[game.teamid].tactics[0] = model[treeiter][0]
 
     def role_changed(self, combobox, index):
-        # Used to set the captain, corner taker, free kick taker, penalty taker
-        # Stores ID number of player in tactics list
+        '''
+        Store player ID for selected role (e.g. captain, penalty taker).
+        '''
         treeiter = combobox.get_active_iter()
 
         if treeiter:
@@ -207,7 +208,7 @@ class Tactics(Gtk.Grid):
         self.comboboxFreeKickTaker.set_sensitive(False)
         self.comboboxCornerTaker.set_sensitive(False)
 
-        for key, playerid in game.clubs[game.teamid].team.items():
+        for playerid in game.clubs[game.teamid].team:
             if playerid != 0:
                 name = display.name(game.players[playerid])
                 playerid = str(playerid)
@@ -288,6 +289,8 @@ class Staff(Gtk.Grid):
             self.attach(scrolledwindow, 0, 1, 1, 1)
 
             treeviewCurrent = Gtk.TreeView()
+            treeviewCurrent.set_enable_search(False)
+            treeviewCurrent.set_search_column(-1)
             treeviewCurrent.set_model(self.liststoreCurrent)
             scrolledwindow.add(treeviewCurrent)
             self.treeselectionCurrent = treeviewCurrent.get_selection()
@@ -319,6 +322,8 @@ class Staff(Gtk.Grid):
             self.treeviewAvailable = Gtk.TreeView()
             self.treeviewAvailable.set_model(self.liststoreAvailable)
             self.treeviewAvailable.set_cursor(0)
+            self.treeviewAvailable.set_enable_search(False)
+            self.treeviewAvailable.set_search_column(-1)
             self.treeviewAvailable.connect("row-activated", self.staff_hire)
             scrolledwindow.add(self.treeviewAvailable)
             treeselectionAvailable = self.treeviewAvailable.get_selection()
@@ -365,14 +370,15 @@ class Staff(Gtk.Grid):
 
             if treeiter:
                 coachid = model[treeiter][0]
-                coach = game.clubs[game.teamid].coaches_available[coachid]
+                club = game.clubs[game.teamid]
+                coach = club.coaches_available[coachid]
 
                 if dialogs.hire_staff(0, coach.name):
                     # Set coach morale to "delighted"
                     coach.morale = 9
 
-                    game.clubs[game.teamid].coaches_hired[coachid] = game.clubs[game.teamid].coaches_available[coachid]
-                    del(game.clubs[game.teamid].coaches_available[coachid])
+                    club.coaches_hired[coachid] = club.coaches_available[coachid]
+                    del(club.coaches_available[coachid])
 
                     self.populate_data()
 
@@ -381,7 +387,7 @@ class Staff(Gtk.Grid):
 
             count = 0
 
-            for key, item in game.clubs[game.teamid].individual_training.items():
+            for item in game.clubs[game.teamid].individual_training:
                 if item[0] == model[treeiter][0]:
                     count += 1
 
@@ -513,6 +519,8 @@ class Staff(Gtk.Grid):
 
             treeviewCurrent = Gtk.TreeView()
             treeviewCurrent.set_model(self.liststoreCurrent)
+            treeviewCurrent.set_enable_search(False)
+            treeviewCurrent.set_search_column(-1)
             self.treeselectionCurrent = treeviewCurrent.get_selection()
             self.treeselectionCurrent.connect("changed", selection_changed, 1)
             cellrenderertext = Gtk.CellRendererText()
@@ -541,6 +549,8 @@ class Staff(Gtk.Grid):
             self.treeviewAvailable = Gtk.TreeView()
             self.treeviewAvailable.set_model(self.liststoreAvailable)
             self.treeviewAvailable.set_cursor(0)
+            self.treeviewAvailable.set_enable_search(False)
+            self.treeviewAvailable.set_search_column(-1)
             scrolledwindow.add(self.treeviewAvailable)
             treeselectionAvailable = self.treeviewAvailable.get_selection()
             treeselectionAvailable.connect("changed", selection_changed, 0)
@@ -583,16 +593,15 @@ class Staff(Gtk.Grid):
             model, treeiter = selection.get_selected()
 
             if treeiter:
-                staffid = model[treeiter][0]
-                scout = game.clubs[game.teamid].scouts_available[staffid]
+                scoutid = model[treeiter][0]
+                club = game.clubs[game.teamid]
+                scout = club.scouts_available[scoutid]
 
                 if dialogs.hire_staff(1, scout.name):
-                    scoutid = model[treeiter][0]
-
                     scout.morale = 9
 
-                    game.clubs[game.teamid].scouts_hired[scoutid] = game.clubs[game.teamid].scouts_available[scoutid]
-                    del(game.clubs[game.teamid].scouts_available[scoutid])
+                    club.scouts_hired[scoutid] = club.scouts_available[scoutid]
+                    del(club.scouts_available[scoutid])
 
                     self.populate_data()
 

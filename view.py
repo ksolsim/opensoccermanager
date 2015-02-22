@@ -372,70 +372,70 @@ class Players(Gtk.Grid):
 
     def filter_visible(self, model, treeiter, data):
         criteria = game.player_filter
-        display = True
+        show = True
 
         # Filter own players
         if criteria[0] is False:
             if model[treeiter][3] == game.teamid:
-                display = False
+                show = False
 
         # Filter position
         if criteria[1] == 1:
             if model[treeiter][6] not in ("GK"):
-                display = False
+                show = False
         elif criteria[1] == 2:
             if model[treeiter][6] not in ("DL", "DR", "DC", "D"):
-                display = False
+                show = False
         elif criteria[1] == 3:
             if model[treeiter][6] not in ("ML", "MR", "MC", "M"):
-                display = False
+                show = False
         elif criteria[1] == 4:
             if model[treeiter][6] not in ("AS", "AF"):
-                display = False
+                show = False
 
         # Filter player values
-        if display:
-            display = criteria[2][1] >= model[treeiter][16] >= criteria[2][0]
+        if show:
+            show = criteria[2][1] >= model[treeiter][16] >= criteria[2][0]
 
         # Filter player ages
-        if display:
-            display = criteria[3][1] >= model[treeiter][2] >= criteria[3][0]
+        if show:
+            show = criteria[3][1] >= model[treeiter][2] >= criteria[3][0]
 
         # Filter transfer list, loan list and contract statuses
         if criteria[4] == 1:
             if model[treeiter][22] is False:
-                display = False
+                show = False
         elif criteria[4] == 2:
             if model[treeiter][23] is False:
-                display = False
+                show = False
         elif criteria[4] == 3:
             if model[treeiter][20] != 0:
-                display = False
+                show = False
         elif criteria[4] == 4:
             if model[treeiter][20] > 52:
-                display = False
+                show = False
 
         # Filter skills
         if model[treeiter][7] < criteria[5][0] or model[treeiter][7] > criteria[5][1]:
-            display = False
+            show = False
         if model[treeiter][8] < criteria[6][0] or model[treeiter][8] > criteria[6][1]:
-            display = False
+            show = False
         if model[treeiter][9] < criteria[7][0] or model[treeiter][9] > criteria[7][1]:
-            display = False
+            show = False
         if model[treeiter][10] < criteria[8][0] or model[treeiter][10] > criteria[8][1]:
-            display = False
+            show = False
         if model[treeiter][11] < criteria[9][0] or model[treeiter][11] > criteria[9][1]:
-            display = False
+            show = False
         if model[treeiter][12] < criteria[10][0] or model[treeiter][12] > criteria[10][1]:
-            display = False
+            show = False
         if model[treeiter][13] < criteria[11][0] or model[treeiter][13] > criteria[11][1]:
-            display = False
+            show = False
         if model[treeiter][14] < criteria[12][0] or model[treeiter][14] > criteria[12][1]:
-            display = False
+            show = False
         if model[treeiter][15] < criteria[13][0] or model[treeiter][15] > criteria[13][1]:
-            display = False
+            show = False
 
-        return display
+        return show
 
     def view_changed(self, combobox):
         index = int(combobox.get_active_id())
@@ -531,21 +531,31 @@ class Negotiations(Gtk.Grid):
         treeviewInbound.set_model(self.liststoreInbound)
         treeviewInbound.set_enable_search(False)
         treeviewInbound.set_search_column(-1)
-        treeviewInbound.connect("row-activated", self.row_activated)
+        treeviewInbound.connect("row-activated", self.inbound_activated)
         treeviewInbound.connect("button-release-event", self.context_menu)
         self.treeselectionInbound = treeviewInbound.get_selection()
         scrolledwindow.add(treeviewInbound)
 
         cellrenderertext = Gtk.CellRendererText()
-        treeviewcolumn = Gtk.TreeViewColumn("Name", cellrenderertext, text=1)
+        treeviewcolumn = Gtk.TreeViewColumn("Name",
+                                            cellrenderertext,
+                                            text=1)
         treeviewInbound.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Offer Date", cellrenderertext, text=2)
+        treeviewcolumn = Gtk.TreeViewColumn("Offer Date",
+                                            cellrenderertext,
+                                            text=2)
         treeviewInbound.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Offer Type", cellrenderertext, text=3)
+        treeviewcolumn = Gtk.TreeViewColumn("Offer Type",
+                                            cellrenderertext,
+                                            text=3)
         treeviewInbound.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Club", cellrenderertext, text=4)
+        treeviewcolumn = Gtk.TreeViewColumn("Club",
+                                            cellrenderertext,
+                                            text=4)
         treeviewInbound.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Status", cellrenderertext, text=5)
+        treeviewcolumn = Gtk.TreeViewColumn("Status",
+                                            cellrenderertext,
+                                            text=5)
         treeviewInbound.append_column(treeviewcolumn)
 
         # Outbound transfers
@@ -567,23 +577,33 @@ class Negotiations(Gtk.Grid):
         self.treeselectionOutbound = treeviewOutbound.get_selection()
         scrolledwindow.add(treeviewOutbound)
 
-        treeviewcolumn = Gtk.TreeViewColumn("Name", cellrenderertext, text=1)
+        treeviewcolumn = Gtk.TreeViewColumn("Name",
+                                            cellrenderertext,
+                                            text=1)
         treeviewOutbound.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Offer Date", cellrenderertext, text=2)
+        treeviewcolumn = Gtk.TreeViewColumn("Offer Date",
+                                            cellrenderertext,
+                                            text=2)
         treeviewOutbound.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Offer Type", cellrenderertext, text=3)
+        treeviewcolumn = Gtk.TreeViewColumn("Offer Type",
+                                            cellrenderertext,
+                                            text=3)
         treeviewOutbound.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Club", cellrenderertext, text=4)
+        treeviewcolumn = Gtk.TreeViewColumn("Club",
+                                            cellrenderertext,
+                                            text=4)
         treeviewOutbound.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Status", cellrenderertext, text=5)
+        treeviewcolumn = Gtk.TreeViewColumn("Status",
+                                            cellrenderertext,
+                                            text=5)
         treeviewOutbound.append_column(treeviewcolumn)
 
         self.contextmenu = Gtk.Menu()
         menuitem = widgets.MenuItem("_Cancel Transfer")
-        menuitem.connect("activate", self.end_transfer)
+        menuitem.connect("activate", self.cancel_transfer)
         self.contextmenu.append(menuitem)
 
-    def end_transfer(self, menuitem):
+    def cancel_transfer(self, menuitem):
         model, treeiter = self.treeselection.get_selected()
         negotiationid = model[treeiter][0]
 
@@ -594,7 +614,7 @@ class Negotiations(Gtk.Grid):
 
             self.populate_data()
 
-    def row_activated(self, treeview, path, column):
+    def inbound_activated(self, treeview, path, column):
         model = treeview.get_model()
         negotiationid = model[path][0]
 
@@ -671,19 +691,28 @@ class Negotiations(Gtk.Grid):
             player = game.players[playerid]
 
             name = display.name(player, mode=1)
-            date = negotiation.date
             transfer = ("Purchase", "Loan", "Free Transfer")[negotiation.transfer_type]
 
             if negotiation.club == game.teamid:
                 club = display.club(player.club)
-                status = constants.transfer_status[negotiation.status]
+                status = constants.transfer_inbound_status[negotiation.status]
 
-                self.liststoreInbound.append([negotiationid, name, date, transfer, club, status])
+                self.liststoreInbound.append([negotiationid,
+                                              name,
+                                              negotiation.date,
+                                              transfer,
+                                              club,
+                                              status])
             elif player.club == game.teamid:
                 club = display.club(negotiation.club)
                 status = constants.transfer_outbound_status[negotiation.status]
 
-                self.liststoreOutbound.append([negotiationid, name, date, transfer, club, status])
+                self.liststoreOutbound.append([negotiationid,
+                                               name,
+                                               negotiation.date,
+                                               transfer,
+                                               club,
+                                               status])
 
     def run(self):
         self.populate_data()
