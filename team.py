@@ -208,7 +208,7 @@ class Tactics(Gtk.Grid):
         self.comboboxFreeKickTaker.set_sensitive(False)
         self.comboboxCornerTaker.set_sensitive(False)
 
-        for playerid in game.clubs[game.teamid].team:
+        for playerid in game.clubs[game.teamid].team.values():
             if playerid != 0:
                 name = display.name(game.players[playerid])
                 playerid = str(playerid)
@@ -226,18 +226,22 @@ class Tactics(Gtk.Grid):
         self.comboboxFormation.set_active(game.clubs[game.teamid].tactics[0])
 
         captain = str(game.clubs[game.teamid].tactics[1])
+
         if not self.comboboxCaptain.set_active_id(captain):
             self.comboboxCaptain.set_active(0)
 
         penaltytaker = str(game.clubs[game.teamid].tactics[2])
+
         if not self.comboboxPenaltyTaker.set_active_id(penaltytaker):
             self.comboboxPenaltyTaker.set_active(0)
 
         freekicktaker = str(game.clubs[game.teamid].tactics[3])
+
         if not self.comboboxFreeKickTaker.set_active_id(freekicktaker):
             self.comboboxFreeKickTaker.set_active(0)
 
         cornertaker = str(game.clubs[game.teamid].tactics[4])
+
         if not self.comboboxCornerTaker.set_active_id(cornertaker):
             self.comboboxCornerTaker.set_active(0)
 

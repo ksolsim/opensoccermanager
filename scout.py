@@ -14,13 +14,13 @@ def individual(shortlist_playerid):
     for playerid in game.clubs[game.teamid].squad:
         player = game.players[playerid]
 
-        if player.position == "GK" and shortlist_position == "GK":
+        if player.position and shortlist_position == "GK":
             equivalents.append(playerid)
-        elif player.position in ("DL", "DR", "DC", "D") and shortlist_position in ("DL", "DR", "DC", "D"):
+        elif player.position and shortlist_position in ("DL", "DR", "DC", "D"):
             equivalents.append(playerid)
-        elif player.position in ("ML", "MR", "MC", "M") and shortlist_position in ("ML", "MR", "MC", "M"):
+        elif player.position and shortlist_position in ("ML", "MR", "MC", "M"):
             equivalents.append(playerid)
-        elif player.position in ("AF", "AS") and shortlist_position in ("AF", "AS"):
+        elif player.position and shortlist_position in ("AF", "AS"):
             equivalents.append(playerid)
 
     averages = []
@@ -70,7 +70,7 @@ def recommends():
     '''
     recommended = []
 
-    for playerid, player in game.players.items():
+    for playerid in game.players.keys():
         status = individual(playerid)
 
         if status == 1:

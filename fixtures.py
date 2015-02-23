@@ -4,12 +4,7 @@ import random
 
 
 def generate(clubs):
-    fixtures = []
-    club_list = []
-
-    for item in clubs:
-        club_list.append(item)
-
+    club_list = [item for item in clubs]
     random.shuffle(club_list)
 
     clubs = club_list
@@ -19,6 +14,7 @@ def generate(clubs):
 
     round_count = 0
     match_count = 0
+    fixtures = []
 
     while round_count < total_rounds:
         fixtures.append([])
@@ -31,13 +27,9 @@ def generate(clubs):
                 away = len(clubs) - 1
 
             if round_count % 2 == 1:
-                home = clubs[home]
-                away = clubs[away]
-                fixtures[round_count].append([home, away])
+                fixtures[round_count].append([clubs[home], clubs[away]])
             else:
-                home = clubs[home]
-                away = clubs[away]
-                fixtures[round_count].append([away, home])
+                fixtures[round_count].append([clubs[away], clubs[home]])
 
             match_count += 1
 

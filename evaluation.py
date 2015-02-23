@@ -67,10 +67,10 @@ def update():
     if len(club.coaches_hired) + len(club.scouts_hired) > 0:
         points = 0
 
-        for coachid, coach in club.coaches_hired.items():
+        for coach in club.coaches_hired.values():
             points += coach.morale
 
-        for scoutid, scout in club.scouts_hired.items():
+        for scout in club.scouts_hired.values():
             points += scout.morale
 
         maximum = (len(club.coaches_hired) + len(club.scouts_hired)) * 10

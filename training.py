@@ -418,13 +418,11 @@ class TrainingCamp(Gtk.Grid):
 
         label = widgets.AlignedLabel("Cost Per Player")
         self.attach(label, 0, 6, 1, 1)
-        self.labelPlayerCost = widgets.AlignedLabel("<b>£%i</b>" % self.cost_per_player)
-        self.labelPlayerCost.set_use_markup(True)
+        self.labelPlayerCost = widgets.AlignedLabel()
         self.attach(self.labelPlayerCost, 1, 6, 1, 1)
         label = widgets.AlignedLabel("Total")
         self.attach(label, 0, 7, 1, 1)
-        self.labelTotal = widgets.AlignedLabel("<b>£%i</b>" % self.cost)
-        self.labelTotal.set_use_markup(True)
+        self.labelTotal = widgets.AlignedLabel()
         self.attach(self.labelTotal, 1, 7, 1, 1)
 
         buttonbox = Gtk.ButtonBox()

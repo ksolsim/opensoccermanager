@@ -171,10 +171,6 @@ def goalscorers(result, selection1, selection2):
 
         return maximum
 
-    team1 = result[0]
-    team2 = result[3]
-    score = result[1], result[2]
-
     players = [[], []]
     scorers = [[], []]
 
@@ -220,16 +216,10 @@ def goalscorers(result, selection1, selection2):
     for count in range(0, result[1]):
         choice = random.choice(players[0])
 
-        player = game.players[choice]
-        name = display.name(player)
-
         scorers[0].append(choice)
 
     for count in range(0, result[2]):
         choice = random.choice(players[1])
-
-        player = game.players[choice]
-        name = display.name(player)
 
         scorers[1].append(choice)
 
@@ -437,14 +427,14 @@ def cards(club1, club2):
 
     players = [[], []]
 
-    for positionid, playerid in game.clubs[club1.teamid].team.items():
+    for playerid in game.clubs[club1.teamid].team.values():
         if playerid != 0:
             players[0].append(playerid)
             players[1].append(playerid)
 
     total1 = generate(club1.teamid)
 
-    for positionid, playerid in game.clubs[club2.teamid].team.items():
+    for playerid in game.clubs[club2.teamid].team.values():
         if playerid != 0:
             players[0].append(playerid)
             players[1].append(playerid)
@@ -548,7 +538,7 @@ def adjust_fitness(recovery=0):
     '''
     Restore player fitness by specified amount, or by a random amount.
     '''
-    for playerid, player in game.players.items():
+    for player in game.players.values():
         if player.injury_type == 0 and player.fitness < 100:
             if recovery == 0:
                 recovery = random.randint(1, 5)
@@ -565,7 +555,7 @@ def match_injury(teamid1, teamid2):
 
         selection = []
 
-        for positionid, playerid in team.items():
+        for playerid in team.values():
             if playerid != 0:
                 player = game.players[playerid]
 
@@ -618,7 +608,7 @@ def injury_period():
     the period reaches zero, then publish news indicating player has
     returned to training (but may not be fully fit).
     '''
-    for clubid, club in game.clubs.items():
+    for club in game.clubs.values():
         for playerid in club.squad:
             player = game.players[playerid]
 
@@ -680,7 +670,7 @@ def update_contracts():
                     if player.contract == 0:
                         news.publish("SH01", player=name)
 
-    for clubid, club in game.clubs.items():
+    for club in game.clubs.values():
         for coachid, coach in club.coaches_hired.items():
             if coach.contract > 0:
                 coach.contract -= 1
@@ -735,7 +725,7 @@ def update_advertising():
     any that have expired. Also periodically refresh the advertisements
     that are available.
     '''
-    for clubid, club in game.clubs.items():
+    for club in game.clubs.values():
         for advert in club.hoardings[1]:
             advert[2] -= 1
 
@@ -840,7 +830,7 @@ def team_training():
         if sunday > 0 or overwork > 18:
             game.team_training_alert = random.randint(12, 18)
 
-            for playerid, player in game.players.items():
+            for playerid in game.players.keys():
                 evaluation.morale(playerid, -5)
     else:
         game.team_training_alert -= 1
@@ -1005,7 +995,6 @@ def training_camp(options):
         fitness = 8
 
     for playerid in squad:
-        player = game.players[playerid]
         evaluation.morale(playerid, morale)
         adjust_fitness(recovery=fitness)
 
@@ -1016,7 +1005,6 @@ def expectation():
     reputations and then publishing news article to notify player at the
     beginning of each season.
     '''
-    team_count = len(game.clubs)
     team_ids = [item for item in game.clubs.keys()]
 
     positions = [[], [], []]
@@ -1038,7 +1026,7 @@ def expectation():
             low_id = clubid
             positions[2] = [clubid]
 
-    midpoint = 20 - (high_value - low_value) / 2
+    midpoint = 20 - ((high_value - low_value) * 0.5)
 
     team_ids.remove(high_id)
     team_ids.remove(low_id)
@@ -1112,7 +1100,7 @@ def end_of_season():
         game.standings[clubid] = [0, 0, 0, 0, 0, 0, 0, 0]
 
     # Reset player statistics
-    for playerid, player in game.players.items():
+    for player in game.players.values():
         player.appearances = 0
         player.missed = 0
         player.substitute = 0
@@ -1134,7 +1122,7 @@ def end_of_season():
         game.referees[referee][4] = 0
 
     # Age staff at end of season
-    for key, scout in game.clubs[game.teamid].scouts_hired.items():
+    for scout in game.clubs[game.teamid].scouts_hired.values():
         scout.age += 1
 
         if scout.age > 60:
@@ -1147,7 +1135,7 @@ def end_of_season():
         if scout.retiring and scout.contract == 0:
             del(game.clubs[game.teamid].scouts_hired[scoutid])
 
-    for key, coach in game.clubs[game.teamid].coaches_hired.items():
+    for coach in game.clubs[game.teamid].coaches_hired.values():
         coach.age += 1
 
     # Reset charts
@@ -1270,7 +1258,6 @@ def renew_contract(playerid):
     points = 0
 
     player = game.players[playerid]
-    club = game.clubs[player.club]
 
     points += player.morale
 

@@ -247,7 +247,7 @@ def generate_result(club1, club2):
     count = 0
 
     for team in (game.clubs[club1].team, game.clubs[club2].team):
-        for positionid, playerid in team.items():
+        for playerid in team.values():
             if playerid != 0:
                 player = game.players[playerid]
 

@@ -200,6 +200,7 @@ class Referees(Gtk.ScrolledWindow):
         treeview.set_model(self.treemodelsort)
         treeview.set_enable_search(False)
         treeview.set_search_column(-1)
+        treeview.set_headers_clickable(True)
         treeselection = treeview.get_selection()
         treeselection.set_mode(Gtk.SelectionMode.NONE)
         self.add(treeview)
@@ -208,25 +209,30 @@ class Referees(Gtk.ScrolledWindow):
         treeviewcolumn = Gtk.TreeViewColumn("Name",
                                             cellrenderertext,
                                             text=0)
+        treeviewcolumn.set_sort_column_id(0)
         treeview.append_column(treeviewcolumn)
         treeviewcolumn = Gtk.TreeViewColumn("Matches",
                                             cellrenderertext,
                                             text=1)
+        treeviewcolumn.set_sort_column_id(1)
         treeviewcolumn.set_fixed_width(75)
         treeview.append_column(treeviewcolumn)
         treeviewcolumn = Gtk.TreeViewColumn("Fouls",
                                             cellrenderertext,
                                             text=2)
+        treeviewcolumn.set_sort_column_id(2)
         treeviewcolumn.set_fixed_width(75)
         treeview.append_column(treeviewcolumn)
         treeviewcolumn = Gtk.TreeViewColumn("Yellow Cards",
                                             cellrenderertext,
                                             text=3)
+        treeviewcolumn.set_sort_column_id(3)
         treeviewcolumn.set_fixed_width(75)
         treeview.append_column(treeviewcolumn)
         treeviewcolumn = Gtk.TreeViewColumn("Red Cards",
                                             cellrenderertext,
                                             text=4)
+        treeviewcolumn.set_sort_column_id(4)
         treeviewcolumn.set_fixed_width(75)
         treeview.append_column(treeviewcolumn)
 
@@ -238,7 +244,7 @@ class Referees(Gtk.ScrolledWindow):
         else:
             self.treemodelsort.set_sort_column_id(1, Gtk.SortType.DESCENDING)
 
-        for refereeid, referee in game.referees.items():
+        for referee in game.referees.values():
             self.liststore.append([referee.name,
                                    referee.matches,
                                    referee.fouls,

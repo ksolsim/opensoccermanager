@@ -479,7 +479,6 @@ def loan_enquiry_accepted(negotiationid):
     player = game.players[playerid]
     name = display.name(player, mode=1)
     club = game.clubs[player.club].name
-    amount = game.players[playerid].value
 
     dialog = Gtk.Dialog()
     dialog.set_transient_for(game.window)
