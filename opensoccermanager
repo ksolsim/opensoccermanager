@@ -332,6 +332,7 @@ class ScreenGame(Gtk.Grid):
         game.menu.menuitemStandings.connect("activate", lambda i: screen_loader(5))
         game.menu.menuitemCharts.connect("activate", lambda i: screen_loader(30))
         game.menu.menuitemEvaluation.connect("activate", lambda i: screen_loader(25))
+        game.menu.menuitemOpposition.connect("activate", self.view_opposition)
         game.menu.menuitemNegotiations.connect("activate", lambda i: screen_loader(21))
         game.menu.menuitemShortlist.connect("activate", lambda i: screen_loader(22))
         game.menu.menuitemStatistics.connect("activate", lambda i: screen_loader(29))
@@ -410,6 +411,10 @@ class ScreenGame(Gtk.Grid):
             dialogs.error(5)
         else:
             dialogs.comparison()
+
+    def view_opposition(self, menuitem):
+        dialog = dialogs.Opposition()
+        dialog.display()
 
     def new_game_clicked(self, menuitem):
         state = dialogs.exit_game(leave=True)

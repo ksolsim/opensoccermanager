@@ -40,7 +40,7 @@ class Players(Gtk.Grid):
         self.entrySearch.connect("activate", self.search_activated)
         self.entrySearch.connect("icon-press", self.reset_activated)
         self.entrySearch.connect_after("backspace", self.backspace_activated)
-        self.entrySearch.add_accelerator("grab_focus",
+        self.entrySearch.add_accelerator("grab-focus",
                                          game.accelgroup,
                                          102,
                                          Gdk.ModifierType.CONTROL_MASK,
@@ -81,11 +81,12 @@ class Players(Gtk.Grid):
         scrolledwindow.set_hexpand(True)
         self.attach(scrolledwindow, 0, 1, 1, 1)
 
-        self.liststorePlayers = Gtk.ListStore(int, str, int, int, str, str, str,
-                                              int, int, int, int, int, int, int,
-                                              int, int, int, str, int, str, int,
-                                              str, bool, bool, str, int, int,
-                                              str, int, str,)
+        self.liststorePlayers = Gtk.ListStore(int, str, int, int, str,
+                                              str, str, int, int, int,
+                                              int, int, int, int, int,
+                                              int, int, str, int, str,
+                                              int, str, bool, bool, str,
+                                              int, int, str, int, str,)
 
         self.treemodelfilter = self.liststorePlayers.filter_new()
         self.treemodelfilter.set_visible_func(self.filter_visible, game.players)
@@ -381,7 +382,7 @@ class Players(Gtk.Grid):
 
         # Filter position
         if criteria[1] == 1:
-            if model[treeiter][6] not in ("GK"):
+            if model[treeiter][6] == "GK":
                 show = False
         elif criteria[1] == 2:
             if model[treeiter][6] not in ("DL", "DR", "DC", "D"):

@@ -1703,3 +1703,123 @@ def error(errorid):
     messagedialog.set_markup(message_text)
     messagedialog.run()
     messagedialog.destroy()
+
+
+class Opposition(Gtk.Dialog):
+    def __init__(self):
+        Gtk.Dialog.__init__(self)
+        self.set_transient_for(game.window)
+        self.set_border_width(5)
+        self.set_default_size(200, 350)
+        self.set_title("View Opposition")
+        self.add_button("_Close", Gtk.ResponseType.CLOSE)
+        self.connect("response", self.response_handler)
+
+        grid = Gtk.Grid()
+        grid.set_row_spacing(5)
+        grid.set_column_spacing(5)
+        self.vbox.add(grid)
+
+        grid2 = Gtk.Grid()
+        grid2.set_column_spacing(5)
+        grid.attach(grid2, 0, 0, 1, 1)
+
+        self.liststoreClubs = Gtk.ListStore(str, str)
+        treemodelsort = Gtk.TreeModelSort(self.liststoreClubs)
+        treemodelsort.set_sort_column_id(0, Gtk.SortType.ASCENDING)
+
+        label = widgets.Label("Opposition")
+        grid2.attach(label, 0, 0, 1, 1)
+        cellrenderertext = Gtk.CellRendererText()
+        self.combobox = Gtk.ComboBox()
+        self.combobox.set_model(self.liststoreClubs)
+        self.combobox.set_id_column(0)
+        self.combobox.connect("changed", self.combobox_changed)
+        self.combobox.pack_start(cellrenderertext, True)
+        self.combobox.add_attribute(cellrenderertext, "text", 1)
+        grid2.attach(self.combobox, 1, 0, 1, 1)
+
+        commonframe = widgets.CommonFrame("Details")
+        grid.attach(commonframe, 0, 1, 1, 1)
+
+        grid1 = Gtk.Grid()
+        grid1.set_row_spacing(5)
+        grid1.set_column_spacing(5)
+        commonframe.insert(grid1)
+
+        label = widgets.AlignedLabel("Name")
+        grid1.attach(label, 0, 0, 1, 1)
+        self.labelName = widgets.AlignedLabel()
+        grid1.attach(self.labelName, 1, 0, 1, 1)
+
+        label = widgets.AlignedLabel("Position")
+        grid1.attach(label, 0, 1, 1, 1)
+        self.labelPosition = widgets.AlignedLabel()
+        grid1.attach(self.labelPosition, 1, 1, 1, 1)
+
+        label = widgets.AlignedLabel("Form")
+        grid1.attach(label, 0, 2, 1, 1)
+        self.labelForm = widgets.AlignedLabel()
+        grid1.attach(self.labelForm, 1, 2, 1, 1)
+
+        commonframe = widgets.CommonFrame("Squad")
+        grid.attach(commonframe, 1, 1, 2, 2)
+
+        scrolledwindow = Gtk.ScrolledWindow()
+        scrolledwindow.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+        commonframe.insert(scrolledwindow)
+
+        self.liststoreSquad = Gtk.ListStore(str)
+        treemodelsort = Gtk.TreeModelSort(self.liststoreSquad)
+        treemodelsort.set_sort_column_id(0, Gtk.SortType.ASCENDING)
+
+        treeview = Gtk.TreeView()
+        treeview.set_vexpand(True)
+        treeview.set_hexpand(True)
+        treeview.set_headers_visible(False)
+        treeview.set_model(treemodelsort)
+        treeview.set_enable_search(False)
+        treeview.set_search_column(-1)
+        treeselection = treeview.get_selection()
+        treeselection.set_mode(Gtk.SelectionMode.NONE)
+        cellrenderertext = Gtk.CellRendererText()
+        treeviewcolumn = Gtk.TreeViewColumn(None,
+                                            cellrenderertext,
+                                            text=0)
+        treeview.append_column(treeviewcolumn)
+        scrolledwindow.add(treeview)
+
+    def display(self):
+        self.liststoreClubs.clear()
+
+        for clubid, club in game.clubs.items():
+            self.liststoreClubs.append([str(clubid), club.name])
+
+        self.combobox.set_active(0)
+
+        self.show_all()
+        self.run()
+
+    def combobox_changed(self, combobox):
+        club = int(combobox.get_active_id())
+
+        self.update_data(club)
+
+    def update_data(self, clubid):
+        club = game.clubs[clubid]
+
+        position = display.find_position(clubid)
+
+        self.labelName.set_label(club.name)
+        self.labelPosition.set_label(position)
+        self.labelForm.set_label("".join(club.form))
+
+        self.liststoreSquad.clear()
+
+        for playerid in club.squad:
+            player = game.players[playerid]
+            name = display.name(player)
+            self.liststoreSquad.append([name])
+
+    def response_handler(self, dialog, response):
+        self.destroy()

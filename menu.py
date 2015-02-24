@@ -82,6 +82,8 @@ class Menu(Gtk.MenuBar):
         menu.append(self.menuitemCharts)
         self.menuitemEvaluation = widgets.MenuItem("_Evaluation")
         menu.append(self.menuitemEvaluation)
+        self.menuitemOpposition = widgets.MenuItem("_Opposition")
+        menu.append(self.menuitemOpposition)
         separator = Gtk.SeparatorMenuItem()
         menu.append(separator)
         self.menuitemNegotiations = widgets.MenuItem("Ne_gotiations")
