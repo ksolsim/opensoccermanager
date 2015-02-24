@@ -1726,13 +1726,13 @@ class Opposition(Gtk.Dialog):
 
         self.liststoreClubs = Gtk.ListStore(str, str)
         treemodelsort = Gtk.TreeModelSort(self.liststoreClubs)
-        treemodelsort.set_sort_column_id(0, Gtk.SortType.ASCENDING)
+        treemodelsort.set_sort_column_id(1, Gtk.SortType.ASCENDING)
 
         label = widgets.Label("Opposition")
         grid2.attach(label, 0, 0, 1, 1)
         cellrenderertext = Gtk.CellRendererText()
         self.combobox = Gtk.ComboBox()
-        self.combobox.set_model(self.liststoreClubs)
+        self.combobox.set_model(treemodelsort)
         self.combobox.set_id_column(0)
         self.combobox.connect("changed", self.combobox_changed)
         self.combobox.pack_start(cellrenderertext, True)
@@ -1793,7 +1793,8 @@ class Opposition(Gtk.Dialog):
         self.liststoreClubs.clear()
 
         for clubid, club in game.clubs.items():
-            self.liststoreClubs.append([str(clubid), club.name])
+            if clubid != game.teamid:
+                self.liststoreClubs.append([str(clubid), club.name])
 
         self.combobox.set_active(0)
 
