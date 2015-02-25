@@ -388,7 +388,9 @@ class ScreenGame(Gtk.Grid):
         club = game.clubs[game.teamid]
         previous = club.manager
 
-        if dialogs.name_change():
+        name_change = dialogs.NameChange()
+
+        if name_change.display():
             news = []
 
             for item in game.news:
@@ -413,13 +415,11 @@ class ScreenGame(Gtk.Grid):
             dialogs.comparison()
 
     def view_opposition(self, menuitem):
-        dialog = dialogs.Opposition()
-        dialog.display()
+        opposition_dialog = dialogs.Opposition()
+        opposition_dialog.display()
 
     def new_game_clicked(self, menuitem):
-        state = dialogs.exit_game(leave=True)
-
-        if not state:
+        if not dialogs.exit_game(leave=True):
             game.window.remove(screengame)
             game.window.add(screenmain)
 
@@ -428,11 +428,11 @@ class ScreenGame(Gtk.Grid):
 
     def load_game_clicked(self, menuitem):
         open_dialog = dialogs.OpenDialog()
-        state = open_dialog.display()
-        open_dialog.destroy()
 
-        if state:
+        if open_dialog.display():
             screen_loader(game.active_screen_id)
+
+        open_dialog.destroy()
 
     def save_game_clicked(self, menuitem):
         save_dialog = dialogs.SaveDialog()
@@ -463,7 +463,7 @@ class ContinueGame:
 
         if current_date == event:
             # Team names to be passed to proceed dialog
-            for count, item in enumerate(game.fixtures[game.fixturesindex]):
+            for item in game.fixtures[game.fixturesindex]:
                 if game.teamid in (item[0], item[1]):
                     match = item
 
@@ -591,7 +591,7 @@ class ContinueGame:
         '''
         error = False
 
-        for position, playerid in game.clubs[game.teamid].team.items():
+        for playerid in game.clubs[game.teamid].team.values():
             if playerid != 0:
                 player = game.players[playerid]
 

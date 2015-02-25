@@ -1620,62 +1620,70 @@ def end_of_season():
     dialog.destroy()
 
 
-def name_change():
-    dialog = Gtk.Dialog()
-    dialog.set_title("Manager Name")
-    dialog.set_transient_for(game.window)
-    dialog.set_border_width(5)
-    dialog.add_button("_Cancel", Gtk.ResponseType.CANCEL)
-    dialog.add_button("_Apply", Gtk.ResponseType.APPLY)
-    dialog.set_default_response(Gtk.ResponseType.APPLY)
+class NameChange(Gtk.Dialog):
+    def __init__(self):
+        self.state = False
 
-    grid = Gtk.Grid()
-    grid.set_column_spacing(5)
-    dialog.vbox.add(grid)
+        Gtk.Dialog.__init__(self)
+        self.set_title("Manager Name")
+        self.set_transient_for(game.window)
+        self.set_border_width(5)
+        self.set_resizable(False)
+        self.add_button("_Cancel", Gtk.ResponseType.CANCEL)
+        self.add_button("_Apply", Gtk.ResponseType.APPLY)
+        self.set_default_response(Gtk.ResponseType.APPLY)
+        self.connect("response", self.response_handler)
 
-    label = Gtk.Label("Change your manager name:")
-    grid.attach(label, 0, 0, 1, 1)
+        grid = Gtk.Grid()
+        grid.set_column_spacing(5)
+        self.vbox.add(grid)
 
-    liststoreName = Gtk.ListStore(str)
+        label = widgets.Label("Change Your Manager _Name:")
+        grid.attach(label, 0, 0, 1, 1)
 
-    combobox = Gtk.ComboBoxText.new_with_entry()
-    combobox.set_model(liststoreName)
-    entry = combobox.get_child()
-    entry.set_text(game.clubs[game.teamid].manager)
-    grid.attach(combobox, 1, 0, 1, 1)
+        self.liststoreName = Gtk.ListStore(str)
 
-    [liststoreName.append([name]) for name in fileio.read_names()]
+        combobox = Gtk.ComboBoxText.new_with_entry()
+        combobox.set_model(self.liststoreName)
+        self.entry = combobox.get_child()
+        self.entry.set_text(game.clubs[game.teamid].manager)
+        label.set_mnemonic_widget(combobox)
+        grid.attach(combobox, 1, 0, 1, 1)
 
-    dialog.show_all()
+    def display(self):
+        for name in fileio.read_names():
+            self.liststoreName.append([name])
 
-    state = False
+        self.show_all()
+        self.run()
 
-    if dialog.run() == Gtk.ResponseType.APPLY:
-        name = entry.get_text()
+        return self.state
 
-        game.clubs[game.teamid].manager = name
-        fileio.write_names(name, "a")
+    def response_handler(self, dialog, response):
+        if response == Gtk.ResponseType.APPLY:
+            name = self.entry.get_text()
 
-        add = True
+            game.clubs[game.teamid].manager = name
+            fileio.write_names(name, "a")
 
-        for count, item in enumerate(liststoreName):
-            if item[0] == game.clubs[game.teamid].manager:
-                add = False
+            add = True
 
-                del(liststoreName[count])
-                liststoreName.prepend([game.clubs[game.teamid].manager])
+            for count, item in enumerate(self.liststoreName):
+                if item[0] == game.clubs[game.teamid].manager:
+                    add = False
 
-        if add:
-            liststoreName.prepend([game.clubs[game.teamid].manager])
+                    del(self.liststoreName[count])
+                    self.liststoreName.prepend([game.clubs[game.teamid].manager])
 
-        names = [key[0] for key in liststoreName]
-        fileio.write_names(names)
+            if add:
+                self.liststoreName.prepend([game.clubs[game.teamid].manager])
 
-        state = True
+            names = [key[0] for key in self.liststoreName]
+            fileio.write_names(names)
 
-    dialog.destroy()
+            self.state = True
 
-    return state
+        self.destroy()
 
 
 def file_not_found_error():
