@@ -7,11 +7,9 @@ import game
 
 
 class InfoTip(Gtk.Grid):
-    name = ""
-    nickname = ""
-    chairman = ""
-    balance = ""
-
+    '''
+    Information tooltip displayed when hovering over date widget.
+    '''
     def __init__(self):
         Gtk.Grid.__init__(self)
         self.set_row_spacing(5)
@@ -19,15 +17,15 @@ class InfoTip(Gtk.Grid):
 
         label = AlignedLabel("Name:")
         self.attach(label, 0, 0, 1, 1)
-        self.labelName = AlignedLabel(self.name)
+        self.labelName = AlignedLabel()
         self.attach(self.labelName, 1, 0, 1, 1)
         label = AlignedLabel("Nickame:")
         self.attach(label, 0, 1, 1, 1)
-        self.labelNickname = AlignedLabel(self.nickname)
+        self.labelNickname = AlignedLabel()
         self.attach(self.labelNickname, 1, 1, 1, 1)
         label = AlignedLabel("Chairman:")
         self.attach(label, 0, 2, 1, 1)
-        self.labelChairman = AlignedLabel(self.chairman)
+        self.labelChairman = AlignedLabel()
         self.attach(self.labelChairman, 1, 2, 1, 1)
 
         separator = Gtk.Separator()
@@ -112,6 +110,9 @@ class CommonFrame(Gtk.Frame):
 
 
 class Label(Gtk.Label):
+    '''
+    Standard label widget with central alignment and markup/mnemonics.
+    '''
     def __init__(self, label=""):
         Gtk.Label.__init__(self)
         self.set_markup(label)
@@ -120,6 +121,9 @@ class Label(Gtk.Label):
 
 
 class AlignedLabel(Gtk.Label):
+    '''
+    Widget label with a default left alignment.
+    '''
     def __init__(self, label="", xalign=0, yalign=0.5):
         Gtk.Label.__init__(self)
         self.set_markup(label)
@@ -129,6 +133,9 @@ class AlignedLabel(Gtk.Label):
 
 
 class MenuItem(Gtk.MenuItem):
+    '''
+    MenuItem with option of using mnemonic character when specified.
+    '''
     def __init__(self, label=""):
         Gtk.MenuItem.__init__(self)
         self.set_label(label)
@@ -136,6 +143,9 @@ class MenuItem(Gtk.MenuItem):
 
 
 class Button(Gtk.Button):
+    '''
+    Button with option of using mnemonic character when specified.
+    '''
     def __init__(self, label=""):
         Gtk.Button.__init__(self)
         self.set_label(label)
@@ -143,6 +153,10 @@ class Button(Gtk.Button):
 
 
 class SpinButton(Gtk.SpinButton):
+    '''
+    SpinButton with default incrementation and value snapping. Also,
+    prevents alphabetical characters being entered.
+    '''
     def __init__(self, maximum):
         Gtk.SpinButton.__init__(self)
         self.set_range(0, maximum)
