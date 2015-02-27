@@ -6,6 +6,7 @@ import random
 import constants
 import display
 import game
+import news
 
 
 class Cards:

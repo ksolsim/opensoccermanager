@@ -34,6 +34,110 @@ class Team:
 
 
 class Match(Gtk.Grid):
+    class Events(Gtk.ScrolledWindow):
+        def __init__(self):
+            Gtk.ScrolledWindow.__init__(self)
+
+            self.viewport = Gtk.Viewport()
+            self.add(self.viewport)
+
+            self.grid = None
+
+            self.show_all()
+
+        def update(self, scorers):
+            self.grid = Gtk.Grid()
+            self.viewport.add(self.grid)
+
+            for count, playerid in enumerate(scorers):
+                player = game.players[playerid]
+                name = display.name(player, mode=1)
+
+                label = widgets.AlignedLabel("%s" % (name))
+                self.grid.attach(label, 0, count, 1, 1)
+
+            self.show_all()
+
+        def clear(self):
+            if self.grid:
+                self.grid.destroy()
+
+    class Statistics(Gtk.Grid):
+        def __init__(self):
+            Gtk.Grid.__init__(self)
+            self.set_hexpand(True)
+            self.set_border_width(5)
+            self.set_row_spacing(5)
+            self.set_column_spacing(5)
+
+            label = widgets.AlignedLabel("Attendance")
+            self.attach(label, 0, 0, 1, 1)
+            self.labelAttendance = widgets.AlignedLabel()
+            self.attach(self.labelAttendance, 1, 0, 1, 1)
+
+            label = widgets.AlignedLabel("Shots On Target")
+            self.attach(label, 0, 1, 1, 1)
+            self.labelShotsOn1 = widgets.AlignedLabel()
+            self.attach(self.labelShotsOn1, 1, 1, 1, 1)
+            self.labelShotsOn2 = widgets.AlignedLabel()
+            self.attach(self.labelShotsOn2, 2, 1, 1, 1)
+
+            label = widgets.AlignedLabel("Shots Off Target")
+            self.attach(label, 0, 2, 1, 1)
+            self.labelShotsOff1 = widgets.AlignedLabel()
+            self.attach(self.labelShotsOff1, 1, 2, 1, 1)
+            self.labelShotsOff2 = widgets.AlignedLabel()
+            self.attach(self.labelShotsOff2, 2, 2, 1, 1)
+
+            label = widgets.AlignedLabel("Free Kicks")
+            self.attach(label, 0, 3, 1, 1)
+            self.labelFreeKicks1 = widgets.AlignedLabel()
+            self.attach(self.labelFreeKicks1, 1, 3, 1, 1)
+            self.labelFreeKicks2 = widgets.AlignedLabel()
+            self.attach(self.labelFreeKicks2, 2, 3, 1, 1)
+
+            label = widgets.AlignedLabel("Corner Kicks")
+            self.attach(label, 0, 4, 1, 1)
+            self.labelCornerKicks1 = widgets.AlignedLabel()
+            self.attach(self.labelCornerKicks1, 1, 4, 1, 1)
+            self.labelCornerKicks2 = widgets.AlignedLabel()
+            self.attach(self.labelCornerKicks2, 2, 4, 1, 1)
+
+            label = widgets.AlignedLabel("Throw-Ins")
+            self.attach(label, 0, 5, 1, 1)
+            self.labelThrowIns1 = widgets.AlignedLabel()
+            self.attach(self.labelThrowIns1, 1, 5, 1, 1)
+            self.labelThrowIns2 = widgets.AlignedLabel()
+            self.attach(self.labelThrowIns2, 2, 5, 1, 1)
+
+            label = widgets.AlignedLabel("Fouls")
+            self.attach(label, 0, 6, 1, 1)
+            self.labelFouls1 = widgets.AlignedLabel()
+            self.attach(self.labelFouls1, 1, 6, 1, 1)
+            self.labelFouls2 = widgets.AlignedLabel()
+            self.attach(self.labelFouls2, 2, 6, 1, 1)
+
+            label = widgets.AlignedLabel("Yellow Cards")
+            self.attach(label, 0, 7, 1, 1)
+            self.labelYellowCards1 = widgets.AlignedLabel()
+            self.attach(self.labelYellowCards1, 1, 7, 1, 1)
+            self.labelYellowCards2 = widgets.AlignedLabel()
+            self.attach(self.labelYellowCards2, 2, 7, 1, 1)
+
+            label = widgets.AlignedLabel("Red Cards")
+            self.attach(label, 0, 8, 1, 1)
+            self.labelRedCards1 = widgets.AlignedLabel()
+            self.attach(self.labelRedCards1, 1, 8, 1, 1)
+            self.labelRedCards2 = widgets.AlignedLabel()
+            self.attach(self.labelRedCards2, 2, 8, 1, 1)
+
+            label = widgets.AlignedLabel("Possession")
+            self.attach(label, 0, 9, 1, 1)
+            self.labelPossession1 = widgets.AlignedLabel()
+            self.attach(self.labelPossession1, 1, 9, 1, 1)
+            self.labelPossession2 = widgets.AlignedLabel()
+            self.attach(self.labelPossession2, 2, 9, 1, 1)
+
     def __init__(self):
         Gtk.Grid.__init__(self)
         self.set_border_width(5)
@@ -66,15 +170,11 @@ class Match(Gtk.Grid):
         grid.attach(self.labelTeam2, 2, 0, 1, 1)
 
         # Events
-        scrolledwindow = Gtk.ScrolledWindow()
-        grid.attach(scrolledwindow, 0, 1, 1, 3)
-        self.viewportEvents1 = Gtk.Viewport()
-        scrolledwindow.add(self.viewportEvents1)
+        self.team1events = self.Events()
+        grid.attach(self.team1events, 0, 1, 1, 3)
 
-        scrolledwindow = Gtk.ScrolledWindow()
-        grid.attach(scrolledwindow, 2, 1, 1, 3)
-        self.viewportEvents2 = Gtk.Viewport()
-        scrolledwindow.add(self.viewportEvents2)
+        self.team2events = self.Events()
+        grid.attach(self.team2events, 2, 1, 1, 3)
 
         # Information
         gridInfo = Gtk.Grid()
@@ -127,81 +227,9 @@ class Match(Gtk.Grid):
             treeviewcolumn = Gtk.TreeViewColumn("Player", cellrenderertext, text=1)
             treeview.append_column(treeviewcolumn)
 
-        grid = Gtk.Grid()
-        grid.set_hexpand(True)
-        grid.set_row_spacing(5)
-        grid.set_column_spacing(5)
-        grid.set_border_width(5)
+        self.stats = self.Statistics()
         label = widgets.Label("_Statistics")
-        self.notebook.append_page(grid, label)
-
-        label = widgets.AlignedLabel("Attendance")
-        grid.attach(label, 0, 0, 1, 1)
-        self.labelAttendance = widgets.AlignedLabel()
-        grid.attach(self.labelAttendance, 1, 0, 1, 1)
-
-        label = widgets.AlignedLabel("Shots On Target")
-        grid.attach(label, 0, 1, 1, 1)
-        self.labelShotsOn1 = widgets.AlignedLabel()
-        grid.attach(self.labelShotsOn1, 1, 1, 1, 1)
-        self.labelShotsOn2 = widgets.AlignedLabel()
-        grid.attach(self.labelShotsOn2, 2, 1, 1, 1)
-
-        label = widgets.AlignedLabel("Shots Off Target")
-        grid.attach(label, 0, 2, 1, 1)
-        self.labelShotsOff1 = widgets.AlignedLabel()
-        grid.attach(self.labelShotsOff1, 1, 2, 1, 1)
-        self.labelShotsOff2 = widgets.AlignedLabel()
-        grid.attach(self.labelShotsOff2, 2, 2, 1, 1)
-
-        label = widgets.AlignedLabel("Free Kicks")
-        grid.attach(label, 0, 3, 1, 1)
-        self.labelFreeKicks1 = widgets.AlignedLabel()
-        grid.attach(self.labelFreeKicks1, 1, 3, 1, 1)
-        self.labelFreeKicks2 = widgets.AlignedLabel()
-        grid.attach(self.labelFreeKicks2, 2, 3, 1, 1)
-
-        label = widgets.AlignedLabel("Corner Kicks")
-        grid.attach(label, 0, 4, 1, 1)
-        self.labelCornerKicks1 = widgets.AlignedLabel()
-        grid.attach(self.labelCornerKicks1, 1, 4, 1, 1)
-        self.labelCornerKicks2 = widgets.AlignedLabel()
-        grid.attach(self.labelCornerKicks2, 2, 4, 1, 1)
-
-        label = widgets.AlignedLabel("Throw-Ins")
-        grid.attach(label, 0, 5, 1, 1)
-        self.labelThrowIns1 = widgets.AlignedLabel()
-        grid.attach(self.labelThrowIns1, 1, 5, 1, 1)
-        self.labelThrowIns2 = widgets.AlignedLabel()
-        grid.attach(self.labelThrowIns2, 2, 5, 1, 1)
-
-        label = widgets.AlignedLabel("Fouls")
-        grid.attach(label, 0, 6, 1, 1)
-        self.labelFouls1 = widgets.AlignedLabel()
-        grid.attach(self.labelFouls1, 1, 6, 1, 1)
-        self.labelFouls2 = widgets.AlignedLabel()
-        grid.attach(self.labelFouls2, 2, 6, 1, 1)
-
-        label = widgets.AlignedLabel("Yellow Cards")
-        grid.attach(label, 0, 7, 1, 1)
-        self.labelYellowCards1 = widgets.AlignedLabel()
-        grid.attach(self.labelYellowCards1, 1, 7, 1, 1)
-        self.labelYellowCards2 = widgets.AlignedLabel()
-        grid.attach(self.labelYellowCards2, 2, 7, 1, 1)
-
-        label = widgets.AlignedLabel("Red Cards")
-        grid.attach(label, 0, 8, 1, 1)
-        self.labelRedCards1 = widgets.AlignedLabel()
-        grid.attach(self.labelRedCards1, 1, 8, 1, 1)
-        self.labelRedCards2 = widgets.AlignedLabel()
-        grid.attach(self.labelRedCards2, 2, 8, 1, 1)
-
-        label = widgets.AlignedLabel("Possession")
-        grid.attach(label, 0, 9, 1, 1)
-        self.labelPossession1 = widgets.AlignedLabel()
-        grid.attach(self.labelPossession1, 1, 9, 1, 1)
-        self.labelPossession2 = widgets.AlignedLabel()
-        grid.attach(self.labelPossession2, 2, 9, 1, 1)
+        self.notebook.append_page(self.stats, label)
 
         self.player_match = 0
 
@@ -275,17 +303,8 @@ class Match(Gtk.Grid):
         widgets.news.set_sensitive(False)
 
         # Remove previous events grid and labels
-        child = self.viewportEvents1.get_child()
-
-        if child is not None:
-            self.viewportEvents1.remove(child)
-            child.destroy()
-
-        child = self.viewportEvents2.get_child()
-
-        if child is not None:
-            self.viewportEvents2.remove(child)
-            child.destroy()
+        self.team1events.clear()
+        self.team2events.clear()
 
         game.results.append([])
 
@@ -338,31 +357,9 @@ class Match(Gtk.Grid):
         playerid = random.choice(motm)
         game.players[playerid].man_of_the_match += 1
 
-        # Team 1
-        grid = Gtk.Grid()
-        self.viewportEvents1.add(grid)
-
-        for count, playerid in enumerate(scorers[0]):
-            player = game.players[playerid]
-            name = display.name(player, mode=1)
-
-            label = widgets.AlignedLabel("%s" % (name))
-            grid.attach(label, 0, count, 1, 1)
-
-        grid.show_all()
-
-        # Team 2
-        grid = Gtk.Grid()
-        self.viewportEvents2.add(grid)
-
-        for count, playerid in enumerate(scorers[1]):
-            player = game.players[playerid]
-            name = display.name(player, mode=1)
-
-            label = widgets.AlignedLabel("%s" % (name))
-            grid.attach(label, 2, count, 1, 1)
-
-        grid.show_all()
+        # Team Events
+        self.team1events.update(scorers[0])
+        self.team2events.update(scorers[1])
 
         # Update player morale
         if result[1] > result[2]:
@@ -416,7 +413,7 @@ class Match(Gtk.Grid):
 
         # Declare attendance
         attendance = actions.attendance(self.team1, self.team2)
-        self.labelAttendance.set_label("%s" % (attendance))
+        self.stats.labelAttendance.set_label("%s" % (attendance))
 
         # Matchday ticket sales
         if self.team1 == game.teamid:
