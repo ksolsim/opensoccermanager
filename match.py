@@ -62,6 +62,53 @@ class Match(Gtk.Grid):
             if self.grid:
                 self.grid.destroy()
 
+    class Teams(Gtk.Grid):
+        def __init__(self):
+            Gtk.Grid.__init__(self)
+            self.set_row_spacing(5)
+            self.set_column_spacing(5)
+            self.set_border_width(5)
+            self.set_column_homogeneous(True)
+
+            cellrenderertext = Gtk.CellRendererText()
+
+            scrolledwindow = Gtk.ScrolledWindow()
+            self.attach(scrolledwindow, 0, 0, 1, 1)
+
+            self.treeviewHome = Gtk.TreeView()
+            self.treeviewHome.set_vexpand(True)
+            self.treeviewHome.set_hexpand(True)
+            self.treeviewHome.set_enable_search(False)
+            self.treeviewHome.set_search_column(-1)
+            scrolledwindow.add(self.treeviewHome)
+            treeselection = self.treeviewHome.get_selection()
+            treeselection.set_mode(Gtk.SelectionMode.NONE)
+
+            treeviewcolumn = Gtk.TreeViewColumn("Position", cellrenderertext, text=0)
+            self.treeviewHome.append_column(treeviewcolumn)
+            treeviewcolumn = Gtk.TreeViewColumn("Player", cellrenderertext, text=1)
+            self.treeviewHome.append_column(treeviewcolumn)
+
+            scrolledwindow = Gtk.ScrolledWindow()
+            self.attach(scrolledwindow, 1, 0, 1, 1)
+
+            self.treeviewAway = Gtk.TreeView()
+            self.treeviewAway.set_vexpand(True)
+            self.treeviewAway.set_hexpand(True)
+            self.treeviewAway.set_enable_search(False)
+            self.treeviewAway.set_search_column(-1)
+            scrolledwindow.add(self.treeviewAway)
+            treeselection = self.treeviewAway.get_selection()
+            treeselection.set_mode(Gtk.SelectionMode.NONE)
+
+            treeviewcolumn = Gtk.TreeViewColumn("Position", cellrenderertext, text=0)
+            self.treeviewAway.append_column(treeviewcolumn)
+            treeviewcolumn = Gtk.TreeViewColumn("Player", cellrenderertext, text=1)
+            self.treeviewAway.append_column(treeviewcolumn)
+
+            self.show_all()
+
+
     class Statistics(Gtk.Grid):
         def __init__(self):
             Gtk.Grid.__init__(self)
@@ -196,36 +243,16 @@ class Match(Gtk.Grid):
         self.notebook.set_vexpand(True)
         grid.attach(self.notebook, 0, 4, 4, 1)
 
-        grid = Gtk.Grid()
-        grid.set_row_spacing(5)
-        grid.set_column_spacing(5)
-        grid.set_border_width(5)
-        grid.set_column_homogeneous(True)
+        self.teams = self.Teams()
         label = widgets.Label("_Teams")
-        self.notebook.append_page(grid, label)
+        self.notebook.append_page(self.teams, label)
 
         cellrenderertext = Gtk.CellRendererText()
         self.liststoreHome = Gtk.ListStore(str, str)
         self.liststoreAway = Gtk.ListStore(str, str)
 
-        for count, model in enumerate((self.liststoreHome, self.liststoreAway)):
-            scrolledwindow = Gtk.ScrolledWindow()
-            grid.attach(scrolledwindow, count, 0, 1, 1)
-
-            treeview = Gtk.TreeView()
-            treeview.set_vexpand(True)
-            treeview.set_hexpand(True)
-            treeview.set_model(model)
-            treeview.set_enable_search(False)
-            treeview.set_search_column(-1)
-            scrolledwindow.add(treeview)
-            treeselection = treeview.get_selection()
-            treeselection.set_mode(Gtk.SelectionMode.NONE)
-
-            treeviewcolumn = Gtk.TreeViewColumn("Position", cellrenderertext, text=0)
-            treeview.append_column(treeviewcolumn)
-            treeviewcolumn = Gtk.TreeViewColumn("Player", cellrenderertext, text=1)
-            treeview.append_column(treeviewcolumn)
+        self.teams.treeviewHome.set_model(self.liststoreHome)
+        self.teams.treeviewAway.set_model(self.liststoreAway)
 
         self.stats = self.Statistics()
         label = widgets.Label("_Statistics")
