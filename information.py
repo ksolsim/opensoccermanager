@@ -557,27 +557,20 @@ class Standings(Gtk.Grid):
     def run(self):
         self.liststoreStandings.clear()
 
-        for item in game.standings:
-            name = game.clubs[item].name
-            played = game.standings[item][0]
-            win = game.standings[item][1]
-            draw = game.standings[item][2]
-            loss = game.standings[item][3]
-            gf = game.standings[item][4]
-            ga = game.standings[item][5]
-            gd = game.standings[item][6]
-            points = game.standings[item][7]
-            form = "".join(game.clubs[item].form)
+        for clubid, details in game.standings.items():
+            club = game.clubs[clubid]
 
-            self.liststoreStandings.append([name,
-                                            played,
-                                            win,
-                                            draw,
-                                            loss,
-                                            gf,
-                                            ga,
-                                            gd,
-                                            points,
+            form = "".join(club.form)
+
+            self.liststoreStandings.append([club.name,
+                                            details.played,
+                                            details.wins,
+                                            details.draws,
+                                            details.losses,
+                                            details.goals_for,
+                                            details.goals_against,
+                                            details.goal_difference,
+                                            details.points,
                                             form])
 
         self.show_all()

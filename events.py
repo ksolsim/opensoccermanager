@@ -805,7 +805,17 @@ def update_records():
     position = display.find_position(game.teamid)
     season = display.season()
 
-    game.record[0] = game.standings[game.teamid][0:]
+    details = game.standings[game.teamid]
+
+    game.record[0] = [details.played,
+                      details.wins,
+                      details.draws,
+                      details.losses,
+                      details.goals_for,
+                      details.goals_against,
+                      details.goal_difference,
+                      details.points
+                     ]
     game.record[0].insert(0, "%s" % (season))
     game.record[0].append(position)
 

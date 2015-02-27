@@ -58,6 +58,17 @@ class Staff:
     pass
 
 
+class League:
+    played = 0
+    wins = 0
+    draws = 0
+    losses = 0
+    goals_for = 0
+    goals_against = 0
+    goal_difference = 0
+    points = 0
+
+
 def open_file(filename):
     # Clear existing data structures
     game.clubs = {}
@@ -75,6 +86,7 @@ def open_file(filename):
     game.results = []
     game.companies = []
     game.surnames = []
+    game.standings = {}
     constants.buildings = []
     constants.merchandise = []
     constants.catering = []
@@ -339,7 +351,17 @@ def open_file(filename):
 
     # Standings
     for item in cursor.execute("SELECT * FROM standings"):
-        game.standings[item[0]] = list(item[1:10])
+        item = list(map(int, item))
+        clubid = item[0]
+        game.standings[clubid] = League()
+        game.standings[clubid].played = item[1]
+        game.standings[clubid].wins = item[2]
+        game.standings[clubid].draws = item[3]
+        game.standings[clubid].losses = item[4]
+        game.standings[clubid].goals_for = item[5]
+        game.standings[clubid].goals_against = item[6]
+        game.standings[clubid].goal_difference = item[7]
+        game.standings[clubid].points = item[8]
 
     # Negotiations
     for item in cursor.execute("SELECT * FROM negotiations"):
@@ -601,7 +623,7 @@ def save_file(filename):
             cursor.execute("INSERT INTO results VALUES (?, ?, ?, ?, ?)", (week, team[0], team[1], team[2], team[3]))
 
     for clubid, item in game.standings.items():
-        cursor.execute("INSERT INTO standings VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", (clubid, item[0], item[1], item[2], item[3], item[4], item[5], item[6], item[7]))
+        cursor.execute("INSERT INTO standings VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", (clubid, item.played, item.wins, item.draws, item.losses, item.goals_for, item.goals_against, item.goal_difference, item.points))
 
     for refereeid, referee in game.referees.items():
         cursor.execute("INSERT INTO referee VALUES (?, ?, ?, ?, ?, ?)", (refereeid, referee.name, referee.matches, referee.fouls, referee.yellows, referee.reds))

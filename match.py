@@ -33,6 +33,23 @@ class Team:
     possession = 0
 
 
+class Referee:
+    def __init__(self):
+        self.referees = []
+
+    def generate(self):
+        self.referees = [refereeid for refereeid in game.referees.keys()]
+        random.shuffle(self.referees)
+
+    def select(self, count):
+        selected = self.referees[count]
+
+        return selected
+
+    def increment(self, refereeid, yellows, reds):
+        events.increment_referee(refereeid, yellows, reds)
+
+
 class Match(Gtk.Grid):
     class Events(Gtk.ScrolledWindow):
         def __init__(self):
@@ -247,7 +264,6 @@ class Match(Gtk.Grid):
         label = widgets.Label("_Teams")
         self.notebook.append_page(self.teams, label)
 
-        cellrenderertext = Gtk.CellRendererText()
         self.liststoreHome = Gtk.ListStore(str, str)
         self.liststoreAway = Gtk.ListStore(str, str)
 
@@ -316,13 +332,15 @@ class Match(Gtk.Grid):
         self.labelScore.set_markup('<span size="16000"><b>0 - 0</b></span>')
 
         # Determine referee
-        self.referee = [refereeid for refereeid, referee in game.referees.items()]
-        random.shuffle(self.referee)
+        self.referee = Referee()
+        self.referee.generate()
 
         stadiumid = game.clubs[self.team1.teamid].stadium
         venue = game.stadiums[stadiumid].name
         self.labelStadium.set_label("Venue: %s" % (venue))
-        referee = game.referees[self.referee[0]].name
+
+        self.refereeid = self.referee.select(0)
+        referee = game.referees[self.refereeid].name
         self.labelReferee.set_label("Referee: %s" % (referee))
 
         game.menu.set_sensitive(False)
@@ -351,7 +369,7 @@ class Match(Gtk.Grid):
                     player.suspension_type = 0
 
         # Standings
-        league.league_update(result)
+        league.update(result)
         game.results[game.fixturesindex].append(result)
 
         selection1, selection2 = events.increment_appearances(self.team1, self.team2)
@@ -362,8 +380,7 @@ class Match(Gtk.Grid):
         yellows, reds = actions.cards(self.team1, self.team2)
         actions.injury(self.team1, self.team2)
 
-        refereeid = self.referee[0]
-        events.increment_referee(refereeid, yellows, reds)
+        events.increment_referee(self.refereeid, yellows, reds)
 
         # Player match ratings
         ratings = [{}, {}]
@@ -471,7 +488,7 @@ class Match(Gtk.Grid):
                 ai.generate_team(club1.teamid)
                 ai.generate_team(club2.teamid)
                 result = ai.generate_result(club1.teamid, club2.teamid)
-                league.league_update(result)
+                league.update(result)
                 game.results[game.fixturesindex].append(result)
 
                 selection1, selection2 = events.increment_appearances(club1, club2)
@@ -482,8 +499,8 @@ class Match(Gtk.Grid):
                 yellows, reds = actions.cards(club1, club2)
                 actions.injury(club1, club2)
 
-                refereeid = self.referee[index + 1]
-                events.increment_referee(refereeid, yellows, reds)
+                refereeid = self.referee.select(index + 1)
+                self.referee.increment(refereeid, yellows, reds)
 
                 events.increment_goalscorers(scorers[0], scorers[1])
                 events.increment_assists(assists[0], assists[1])

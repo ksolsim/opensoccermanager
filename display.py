@@ -52,8 +52,17 @@ def find_champion():
     '''
     standings = []
 
-    for clubid, club in game.standings.items():
-        item = (clubid, club[0], club[1], club[2], club[3], club[4], club[5], club[6], club[7])
+    for clubid, details in game.standings.items():
+        item = (clubid,
+                details.played,
+                details.wins,
+                details.draws,
+                details.losses,
+                details.goals_for,
+                details.goals_against,
+                details.goal_difference,
+                details.points
+               )
         standings.append(item)
 
     standings = sorted(standings,
@@ -71,8 +80,17 @@ def find_position(teamid, ordinal=True):
     '''
     standings = []
 
-    for clubid, club in game.standings.items():
-        item = (clubid, club[0], club[1], club[2], club[3], club[4], club[5], club[6], club[7])
+    for clubid, details in game.standings.items():
+        item = (clubid,
+                details.played,
+                details.wins,
+                details.draws,
+                details.losses,
+                details.goals_for,
+                details.goals_against,
+                details.goal_difference,
+                details.points
+               )
         standings.append(item)
 
     standings = sorted(standings,

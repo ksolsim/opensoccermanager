@@ -64,6 +64,17 @@ class Flotation:
     pass
 
 
+class League:
+    played = 0
+    wins = 0
+    draws = 0
+    losses = 0
+    goals_for = 0
+    goals_against = 0
+    goal_difference = 0
+    points = 0
+
+
 def datainit():
     '''
     Populate data for game, including clubs, players and generate fixtures for
@@ -133,7 +144,7 @@ def datainit():
         for count in range(0, 16):
             club.team[count] = 0
 
-        game.standings[clubid] = [0, 0, 0, 0, 0, 0, 0, 0]
+        game.standings[clubid] = League()
 
     # Import players
     for item in database.importer("player"):
