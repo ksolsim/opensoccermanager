@@ -3,6 +3,7 @@
 from gi.repository import Gtk
 import random
 
+import actions
 import ai
 import constants
 import display
@@ -310,18 +311,18 @@ class Match(Gtk.Grid):
         selection1, selection2 = events.increment_appearances(self.team1, self.team2)
 
         # Events
-        scorers = events.goalscorers(result, selection1, selection2)
-        assists = events.assists(result, selection1, selection2, scorers)
-        yellows, reds = events.cards(self.team1, self.team2)
-        events.match_injury(self.team1, self.team2)
+        scorers = actions.goalscorers(result, selection1, selection2)
+        assists = actions.assists(result, selection1, selection2, scorers)
+        yellows, reds = actions.cards(self.team1, self.team2)
+        actions.injury(self.team1, self.team2)
 
         refereeid = self.referee[0]
         events.increment_referee(refereeid, yellows, reds)
 
         # Player match ratings
         ratings = [{}, {}]
-        ratings[0] = events.rating(selection1)
-        ratings[1] = events.rating(selection2)
+        ratings[0] = actions.rating(selection1)
+        ratings[1] = actions.rating(selection2)
 
         ratings = dict(ratings[0].items() | ratings[1].items())
 
@@ -414,7 +415,7 @@ class Match(Gtk.Grid):
             money.deposit(amount, 8)
 
         # Declare attendance
-        attendance = events.attendance(self.team1, self.team2)
+        attendance = actions.attendance(self.team1, self.team2)
         self.labelAttendance.set_label("%s" % (attendance))
 
         # Matchday ticket sales
@@ -452,10 +453,10 @@ class Match(Gtk.Grid):
                 selection1, selection2 = events.increment_appearances(club1, club2)
 
                 # Events
-                scorers = events.goalscorers(result, selection1, selection2)
-                assists = events.assists(result, selection1, selection2, scorers)
-                yellows, reds = events.cards(club1, club2)
-                events.match_injury(club1, club2)
+                scorers = actions.goalscorers(result, selection1, selection2)
+                assists = actions.assists(result, selection1, selection2, scorers)
+                yellows, reds = actions.cards(club1, club2)
+                actions.injury(club1, club2)
 
                 refereeid = self.referee[index + 1]
                 events.increment_referee(refereeid, yellows, reds)
