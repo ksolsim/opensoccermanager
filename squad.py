@@ -174,8 +174,9 @@ class Squad(Gtk.Grid):
         self.comboDCList = [None] * 16
 
         self.labelTeam = []
+
         for count in range(0, 11):
-            label = Gtk.Label()
+            label = widgets.Label()
             self.gridTeam.attach(label, 0, count, 1, 1)
             self.labelTeam.append(label)
 
@@ -190,8 +191,9 @@ class Squad(Gtk.Grid):
         self.notebook.append_page(self.gridSubs, label)
 
         self.labelSubs = []
+
         for count in range(0, 5):
-            label = Gtk.Label()
+            label = widgets.Label()
             self.gridSubs.attach(label, 0, count, 1, 1)
             self.labelSubs.append(label)
 
@@ -259,9 +261,9 @@ class Squad(Gtk.Grid):
         for count in range(0, 16):
             if count < 11:
                 position = constants.formations[formationid][1][count]
-                self.labelTeam[count].set_label("%s" % (position))
+                self.labelTeam[count].set_label("_%s" % (position))
             else:
-                self.labelSubs[count - 11].set_label("Sub %s" % (count - 10))
+                self.labelSubs[count - 11].set_label("Sub _%s" % (count - 10))
 
             liststore = Gtk.ListStore(str, str)
             liststore.append([str(0), "Not Selected"])
@@ -281,6 +283,11 @@ class Squad(Gtk.Grid):
 
             connectid = combobox.connect("changed", self.update_squad, count)
             self.comboDCList[count] = connectid
+
+            if count < 11:
+                self.labelTeam[count].set_mnemonic_widget(combobox)
+            else:
+                self.labelSubs[count - 11].set_mnemonic_widget(combobox)
 
         # Context menu for "Add To Position"
         self.menuPosition = Gtk.Menu()
@@ -312,7 +319,9 @@ class Squad(Gtk.Grid):
     def on_drag_data_received(self, combobox, context, x, y, selection, info, time):
         playerid = selection.get_data().decode("utf-8")
 
-        combobox.set_active_id(playerid)
+        if not combobox.set_active_id(playerid):
+            self.checkbuttonLimit.set_active(False)
+            combobox.set_active_id(playerid)
 
         if context.get_actions() == Gdk.DragAction.COPY:
             context.finish(True, False, time)
