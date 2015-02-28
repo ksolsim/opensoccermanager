@@ -560,7 +560,7 @@ class Standings(Gtk.Grid):
         for clubid, details in game.standings.items():
             club = game.clubs[clubid]
 
-            form = "".join(club.form)
+            form = "".join(club.form[-6:])
 
             self.liststoreStandings.append([club.name,
                                             details.played,

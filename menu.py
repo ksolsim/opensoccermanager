@@ -65,34 +65,106 @@ class Menu(Gtk.MenuBar):
         menu = Gtk.Menu()
         menuitem.set_submenu(menu)
         self.menuitemPlayers = widgets.MenuItem("_Players")
+        key, mod = Gtk.accelerator_parse("<CONTROL>2")
+        self.menuitemPlayers.add_accelerator("activate",
+                                          game.accelgroup,
+                                          key,
+                                          mod,
+                                          Gtk.AccelFlags.VISIBLE)
         menu.append(self.menuitemPlayers)
         self.menuitemComparison = widgets.MenuItem("C_omparison")
+        key, mod = Gtk.accelerator_parse("<CONTROL><SHIFT>U")
+        self.menuitemComparison.add_accelerator("activate",
+                                          game.accelgroup,
+                                          key,
+                                          mod,
+                                          Gtk.AccelFlags.VISIBLE)
         menu.append(self.menuitemComparison)
         separator = Gtk.SeparatorMenuItem()
         menu.append(separator)
         self.menuitemNews = widgets.MenuItem("_News")
+        key, mod = Gtk.accelerator_parse("<CONTROL>4")
+        self.menuitemNews.add_accelerator("activate",
+                                          game.accelgroup,
+                                          key,
+                                          mod,
+                                          Gtk.AccelFlags.VISIBLE)
         menu.append(self.menuitemNews)
         self.menuitemFixtures = widgets.MenuItem("_Fixtures")
+        key, mod = Gtk.accelerator_parse("<CONTROL><SHIFT>F")
+        self.menuitemFixtures.add_accelerator("activate",
+                                          game.accelgroup,
+                                          key,
+                                          mod,
+                                          Gtk.AccelFlags.VISIBLE)
         menu.append(self.menuitemFixtures)
         self.menuitemResults = widgets.MenuItem("_Results")
+        key, mod = Gtk.accelerator_parse("<CONTROL><SHIFT>R")
+        self.menuitemResults.add_accelerator("activate",
+                                          game.accelgroup,
+                                          key,
+                                          mod,
+                                          Gtk.AccelFlags.VISIBLE)
         menu.append(self.menuitemResults)
         self.menuitemStandings = widgets.MenuItem("_Standings")
+        key, mod = Gtk.accelerator_parse("<CONTROL>7")
+        self.menuitemStandings.add_accelerator("activate",
+                                          game.accelgroup,
+                                          key,
+                                          mod,
+                                          Gtk.AccelFlags.VISIBLE)
         menu.append(self.menuitemStandings)
         self.menuitemCharts = widgets.MenuItem("_Charts")
+        key, mod = Gtk.accelerator_parse("<CONTROL><SHIFT>C")
+        self.menuitemCharts.add_accelerator("activate",
+                                          game.accelgroup,
+                                          key,
+                                          mod,
+                                          Gtk.AccelFlags.VISIBLE)
         menu.append(self.menuitemCharts)
         self.menuitemEvaluation = widgets.MenuItem("_Evaluation")
+        key, mod = Gtk.accelerator_parse("<CONTROL><SHIFT>E")
+        self.menuitemEvaluation.add_accelerator("activate",
+                                          game.accelgroup,
+                                          key,
+                                          mod,
+                                          Gtk.AccelFlags.VISIBLE)
         menu.append(self.menuitemEvaluation)
         self.menuitemOpposition = widgets.MenuItem("_Opposition")
+        key, mod = Gtk.accelerator_parse("<CONTROL><SHIFT>O")
+        self.menuitemOpposition.add_accelerator("activate",
+                                          game.accelgroup,
+                                          key,
+                                          mod,
+                                          Gtk.AccelFlags.VISIBLE)
         menu.append(self.menuitemOpposition)
         separator = Gtk.SeparatorMenuItem()
         menu.append(separator)
         self.menuitemNegotiations = widgets.MenuItem("Ne_gotiations")
+        key, mod = Gtk.accelerator_parse("<CONTROL><SHIFT>G")
+        self.menuitemNegotiations.add_accelerator("activate",
+                                          game.accelgroup,
+                                          key,
+                                          mod,
+                                          Gtk.AccelFlags.VISIBLE)
         menu.append(self.menuitemNegotiations)
         self.menuitemShortlist = widgets.MenuItem("Short_list")
+        key, mod = Gtk.accelerator_parse("<CONTROL><SHIFT>L")
+        self.menuitemShortlist.add_accelerator("activate",
+                                          game.accelgroup,
+                                          key,
+                                          mod,
+                                          Gtk.AccelFlags.VISIBLE)
         menu.append(self.menuitemShortlist)
         separator = Gtk.SeparatorMenuItem()
         menu.append(separator)
         self.menuitemStatistics = widgets.MenuItem("_Statistics")
+        key, mod = Gtk.accelerator_parse("<CONTROL><SHIFT>S")
+        self.menuitemStatistics.add_accelerator("activate",
+                                          game.accelgroup,
+                                          key,
+                                          mod,
+                                          Gtk.AccelFlags.VISIBLE)
         menu.append(self.menuitemStatistics)
 
         menuitem = widgets.MenuItem("_Business")
@@ -100,26 +172,80 @@ class Menu(Gtk.MenuBar):
         menu = Gtk.Menu()
         menuitem.set_submenu(menu)
         self.menuitemStadium = widgets.MenuItem("_Stadium")
+        key, mod = Gtk.accelerator_parse("<CONTROL><SHIFT>Z")
+        self.menuitemStadium.add_accelerator("activate",
+                                          game.accelgroup,
+                                          key,
+                                          mod,
+                                          Gtk.AccelFlags.VISIBLE)
         menu.append(self.menuitemStadium)
         self.menuitemBuildings = widgets.MenuItem("_Buildings")
+        key, mod = Gtk.accelerator_parse("<CONTROL><SHIFT>X")
+        self.menuitemBuildings.add_accelerator("activate",
+                                          game.accelgroup,
+                                          key,
+                                          mod,
+                                          Gtk.AccelFlags.VISIBLE)
         menu.append(self.menuitemBuildings)
         separator = Gtk.SeparatorMenuItem()
         menu.append(separator)
         self.menuitemTickets = widgets.MenuItem("_Tickets")
+        key, mod = Gtk.accelerator_parse("<CONTROL><SHIFT>K")
+        self.menuitemTickets.add_accelerator("activate",
+                                          game.accelgroup,
+                                          key,
+                                          mod,
+                                          Gtk.AccelFlags.VISIBLE)
         menu.append(self.menuitemTickets)
         self.menuitemSponsorship = widgets.MenuItem("S_ponsorship")
+        key, mod = Gtk.accelerator_parse("<CONTROL><SHIFT>O")
+        self.menuitemSponsorship.add_accelerator("activate",
+                                          game.accelgroup,
+                                          key,
+                                          mod,
+                                          Gtk.AccelFlags.VISIBLE)
         menu.append(self.menuitemSponsorship)
         self.menuitemAdvertising = widgets.MenuItem("_Advertising")
+        key, mod = Gtk.accelerator_parse("<CONTROL><SHIFT>D")
+        self.menuitemAdvertising.add_accelerator("activate",
+                                          game.accelgroup,
+                                          key,
+                                          mod,
+                                          Gtk.AccelFlags.VISIBLE)
         menu.append(self.menuitemAdvertising)
         self.menuitemMerchandise = widgets.MenuItem("_Merchandise")
+        key, mod = Gtk.accelerator_parse("<CONTROL><SHIFT>M")
+        self.menuitemMerchandise.add_accelerator("activate",
+                                          game.accelgroup,
+                                          key,
+                                          mod,
+                                          Gtk.AccelFlags.VISIBLE)
         menu.append(self.menuitemMerchandise)
         self.menuitemCatering = widgets.MenuItem("_Catering")
+        key, mod = Gtk.accelerator_parse("<CONTROL><SHIFT>T")
+        self.menuitemCatering.add_accelerator("activate",
+                                          game.accelgroup,
+                                          key,
+                                          mod,
+                                          Gtk.AccelFlags.VISIBLE)
         menu.append(self.menuitemCatering)
         separator = Gtk.SeparatorMenuItem()
         menu.append(separator)
         self.menuitemFinances = widgets.MenuItem("_Finances")
+        key, mod = Gtk.accelerator_parse("<CONTROL><SHIFT>F")
+        self.menuitemFinances.add_accelerator("activate",
+                                          game.accelgroup,
+                                          key,
+                                          mod,
+                                          Gtk.AccelFlags.VISIBLE)
         menu.append(self.menuitemFinances)
         self.menuitemAccounts = widgets.MenuItem("A_ccounts")
+        key, mod = Gtk.accelerator_parse("<CONTROL>9")
+        self.menuitemAccounts.add_accelerator("activate",
+                                          game.accelgroup,
+                                          key,
+                                          mod,
+                                          Gtk.AccelFlags.VISIBLE)
         menu.append(self.menuitemAccounts)
 
         menuitem = widgets.MenuItem("_Team")
@@ -127,24 +253,66 @@ class Menu(Gtk.MenuBar):
         menu = Gtk.Menu()
         menuitem.set_submenu(menu)
         self.menuitemSquad = widgets.MenuItem("_Squad")
+        key, mod = Gtk.accelerator_parse("<CONTROL>1")
+        self.menuitemSquad.add_accelerator("activate",
+                                          game.accelgroup,
+                                          key,
+                                          mod,
+                                          Gtk.AccelFlags.VISIBLE)
         menu.append(self.menuitemSquad)
         self.menuitemTactics = widgets.MenuItem("_Tactics")
+        key, mod = Gtk.accelerator_parse("<CONTROL>3")
+        self.menuitemTactics.add_accelerator("activate",
+                                          game.accelgroup,
+                                          key,
+                                          mod,
+                                          Gtk.AccelFlags.VISIBLE)
         menu.append(self.menuitemTactics)
         menuitem = widgets.MenuItem("T_raining")
         menu.append(menuitem)
         menuTraining = Gtk.Menu()
         menuitem.set_submenu(menuTraining)
         self.menuitemTeamTraining = widgets.MenuItem("_Team Training")
+        key, mod = Gtk.accelerator_parse("<CONTROL>5")
+        self.menuitemTeamTraining.add_accelerator("activate",
+                                          game.accelgroup,
+                                          key,
+                                          mod,
+                                          Gtk.AccelFlags.VISIBLE)
         menuTraining.append(self.menuitemTeamTraining)
         self.menuitemIndTraining = widgets.MenuItem("_Individual Training")
+        key, mod = Gtk.accelerator_parse("<CONTROL>6")
+        self.menuitemIndTraining.add_accelerator("activate",
+                                          game.accelgroup,
+                                          key,
+                                          mod,
+                                          Gtk.AccelFlags.VISIBLE)
         menuTraining.append(self.menuitemIndTraining)
         self.menuitemTrainingCamp = widgets.MenuItem("Training _Camp")
+        key, mod = Gtk.accelerator_parse("<CONTROL><SHIFT>C")
+        self.menuitemTrainingCamp.add_accelerator("activate",
+                                          game.accelgroup,
+                                          key,
+                                          mod,
+                                          Gtk.AccelFlags.VISIBLE)
         menuTraining.append(self.menuitemTrainingCamp)
         self.menuitemInjSus = widgets.MenuItem("Injuries & _Suspensions")
+        key, mod = Gtk.accelerator_parse("<CONTROL>8")
+        self.menuitemInjSus.add_accelerator("activate",
+                                          game.accelgroup,
+                                          key,
+                                          mod,
+                                          Gtk.AccelFlags.VISIBLE)
         menu.append(self.menuitemInjSus)
         separator = Gtk.SeparatorMenuItem()
         menu.append(separator)
         self.menuitemStaff = widgets.MenuItem("_Staff")
+        key, mod = Gtk.accelerator_parse("<CONTROL><SHIFT>Q")
+        self.menuitemStaff.add_accelerator("activate",
+                                          game.accelgroup,
+                                          key,
+                                          mod,
+                                          Gtk.AccelFlags.VISIBLE)
         menu.append(self.menuitemStaff)
 
         menuitem = widgets.MenuItem("_Help")

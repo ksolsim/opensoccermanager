@@ -55,10 +55,3 @@ def update(result):
 
         game.clubs[team1].form.append("D")
         game.clubs[team2].form.append("D")
-
-    # Remove form items if more than six
-    if len(game.clubs[team1].form) > 6:
-        game.clubs[team1].form.pop(0)
-
-    if len(game.clubs[team2].form) > 6:
-        game.clubs[team2].form.pop(0)
