@@ -11,68 +11,8 @@ import game
 import news
 import resources
 import staff
+import structures
 import widgets
-
-
-class Club:
-    pass
-
-
-class Player:
-    pass
-
-
-class Nation:
-    pass
-
-
-class Stadium:
-    capacity = 0
-    maintenance = 100
-    main = []
-    corner = []
-    fines = 0
-    warnings = 0
-
-
-class Stand:
-    capacity = 0
-    seating = False
-    roof = False
-
-
-class Referee:
-    matches = 0
-    fouls = 0
-    yellows = 0
-    reds = 0
-
-
-class Overdraft:
-    pass
-
-
-class Loan:
-    pass
-
-
-class Grant:
-    pass
-
-
-class Flotation:
-    pass
-
-
-class League:
-    played = 0
-    wins = 0
-    draws = 0
-    losses = 0
-    goals_for = 0
-    goals_against = 0
-    goal_difference = 0
-    points = 0
 
 
 def datainit():
@@ -101,7 +41,7 @@ def datainit():
 
     # Import clubs and populate club data structure
     for item in database.importer("club"):
-        club = Club()
+        club = structures.Club()
         clubid = item[0]
         game.clubs[clubid] = club
 
@@ -144,11 +84,11 @@ def datainit():
         for count in range(0, 16):
             club.team[count] = 0
 
-        game.standings[clubid] = League()
+        game.standings[clubid] = structures.League()
 
     # Import players
     for item in database.importer("player"):
-        player = Player()
+        player = structures.Player()
         playerid = item[0]
         game.players[playerid] = player
 
@@ -199,7 +139,7 @@ def datainit():
 
     # Import nations
     for item in database.importer("nation"):
-        nation = Nation()
+        nation = structures.Nation()
         nationid = item[0]
         game.nations[nationid] = nation
 
@@ -210,7 +150,7 @@ def datainit():
 
     # Import stadiums
     for item in database.importer("stadium"):
-        stadium = Stadium()
+        stadium = structures.Stadium()
         stadiumid = item[0]
         game.stadiums[stadiumid] = stadium
 
@@ -221,7 +161,7 @@ def datainit():
         stadium.corner = []
 
         for count, value in enumerate(item[2:6]):
-            stand = Stand()
+            stand = structures.Stand()
             stand.capacity = value
 
             if stand.capacity > 0:
@@ -242,7 +182,7 @@ def datainit():
             stadium.main.append(stand)
 
         for count, value in enumerate(item[6:10]):
-            stand = Stand()
+            stand = structures.Stand()
             stand.capacity = value
 
             if stand.capacity > 0:
@@ -301,7 +241,7 @@ def datainit():
 
     # Import referees
     for item in database.importer("referee"):
-        referee = Referee()
+        referee = structures.Referee()
         refereeid = item[0]
         referee.name = item[1]
         game.referees[refereeid] = referee
@@ -335,25 +275,25 @@ def dataloader(finances):
     game.advertising_timeout = random.randint(8, 12)
 
     # Produce initial interest rates
-    game.bankloan = Loan()
+    game.bankloan = structures.Loan()
     game.bankloan.amount = 0
     game.bankloan.rate = random.randint(4, 15)
     game.bankloan.timeout = random.randint(4, 16)
 
     # Overdraft
-    game.overdraft = Overdraft()
+    game.overdraft = structures.Overdraft()
     game.overdraft.amount = 0
     game.overdraft.rate = random.randint(4, 15)
     game.overdraft.timeout = random.randint(4, 16)
 
     # Grant
-    game.grant = Grant()
+    game.grant = structures.Grant()
     game.grant.maximum = 0
     game.grant.status = False
     game.grant.timeout = 0
 
     # Flotation
-    game.flotation = Flotation()
+    game.flotation = structures.Flotation()
     game.flotation.amount = 0
     game.flotation.timeout = 0
     game.flotation.status = 0

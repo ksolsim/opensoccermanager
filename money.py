@@ -15,7 +15,7 @@ def deposit(amount, category=None):
     '''
     club = game.clubs[game.teamid]
 
-    if category is not None:
+    if category:
         club.accounts[category][0] += amount
         club.accounts[category][1] += amount
 

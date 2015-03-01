@@ -38,7 +38,7 @@ def publish(newsid, **kwargs):
     category = int(item[2])
 
     for key, value in keys.items():
-        if value is not None:
+        if value:
             value = str(value)
             title = title.replace(key, value)
             message = message.replace(key, value)

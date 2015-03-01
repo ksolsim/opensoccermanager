@@ -409,7 +409,7 @@ class ScreenGame(Gtk.Grid):
     def player_comparison(self, menuitem):
         if game.comparison == [None, None]:
             dialogs.error(3)
-        elif game.comparison[0] is None or game.comparison[1] is None:
+        elif not game.comparison[0] or not game.comparison[1]:
             dialogs.error(5)
         else:
             dialogs.comparison()
@@ -657,7 +657,7 @@ def screen_loader(index):
                99: (obj_match, "match"),
               }
 
-    if game.active_screen is not None:
+    if game.active_screen:
         if game.active_screen_id == index:
             game.active_screen.run()
 

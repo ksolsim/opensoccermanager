@@ -13,7 +13,7 @@ def name(player, mode=0):
     Return the player name in the requested format depending on whether
     it should be displayed as first/second or second/first name.
     '''
-    if player.common_name is None:
+    if not player.common_name:
         player.common_name = ""
 
     if player.common_name is not "":
@@ -53,17 +53,17 @@ def find_champion():
     standings = []
 
     for clubid, details in game.standings.items():
-        item = (clubid,
-                details.played,
-                details.wins,
-                details.draws,
-                details.losses,
-                details.goals_for,
-                details.goals_against,
-                details.goal_difference,
-                details.points
-               )
-        standings.append(item)
+        details = (clubid,
+                   details.played,
+                   details.wins,
+                   details.draws,
+                   details.losses,
+                   details.goals_for,
+                   details.goals_against,
+                   details.goal_difference,
+                   details.points
+                  )
+        standings.append(details)
 
     standings = sorted(standings,
                        key=operator.itemgetter(8, 7, 5, 6),
@@ -81,17 +81,17 @@ def find_position(teamid, ordinal=True):
     standings = []
 
     for clubid, details in game.standings.items():
-        item = (clubid,
-                details.played,
-                details.wins,
-                details.draws,
-                details.losses,
-                details.goals_for,
-                details.goals_against,
-                details.goal_difference,
-                details.points
-               )
-        standings.append(item)
+        details = (clubid,
+                   details.played,
+                   details.wins,
+                   details.draws,
+                   details.losses,
+                   details.goals_for,
+                   details.goals_against,
+                   details.goal_difference,
+                   details.points
+                  )
+        standings.append(details)
 
     standings = sorted(standings,
                        key=operator.itemgetter(8, 7, 5, 6),

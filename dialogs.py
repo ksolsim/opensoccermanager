@@ -186,7 +186,7 @@ def delete_dialog():
     def load_directory(filechooserbutton=None, location=None):
         liststore.clear()
 
-        if filechooserbutton is not None:
+        if filechooserbutton:
             location = filechooserbutton.get_uri()
             location = location[7:]
 
@@ -605,7 +605,7 @@ def player_info(playerid):
     label = widgets.AlignedLabel("League Runners Up Bonus")
     grid.attach(label, 0, 3, 1, 1)
 
-    if playerid is not None:
+    if playerid:
         bonus = game.players[playerid].bonus
 
         amount = display.wage(bonus[2])
@@ -637,7 +637,7 @@ def player_info(playerid):
     label = widgets.AlignedLabel("Suspension Period")
     grid.attach(label, 0, 3, 1, 1)
 
-    if playerid is not None:
+    if playerid:
         player = game.players[playerid]
         injuryid = player.injury_type
         suspensionid = player.suspension_type
@@ -799,7 +799,7 @@ def add_individual_training(playerid=None):
 
     cellrenderertext = Gtk.CellRendererText()
 
-    if playerid is None:
+    if not playerid:
         label = widgets.AlignedLabel("Player")
         grid.attach(label, 0, 0, 1, 1)
 
@@ -850,7 +850,7 @@ def add_individual_training(playerid=None):
     grid1.attach(radiobuttonIntensityHigh, 2, 0, 1, 1)
 
     # Set values when editing
-    if playerid is not None:
+    if playerid:
         training = game.clubs[game.teamid].individual_training
         training = training[playerid]
 
@@ -874,7 +874,7 @@ def add_individual_training(playerid=None):
     training = None
 
     if dialog.run() == Gtk.ResponseType.OK:
-        if playerid is None:
+        if not playerid:
             active = comboboxPlayer.get_active()
             playerid = liststorePlayer[active][0]
 

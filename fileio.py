@@ -8,66 +8,8 @@ import display
 import events
 import game
 import resources
+import structures
 import widgets
-
-
-class Player:
-    pass
-
-
-class Club:
-    pass
-
-
-class Nation:
-    pass
-
-
-class Stadium:
-    pass
-
-
-class Stand:
-    pass
-
-
-class Referee:
-    pass
-
-
-class Negotiation:
-    pass
-
-
-class Flotation:
-    pass
-
-
-class Overdraft:
-    pass
-
-
-class BankLoan:
-    pass
-
-
-class Grant:
-    pass
-
-
-class Staff:
-    pass
-
-
-class League:
-    played = 0
-    wins = 0
-    draws = 0
-    losses = 0
-    goals_for = 0
-    goals_against = 0
-    goal_difference = 0
-    points = 0
 
 
 def open_file(filename):
@@ -118,23 +60,23 @@ def open_file(filename):
     The following variables in each class need correctly saving and
     restoring from the save game file.
     '''
-    game.flotation = Flotation()
+    game.flotation = structures.Flotation()
     game.flotation.timeout = 0
     game.flotation.status = 0
     game.flotation.amount = 0
 
-    game.overdraft = Overdraft()
+    game.overdraft = structures.Overdraft()
     game.overdraft.amount = 0
     game.overdraft.timeout = 0
     game.overdraft.maximum = 0
     game.overdraft.rate = 0
 
-    game.bankloan = BankLoan()
+    game.bankloan = structures.BankLoan()
     game.bankloan.amount = 0
     game.bankloan.maximum = 0
     game.bankloan.rate = 0
 
-    game.grant = Grant()
+    game.grant = structures.Grant()
     game.grant.timeout = 0
     game.grant.status = False
     game.grant.maximum = 0
@@ -145,7 +87,7 @@ def open_file(filename):
 
     # Nation
     for item in cursor.execute("SELECT * FROM nation"):
-        nation = Nation()
+        nation = structures.Nation()
         nationid = item[0]
         game.nations[nationid] = nation
 
@@ -154,7 +96,7 @@ def open_file(filename):
 
     # Stadium
     for item in cursor.execute("SELECT * FROM stadium"):
-        stadium = Stadium()
+        stadium = structures.Stadium()
         stadiumid = item[0]
         game.stadiums[stadiumid] = stadium
 
@@ -171,7 +113,7 @@ def open_file(filename):
         count = 0
 
         for value in range(0, 4):
-            stand = Stand()
+            stand = structures.Stand()
             stand.capacity = data[0 * value]
             stand.roof = data[1 * value]
             stand.seating = data[2 * value]
@@ -185,7 +127,7 @@ def open_file(filename):
         count = 0
 
         for value in range(0, 4):
-            stand = Stand()
+            stand = structures.Stand()
             stand.capacity = data[0 * value]
             stand.roof = data[1 * value]
             stand.seating = data[2 * value]
@@ -197,7 +139,7 @@ def open_file(filename):
 
     # Club
     for item in cursor.execute("SELECT * FROM club"):
-        club = Club()
+        club = structures.Club()
         clubid = item[0]
         game.clubs[clubid] = club
 
@@ -249,7 +191,7 @@ def open_file(filename):
 
         club.sponsor_status = item[28]
 
-        if item[29] is not None:
+        if item[29]:
             club.sponsor_offer = item[29].split(",")
             club.sponsor_offer[1] = int(club.sponsor_offer[1])
             club.sponsor_offer[2] = int(club.sponsor_offer[2])
@@ -278,7 +220,7 @@ def open_file(filename):
 
     # Player
     for item in cursor.execute("SELECT * FROM player"):
-        player = Player()
+        player = structures.Player()
         playerid = item[0]
         game.players[playerid] = player
 
@@ -357,7 +299,7 @@ def open_file(filename):
     for item in cursor.execute("SELECT * FROM standings"):
         item = list(map(int, item))
         clubid = item[0]
-        game.standings[clubid] = League()
+        game.standings[clubid] = structures.League()
         game.standings[clubid].played = item[1]
         game.standings[clubid].wins = item[2]
         game.standings[clubid].draws = item[3]
@@ -369,7 +311,7 @@ def open_file(filename):
 
     # Negotiations
     for item in cursor.execute("SELECT * FROM negotiations"):
-        negotiation = Negotiation()
+        negotiation = structures.Negotiation()
         key = item[0]
         negotiation.playerid = item[1]
         negotiation.transfer_type = item[2]
@@ -419,7 +361,7 @@ def open_file(filename):
 
     # Staff
     for item in cursor.execute("SELECT * FROM coachavailable"):
-        coach = Staff()
+        coach = structures.Staff()
         coach.name = item[1]
         coach.age = item[2]
         coach.ability = item[3]
@@ -431,7 +373,7 @@ def open_file(filename):
         club.coaches_available[coachid] = coach
 
     for item in cursor.execute("SELECT * FROM coachhired"):
-        coach = Staff()
+        coach = structures.Staff()
         coach.name = item[1]
         coach.age = item[2]
         coach.ability = item[3]
@@ -445,7 +387,7 @@ def open_file(filename):
         club.coaches_hired[coachid] = coach
 
     for item in cursor.execute("SELECT * FROM scoutavailable"):
-        scout = Staff()
+        scout = structures.Staff()
         scout.name = item[1]
         scout.age = item[2]
         scout.ability = item[3]
@@ -456,7 +398,7 @@ def open_file(filename):
         club.scouts_available[scoutid] = scout
 
     for item in cursor.execute("SELECT * FROM scouthired"):
-        scout = Staff()
+        scout = structures.Staff()
         scout.name = item[1]
         scout.age = item[2]
         scout.ability = item[3]
@@ -470,7 +412,7 @@ def open_file(filename):
 
     # Referees
     for item in cursor.execute("SELECT * FROM referee"):
-        referee = Referee()
+        referee = structures.Referee()
         referee.name = item[1]
         referee.matches = item[2]
         referee.fouls = item[3]
@@ -588,12 +530,12 @@ def save_file(filename):
         cursor.execute("INSERT INTO stadium VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (stadiumid, stadium.name, stadium.capacity, stadium.condition, stadium.warnings, stadium.plots, details[0], details[1], details[2], details[3], details[4], details[5], details[6], details[7], details[8], details[9], details[10], details[11], details[12], details[13], details[14], details[15], details[16], details[17], details[18], details[19], details[20], details[21], details[22], details[23], buildings[0], buildings[1], buildings[2], buildings[3], buildings[4], buildings[5], buildings[6], buildings[7]))
 
     for clubid, club in game.clubs.items():
-        if club.merchandise is not None:
+        if club.merchandise:
             merchandise = ",".join(str(item) for item in club.merchandise)
         else:
             merchandise = None
 
-        if club.catering is not None:
+        if club.catering:
             catering = ",".join(str(item) for item in club.catering)
         else:
             catering = None
@@ -706,7 +648,7 @@ def save_file(filename):
     for item in club.programmes[1]:
         cursor.execute("INSERT INTO programmescurrent VALUES (?, ?, ?)", item[0:3])
 
-    for item in game.records[1]:
+    for item in game.record[1]:
         cursor.execute("INSERT INTO records VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", item)
 
     connection.commit()

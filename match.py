@@ -13,24 +13,8 @@ import league
 import money
 import news
 import sales
+import structures
 import widgets
-
-
-class Team:
-    teamid = 0
-    name = ""
-    team = {}
-    substitutes = {}
-    shots_on_target = 0
-    shots_off_target = 0
-    throw_ins = 0
-    corner_kicks = 0
-    free_kicks = 0
-    penalty_kicks = 0
-    fouls = 0
-    yellow_cards = 0
-    red_cards = 0
-    possession = 0
 
 
 class Referee:
@@ -287,10 +271,10 @@ class Match(Gtk.Grid):
                 match = item
                 self.player_match = count
 
-        self.team1 = Team()
+        self.team1 = structures.Team()
         self.team1.teamid = match[0]
         self.team1.name = game.clubs[self.team1.teamid].name
-        self.team2 = Team()
+        self.team2 = structures.Team()
         self.team2.teamid = match[1]
         self.team2.name = game.clubs[self.team2.teamid].name
 
@@ -480,9 +464,9 @@ class Match(Gtk.Grid):
         # Update league table for all other matches
         for index, item in enumerate(game.fixtures[game.fixturesindex]):
             if index != self.player_match:
-                club1 = Team()
+                club1 = structures.Team()
                 club1.teamid = item[0]
-                club2 = Team()
+                club2 = structures.Team()
                 club2.teamid = item[1]
 
                 ai.generate_team(club1.teamid)

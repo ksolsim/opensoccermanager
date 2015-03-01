@@ -63,6 +63,7 @@ class TeamTraining(Gtk.Grid):
 
         self.comboboxes = []
         count = 0
+
         for row in range(1, 8):
             for column in range(1, 7):
                 combobox = Gtk.ComboBoxText()
@@ -88,32 +89,30 @@ class TeamTraining(Gtk.Grid):
         Generate training sessions automatically, and overwrite any existing
         setup
         '''
-        combobox = self.comboboxes
-
         values = [count for count in range(2, 18)]
         random.shuffle(values)
 
         # Reset comboboxes to zero
-        [item.set_active(0) for item in combobox]
+        [item.set_active(0) for item in self.comboboxes]
 
-        combobox[0].set_active(values[0])
-        combobox[1].set_active(values[1])
-        combobox[2].set_active(1)
-        combobox[6].set_active(values[2])
-        combobox[7].set_active(values[3])
-        combobox[8].set_active(1)
-        combobox[12].set_active(values[4])
-        combobox[13].set_active(values[5])
-        combobox[14].set_active(1)
-        combobox[18].set_active(values[6])
-        combobox[19].set_active(values[7])
-        combobox[20].set_active(1)
-        combobox[24].set_active(values[8])
-        combobox[25].set_active(values[9])
-        combobox[26].set_active(1)
-        combobox[30].set_active(values[10])
-        combobox[31].set_active(values[11])
-        combobox[32].set_active(1)
+        self.comboboxes[0].set_active(values[0])
+        self.comboboxes[1].set_active(values[1])
+        self.comboboxes[2].set_active(1)
+        self.comboboxes[6].set_active(values[2])
+        self.comboboxes[7].set_active(values[3])
+        self.comboboxes[8].set_active(1)
+        self.comboboxes[12].set_active(values[4])
+        self.comboboxes[13].set_active(values[5])
+        self.comboboxes[14].set_active(1)
+        self.comboboxes[18].set_active(values[6])
+        self.comboboxes[19].set_active(values[7])
+        self.comboboxes[20].set_active(1)
+        self.comboboxes[24].set_active(values[8])
+        self.comboboxes[25].set_active(values[9])
+        self.comboboxes[26].set_active(1)
+        self.comboboxes[30].set_active(values[10])
+        self.comboboxes[31].set_active(values[11])
+        self.comboboxes[32].set_active(1)
 
     def training_changed(self, combobox, index):
         game.clubs[game.teamid].team_training[index] = combobox.get_active()
@@ -219,7 +218,7 @@ class IndividualTraining(Gtk.Grid):
         else:
             training = dialogs.add_individual_training()
 
-        if training is not None:
+        if training:
             player = game.players[training[0]]
             coach = training[1]
 

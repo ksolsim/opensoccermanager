@@ -939,7 +939,7 @@ class Statistics(Gtk.Grid):
         self.liststoreRecordCurrent.insert(0, game.record[0])
 
         # Highest win / loss
-        if game.statistics[0][0] is not None:
+        if game.statistics[0][0]:
             clubid = game.statistics[0][0]
             opposition = game.clubs[clubid].name
             self.labelWin.set_label("%i - %i (against %s)" % (game.statistics[0][1][0],
@@ -947,7 +947,7 @@ class Statistics(Gtk.Grid):
                                                               opposition)
                                    )
 
-        if game.statistics[1][0] is not None:
+        if game.statistics[1][0]:
             clubid = game.statistics[1][0]
             opposition = game.clubs[clubid].name
             self.labelLoss.set_label("%i - %i (against %s)" % (game.statistics[1][1][0],
