@@ -28,35 +28,34 @@ class Tickets(Gtk.Grid):
         self.set_border_width(5)
         self.set_row_spacing(5)
 
-        grid = Gtk.Grid()
-        grid.set_row_spacing(5)
-        grid.set_column_spacing(5)
-        self.attach(grid, 0, 0, 1, 1)
+        commonframe = widgets.CommonFrame("Ticket Prices")
+        self.attach(commonframe, 0, 0, 1, 1)
 
-        label = widgets.AlignedLabel("<b>Ticket Prices</b>")
-        label.set_use_markup(True)
-        grid.attach(label, 0, 0, 1, 1)
+        grid1 = Gtk.Grid()
+        grid1.set_row_spacing(5)
+        grid1.set_column_spacing(5)
+        commonframe.insert(grid1)
 
         label = Gtk.Label("<b>League</b>")
         label.set_use_markup(True)
-        grid.attach(label, 1, 1, 2, 1)
+        grid1.attach(label, 1, 1, 2, 1)
         label = Gtk.Label("<b>Cup</b>")
         label.set_use_markup(True)
-        grid.attach(label, 3, 1, 2, 1)
+        grid1.attach(label, 3, 1, 2, 1)
         label = Gtk.Label("<b>Season</b>")
         label.set_use_markup(True)
-        grid.attach(label, 5, 1, 2, 1)
+        grid1.attach(label, 5, 1, 2, 1)
 
         label = widgets.AlignedLabel("Standing")
-        grid.attach(label, 0, 2, 1, 1)
+        grid1.attach(label, 0, 2, 1, 1)
         label = widgets.AlignedLabel("Covered Standing")
-        grid.attach(label, 0, 3, 1, 1)
+        grid1.attach(label, 0, 3, 1, 1)
         label = widgets.AlignedLabel("Seating")
-        grid.attach(label, 0, 4, 1, 1)
+        grid1.attach(label, 0, 4, 1, 1)
         label = widgets.AlignedLabel("Covered Seating")
-        grid.attach(label, 0, 5, 1, 1)
+        grid1.attach(label, 0, 5, 1, 1)
         label = widgets.AlignedLabel("Corporate Box")
-        grid.attach(label, 0, 6, 1, 1)
+        grid1.attach(label, 0, 6, 1, 1)
 
         count = 0
 
@@ -69,41 +68,41 @@ class Tickets(Gtk.Grid):
                 scale.set_digits(0)
                 scale.set_increments(1, 10)
                 scale.connect("value-changed", self.value_changed, count)
-                scale.connect("format-value", self.format_value)
-                grid.attach(scale, column * 2, row + 1, 1, 1)
+                scale.connect("format-value", self.format_value_tickets)
+                grid1.attach(scale, column * 2, row + 1, 1, 1)
                 self.scales.append(scale)
 
                 count += 1
 
+        commonframe = widgets.CommonFrame("School Tickets")
+        self.attach(commonframe, 0, 1, 1, 1)
+
         grid = Gtk.Grid()
         grid.set_row_spacing(5)
         grid.set_column_spacing(5)
-        self.attach(grid, 0, 1, 1, 1)
+        commonframe.insert(grid)
 
-        label = widgets.AlignedLabel("<b>School Tickets</b>")
-        label.set_use_markup(True)
-        grid.attach(label, 0, 0, 1, 1)
-
-        label = widgets.AlignedLabel("Free School Tickets")
+        label = widgets.AlignedLabel("Free School Tickets Available")
         grid.attach(label, 0, 1, 1, 1)
         self.spinbuttonSchoolTickets = Gtk.SpinButton()
         self.spinbuttonSchoolTickets.set_snap_to_ticks(True)
         self.spinbuttonSchoolTickets.connect("value-changed", self.school_tickets)
         grid.attach(self.spinbuttonSchoolTickets, 1, 1, 1, 1)
 
+        commonframe = widgets.CommonFrame("School Tickets")
+        self.attach(commonframe, 0, 2, 1, 1)
+
         grid = Gtk.Grid()
         grid.set_row_spacing(5)
         grid.set_column_spacing(5)
-        self.attach(grid, 0, 2, 1, 1)
-
-        label = widgets.AlignedLabel("<b>Season Tickets</b>")
-        label.set_use_markup(True)
-        grid.attach(label, 0, 0, 1, 1)
+        commonframe.insert(grid)
 
         label = widgets.AlignedLabel("Season Ticket Allocation Percentage")
         grid.attach(label, 0, 1, 1, 1)
         self.spinbuttonSeasonTickets = Gtk.SpinButton.new_with_range(0, 100, 1)
+        self.spinbuttonSeasonTickets.set_numeric(False)
         self.spinbuttonSeasonTickets.connect("value-changed", self.season_tickets)
+        self.spinbuttonSeasonTickets.connect("output", self.format_value_season)
         grid.attach(self.spinbuttonSeasonTickets, 1, 1, 1, 1)
         self.labelStatus = widgets.AlignedLabel()
         grid.attach(self.labelStatus, 0, 2, 2, 1)
@@ -111,10 +110,16 @@ class Tickets(Gtk.Grid):
     def value_changed(self, scale, index):
         game.clubs[game.teamid].tickets[index] = int(scale.get_value())
 
-    def format_value(self, scale, value):
+    def format_value_tickets(self, scale, value):
         value = display.currency(value)
 
         return value
+
+    def format_value_season(self, scale):
+        value = "%i%%" % (scale.get_value_as_int())
+        scale.set_text(value)
+
+        return True
 
     def school_tickets(self, scale):
          game.clubs[game.teamid].school_tickets = scale.get_value_as_int()

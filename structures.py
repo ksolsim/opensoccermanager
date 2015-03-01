@@ -60,10 +60,6 @@ class Nation:
     pass
 
 
-class Stand:
-    pass
-
-
 class Referee:
     pass
 

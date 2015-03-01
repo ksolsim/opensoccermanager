@@ -11,8 +11,9 @@ class DB:
     def __init__(self):
         self.prefs = preferences.Preferences()
 
-    def connect(self):
-        self.prefs.readfile()
+    def connect(self, filename=None):
+        if not filename:
+            self.prefs.readfile()
 
         filepath = os.path.join("databases", game.database_filename)
 

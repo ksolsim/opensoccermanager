@@ -22,7 +22,6 @@ def datainit():
     information.
     '''
     database = game.database
-    database.connect()
 
     game.clubs = {}
     game.players = {}

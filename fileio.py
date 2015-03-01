@@ -690,7 +690,7 @@ def read_names():
 def write_names(data, mode="w"):
     filepath = os.path.join(game.data_location, "users.txt")
 
-    if mode == "w":
+    if mode is "w":
         with open(filepath, "w") as fp:
             for value in data:
                 fp.write("%s\n" % (value))
