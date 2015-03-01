@@ -97,13 +97,9 @@ def find_position(teamid, ordinal=True):
                        key=operator.itemgetter(8, 7, 5, 6),
                        reverse=True)
 
-    position = 1
-
-    for item in standings:
+    for position, item in enumerate(standings, start=1):
         if item[0] == teamid:
             break
-
-        position += 1
 
     if ordinal:
         position = format_position(position)

@@ -51,34 +51,6 @@ def datainit():
         club.chairman = item[4]
         club.stadium = item[5]
         club.reputation = item[6]
-        club.squad = []
-        club.team = {}
-        club.tactics = [0, 0, 0, 0, 0, 1, 1, 0, 0]
-        club.coaches_available = {}
-        club.coaches_hired = {}
-        club.scouts_available = {}
-        club.scouts_hired = {}
-        club.team_training = [0] * 42
-        club.individual_training = {}
-        club.tickets = [0] * 15
-        club.season_tickets = 40
-        club.school_tickets = 0
-        club.accounts = [[0, 0] for x in range(20)]
-        club.income = 0
-        club.expenditure = 0
-        club.balance = 0
-        club.finances = [0, 0, 0, 0, 0, 0, 0, 0]
-        club.sponsor_status = 0
-        club.sponsor_offer = ()
-        club.hoardings = [[], [], 0]
-        club.programmes = [[], [], 0]
-        club.shortlist = set()
-        club.merchandise = []
-        club.catering = []
-        club.sales = [[], []]
-        club.evaluation = [0, 0, 0, 0, 0]
-        club.statistics = [0] * 3
-        club.form = []
 
         # Initialise playerid in team to 0
         for count in range(0, 16):
@@ -108,27 +80,8 @@ def datainit():
         player.stamina = item[14]
         player.ball_control = item[15]
         player.set_pieces = item[16]
-        player.fitness = 100
         player.training = item[17]
-        player.training_points = 0
-        player.morale = 10
-        player.injury_type = 0
-        player.injury_period = 0
-        player.suspension_points = 0
-        player.suspension_type = 0
-        player.suspension_period = 0
-        player.yellow_cards = 0
-        player.red_cards = 0
         player.contract = random.randint(24, 260)
-        player.transfer = [False, False]
-        player.not_for_sale = False
-        player.appearances = 0
-        player.substitute = 0
-        player.missed = 0
-        player.goals = 0
-        player.assists = 0
-        player.man_of_the_match = 0
-        player.rating = []
 
         player.age = events.age(item[4])
         player.value = calculator.value(item[0])
@@ -267,15 +220,15 @@ def dataloader(finances):
     club.hoardings[2] = 48
 
     if club.reputation > 10:
-        club.programmes[2] = 24
+        club.programmes[2] = 36
     else:
-        club.programmes[2] = 18
+        club.programmes[2] = 24
 
     events.generate_advertisement()
     game.advertising_timeout = random.randint(8, 12)
 
     # Produce initial interest rates
-    game.bankloan = structures.Loan()
+    game.bankloan = structures.BankLoan()
     game.bankloan.amount = 0
     game.bankloan.rate = random.randint(4, 15)
     game.bankloan.timeout = random.randint(4, 16)
@@ -310,8 +263,8 @@ def dataloader(finances):
     club.school_tickets = tickets * 100
 
     # Initiate values for merchandise / catering
-    [club.merchandise.append(100) for item in constants.merchandise]
-    [club.catering.append(100) for item in constants.catering]
+    club.merchandise = [100 for item in constants.merchandise]
+    club.catering = [100 for item in constants.catering]
 
     # Import resources
     resources.import_news()
@@ -321,6 +274,7 @@ def dataloader(finances):
 
     # Retrieve first three fixtures for news
     initial_fixtures = []
+
     for count, week in enumerate(game.fixtures):
         for match in week:
             if game.teamid in (match[0], match[1]) and count < 3:
