@@ -10,11 +10,8 @@ import display
 import game
 import money
 import news
+import structures
 import widgets
-
-
-class Negotiation():
-    pass
 
 
 def make_enquiry(playerid, transfer_type):
@@ -27,7 +24,7 @@ def make_enquiry(playerid, transfer_type):
     state = enquiry_dialog(playerid, transfer_type)
 
     if state:
-        negotiation = Negotiation()
+        negotiation = structures.Negotiation()
         negotiation.playerid = playerid
         negotiation.date = "%i/%i/%i" % (game.year, game.month, game.date)
         negotiation.transfer_type = transfer_type
@@ -310,7 +307,6 @@ def transfer_enquiry_accepted(negotiationid):
 
     name = display.name(player, mode=1)
     club = game.clubs[player.club].name
-    amount = game.players[playerid].value
 
     dialog = Gtk.Dialog()
     dialog.set_transient_for(game.window)
@@ -330,7 +326,7 @@ def transfer_enquiry_accepted(negotiationid):
     label = widgets.AlignedLabel("Enter the amount to offer for the player:")
     grid.attach(label, 0, 1, 1, 1)
     spinbuttonAmount = Gtk.SpinButton.new_with_range(0, 999999999, 100000)
-    spinbuttonAmount.set_value(amount * 1.10)
+    spinbuttonAmount.set_value(player.value * 1.10)
     grid.attach(spinbuttonAmount, 1, 1, 1, 1)
 
     dialog.show_all()
@@ -698,9 +694,7 @@ def extend_loan(playerid):
     dialog.show_all()
 
     if dialog.run() == Gtk.ResponseType.OK:
-        state = consider_extension(playerid)
-
-        if state:
+        if consider_extension(playerid):
             game.loans[playerid][1] += spinbutton.get_value_as_int()
 
     dialog.destroy()

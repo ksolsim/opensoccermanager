@@ -7,12 +7,7 @@ import constants
 import display
 import game
 import news
-
-
-class Cards:
-    yellow_cards = 0
-    red_cards = 0
-    points = 0
+import structures
 
 
 def goalscorers(result, selection1, selection2):
@@ -217,17 +212,6 @@ def cards(club1, club2):
                         name = display.name(player, mode=1)
                         news.publish("SU03", player=name, period="1", cards=player.yellow_cards)
 
-                '''
-                # Add card to chart
-                if playerid not in game.cards.keys():
-                    cards = Cards()
-                    game.cards[playerid] = cards
-                else:
-                    cards = game.cards[playerid]
-
-                cards.yellow_cards += 1
-                '''
-
             count += 1
 
         count = 0
@@ -252,23 +236,12 @@ def cards(club1, club2):
                     name = display.name(player, mode=1)
                     news.publish("SU02", player=name, period=player.suspension_period, suspension=suspension[0])
 
-                '''
-                # Add card to chart
-                if playerid not in game.cards.keys():
-                    cards = Cards()
-                    game.cards[playerid] = cards
-                else:
-                    cards = game.cards[playerid]
-
-                cards.red_cards += 1
-                '''
-
             count += 1
 
         # Process cards and add to chart
         for playerid, amount in match_cards[0].items():
             if playerid not in game.cards.keys():
-                cards = Cards()
+                cards = structures.Cards()
                 game.cards[playerid] = cards
             else:
                 cards = game.cards[playerid]
@@ -278,7 +251,7 @@ def cards(club1, club2):
 
         for playerid, amount in match_cards[1].items():
             if playerid not in game.cards.keys():
-                cards = Cards()
+                cards = structures.Cards()
                 game.cards[playerid] = cards
             else:
                 cards = game.cards[playerid]

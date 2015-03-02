@@ -122,7 +122,7 @@ class Tickets(Gtk.Grid):
         return True
 
     def school_tickets(self, scale):
-         game.clubs[game.teamid].school_tickets = scale.get_value_as_int()
+        game.clubs[game.teamid].school_tickets = scale.get_value_as_int()
 
     def season_tickets(self, scale):
         game.clubs[game.teamid].season_tickets = scale.get_value_as_int()

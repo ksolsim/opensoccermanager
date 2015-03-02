@@ -500,7 +500,6 @@ def renew_player_contract(playerid):
     dialog.vbox.set_spacing(5)
 
     label = widgets.AlignedLabel("<b>%s</b> is requesting a %i year contract." % (name, contract))
-    label.set_use_markup(True)
     dialog.vbox.add(label)
 
     commonframe = widgets.CommonFrame("Details")

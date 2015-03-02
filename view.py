@@ -9,6 +9,7 @@ import constants
 import dialogs
 import display
 import game
+import menu
 import scout
 import transfer
 import widgets
@@ -188,49 +189,14 @@ class Players(Gtk.Grid):
           column.set_visible(False),
           self.treeviewPlayers.append_column(column)) for column in self.tree_columns[2]]
 
-        self.contextmenu1 = Gtk.Menu()
-        self.menuitemTransfer = widgets.MenuItem("Make _Transfer Offer")
-        self.menuitemTransfer.connect("activate", self.make_transfer_offer, 0)
-        self.contextmenu1.append(self.menuitemTransfer)
-        self.menuitemLoan = widgets.MenuItem("Make _Loan Offer")
-        self.menuitemLoan.connect("activate", self.make_transfer_offer, 1)
-        self.contextmenu1.append(self.menuitemLoan)
-        separator = Gtk.SeparatorMenuItem()
-        self.contextmenu1.append(separator)
-        self.menuitemAddShortlist = widgets.MenuItem("_Add To Shortlist")
-        self.menuitemAddShortlist.connect("activate", self.add_to_shortlist)
-        self.contextmenu1.append(self.menuitemAddShortlist)
-        self.menuitemRemoveShortlist = widgets.MenuItem("_Remove From Shortlist")
-        self.menuitemRemoveShortlist.connect("activate", self.remove_from_shortlist)
-        self.contextmenu1.append(self.menuitemRemoveShortlist)
-        separator = Gtk.SeparatorMenuItem()
-        self.contextmenu1.append(separator)
-        self.menuitemComparison1 = widgets.MenuItem("Add to Comparison _1")
-        self.menuitemComparison1.connect("activate", self.add_to_comparison, 0)
-        self.contextmenu1.append(self.menuitemComparison1)
-        self.menuitemComparison2 = widgets.MenuItem("Add to Comparison _2")
-        self.menuitemComparison2.connect("activate", self.add_to_comparison, 1)
-        self.contextmenu1.append(self.menuitemComparison2)
-        separator = Gtk.SeparatorMenuItem()
-        self.contextmenu1.append(separator)
-        self.menuitemRecommends = Gtk.CheckMenuItem("_Scout Recommends")
-        self.menuitemRecommends.set_use_underline(True)
-        self.menuitemRecommends.connect("activate", self.scout_recommends)
-        self.contextmenu1.append(self.menuitemRecommends)
-
-        self.contextmenu2 = Gtk.Menu()
-        self.menuitemComparison1 = widgets.MenuItem("Add to Comparison _1")
-        self.menuitemComparison1.connect("activate", self.add_to_comparison, 0)
-        self.contextmenu2.append(self.menuitemComparison1)
-        self.menuitemComparison2 = widgets.MenuItem("Add to Comparison _2")
-        self.menuitemComparison2.connect("activate", self.add_to_comparison, 1)
-        self.contextmenu2.append(self.menuitemComparison2)
-        separator = Gtk.SeparatorMenuItem()
-        self.contextmenu2.append(separator)
-        self.menuitemRecommends = Gtk.CheckMenuItem("_Scout Recommends")
-        self.menuitemRecommends.set_use_underline(True)
-        self.menuitemRecommends.connect("activate", self.scout_recommends)
-        self.contextmenu2.append(self.menuitemRecommends)
+        self.contextmenu = menu.PlayersContextMenu()
+        self.contextmenu.menuitemTransfer.connect("activate", self.make_transfer_offer, 0)
+        self.contextmenu.menuitemLoan.connect("activate", self.make_transfer_offer, 1)
+        self.contextmenu.menuitemAddShortlist.connect("activate", self.add_to_shortlist)
+        self.contextmenu.menuitemRemoveShortlist.connect("activate", self.remove_from_shortlist)
+        self.contextmenu.menuitemComparison1.connect("activate", self.add_to_comparison, 0)
+        self.contextmenu.menuitemComparison2.connect("activate", self.add_to_comparison, 1)
+        self.contextmenu.menuitemRecommends.connect("activate", self.scout_recommends)
 
     def run(self):
         self.populate_data(game.players)
@@ -331,35 +297,24 @@ class Players(Gtk.Grid):
                 player = game.players[playerid]
 
                 if playerid not in game.clubs[game.teamid].squad:
-                    self.contextmenu1.show_all()
+                    self.contextmenu.display()
 
                     if playerid in game.clubs[game.teamid].shortlist:
-                        self.menuitemAddShortlist.set_sensitive(False)
-                        self.menuitemRemoveShortlist.set_sensitive(True)
+                        self.contextmenu.menuitemAddShortlist.set_sensitive(False)
+                        self.contextmenu.menuitemRemoveShortlist.set_sensitive(True)
                     else:
-                        self.menuitemAddShortlist.set_sensitive(True)
-                        self.menuitemRemoveShortlist.set_sensitive(False)
-
-                    self.menuitemTransfer.set_visible(True)
-                    self.menuitemLoan.set_visible(True)
-                    self.menuitemAddShortlist.set_visible(True)
-                    self.menuitemRemoveShortlist.set_visible(True)
+                        self.contextmenu.menuitemAddShortlist.set_sensitive(True)
+                        self.contextmenu.menuitemRemoveShortlist.set_sensitive(False)
 
                     if player.club == 0:
-                        self.menuitemLoan.set_sensitive(False)
+                        self.contextmenu.menuitemLoan.set_sensitive(False)
                     else:
-                        self.menuitemLoan.set_sensitive(True)
+                        self.contextmenu.menuitemLoan.set_sensitive(True)
 
-                    self.contextmenu1.popup(None, None, None, None, event.button, event.time)
+                    self.contextmenu.popup(None, None, None, None, event.button, event.time)
                 else:
-                    self.contextmenu2.show_all()
-
-                    self.menuitemTransfer.set_visible(False)
-                    self.menuitemLoan.set_visible(False)
-                    self.menuitemAddShortlist.set_visible(False)
-                    self.menuitemRemoveShortlist.set_visible(False)
-
-                    self.contextmenu2.popup(None, None, None, None, event.button, event.time)
+                    self.contextmenu.display(mode=1)
+                    self.contextmenu.popup(None, None, None, None, event.button, event.time)
 
     def filter_dialog(self, button):
         dialogs.player_filter()

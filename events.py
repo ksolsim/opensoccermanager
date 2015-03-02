@@ -852,12 +852,14 @@ def renew_contract(playerid):
     points += player.morale
 
     overall = evaluation.calculate_overall()
-    points += overall - 50
+    points += overall - 25
 
-    if points > 0:
-        return True
+    if points >= 0:
+        state = True
     else:
-        return False
+        state = False
+
+    return state
 
 
 def update_morale(clubid, amount):

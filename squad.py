@@ -2,13 +2,17 @@
 
 from gi.repository import Gtk
 from gi.repository import Gdk
+import random
 
 import constants
 import dialogs
 import display
+import evaluation
 import events
 import game
+import menu
 import money
+import structures
 import transfer
 import widgets
 
@@ -19,7 +23,7 @@ class Squad(Gtk.Grid):
                    ('text/plain', 0, 1),
                    ('TEXT', 0, 2),
                    ('STRING', 0, 3),
-                   ]
+                  ]
 
         self.tree_columns = ([], [], [])
 
@@ -75,7 +79,8 @@ class Squad(Gtk.Grid):
         buttonbox.add(self.buttonReset)
 
         scrolledwindow = Gtk.ScrolledWindow()
-        scrolledwindow.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+        scrolledwindow.set_policy(Gtk.PolicyType.NEVER,
+                                  Gtk.PolicyType.AUTOMATIC)
         self.attach(scrolledwindow, 0, 1, 1, 1)
 
         treeviewSquad = Gtk.TreeView()
@@ -91,23 +96,37 @@ class Squad(Gtk.Grid):
         scrolledwindow.add(treeviewSquad)
 
         cellrenderertext = Gtk.CellRendererText()
-        treeviewcolumn = Gtk.TreeViewColumn("Name", cellrenderertext, text=1)
+        treeviewcolumn = Gtk.TreeViewColumn("Name",
+                                            cellrenderertext,
+                                            text=1)
         treeviewcolumn.set_expand(True)
         treeviewSquad.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Position", cellrenderertext, text=2)
+        treeviewcolumn = Gtk.TreeViewColumn("Position",
+                                            cellrenderertext,
+                                            text=2)
         treeviewcolumn.set_expand(True)
         treeviewSquad.append_column(treeviewcolumn)
 
         # Personal
-        treeviewcolumn = Gtk.TreeViewColumn("Nationality", cellrenderertext, text=13)
+        treeviewcolumn = Gtk.TreeViewColumn("Nationality",
+                                            cellrenderertext,
+                                            text=13)
         self.tree_columns[0].append(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Value", cellrenderertext, text=14)
+        treeviewcolumn = Gtk.TreeViewColumn("Value",
+                                            cellrenderertext,
+                                            text=14)
         self.tree_columns[0].append(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Wages", cellrenderertext, text=15)
+        treeviewcolumn = Gtk.TreeViewColumn("Wages",
+                                            cellrenderertext,
+                                            text=15)
         self.tree_columns[0].append(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Contract", cellrenderertext, text=16)
+        treeviewcolumn = Gtk.TreeViewColumn("Contract",
+                                            cellrenderertext,
+                                            text=16)
         self.tree_columns[0].append(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Morale", cellrenderertext, text=17)
+        treeviewcolumn = Gtk.TreeViewColumn("Morale",
+                                            cellrenderertext,
+                                            text=17)
         self.tree_columns[0].append(treeviewcolumn)
 
         [(column.set_expand(True),
@@ -115,32 +134,48 @@ class Squad(Gtk.Grid):
           treeviewSquad.append_column(column)) for column in self.tree_columns[0]]
 
         # Skills
-        for count, item in enumerate(("KP", "TK", "PS", "SH", "HD", "PC", "ST", "BC", "SP"), start=3):
+        for count, item in enumerate(constants.short_skill, start=3):
             label = Gtk.Label("%s" % (item))
             label.set_tooltip_text(constants.skill[count - 3])
             label.show()
-            treeviewcolumn = Gtk.TreeViewColumn(None, cellrenderertext, text=count)
+            treeviewcolumn = Gtk.TreeViewColumn(None,
+                                                cellrenderertext,
+                                                text=count)
             treeviewcolumn.set_widget(label)
             self.tree_columns[1].append(treeviewcolumn)
 
-        treeviewcolumn = Gtk.TreeViewColumn("Fitness", cellrenderertext, text=12)
+        treeviewcolumn = Gtk.TreeViewColumn("Fitness",
+                                            cellrenderertext,
+                                            text=12)
         self.tree_columns[1].append(treeviewcolumn)
 
         [(column.set_expand(True),
           treeviewSquad.append_column(column)) for column in self.tree_columns[1]]
 
         # Form
-        treeviewcolumn = Gtk.TreeViewColumn("Games", cellrenderertext, text=18)
+        treeviewcolumn = Gtk.TreeViewColumn("Games",
+                                            cellrenderertext,
+                                            text=18)
         self.tree_columns[2].append(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Goals", cellrenderertext, text=19)
+        treeviewcolumn = Gtk.TreeViewColumn("Goals",
+                                            cellrenderertext,
+                                            text=19)
         self.tree_columns[2].append(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Assists", cellrenderertext, text=20)
+        treeviewcolumn = Gtk.TreeViewColumn("Assists",
+                                            cellrenderertext,
+                                            text=20)
         self.tree_columns[2].append(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Cards", cellrenderertext, text=21)
+        treeviewcolumn = Gtk.TreeViewColumn("Cards",
+                                            cellrenderertext,
+                                            text=21)
         self.tree_columns[2].append(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("MOTM", cellrenderertext, text=22)
+        treeviewcolumn = Gtk.TreeViewColumn("MOTM",
+                                            cellrenderertext,
+                                            text=22)
         self.tree_columns[2].append(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Rating", cellrenderertext, text=23)
+        treeviewcolumn = Gtk.TreeViewColumn("Rating",
+                                            cellrenderertext,
+                                            text=23)
         self.tree_columns[2].append(treeviewcolumn)
 
         [(column.set_expand(True),
@@ -198,42 +233,18 @@ class Squad(Gtk.Grid):
             self.labelSubs.append(label)
 
         # Context menu
-        self.menu = Gtk.Menu()
-        self.menuitemAddPos = widgets.MenuItem("_Add To Position")
-        self.menu.append(self.menuitemAddPos)
-        menuitemRemovePos = widgets.MenuItem("_Remove From Position")
-        menuitemRemovePos.connect("activate", self.remove_from_position)
-        self.menu.append(menuitemRemovePos)
-        separator = Gtk.SeparatorMenuItem()
-        self.menu.append(separator)
-        self.menuitemAddTransfer = widgets.MenuItem("Add To _Transfer List")
-        self.menuitemAddTransfer.connect("activate", self.transfer_status, 0)
-        self.menu.append(self.menuitemAddTransfer)
-        self.menuitemRemoveTransfer = widgets.MenuItem("_Remove From Transfer List")
-        self.menuitemRemoveTransfer.connect("activate", self.transfer_status, 0)
-        self.menu.append(self.menuitemRemoveTransfer)
-        self.menuitemAddLoan = widgets.MenuItem("Add To _Loan List")
-        self.menuitemAddLoan.connect("activate", self.transfer_status, 1)
-        self.menu.append(self.menuitemAddLoan)
-        self.menuitemRemoveLoan = widgets.MenuItem("_Remove From Loan List")
-        self.menuitemRemoveLoan.connect("activate", self.transfer_status, 1)
-        self.menu.append(self.menuitemRemoveLoan)
-        self.menuitemQuickSell = widgets.MenuItem("_Quick Sell")
-        self.menuitemQuickSell.connect("activate", self.quick_sell)
-        self.menu.append(self.menuitemQuickSell)
-        self.menuitemRenewContract = widgets.MenuItem("Renew _Contract")
-        self.menuitemRenewContract.connect("activate", self.renew_contract)
-        self.menu.append(self.menuitemRenewContract)
-        self.menuitemNotForSale = Gtk.CheckMenuItem("_Not For Sale")
-        self.menuitemNotForSale.set_use_underline(True)
-        self.menuitemNotForSale.connect("toggled", self.not_for_sale)
-        self.menu.append(self.menuitemNotForSale)
-        self.menuitemExtendLoan = widgets.MenuItem("_Extend Loan")
-        self.menuitemExtendLoan.connect("activate", self.extend_loan)
-        self.menu.append(self.menuitemExtendLoan)
-        self.menuitemCancelLoan = widgets.MenuItem("_Cancel Loan")
-        self.menuitemCancelLoan.connect("activate", self.cancel_loan)
-        self.menu.append(self.menuitemCancelLoan)
+        self.contextmenu = menu.SquadContextMenu()
+        #self.contextmenu.menuitemAddPosition.connect("activate", self.add_to_position)
+        self.contextmenu.menuitemRemovePosition.connect("activate", self.remove_from_position)
+        self.contextmenu.menuitemAddTransfer.connect("activate", self.transfer_status, 0)
+        self.contextmenu.menuitemRemoveTransfer.connect("activate", self.transfer_status, 0)
+        self.contextmenu.menuitemAddLoan.connect("activate", self.transfer_status, 1)
+        self.contextmenu.menuitemRemoveLoan.connect("activate", self.transfer_status, 1)
+        self.contextmenu.menuitemQuickSell.connect("activate", self.quick_sell)
+        self.contextmenu.menuitemRenewContract.connect("activate", self.renew_contract)
+        self.contextmenu.menuitemNotForSale.connect("toggled", self.not_for_sale)
+        self.contextmenu.menuitemExtendLoan.connect("activate", self.extend_loan)
+        self.contextmenu.menuitemCancelLoan.connect("activate", self.cancel_loan)
 
         cellrenderertext = Gtk.CellRendererText()
 
@@ -291,7 +302,7 @@ class Squad(Gtk.Grid):
 
         # Context menu for "Add To Position"
         self.menuPosition = Gtk.Menu()
-        self.menuitemAddPos.set_submenu(self.menuPosition)
+        self.contextmenu.menuitemAddPosition.set_submenu(self.menuPosition)
 
         for count, item in enumerate(constants.formations[formationid][1]):
             menuitem = Gtk.MenuItem("%s" % (item))
@@ -403,45 +414,45 @@ class Squad(Gtk.Grid):
             playerid = model[treeiter][0]
             player = game.players[playerid]
 
-            self.menuitemNotForSale.set_active(player.not_for_sale)
+            self.contextmenu.menuitemNotForSale.set_active(player.not_for_sale)
 
-            self.menu.show_all()
+            self.contextmenu.show_all()
 
             if playerid in game.loans:
-                self.menuitemAddTransfer.set_visible(False)
-                self.menuitemRemoveTransfer.set_visible(False)
-                self.menuitemAddLoan.set_visible(False)
-                self.menuitemRemoveLoan.set_visible(False)
-                self.menuitemQuickSell.set_visible(False)
-                self.menuitemRenewContract.set_visible(False)
-                self.menuitemNotForSale.set_visible(False)
-                self.menuitemExtendLoan.set_visible(True)
-                self.menuitemCancelLoan.set_visible(True)
+                self.contextmenu.menuitemAddTransfer.set_visible(False)
+                self.contextmenu.menuitemRemoveTransfer.set_visible(False)
+                self.contextmenu.menuitemAddLoan.set_visible(False)
+                self.contextmenu.menuitemRemoveLoan.set_visible(False)
+                self.contextmenu.menuitemQuickSell.set_visible(False)
+                self.contextmenu.menuitemRenewContract.set_visible(False)
+                self.contextmenu.menuitemNotForSale.set_visible(False)
+                self.contextmenu.menuitemExtendLoan.set_visible(True)
+                self.contextmenu.menuitemCancelLoan.set_visible(True)
             else:
                 transfer = player.transfer[0]
                 loan = player.transfer[1]
 
                 if transfer is True:
-                    self.menuitemAddTransfer.set_sensitive(False)
-                    self.menuitemRemoveTransfer.set_sensitive(True)
-                    self.menuitemNotForSale.set_active(False)
-                    self.menuitemNotForSale.set_sensitive(False)
+                    self.contextmenu.menuitemAddTransfer.set_sensitive(False)
+                    self.contextmenu.menuitemRemoveTransfer.set_sensitive(True)
+                    self.contextmenu.menuitemNotForSale.set_active(False)
+                    self.contextmenu.menuitemNotForSale.set_sensitive(False)
                 else:
-                    self.menuitemAddTransfer.set_sensitive(True)
-                    self.menuitemRemoveTransfer.set_sensitive(False)
+                    self.contextmenu.menuitemAddTransfer.set_sensitive(True)
+                    self.contextmenu.menuitemRemoveTransfer.set_sensitive(False)
 
                 if loan is True:
-                    self.menuitemAddLoan.set_sensitive(False)
-                    self.menuitemRemoveLoan.set_sensitive(True)
+                    self.contextmenu.menuitemAddLoan.set_sensitive(False)
+                    self.contextmenu.menuitemRemoveLoan.set_sensitive(True)
                 else:
-                    self.menuitemAddLoan.set_sensitive(True)
-                    self.menuitemRemoveLoan.set_sensitive(False)
+                    self.contextmenu.menuitemAddLoan.set_sensitive(True)
+                    self.contextmenu.menuitemRemoveLoan.set_sensitive(False)
 
-                self.menuitemNotForSale.set_visible(True)
-                self.menuitemExtendLoan.set_visible(False)
-                self.menuitemCancelLoan.set_visible(False)
+                self.contextmenu.menuitemNotForSale.set_visible(True)
+                self.contextmenu.menuitemExtendLoan.set_visible(False)
+                self.contextmenu.menuitemCancelLoan.set_visible(False)
 
-            self.menu.popup(None, None, None, None, event.button, event.time)
+            self.contextmenu.popup(None, None, None, None, event.button, event.time)
 
     def view_changed(self, combobox):
         index = int(combobox.get_active_id())
@@ -453,7 +464,8 @@ class Squad(Gtk.Grid):
     def filter_squad(self, button):
         dialogs.squad_filter()
 
-        self.buttonReset.set_sensitive(not game.squad_filter == constants.squad_filter)
+        sensitive = not game.squad_filter == constants.squad_filter
+        self.buttonReset.set_sensitive(sensitive)
         self.treemodelfilter.refilter()
 
     def filter_reset(self, button):
@@ -509,9 +521,7 @@ class Squad(Gtk.Grid):
         playerid = model[treeiter][0]
 
         if events.renew_contract(playerid):
-            state = dialogs.renew_player_contract(playerid)
-
-            if state:
+            if dialogs.renew_player_contract(playerid):
                 self.populate_data()
         else:
             dialogs.error(8)
@@ -530,10 +540,7 @@ class Squad(Gtk.Grid):
         state = dialogs.quick_sell(name, club, amount)
 
         if state:
-            class Negotiation:
-                pass
-
-            negotiation = Negotiation()
+            negotiation = structures.Negotiation()
             negotiation.playerid = playerid
             negotiation.club = new_club
             negotiation.transfer_type = 0
@@ -570,9 +577,8 @@ class Squad(Gtk.Grid):
         player = game.players[playerid]
 
         name = display.name(player, mode=1)
-        state = dialogs.cancel_loan(name)
 
-        if state:
+        if dialogs.cancel_loan(name):
             transfer.end_loan(playerid)
 
             for key, item in game.clubs[game.teamid].team.items():

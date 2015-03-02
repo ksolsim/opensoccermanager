@@ -5,10 +5,7 @@ import string
 
 import constants
 import game
-
-
-class Staff:
-    pass
+import structures
 
 
 def generate(role, number):
@@ -71,7 +68,7 @@ def generate(role, number):
     members = {}
 
     for count in range(0, number):
-        staff = Staff()
+        staff = structures.Staff()
         staff.name = name()
         staff.age = age()
         staff.ability = ability()

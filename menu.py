@@ -7,6 +7,9 @@ import widgets
 
 
 class Menu(Gtk.MenuBar):
+    '''
+    Main menu structure seen once the game has been started.
+    '''
     def __init__(self):
         Gtk.MenuBar.__init__(self)
 
@@ -331,3 +334,84 @@ class Menu(Gtk.MenuBar):
         menu.append(self.menuitemInformation)
         self.menuitemAbout = widgets.MenuItem("_About")
         menu.append(self.menuitemAbout)
+
+
+class PlayersContextMenu(Gtk.Menu):
+    '''
+    Context menu displayed for players not belonging to the users club.
+    '''
+    def __init__(self):
+        Gtk.Menu.__init__(self)
+
+        self.menuitemTransfer = widgets.MenuItem("Make _Transfer Offer")
+        self.append(self.menuitemTransfer)
+        self.menuitemLoan = widgets.MenuItem("Make _Loan Offer")
+        self.append(self.menuitemLoan)
+
+        self.separator1 = Gtk.SeparatorMenuItem()
+        self.append(self.separator1)
+
+        self.menuitemAddShortlist = widgets.MenuItem("_Add To Shortlist")
+        self.append(self.menuitemAddShortlist)
+        self.menuitemRemoveShortlist = widgets.MenuItem("_Remove From Shortlist")
+        self.append(self.menuitemRemoveShortlist)
+
+        self.separator2 = Gtk.SeparatorMenuItem()
+        self.append(self.separator2)
+
+        self.menuitemComparison1 = widgets.MenuItem("Add to Comparison _1")
+        self.append(self.menuitemComparison1)
+        self.menuitemComparison2 = widgets.MenuItem("Add to Comparison _2")
+        self.append(self.menuitemComparison2)
+
+        separator = Gtk.SeparatorMenuItem()
+        self.append(separator)
+
+        self.menuitemRecommends = Gtk.CheckMenuItem("_Scout Recommends")
+        self.menuitemRecommends.set_use_underline(True)
+        self.append(self.menuitemRecommends)
+
+    def display(self, mode=0):
+        self.show_all()
+
+        if mode == 1:
+            self.menuitemTransfer.set_visible(False)
+            self.menuitemLoan.set_visible(False)
+            self.menuitemAddShortlist.set_visible(False)
+            self.menuitemRemoveShortlist.set_visible(False)
+            self.separator1.set_visible(False)
+            self.separator2.set_visible(False)
+
+
+class SquadContextMenu(Gtk.Menu):
+    def __init__(self):
+        Gtk.Menu.__init__(self)
+
+        self.menuitemAddPosition = widgets.MenuItem("_Add To Position")
+        self.append(self.menuitemAddPosition)
+        self.menuitemRemovePosition = widgets.MenuItem("_Remove From Position")
+        self.append(self.menuitemRemovePosition)
+
+        separator = Gtk.SeparatorMenuItem()
+        self.append(separator)
+
+        self.menuitemAddTransfer = widgets.MenuItem("_Add To Transfer List")
+        self.append(self.menuitemAddTransfer)
+        self.menuitemRemoveTransfer = widgets.MenuItem("_Remove From Transfer List")
+        self.append(self.menuitemRemoveTransfer)
+        self.menuitemAddLoan = widgets.MenuItem("Add To _Loan List")
+        self.append(self.menuitemAddLoan)
+        self.menuitemRemoveLoan = widgets.MenuItem("_Remove From Loan List")
+        self.append(self.menuitemRemoveLoan)
+        self.menuitemQuickSell = widgets.MenuItem("_Quick Sell")
+        self.append(self.menuitemQuickSell)
+        self.menuitemRenewContract = widgets.MenuItem("Renew _Contract")
+        self.append(self.menuitemRenewContract)
+        self.menuitemNotForSale = Gtk.CheckMenuItem("_Not For Sale")
+        self.menuitemNotForSale.set_use_underline(True)
+        self.append(self.menuitemNotForSale)
+
+        self.menuitemExtendLoan = widgets.MenuItem("_Extend Loan")
+        self.append(self.menuitemExtendLoan)
+        self.menuitemCancelLoan = widgets.MenuItem("_Cancel Loan")
+        self.append(self.menuitemCancelLoan)

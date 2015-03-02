@@ -60,10 +60,6 @@ class Nation:
     pass
 
 
-class Referee:
-    pass
-
-
 class Negotiation:
     pass
 
@@ -141,3 +137,10 @@ class Team:
         self.yellow_cards = 0
         self.red_cards = 0
         self.possession = 0
+
+
+class Cards:
+    def __init__(self):
+        self.yellow_cards = 0
+        self.red_cards = 0
+        self.points = 0
