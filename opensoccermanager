@@ -144,7 +144,8 @@ class ScreenMain(Gtk.Grid):
 
     def editor_clicked(self, button):
         try:
-            subprocess.Popen("editor/editor.py", shell=False)
+            filepath = os.path.join("editor", "editor.py")
+            subprocess.Popen(filepath, shell=False)
         except FileNotFoundError:
             dialogs.file_not_found_error()
 
@@ -229,8 +230,8 @@ class ScreenDetails(Gtk.Grid):
         data.datainit()
 
         # Set database
-        filename = "databases/%s" % (game.database_filename)
-        self.filechooserDatabase.select_filename(filename)
+        filepath = os.path.join("databases", "%s" % (game.database_filename))
+        self.filechooserDatabase.select_filename(filepath)
 
         # Load financials
         self.comboboxFinances.remove_all()
@@ -265,14 +266,12 @@ class ScreenDetails(Gtk.Grid):
         self.comboboxClub.set_active(0)
 
     def finances_changed(self, radiobutton):
-        state = self.radiobuttonFinancesUSM.get_active()
-        self.comboboxFinances.set_sensitive(state)
+        active = self.radiobuttonFinancesUSM.get_active()
+        self.comboboxFinances.set_sensitive(active)
 
     def continue_status(self, entry):
-        if entry.get_text_length() > 0:
-            self.buttonContinue.set_sensitive(True)
-        else:
-            self.buttonContinue.set_sensitive(False)
+        sensitive = entry.get_text_length() > 0
+        self.buttonContinue.set_sensitive(sensitive)
 
     def back_button_clicked(self, button):
         game.window.remove(screendetails)

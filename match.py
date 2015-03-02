@@ -35,9 +35,34 @@ class Referee:
 
 
 class Match(Gtk.Grid):
+    class Score(Gtk.Grid):
+        def __init__(self):
+            Gtk.Grid.__init__(self)
+            self.set_hexpand(True)
+
+            self.labelTeam1 = widgets.Label()
+            self.labelTeam1.set_hexpand(True)
+            self.attach(self.labelTeam1, 0, 0, 1, 1)
+            self.labelScore = widgets.Label()
+            self.labelScore.set_hexpand(True)
+            self.attach(self.labelScore, 1, 0, 1, 1)
+            self.labelTeam2 = widgets.Label()
+            self.labelTeam2.set_hexpand(True)
+            self.attach(self.labelTeam2, 2, 0, 1, 1)
+
+        def update_teams(self, *teams):
+            self.labelTeam1.set_markup("<span size='16000'><b>%s</b></span>" % (teams[0]))
+            self.labelTeam2.set_markup("<span size='16000'><b>%s</b></span>" % (teams[1]))
+            self.labelScore.set_markup("<span size='16000'><b>0 - 0</b></span>")
+
+        def update_score(self, *score):
+            score = "%i - %i" % (score)
+            self.labelScore.set_markup("<span size='16000'><b>%s</b></span>" % (score))
+
     class Events(Gtk.ScrolledWindow):
         def __init__(self):
             Gtk.ScrolledWindow.__init__(self)
+            self.set_hexpand(True)
 
             self.viewport = Gtk.Viewport()
             self.add(self.viewport)
@@ -108,7 +133,6 @@ class Match(Gtk.Grid):
             self.treeviewAway.append_column(treeviewcolumn)
 
             self.show_all()
-
 
     class Statistics(Gtk.Grid):
         def __init__(self):
@@ -205,17 +229,8 @@ class Match(Gtk.Grid):
         self.attach(grid, 1, 0, 1, 1)
 
         # Score
-        self.labelTeam1 = widgets.Label()
-        self.labelTeam1.set_size_request(180, -1)
-        self.labelTeam1.set_hexpand(True)
-        grid.attach(self.labelTeam1, 0, 0, 1, 1)
-        self.labelScore = widgets.Label()
-        self.labelScore.set_hexpand(True)
-        grid.attach(self.labelScore, 1, 0, 1, 1)
-        self.labelTeam2 = widgets.Label()
-        self.labelTeam2.set_size_request(180, -1)
-        self.labelTeam2.set_hexpand(True)
-        grid.attach(self.labelTeam2, 2, 0, 1, 1)
+        self.score = self.Score()
+        grid.attach(self.score, 0, 0, 3, 1)
 
         # Events
         self.team1events = self.Events()
@@ -249,9 +264,9 @@ class Match(Gtk.Grid):
         self.notebook.append_page(self.teams, label)
 
         self.liststoreHome = Gtk.ListStore(str, str)
-        self.liststoreAway = Gtk.ListStore(str, str)
-
         self.teams.treeviewHome.set_model(self.liststoreHome)
+
+        self.liststoreAway = Gtk.ListStore(str, str)
         self.teams.treeviewAway.set_model(self.liststoreAway)
 
         self.stats = self.Statistics()
@@ -311,9 +326,7 @@ class Match(Gtk.Grid):
 
             model = 1
 
-        self.labelTeam1.set_markup('<span size="16000"><b>%s</b></span>' % (self.team1.name))
-        self.labelTeam2.set_markup('<span size="16000"><b>%s</b></span>' % (self.team2.name))
-        self.labelScore.set_markup('<span size="16000"><b>0 - 0</b></span>')
+        self.score.update_teams(self.team1.name, self.team2.name)
 
         # Determine referee
         self.referee = Referee()
@@ -342,7 +355,7 @@ class Match(Gtk.Grid):
     def start_button_clicked(self, button):
         # Generate player match result and display
         result = ai.generate_result(self.team1.teamid, self.team2.teamid)
-        self.labelScore.set_markup('<span size="16000"><b>%i - %i</b></span>' % (result[1], result[2]))
+        self.score.update_score(result[1], result[2])
 
         # Decrement matches player is suspended for
         for playerid, player in game.players.items():
