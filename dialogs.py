@@ -15,12 +15,8 @@ import evaluation
 import fileio
 import game
 import money
-import preferences
 import version
 import widgets
-
-
-prefs = preferences.Preferences()
 
 
 def exit_game(leave=False):
@@ -270,37 +266,44 @@ def preferences_dialog():
         if not game.music:
             game.player.play()
             game.music = True
-            prefs["AUDIO"]["PlayMusic"] = "True"
+            game.preferences["AUDIO"]["PlayMusic"] = "True"
         elif game.music:
             game.player.stop()
             game.music = False
-            prefs["AUDIO"]["PlayMusic"] = "False"
+            game.preferences["AUDIO"]["PlayMusic"] = "False"
 
-        prefs.writefile()
+        game.preferences.writefile()
 
     def change_currency(combobox):
         game.currency = combobox.get_active_id()
 
-        prefs["INTERFACE"]["Currency"] = game.currency
-        prefs.writefile()
+        game.preferences["INTERFACE"]["Currency"] = game.currency
+        game.preferences.writefile()
 
         game.currency = int(game.currency)
 
     def change_screen(combobox):
         game.start_screen = combobox.get_active_id()
 
-        prefs["INTERFACE"]["StartScreen"] = game.start_screen
-        prefs.writefile()
+        game.preferences["INTERFACE"]["StartScreen"] = game.start_screen
+        game.preferences.writefile()
 
         game.start_screen = int(game.start_screen)
 
-    def change_save_location(filechooserbutton):
+    def change_database_default(filechooserbutton):
         directory = filechooserbutton.get_uri()
+        game.database_filename = directory[7:]
 
-        prefs["SAVE"]["Saves"] = game.save_location
-        prefs.writefile()
+        game.preferences["DATABASE"]["Database"] = game.database_filename
+        game.preferences.writefile()
 
-        game.save_location = directory[7:]
+    def change_data_location(filechooserbutton):
+        directory = filechooserbutton.get_uri()
+        game.data_location = directory[7:]
+
+        game.preferences["SAVE"]["Data"] = game.data_location
+        game.preferences["SAVE"]["Saves"] = os.path.join(game.data_location, "saves")
+        game.preferences.writefile()
 
     def clear_names(button):
         filepath = os.path.join(game.data_location, "users.txt")
@@ -309,9 +312,11 @@ def preferences_dialog():
     dialog = Gtk.Dialog()
     dialog.set_title("Preferences")
     dialog.set_transient_for(game.window)
+    dialog.set_resizable(False)
     dialog.add_button("_OK", Gtk.ResponseType.OK)
     dialog.set_default_response(Gtk.ResponseType.OK)
     dialog.set_border_width(5)
+    dialog.vbox.set_spacing(5)
 
     grid = Gtk.Grid()
     grid.set_row_spacing(5)
@@ -346,25 +351,48 @@ def preferences_dialog():
     comboboxCurrency.connect("changed", change_currency)
     grid.attach(comboboxCurrency, 1, 2, 3, 1)
 
-    label = widgets.AlignedLabel("Save Location")
-    grid.attach(label, 0, 3, 1, 1)
-    filechooserLocation = Gtk.FileChooserButton()
-    filechooserLocation.set_tooltip_text("The location where save files will be stored by default.")
-    filechooserLocation.set_action(Gtk.FileChooserAction.SELECT_FOLDER)
-    filechooserLocation.set_filename(game.save_location)
-    filechooserLocation.connect("file-set", change_save_location)
-    grid.attach(filechooserLocation, 1, 3, 3, 1)
+    # Data locations
+    frame = widgets.CommonFrame("Data Locations")
+    dialog.vbox.add(frame)
 
+    grid1 = Gtk.Grid()
+    grid1.set_row_spacing(5)
+    grid1.set_column_spacing(5)
+    frame.insert(grid1)
+
+    label = widgets.AlignedLabel("Default Database Location")
+    grid1.attach(label, 0, 0, 1, 1)
+    filechooserDatabaseLocation = Gtk.FileChooserButton()
+    filechooserDatabaseLocation.set_tooltip_text("Location of default database file to load.")
+    filechooserDatabaseLocation.set_action(Gtk.FileChooserAction.OPEN)
+    filechooserDatabaseLocation.set_filename(os.path.join("databases", game.database_filename))
+    filechooserDatabaseLocation.connect("file-set", change_database_default)
+    grid1.attach(filechooserDatabaseLocation, 1, 0, 1, 1)
+
+    label = widgets.AlignedLabel("Data File Location")
+    grid1.attach(label, 0, 1, 1, 1)
+    filechooserSaveLocation = Gtk.FileChooserButton()
+    filechooserSaveLocation.set_tooltip_text("Default location where game data is stored.")
+    filechooserSaveLocation.set_action(Gtk.FileChooserAction.SELECT_FOLDER)
+    filechooserSaveLocation.set_filename(game.data_location)
+    filechooserSaveLocation.connect("file-set", change_data_location)
+    grid1.attach(filechooserSaveLocation, 1, 1, 1, 1)
+
+    # Manager names
     frame = widgets.CommonFrame("Manager Names")
-    grid.attach(frame, 0, 4, 2, 1)
+    dialog.vbox.add(frame)
+
     grid1 = Gtk.Grid()
     grid1.set_column_spacing(5)
     frame.insert(grid1)
+
     label = widgets.AlignedLabel("Clear previously entered manager names:")
     grid1.attach(label, 0, 0, 1, 1)
+    buttonbox = Gtk.ButtonBox()
+    grid1.attach(buttonbox, 1, 0, 1, 1)
     buttonClear = widgets.Button("_Clear Names")
     buttonClear.connect("clicked", clear_names)
-    grid1.attach(buttonClear, 1, 0, 1, 1)
+    buttonbox.add(buttonClear)
 
     dialog.show_all()
     dialog.run()

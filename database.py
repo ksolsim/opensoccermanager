@@ -4,22 +4,17 @@ import sqlite3
 import os
 
 import game
-import preferences
 
 
 class DB:
-    def __init__(self):
-        self.prefs = preferences.Preferences()
-
     def connect(self, filename=None):
         if not filename:
-            self.prefs.readfile()
+            game.preferences.readfile()
 
         filepath = os.path.join("databases", game.database_filename)
 
         self.connection = sqlite3.connect(filepath)
         self.connection.execute("PRAGMA foreign_keys = on")
-        self.connection.commit()
         self.cursor = self.connection.cursor()
 
     def importer(self, table):
@@ -28,5 +23,15 @@ class DB:
 
         return data
 
-    def disconnect(self):
-        self.connection.close()
+
+class SaveFile:
+    def connect(self, filepath):
+        self.connection = sqlite3.connect(filepath)
+        self.connection.execute("PRAGMA foreign_keys = on")
+        self.cursor = self.connection.cursor()
+
+    def load(self, table):
+        self.cursor.execute("SELECT * FROM %s" % (table))
+        data = self.cursor.fetchall()
+
+        return data

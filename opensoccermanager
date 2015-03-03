@@ -69,7 +69,7 @@ class Window(Gtk.Window):
     def run(self):
         self.add(screenmain)
 
-        prefs.readfile()
+        game.preferences.readfile()
         fileio.check_config()
 
         self.show_all()
@@ -133,9 +133,8 @@ class ScreenMain(Gtk.Grid):
 
     def load_game_clicked(self, button):
         open_dialog = dialogs.OpenDialog()
-        state = open_dialog.display()
 
-        if state:
+        if open_dialog.display():
             game.window.remove(screenmain)
             game.window.add(screengame)
             screengame.run()
@@ -332,7 +331,7 @@ class ScreenDetails(Gtk.Grid):
         ai.loan_list()
         ai.team_training()
 
-        game.database.disconnect()
+        game.database.connection.close()
 
 
 class ScreenGame(Gtk.Grid):
@@ -706,14 +705,14 @@ def exit_game(widget=None, event=None):
         Save the window size and state to preferences when quitting.
         '''
         if game.window.is_maximized():
-            prefs["INTERFACE"]["Maximized"] = "True"
+            game.preferences["INTERFACE"]["Maximized"] = "True"
         else:
-            prefs["INTERFACE"]["Maximized"] = "False"
+            game.preferences["INTERFACE"]["Maximized"] = "False"
             width, height = game.window.get_size()
-            prefs["INTERFACE"]["Width"] = str(width)
-            prefs["INTERFACE"]["Height"] = str(height)
+            game.preferences["INTERFACE"]["Width"] = str(width)
+            game.preferences["INTERFACE"]["Height"] = str(height)
 
-        prefs.writefile()
+        game.preferences.writefile()
 
     if game.teamid == 0:
         update_window_config()
@@ -730,7 +729,7 @@ def exit_game(widget=None, event=None):
 
 game.database = database.DB()
 continuegame = ContinueGame()
-prefs = preferences.Preferences()
+game.preferences = preferences.Preferences()
 game.player = music.Player()
 
 widgets.date = widgets.Date()

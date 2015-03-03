@@ -4,12 +4,16 @@ import os
 import sqlite3
 
 import constants
+import database
 import display
 import events
 import game
 import resources
 import structures
 import widgets
+
+
+db = database.SaveFile()
 
 
 def open_file(filename):
@@ -35,13 +39,11 @@ def open_file(filename):
     constants.merchandise = []
     constants.catering = []
 
-    connection = sqlite3.connect(filename)
-    connection.execute("PRAGMA foreign_keys = on")
-    cursor = connection.cursor()
+    db.connect(filename)
 
     # Main data and globals
-    cursor.execute("SELECT * FROM main")
-    data = cursor.fetchone()
+    db.cursor.execute("SELECT * FROM main")
+    data = db.cursor.fetchone()
 
     game.teamid = int(data[0])
     game.year = int(data[1])
@@ -86,7 +88,7 @@ def open_file(filename):
     widgets.date.update()
 
     # Nation
-    for item in cursor.execute("SELECT * FROM nation"):
+    for item in db.load("nation"):
         nation = structures.Nation()
         nationid = item[0]
         game.nations[nationid] = nation
@@ -95,7 +97,7 @@ def open_file(filename):
         nation.denonym = item[2]
 
     # Stadium
-    for item in cursor.execute("SELECT * FROM stadium"):
+    for item in db.load("stadium"):
         stadium = structures.Stadium()
         stadiumid = item[0]
         game.stadiums[stadiumid] = stadium
@@ -138,7 +140,7 @@ def open_file(filename):
         stadium.buildings = list(item[30:38])
 
     # Club
-    for item in cursor.execute("SELECT * FROM club"):
+    for item in db.load("club"):
         club = structures.Club()
         clubid = item[0]
         game.clubs[clubid] = club
@@ -207,20 +209,20 @@ def open_file(filename):
 
     # Team
     for clubid, club in game.clubs.items():
-        cursor.execute("SELECT * FROM team WHERE club=?", (clubid,))
-        data = cursor.fetchone()
+        db.cursor.execute("SELECT * FROM team WHERE club=?", (clubid,))
+        data = db.cursor.fetchone()
 
         for position, item in enumerate(data[1:]):
             club.team[position] = item
 
-        cursor.execute("SELECT * FROM shortlist WHERE club=?", (clubid,))
-        data = cursor.fetchall()
+        db.cursor.execute("SELECT * FROM shortlist WHERE club=?", (clubid,))
+        data = db.cursor.fetchall()
 
         for item in data:
             club.shortlist.add(item[1])
 
     # Player
-    for item in cursor.execute("SELECT * FROM player"):
+    for item in db.load("player"):
         player = structures.Player()
         playerid = item[0]
         game.players[playerid] = player
@@ -269,7 +271,7 @@ def open_file(filename):
         player.age = events.age(item[4])
 
     # Squad
-    for item in cursor.execute("SELECT * FROM squad"):
+    for item in db.load("squad"):
         clubid = item[0]
         playerid = item[1]
 
@@ -277,19 +279,19 @@ def open_file(filename):
         game.players[playerid].club = clubid
 
     # News
-    for item in cursor.execute("SELECT * FROM news"):
+    for item in db.load("news"):
         game.news.append(item[0:5])
 
     # Fixtures
     for item in range(0, 38):
-        data = cursor.execute("SELECT * FROM fixtures WHERE week=?", (item,))
+        data = db.cursor.execute("SELECT * FROM fixtures WHERE week=?", (item,))
         game.fixtures.append([])
 
         for value in data:
             game.fixtures[value[0]].append([value[1], value[2]])
 
     # Results
-    for item in cursor.execute("SELECT * FROM results"):
+    for item in db.cursor.execute("SELECT * FROM results"):
         if len(game.results) == item[0] + 1:
             game.results[item[0]].append(item[1:5])
         else:
@@ -297,7 +299,7 @@ def open_file(filename):
             game.results[item[0]].append(item[1:5])
 
     # Standings
-    for item in cursor.execute("SELECT * FROM standings"):
+    for item in db.load("standings"):
         item = list(map(int, item))
         clubid = item[0]
         game.standings[clubid] = structures.League()
@@ -311,7 +313,7 @@ def open_file(filename):
         game.standings[clubid].points = item[8]
 
     # Negotiations
-    for item in cursor.execute("SELECT * FROM negotiations"):
+    for item in db.load("negotiations"):
         negotiation = structures.Negotiation()
         key = item[0]
         negotiation.playerid = item[1]
@@ -323,45 +325,45 @@ def open_file(filename):
         game.negotiations[key] = negotiation
 
     # Loans
-    for item in cursor.execute("SELECT * FROM loans"):
+    for item in db.load("loans"):
         game.loans[item[0]] = [item[1], item[2]]
 
     # Charts
-    for item in cursor.execute("SELECT * FROM transfers"):
+    for item in db.load("transfers"):
         game.transfers.append(item)
 
     # Buildings
-    for item in cursor.execute("SELECT * FROM buildings"):
+    for item in db.load("buildings"):
         constants.buildings.append(item)
 
     # Injuries
-    for item in cursor.execute("SELECT * FROM injuries"):
+    for item in db.load("injuries"):
         constants.injuries[item[0]] = item[1:]
 
     # Suspensions
-    for item in cursor.execute("SELECT * FROM suspensions"):
+    for item in db.load("suspensions"):
         constants.suspensions[item[0]] = item[1:]
 
     # Companies
-    for item in cursor.execute("SELECT * FROM companies"):
+    for item in db.load("companies"):
         game.companies.append(item)
 
     # Surnames
-    for item in cursor.execute("SELECT * FROM surnames"):
+    for item in db.load("surnames"):
         game.surnames.append(item[0])
 
     # Merchandise
-    for item in cursor.execute("SELECT * FROM merchandise"):
+    for item in db.load("merchandise"):
         constants.merchandise.append(item)
 
     # Catering
-    for item in cursor.execute("SELECT * FROM catering"):
+    for item in db.load("catering"):
         constants.catering.append(item)
 
     club = game.clubs[game.teamid]
 
     # Staff
-    for item in cursor.execute("SELECT * FROM coachavailable"):
+    for item in db.load("coachavailable"):
         coach = structures.Staff()
         coach.name = item[1]
         coach.age = item[2]
@@ -373,7 +375,7 @@ def open_file(filename):
         coachid = item[0]
         club.coaches_available[coachid] = coach
 
-    for item in cursor.execute("SELECT * FROM coachhired"):
+    for item in db.load("coachhired"):
         coach = structures.Staff()
         coach.name = item[1]
         coach.age = item[2]
@@ -387,7 +389,7 @@ def open_file(filename):
         coachid = item[0]
         club.coaches_hired[coachid] = coach
 
-    for item in cursor.execute("SELECT * FROM scoutavailable"):
+    for item in db.load("scoutavailable"):
         scout = structures.Staff()
         scout.name = item[1]
         scout.age = item[2]
@@ -398,7 +400,7 @@ def open_file(filename):
         scoutid = item[0]
         club.scouts_available[scoutid] = scout
 
-    for item in cursor.execute("SELECT * FROM scouthired"):
+    for item in db.load("scouthired"):
         scout = structures.Staff()
         scout.name = item[1]
         scout.age = item[2]
@@ -412,7 +414,7 @@ def open_file(filename):
         club.scouts_hired[scoutid] = scout
 
     # Referees
-    for item in cursor.execute("SELECT * FROM referee"):
+    for item in db.load("referee"):
         referee = structures.Referee()
         referee.name = item[1]
         referee.matches = item[2]
@@ -426,16 +428,16 @@ def open_file(filename):
     club = game.clubs[game.teamid]
 
     # Advertising
-    for item in cursor.execute("SELECT * FROM hoardingsavailable"):
+    for item in db.load("hoardingsavailable"):
         club.hoardings[0].append(item)
 
-    for item in cursor.execute("SELECT * FROM hoardingscurrent"):
+    for item in db.load("hoardingscurrent"):
         club.hoardings[1].append(item)
 
-    for item in cursor.execute("SELECT * FROM programmesavailable"):
+    for item in db.load("programmesavailable"):
         club.programmes[0].append(item)
 
-    for item in cursor.execute("SELECT * FROM programmescurrent"):
+    for item in db.load("programmescurrent"):
         club.programmes[1].append(item)
 
     # Records
@@ -460,7 +462,7 @@ def open_file(filename):
     resources.import_news()
     resources.import_evaluation()
 
-    connection.close()
+    db.connection.close()
 
 
 def save_file(filename):
@@ -468,50 +470,48 @@ def save_file(filename):
     if os.path.exists(filename):
         os.remove(filename)
 
-    connection = sqlite3.connect(filename)
-    connection.execute("PRAGMA foreign_keys = on")
-    cursor = connection.cursor()
+    db.connect(filename)
 
-    cursor.execute("CREATE TABLE main (teamid, year, month, date, week, eventindex, dateindex, dateprev, fixturesindex, fixturespage, televised)")
-    cursor.execute("CREATE TABLE nation (id PRIMARY KEY, name, denonym)")
-    cursor.execute("CREATE TABLE stadium (id PRIMARY KEY, name, capacity, condition, warnings, plots, northcapacity, northroof, northseating, westcapacity, westroof, westseating, southcapacity, southroof, southseating, eastcapacity, eastroof, eastseating, northwestcapacity, northeastcapacity, southwestcapacity, southeastcapacity, northwestroof, northeastroof, southwestroof, southeastroof, northwestseating, northeastseating, southwestseating, southeastseating, stall, programme, smallshop, largeshop, bar, burgerbar, cafe, restaurant)")
-    cursor.execute("CREATE TABLE club (id PRIMARY KEY, name, nickname, manager, chairman, stadium, reputation, tactics1, tactics2, tactics3, tactics4, tactics5, tactics6, tactics7, tactics8, tactics9, seasontickets, schooltickets, income, expenditure, balance, eval1, eval2, eval3, eval4, eval5, merchandise, catering, sponsorstatus, sponsoroffer, teamtraining, tickets, accounts, form)")
-    cursor.execute("CREATE TABLE player (id PRIMARY KEY, firstname, secondname, commonname, dateofbirth, club, nation, position, keeping, tackling, passing, shooting, heading, pace, stamina, ballcontrol, setpieces, fitness, training, trainingpoints, morale, injurytype, injuryperiod, suspensiontype, suspensionperiod, suspensionpoints, value, wage, bonus0, bonus1, bonus2, bonus3, contract, transfer1, transfer2, notforsale, appearances, substitute, missed, goals, assists, manofthematch, yellowcards, redcards, rating, FOREIGN KEY(club) REFERENCES club(id), FOREIGN KEY(nation) REFERENCES nation(id))")
-    cursor.execute("CREATE TABLE squad (club, player, FOREIGN KEY(club) REFERENCES club(id), FOREIGN KEY(player) REFERENCES player(id))")
-    cursor.execute("CREATE TABLE news (date, title, message, category, unread)")
-    cursor.execute("CREATE TABLE fixtures (week, team1, team2)")
-    cursor.execute("CREATE TABLE results (week, team1, result1, result2, team2)")
-    cursor.execute("CREATE TABLE standings (club, played, won, drawn, lost, goalsfor, goalsagainst, goaldifference, points, FOREIGN KEY(club) REFERENCES club(id))")
-    cursor.execute("CREATE TABLE referee (refereeid PRIMARY KEY, name, matches, fouls, yellow, red)")
-    cursor.execute("CREATE TABLE team (club, pos1, pos2, pos3, pos4, pos5, pos6, pos7, pos8, pos9, pos10, pos11, pos12, pos13, pos14, pos15, pos16, FOREIGN KEY(club) REFERENCES club(id))")
-    cursor.execute("CREATE TABLE shortlist (club, player, FOREIGN KEY(club) REFERENCES club(id), FOREIGN KEY(player) REFERENCES player(id))")
-    cursor.execute("CREATE TABLE negotiations (negotiationid, player, transfertype, timeout, club, status, date, FOREIGN KEY(player) REFERENCES player(id), FOREIGN KEY(club) REFERENCES club(id))")
-    cursor.execute("CREATE TABLE loans (player, club, period, FOREIGN KEY(player) REFERENCES player(id), FOREIGN KEY(club) REFERENCES club(id))")
-    cursor.execute("CREATE TABLE transfers (player, oldclub, newclub, fee, FOREIGN KEY(player) REFERENCES player(id), FOREIGN KEY(oldclub) REFERENCES club(id), FOREIGN KEY(newclub) REFERENCES club(id))")
-    cursor.execute("CREATE TABLE individualtraining (name, coach, skill, intensity, start, current, notes)")
-    cursor.execute("CREATE TABLE hoardingsavailable (name, quantity, period, cost)")
-    cursor.execute("CREATE TABLE programmesavailable (name, quantity, period, cost)")
-    cursor.execute("CREATE TABLE hoardingscurrent (name, quantity, period)")
-    cursor.execute("CREATE TABLE programmescurrent (name, quantity, period)")
-    cursor.execute("CREATE TABLE buildings (name, size, cost)")
-    cursor.execute("CREATE TABLE merchandise (name, cost, percentage)")
-    cursor.execute("CREATE TABLE catering (name, cost, percentage)")
-    cursor.execute("CREATE TABLE injuries (injuryid PRIMARY KEY, name, minperiod, maxperiod, minfitness, maxfitness)")
-    cursor.execute("CREATE TABLE suspensions (suspensionid PRIMARY KEY, name, minperiod, maxperiod)")
-    cursor.execute("CREATE TABLE companies (name)")
-    cursor.execute("CREATE TABLE surnames (name)")
-    cursor.execute("CREATE TABLE coachavailable (id PRIMARY KEY, name, age, rating, speciality, wage, contract)")
-    cursor.execute("CREATE TABLE scoutavailable (id PRIMARY KEY, name, age, rating, wage, contract)")
-    cursor.execute("CREATE TABLE coachhired (id PRIMARY KEY, name, age, rating, speciality, wage, contract, morale, retiring)")
-    cursor.execute("CREATE TABLE scouthired (id PRIMARY KEY, name, age, rating, wage, contract, morale, retiring)")
-    cursor.execute("CREATE TABLE records (season, played, won, drawn, lost, goalsfor, goalsagainst, goaldifference, points, position)")
+    db.cursor.execute("CREATE TABLE main (teamid, year, month, date, week, eventindex, dateindex, dateprev, fixturesindex, fixturespage, televised)")
+    db.cursor.execute("CREATE TABLE nation (id PRIMARY KEY, name, denonym)")
+    db.cursor.execute("CREATE TABLE stadium (id PRIMARY KEY, name, capacity, condition, warnings, plots, northcapacity, northroof, northseating, westcapacity, westroof, westseating, southcapacity, southroof, southseating, eastcapacity, eastroof, eastseating, northwestcapacity, northeastcapacity, southwestcapacity, southeastcapacity, northwestroof, northeastroof, southwestroof, southeastroof, northwestseating, northeastseating, southwestseating, southeastseating, stall, programme, smallshop, largeshop, bar, burgerbar, cafe, restaurant)")
+    db.cursor.execute("CREATE TABLE club (id PRIMARY KEY, name, nickname, manager, chairman, stadium, reputation, tactics1, tactics2, tactics3, tactics4, tactics5, tactics6, tactics7, tactics8, tactics9, seasontickets, schooltickets, income, expenditure, balance, eval1, eval2, eval3, eval4, eval5, merchandise, catering, sponsorstatus, sponsoroffer, teamtraining, tickets, accounts, form)")
+    db.cursor.execute("CREATE TABLE player (id PRIMARY KEY, firstname, secondname, commonname, dateofbirth, club, nation, position, keeping, tackling, passing, shooting, heading, pace, stamina, ballcontrol, setpieces, fitness, training, trainingpoints, morale, injurytype, injuryperiod, suspensiontype, suspensionperiod, suspensionpoints, value, wage, bonus0, bonus1, bonus2, bonus3, contract, transfer1, transfer2, notforsale, appearances, substitute, missed, goals, assists, manofthematch, yellowcards, redcards, rating, FOREIGN KEY(club) REFERENCES club(id), FOREIGN KEY(nation) REFERENCES nation(id))")
+    db.cursor.execute("CREATE TABLE squad (club, player, FOREIGN KEY(club) REFERENCES club(id), FOREIGN KEY(player) REFERENCES player(id))")
+    db.cursor.execute("CREATE TABLE news (date, title, message, category, unread)")
+    db.cursor.execute("CREATE TABLE fixtures (week, team1, team2)")
+    db.cursor.execute("CREATE TABLE results (week, team1, result1, result2, team2)")
+    db.cursor.execute("CREATE TABLE standings (club, played, won, drawn, lost, goalsfor, goalsagainst, goaldifference, points, FOREIGN KEY(club) REFERENCES club(id))")
+    db.cursor.execute("CREATE TABLE referee (refereeid PRIMARY KEY, name, matches, fouls, yellow, red)")
+    db.cursor.execute("CREATE TABLE team (club, pos1, pos2, pos3, pos4, pos5, pos6, pos7, pos8, pos9, pos10, pos11, pos12, pos13, pos14, pos15, pos16, FOREIGN KEY(club) REFERENCES club(id))")
+    db.cursor.execute("CREATE TABLE shortlist (club, player, FOREIGN KEY(club) REFERENCES club(id), FOREIGN KEY(player) REFERENCES player(id))")
+    db.cursor.execute("CREATE TABLE negotiations (negotiationid, player, transfertype, timeout, club, status, date, FOREIGN KEY(player) REFERENCES player(id), FOREIGN KEY(club) REFERENCES club(id))")
+    db.cursor.execute("CREATE TABLE loans (player, club, period, FOREIGN KEY(player) REFERENCES player(id), FOREIGN KEY(club) REFERENCES club(id))")
+    db.cursor.execute("CREATE TABLE transfers (player, oldclub, newclub, fee, FOREIGN KEY(player) REFERENCES player(id), FOREIGN KEY(oldclub) REFERENCES club(id), FOREIGN KEY(newclub) REFERENCES club(id))")
+    db.cursor.execute("CREATE TABLE individualtraining (name, coach, skill, intensity, start, current, notes)")
+    db.cursor.execute("CREATE TABLE hoardingsavailable (name, quantity, period, cost)")
+    db.cursor.execute("CREATE TABLE programmesavailable (name, quantity, period, cost)")
+    db.cursor.execute("CREATE TABLE hoardingscurrent (name, quantity, period)")
+    db.cursor.execute("CREATE TABLE programmescurrent (name, quantity, period)")
+    db.cursor.execute("CREATE TABLE buildings (name, size, cost)")
+    db.cursor.execute("CREATE TABLE merchandise (name, cost, percentage)")
+    db.cursor.execute("CREATE TABLE catering (name, cost, percentage)")
+    db.cursor.execute("CREATE TABLE injuries (injuryid PRIMARY KEY, name, minperiod, maxperiod, minfitness, maxfitness)")
+    db.cursor.execute("CREATE TABLE suspensions (suspensionid PRIMARY KEY, name, minperiod, maxperiod)")
+    db.cursor.execute("CREATE TABLE companies (name)")
+    db.cursor.execute("CREATE TABLE surnames (name)")
+    db.cursor.execute("CREATE TABLE coachavailable (id PRIMARY KEY, name, age, rating, speciality, wage, contract)")
+    db.cursor.execute("CREATE TABLE scoutavailable (id PRIMARY KEY, name, age, rating, wage, contract)")
+    db.cursor.execute("CREATE TABLE coachhired (id PRIMARY KEY, name, age, rating, speciality, wage, contract, morale, retiring)")
+    db.cursor.execute("CREATE TABLE scouthired (id PRIMARY KEY, name, age, rating, wage, contract, morale, retiring)")
+    db.cursor.execute("CREATE TABLE records (season, played, won, drawn, lost, goalsfor, goalsagainst, goaldifference, points, position)")
 
     televised = ",".join(str(item) for item in game.televised)
 
-    cursor.execute("INSERT INTO main VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (game.teamid, game.year, game.month, game.date, game.week, game.eventindex, game.dateindex, game.dateprev, game.fixturesindex, game.fixturespage, televised))
+    db.cursor.execute("INSERT INTO main VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (game.teamid, game.year, game.month, game.date, game.week, game.eventindex, game.dateindex, game.dateprev, game.fixturesindex, game.fixturespage, televised))
 
     for nationid, nation in game.nations.items():
-        cursor.execute("INSERT INTO nation VALUES (?, ?, ?)", (nationid, nation.name, nation.denonym))
+        db.cursor.execute("INSERT INTO nation VALUES (?, ?, ?)", (nationid, nation.name, nation.denonym))
 
     for stadiumid, stadium in game.stadiums.items():
         details = []
@@ -528,7 +528,7 @@ def save_file(filename):
 
         buildings = stadium.buildings
 
-        cursor.execute("INSERT INTO stadium VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (stadiumid, stadium.name, stadium.capacity, stadium.condition, stadium.warnings, stadium.plots, details[0], details[1], details[2], details[3], details[4], details[5], details[6], details[7], details[8], details[9], details[10], details[11], details[12], details[13], details[14], details[15], details[16], details[17], details[18], details[19], details[20], details[21], details[22], details[23], buildings[0], buildings[1], buildings[2], buildings[3], buildings[4], buildings[5], buildings[6], buildings[7]))
+        db.cursor.execute("INSERT INTO stadium VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (stadiumid, stadium.name, stadium.capacity, stadium.condition, stadium.warnings, stadium.plots, details[0], details[1], details[2], details[3], details[4], details[5], details[6], details[7], details[8], details[9], details[10], details[11], details[12], details[13], details[14], details[15], details[16], details[17], details[18], details[19], details[20], details[21], details[22], details[23], buildings[0], buildings[1], buildings[2], buildings[3], buildings[4], buildings[5], buildings[6], buildings[7]))
 
     for clubid, club in game.clubs.items():
         if club.merchandise:
@@ -560,100 +560,100 @@ def save_file(filename):
 
         form = ",".join(item for item in club.form)
 
-        cursor.execute("INSERT INTO club VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (clubid, club.name, club.nickname, club.manager, club.chairman, club.stadium, club.reputation, club.tactics[0], club.tactics[1], club.tactics[2], club.tactics[3], club.tactics[4], club.tactics[5], club.tactics[6], club.tactics[7], club.tactics[8], club.season_tickets, club.school_tickets, club.income, club.expenditure, club.balance, club.evaluation[0], club.evaluation[1], club.evaluation[2], club.evaluation[3], club.evaluation[4], merchandise, catering, club.sponsor_status, sponsor_offer, team_training, tickets, accounts, form))
+        db.cursor.execute("INSERT INTO club VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (clubid, club.name, club.nickname, club.manager, club.chairman, club.stadium, club.reputation, club.tactics[0], club.tactics[1], club.tactics[2], club.tactics[3], club.tactics[4], club.tactics[5], club.tactics[6], club.tactics[7], club.tactics[8], club.season_tickets, club.school_tickets, club.income, club.expenditure, club.balance, club.evaluation[0], club.evaluation[1], club.evaluation[2], club.evaluation[3], club.evaluation[4], merchandise, catering, club.sponsor_status, sponsor_offer, team_training, tickets, accounts, form))
 
     for playerid, player in game.players.items():
         rating = ",".join(map(str, player.rating))
 
-        cursor.execute("INSERT INTO player VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (playerid, player.first_name, player.second_name, player.common_name, player.date_of_birth, player.club, player.nationality, player.position, player.keeping, player.tackling, player.passing, player.shooting, player.heading, player.pace, player.stamina, player.ball_control, player.set_pieces, player.fitness, player.training, player.training_points, player.morale, player.injury_type, player.injury_period, player.suspension_type, player.suspension_period, player.suspension_points, player.value, player.wage, player.bonus[0], player.bonus[1], player.bonus[2], player.bonus[3], player.contract, player.transfer[0], player.transfer[1], player.not_for_sale, player.appearances, player.substitute, player.missed, player.goals, player.assists, player.man_of_the_match, player.yellow_cards, player.red_cards, rating))
+        db.cursor.execute("INSERT INTO player VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (playerid, player.first_name, player.second_name, player.common_name, player.date_of_birth, player.club, player.nationality, player.position, player.keeping, player.tackling, player.passing, player.shooting, player.heading, player.pace, player.stamina, player.ball_control, player.set_pieces, player.fitness, player.training, player.training_points, player.morale, player.injury_type, player.injury_period, player.suspension_type, player.suspension_period, player.suspension_points, player.value, player.wage, player.bonus[0], player.bonus[1], player.bonus[2], player.bonus[3], player.contract, player.transfer[0], player.transfer[1], player.not_for_sale, player.appearances, player.substitute, player.missed, player.goals, player.assists, player.man_of_the_match, player.yellow_cards, player.red_cards, rating))
 
     for clubid, club in game.clubs.items():
         for item in club.squad:
-            cursor.execute("INSERT INTO squad VALUES (?, ?)", (clubid, item))
+            db.cursor.execute("INSERT INTO squad VALUES (?, ?)", (clubid, item))
 
-        cursor.execute("INSERT INTO team VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (clubid, club.team[0], club.team[1], club.team[2], club.team[3], club.team[4], club.team[5], club.team[6], club.team[7], club.team[8], club.team[9], club.team[10], club.team[11], club.team[12], club.team[13], club.team[14], club.team[15]))
+        db.cursor.execute("INSERT INTO team VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (clubid, club.team[0], club.team[1], club.team[2], club.team[3], club.team[4], club.team[5], club.team[6], club.team[7], club.team[8], club.team[9], club.team[10], club.team[11], club.team[12], club.team[13], club.team[14], club.team[15]))
 
         for item in club.shortlist:
-            cursor.execute("INSERT INTO shortlist VALUES (?, ?)", (clubid, item))
+            db.cursor.execute("INSERT INTO shortlist VALUES (?, ?)", (clubid, item))
 
     for item in game.news:
-        cursor.execute("INSERT INTO news VALUES (?, ?, ?, ?, ?)", (item[0:5]))
+        db.cursor.execute("INSERT INTO news VALUES (?, ?, ?, ?, ?)", (item[0:5]))
 
     for week, match in enumerate(game.fixtures):
         for team in match:
-            cursor.execute("INSERT INTO fixtures VALUES (?, ?, ?)", (week, team[0], team[1]))
+            db.cursor.execute("INSERT INTO fixtures VALUES (?, ?, ?)", (week, team[0], team[1]))
 
     for week, match in enumerate(game.results):
         for team in match:
-            cursor.execute("INSERT INTO results VALUES (?, ?, ?, ?, ?)", (week, team[0], team[1], team[2], team[3]))
+            db.cursor.execute("INSERT INTO results VALUES (?, ?, ?, ?, ?)", (week, team[0], team[1], team[2], team[3]))
 
     for clubid, item in game.standings.items():
-        cursor.execute("INSERT INTO standings VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", (clubid, item.played, item.wins, item.draws, item.losses, item.goals_for, item.goals_against, item.goal_difference, item.points))
+        db.cursor.execute("INSERT INTO standings VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", (clubid, item.played, item.wins, item.draws, item.losses, item.goals_for, item.goals_against, item.goal_difference, item.points))
 
     for refereeid, referee in game.referees.items():
-        cursor.execute("INSERT INTO referee VALUES (?, ?, ?, ?, ?, ?)", (refereeid, referee.name, referee.matches, referee.fouls, referee.yellows, referee.reds))
+        db.cursor.execute("INSERT INTO referee VALUES (?, ?, ?, ?, ?, ?)", (refereeid, referee.name, referee.matches, referee.fouls, referee.yellows, referee.reds))
 
     for key, negotiation in game.negotiations.items():
-        cursor.execute("INSERT INTO negotiations VALUES (?, ?, ?, ?, ?, ?, ?)", (key, negotiation.playerid, negotiation.transfer_type, negotiation.timeout, negotiation.club, negotiation.status, negotiation.date))
+        db.cursor.execute("INSERT INTO negotiations VALUES (?, ?, ?, ?, ?, ?, ?)", (key, negotiation.playerid, negotiation.transfer_type, negotiation.timeout, negotiation.club, negotiation.status, negotiation.date))
 
     for key, loan in game.loans.items():
-        cursor.execute("INSERT INTO loans VALUES (?, ?, ?)", (key, loan[0], loan[1]))
+        db.cursor.execute("INSERT INTO loans VALUES (?, ?, ?)", (key, loan[0], loan[1]))
 
     for item in game.transfers:
-        cursor.execute("INSERT INTO transfers VALUES (?, ?, ?, ?)", item)
+        db.cursor.execute("INSERT INTO transfers VALUES (?, ?, ?, ?)", item)
 
     for item in constants.buildings:
-        cursor.execute("INSERT INTO buildings VALUES (?, ?, ?)", item)
+        db.cursor.execute("INSERT INTO buildings VALUES (?, ?, ?)", item)
 
     for injuryid, injury in constants.injuries.items():
-        cursor.execute("INSERT INTO injuries VALUES (?, ?, ?, ?, ?, ?)", (injuryid, injury[0], injury[1], injury[2], injury[3], injury[4]))
+        db.cursor.execute("INSERT INTO injuries VALUES (?, ?, ?, ?, ?, ?)", (injuryid, injury[0], injury[1], injury[2], injury[3], injury[4]))
 
     for suspensionid, suspension in constants.suspensions.items():
-        cursor.execute("INSERT INTO suspensions VALUES (?, ?, ?, ?)", (suspensionid, suspension[0], suspension[1], suspension[2]))
+        db.cursor.execute("INSERT INTO suspensions VALUES (?, ?, ?, ?)", (suspensionid, suspension[0], suspension[1], suspension[2]))
 
     for company in game.companies:
-        cursor.execute("INSERT INTO companies VALUES (?)", (company[0],))
+        db.cursor.execute("INSERT INTO companies VALUES (?)", (company[0],))
 
     for surname in game.surnames:
-        cursor.execute("INSERT INTO surnames VALUES (?)", (surname,))
+        db.cursor.execute("INSERT INTO surnames VALUES (?)", (surname,))
 
     for item in constants.merchandise:
-        cursor.execute("INSERT INTO merchandise VALUES (?, ?, ?)", item[0:])
+        db.cursor.execute("INSERT INTO merchandise VALUES (?, ?, ?)", item[0:])
 
     for item in constants.catering:
-        cursor.execute("INSERT INTO catering VALUES (?, ?, ?)", item[0:])
+        db.cursor.execute("INSERT INTO catering VALUES (?, ?, ?)", item[0:])
 
     club = game.clubs[game.teamid]
 
     for coachid, coach in club.coaches_available.items():
-        cursor.execute("INSERT INTO coachavailable VALUES (?, ?, ?, ?, ?, ?, ?)", (coachid, coach.name, coach.age, coach.ability, coach.speciality, coach.wage, coach.contract))
+        db.cursor.execute("INSERT INTO coachavailable VALUES (?, ?, ?, ?, ?, ?, ?)", (coachid, coach.name, coach.age, coach.ability, coach.speciality, coach.wage, coach.contract))
 
     for scoutid, scout in club.scouts_available.items():
-        cursor.execute("INSERT INTO scoutavailable VALUES (?, ?, ?, ?, ?, ?)", (scoutid, scout.name, scout.age, scout.ability, scout.wage, scout.contract))
+        db.cursor.execute("INSERT INTO scoutavailable VALUES (?, ?, ?, ?, ?, ?)", (scoutid, scout.name, scout.age, scout.ability, scout.wage, scout.contract))
 
     for coachid, coach in club.coaches_hired.items():
-        cursor.execute("INSERT INTO coachhired VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", (coachid, coach.name, coach.age, coach.ability, coach.speciality, coach.wage, coach.contract, coach.morale, coach.retiring))
+        db.cursor.execute("INSERT INTO coachhired VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", (coachid, coach.name, coach.age, coach.ability, coach.speciality, coach.wage, coach.contract, coach.morale, coach.retiring))
 
     for scoutid, scout in club.scouts_hired.items():
-        cursor.execute("INSERT INTO scouthired VALUES (?, ?, ?, ?, ?, ?, ?, ?)", (scoutid, scout.name, scout.age, scout.ability, scout.wage, scout.contract, scout.morale, scout.retiring))
+        db.cursor.execute("INSERT INTO scouthired VALUES (?, ?, ?, ?, ?, ?, ?, ?)", (scoutid, scout.name, scout.age, scout.ability, scout.wage, scout.contract, scout.morale, scout.retiring))
 
     for item in club.hoardings[0]:
-        cursor.execute("INSERT INTO hoardingsavailable VALUES (?, ?, ?, ?)", item[0:4])
+        db.cursor.execute("INSERT INTO hoardingsavailable VALUES (?, ?, ?, ?)", item[0:4])
 
     for item in club.hoardings[1]:
-        cursor.execute("INSERT INTO hoardingscurrent VALUES (?, ?, ?)", item[0:3])
+        db.cursor.execute("INSERT INTO hoardingscurrent VALUES (?, ?, ?)", item[0:3])
 
     for item in club.programmes[0]:
-        cursor.execute("INSERT INTO programmesavailable VALUES (?, ?, ?, ?)", item[0:4])
+        db.cursor.execute("INSERT INTO programmesavailable VALUES (?, ?, ?, ?)", item[0:4])
 
     for item in club.programmes[1]:
-        cursor.execute("INSERT INTO programmescurrent VALUES (?, ?, ?)", item[0:3])
+        db.cursor.execute("INSERT INTO programmescurrent VALUES (?, ?, ?)", item[0:3])
 
     for item in game.record[1]:
-        cursor.execute("INSERT INTO records VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", item)
+        db.cursor.execute("INSERT INTO records VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", item)
 
-    connection.commit()
-    connection.close()
+    db.connection.commit()
+    db.connection.close()
 
 
 def check_config():

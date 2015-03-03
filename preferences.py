@@ -10,9 +10,9 @@ class Preferences(ConfigParser):
     def __init__(self):
         ConfigParser.__init__(self)
 
-        home = os.path.expanduser("~")
-        data = os.path.join(home, ".config", "opensoccermanager")
-        save = os.path.join(home, ".config", "opensoccermanager", "saves")
+        self.home = os.path.expanduser("~")
+        data = os.path.join(self.home, ".config", "opensoccermanager")
+        save = os.path.join(data, "saves")
 
         self.filename = os.path.join(data, "preferences.ini")
 
@@ -36,7 +36,7 @@ class Preferences(ConfigParser):
         game.currency = int(self["INTERFACE"]["Currency"])
         game.start_screen = int(self["INTERFACE"]["StartScreen"])
 
-        maximized = bool(self["INTERFACE"].getboolean("Maximized"))
+        maximized = self["INTERFACE"].getboolean("Maximized")
 
         if maximized:
             game.window.maximize()
@@ -46,20 +46,19 @@ class Preferences(ConfigParser):
         game.window.set_default_size(width, height)
 
         game.music = self["AUDIO"].getboolean("PlayMusic")
-        game.save_location = self["SAVE"]["Saves"]
         game.data_location = self["SAVE"]["Data"]
+        game.save_location = self["SAVE"]["Saves"]
         game.database_filename = self["DATABASE"]["Database"]
 
+        if game.data_location is "":
+            game.data_location = os.path.join(self.home, ".config", "opensoccermanager")
+            self["SAVE"]["Data"] = game.data_location
+
+            self.writefile()
+
         if game.save_location is "":
-            home = os.path.expanduser("~")
-            game.save_location = os.path.join(home, ".config", "opensoccermanager", "saves")
+            game.save_location = os.path.join(game.data_location, "saves")
             self["SAVE"]["Saves"] = game.save_location
 
             self.writefile()
 
-        if game.data_location is "":
-            home = os.path.expanduser("~")
-            game.data_location = os.path.join(home, ".config", "opensoccermanager")
-            self["SAVE"]["Data"] = game.data_location
-
-            self.writefile()
