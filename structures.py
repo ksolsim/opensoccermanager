@@ -23,6 +23,20 @@ class Player:
         self.man_of_the_match = 0
         self.rating = []
 
+    def skills(self):
+        values = (self.keeping,
+                  self.tackling,
+                  self.passing,
+                  self.shooting,
+                  self.heading,
+                  self.pace,
+                  self.stamina,
+                  self.ball_control,
+                  self.set_pieces,
+                 )
+
+        return values
+
 
 class Club:
     def __init__(self):

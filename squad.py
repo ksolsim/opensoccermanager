@@ -234,7 +234,6 @@ class Squad(Gtk.Grid):
 
         # Context menu
         self.contextmenu = menu.SquadContextMenu()
-        #self.contextmenu.menuitemAddPosition.connect("activate", self.add_to_position)
         self.contextmenu.menuitemRemovePosition.connect("activate", self.remove_from_position)
         self.contextmenu.menuitemAddTransfer.connect("activate", self.transfer_status, 0)
         self.contextmenu.menuitemRemoveTransfer.connect("activate", self.transfer_status, 0)

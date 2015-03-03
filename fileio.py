@@ -149,7 +149,6 @@ def open_file(filename):
         club.chairman = item[4]
         club.stadium = item[5]
         club.reputation = item[6]
-        club.form = []
         club.squad = []
         club.team = {}
         club.tactics = list(item[7:16])
@@ -179,15 +178,17 @@ def open_file(filename):
         club.scouts_hired = {}
         club.accounts = []
 
-        merchandise = item[26].split(",")
+        if item[26]:
+            merchandise = item[26].split(",")
 
-        if len(merchandise) > 1:
-            club.merchandise = list(map(int, merchandise))
+            if len(merchandise) > 1:
+                club.merchandise = list(map(int, merchandise))
 
-        catering = item[27].split(",")
+        if item[27]:
+            catering = item[27].split(",")
 
-        if len(catering) > 1:
-            club.catering = list(map(int, catering))
+            if len(catering) > 1:
+                club.catering = list(map(int, catering))
 
         club.sponsor_status = item[28]
 

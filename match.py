@@ -55,8 +55,8 @@ class Match(Gtk.Grid):
             self.labelTeam2.set_markup("<span size='16000'><b>%s</b></span>" % (teams[1]))
             self.labelScore.set_markup("<span size='16000'><b>0 - 0</b></span>")
 
-        def update_score(self, *score):
-            score = "%i - %i" % (score)
+        def update_score(self, score):
+            score = "%i - %i" % (score[0], score[1])
             self.labelScore.set_markup("<span size='16000'><b>%s</b></span>" % (score))
 
     class Events(Gtk.ScrolledWindow):
@@ -110,9 +110,13 @@ class Match(Gtk.Grid):
             treeselection = self.treeviewHome.get_selection()
             treeselection.set_mode(Gtk.SelectionMode.NONE)
 
-            treeviewcolumn = Gtk.TreeViewColumn("Position", cellrenderertext, text=0)
+            treeviewcolumn = Gtk.TreeViewColumn("Position",
+                                                cellrenderertext,
+                                                text=0)
             self.treeviewHome.append_column(treeviewcolumn)
-            treeviewcolumn = Gtk.TreeViewColumn("Player", cellrenderertext, text=1)
+            treeviewcolumn = Gtk.TreeViewColumn("Player",
+                                                cellrenderertext,
+                                                text=1)
             self.treeviewHome.append_column(treeviewcolumn)
 
             scrolledwindow = Gtk.ScrolledWindow()
@@ -127,9 +131,13 @@ class Match(Gtk.Grid):
             treeselection = self.treeviewAway.get_selection()
             treeselection.set_mode(Gtk.SelectionMode.NONE)
 
-            treeviewcolumn = Gtk.TreeViewColumn("Position", cellrenderertext, text=0)
+            treeviewcolumn = Gtk.TreeViewColumn("Position",
+                                                cellrenderertext,
+                                                text=0)
             self.treeviewAway.append_column(treeviewcolumn)
-            treeviewcolumn = Gtk.TreeViewColumn("Player", cellrenderertext, text=1)
+            treeviewcolumn = Gtk.TreeViewColumn("Player",
+                                                cellrenderertext,
+                                                text=1)
             self.treeviewAway.append_column(treeviewcolumn)
 
             self.show_all()
@@ -354,8 +362,11 @@ class Match(Gtk.Grid):
 
     def start_button_clicked(self, button):
         # Generate player match result and display
-        result = ai.generate_result(self.team1.teamid, self.team2.teamid)
-        self.score.update_score(result[1], result[2])
+        result = ai.Result(self.team1.teamid, self.team2.teamid)
+
+        self.score.update_score(result.final_score)
+
+        result = self.team1.teamid, result.final_score[0], result.final_score[1], self.team2.teamid
 
         # Decrement matches player is suspended for
         for playerid, player in game.players.items():
@@ -484,15 +495,19 @@ class Match(Gtk.Grid):
 
                 ai.generate_team(club1.teamid)
                 ai.generate_team(club2.teamid)
-                result = ai.generate_result(club1.teamid, club2.teamid)
-                league.update(result)
-                game.results[game.fixturesindex].append(result)
+
+                result = ai.Result(club1.teamid, club2.teamid)
+
+                score = club1.teamid, result.final_score[0], result.final_score[1], club2.teamid
+
+                league.update(score)
+                game.results[game.fixturesindex].append(score)
 
                 selection1, selection2 = events.increment_appearances(club1, club2)
 
                 # Events
-                scorers = actions.goalscorers(result, selection1, selection2)
-                assists = actions.assists(result, selection1, selection2, scorers)
+                scorers = actions.goalscorers(score, selection1, selection2)
+                assists = actions.assists(score, selection1, selection2, scorers)
                 yellows, reds = actions.cards(club1, club2)
                 actions.injury(club1, club2)
 
@@ -501,5 +516,7 @@ class Match(Gtk.Grid):
 
                 events.increment_goalscorers(scorers[0], scorers[1])
                 events.increment_assists(assists[0], assists[1])
-                events.update_statistics(result)
+                events.update_statistics(score)
                 events.update_records()
+
+                del(result)

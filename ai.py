@@ -10,6 +10,119 @@ import money
 import news
 
 
+class Result:
+    def __init__(self, clubid1, clubid2):
+        self.clubid1 = clubid1
+        self.clubid2 = clubid2
+
+        self.final_score = [0, 0]
+
+        self.calculate_skills()
+
+    def calculate_skills(self):
+        '''
+        Calculate the scores from the player skills based on the team
+        selection.
+        '''
+        self.weights = [0, 0]
+
+        for count, team in enumerate((game.clubs[self.clubid1].team,
+                                      game.clubs[self.clubid2].team)):
+            for playerid in team.values():
+                if playerid != 0:
+                    player = game.players[playerid]
+
+                    skills = player.skills()
+                    self.weights[count] = sum(skills)
+
+        self.total = sum(self.weights)
+
+        self.calculate_percentages()
+
+    def home_advantage(self):
+        '''
+        Calculate home advantage score based on form and fan morale.
+        '''
+        club = game.clubs[self.clubid1]
+
+        points = 0
+
+        for item in club.form[-6:]:
+            if item is "W":
+                points += 3
+            elif item is "D":
+                points += 1
+
+        return points
+
+    def calculate_percentages(self):
+        '''
+        Determine the percentage chance of a win for each team, based on
+        club reputation and home advantage.
+        '''
+        advantage = self.home_advantage()
+
+        percent1 = ((self.weights[0] / self.total) + advantage) * 100
+        percent1 = (percent1 * 0.05) * game.clubs[self.clubid1].reputation
+        self.percent1 = round(percent1)
+
+        percent2 = (self.weights[1] / self.total) * 100
+        percent2 = (percent2 * 0.05) * game.clubs[self.clubid2].reputation
+        self.percent2 = round(percent2)
+
+        self.determine_result()
+
+    def determine_result(self):
+        if self.percent1 > self.percent2:
+            draw = self.percent1 - self.percent2
+        elif self.percent1 < self.percent2:
+            draw = self.percent2 - self.percent1
+        else:
+            draw = 0
+
+        ranges = [[], [], []]
+        ranges[0] = [0, self.percent1]
+        ranges[1] = [ranges[0][1], self.percent1 + draw]
+        ranges[2] = [ranges[1][1], ranges[1][1] + self.percent2]
+
+        [list(map(int, item)) for item in ranges]
+
+        choice = random.randrange(0, int(ranges[2][1]))
+
+        if choice < ranges[0][1]:
+            score = self.generate_goals()
+        elif choice < ranges[1][1]:
+            score = self.generate_goals()
+            score = score[0], score[0]
+        elif choice < ranges[2][1]:
+            score = self.generate_goals()
+            score = score[1], score[0]
+
+        self.final_score = score
+
+    def generate_goals(self):
+        score1 = 1
+
+        if game.clubs[game.teamid].tactics[5] == 0:
+            start = 35
+        elif game.clubs[game.teamid].tactics[5] == 1:
+            start = 50
+        elif game.clubs[game.teamid].tactics[5] == 2:
+            start = 65
+
+        for x in range(2, 9):
+            if random.randint(0, 100) < start:
+                score1 += 1
+                start = int(start * 0.5)
+
+                if start < 1:
+                    start = 1
+
+        score2 = random.randint(0, score1 - 1)
+
+        return score1, score2
+
+
 def team_training():
     '''
     Generate team training schedules for all teams. Sets mix of training
@@ -219,116 +332,6 @@ def generate_team(clubid):
 
     for count, player in enumerate(substitutes, start = 11):
         team[count] = player
-
-
-def home_advantage(clubid):
-    '''
-    Calculate home advantage based on form of club.
-    '''
-    club = game.clubs[clubid]
-
-    points = 0
-
-    for item in club.form:
-        if item == "W":
-            points += 3
-        elif item == "D":
-            points += 1
-
-    return points
-
-
-def generate_result(club1, club2):
-    '''
-    Generate the winner, loser or whether its a draw, and determine the
-    number of goals scored by both teams.
-    '''
-    sums = [0, 0]
-    count = 0
-
-    for team in (game.clubs[club1].team, game.clubs[club2].team):
-        for playerid in team.values():
-            if playerid != 0:
-                player = game.players[playerid]
-
-                skills = (player.keeping,
-                          player.tackling,
-                          player.passing,
-                          player.shooting,
-                          player.heading,
-                          player.pace,
-                          player.stamina,
-                          player.ball_control,
-                          player.set_pieces)
-                sums[count] = sum(skills)
-
-        count += 1
-
-    total_score = sum(sums)
-
-    advantage = home_advantage(club1)
-
-    percent1 = (sums[0] / total_score) * 100
-    percent1 = ((percent1 + advantage) * 0.05) * game.clubs[club1].reputation
-    percent2 = (sums[1] / total_score) * 100
-    percent2 = ((percent2 - advantage) * 0.05) * game.clubs[club2].reputation
-    percent1 = round(percent1)
-    percent2 = round(percent2)
-
-    if percent1 > percent2:
-        draw = percent1 - percent2
-    elif percent2 > percent1:
-        draw = percent2 - percent1
-    else:
-        draw = 0
-
-    draw += 100 - draw - percent1 - percent2
-
-    ranges = [[], [], []]
-    ranges[0] = [0, percent1]
-    ranges[1] = [ranges[0][1], percent1 + draw]
-    ranges[2] = [ranges[1][1], ranges[1][1] + percent2]
-
-    [list(map(int, item)) for item in ranges]
-
-    def generate_score(ranges):
-        def generate_goals(club):
-            score1 = 1
-
-            if game.clubs[game.teamid].tactics[5] == 0:
-                start = 35
-            elif game.clubs[game.teamid].tactics[5] == 1:
-                start = 50
-            elif game.clubs[game.teamid].tactics[5] == 2:
-                start = 65
-
-            for x in range(2, 9):
-                if random.randint(0, 100) < start:
-                    score1 += 1
-                    start = int(start * 0.5)
-
-                    if start < 1:
-                        start = 1
-
-            score2 = random.randint(0, score1 - 1)
-
-            return score1, score2
-
-        choice = random.randrange(0, int(ranges[2][1]))
-
-        if choice < ranges[0][1]:
-            r1, r2 = generate_goals(club1)
-        elif choice < ranges[1][1]:
-            r1, r2 = generate_goals(club1)
-            r2 = r1
-        elif choice < ranges[2][1]:
-            r2, r1 = generate_goals(club2)
-
-        return r1, r2
-
-    result1, result2 = generate_score(ranges)
-
-    return club1, result1, result2, club2
 
 
 def advertising():
