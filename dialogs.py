@@ -313,8 +313,7 @@ def preferences_dialog():
     dialog.set_title("Preferences")
     dialog.set_transient_for(game.window)
     dialog.set_resizable(False)
-    dialog.add_button("_OK", Gtk.ResponseType.OK)
-    dialog.set_default_response(Gtk.ResponseType.OK)
+    dialog.add_button("_Close", Gtk.ResponseType.OK)
     dialog.set_border_width(5)
     dialog.vbox.set_spacing(5)
 

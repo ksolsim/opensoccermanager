@@ -2,12 +2,14 @@
 
 import random
 
+import actions
 import calculator
 import constants
 import display
 import game
 import money
 import news
+import structures
 
 
 class Result:
@@ -17,7 +19,7 @@ class Result:
 
         self.final_score = [0, 0]
 
-        self.calculate_skills()
+        self.select_team()
 
     def calculate_skills(self):
         '''
@@ -100,6 +102,11 @@ class Result:
 
         self.final_score = score
 
+        self.goalscorers()
+        self.cards()
+        self.injury()
+        self.ratings()
+
     def generate_goals(self):
         score1 = 1
 
@@ -121,6 +128,383 @@ class Result:
         score2 = random.randint(0, score1 - 1)
 
         return score1, score2
+
+    def select_team(self):
+        self.selection1 = [[], []]
+        subs = []
+
+        for key, playerid in game.clubs[self.clubid1].team.items():
+            if playerid != 0 and key < 11:
+                self.selection1[0].append(playerid)
+
+            if playerid != 0 and key >= 11:
+                subs.append(playerid)
+
+        for count in range(1, 4):
+            if len(subs) > 0:
+                choice = random.choice(subs)
+                self.selection1[1].append(choice)
+                subs.remove(choice)
+
+        self.selection2 = [[], []]
+        subs = []
+
+        for key, playerid in game.clubs[self.clubid2].team.items():
+            if playerid != 0 and key < 11:
+                self.selection2[0].append(playerid)
+
+            if playerid != 0 and key >= 11:
+                subs.append(playerid)
+
+        for count in range(1, 4):
+            if len(subs) > 0:
+                choice = random.choice(subs)
+                self.selection2[1].append(choice)
+                subs.remove(choice)
+
+        self.calculate_skills()
+
+    def goalscorers(self):
+        '''
+        Determines the goalscorers for each club when passed both club
+        team IDs and the score for both teams.
+        '''
+        def maximum_calculator(player):
+            maximum = 0
+
+            if player.position == "GK":
+                maximum = 1
+            elif player.position in ("DL", "DR", "DC", "D"):
+                maximum = player.tackling
+            elif player.position in ("ML", "MR", "MC", "M"):
+                maximum = player.passing * 3
+            elif player.position in ("AS", "AF"):
+                maximum = player.shooting * 5
+
+            return maximum
+
+        players = [[], []]
+        scorers = [[], []]
+
+        for playerid in self.selection1[0]:
+            if playerid != 0:
+                player = game.players[playerid]
+
+                maximum = maximum_calculator(player)
+
+                for x in range(0, maximum):
+                    players[0].append(playerid)
+
+        for playerid in self.selection1[1]:
+            if playerid != 0:
+                player = game.players[playerid]
+
+                maximum = maximum_calculator(player)
+
+                for x in range(0, maximum):
+                    players[0].append(playerid)
+
+        for playerid in self.selection2[0]:
+            if playerid != 0:
+                player = game.players[playerid]
+
+                maximum = maximum_calculator(player)
+
+                for x in range(0, maximum):
+                    players[1].append(playerid)
+
+        for playerid in self.selection2[1]:
+            if playerid != 0:
+                player = game.players[playerid]
+
+                maximum = maximum_calculator(player)
+
+                for x in range(0, maximum):
+                    players[1].append(playerid)
+
+        random.shuffle(players[0])
+        random.shuffle(players[1])
+
+        for count in range(0, self.final_score[0]):
+            choice = random.choice(players[0])
+
+            scorers[0].append(choice)
+
+        for count in range(0, self.final_score[1]):
+            choice = random.choice(players[1])
+
+            scorers[1].append(choice)
+
+        self.scorers = scorers
+
+        self.assists()
+
+    def assists(self):#, result, selection1, selection2, scorers):
+        players = [[], []]
+
+        for playerid in self.selection1[0]:
+            if playerid != 0:
+                players[0].append(playerid)
+
+        for playerid in self.selection2[0]:
+            if playerid != 0:
+                players[1].append(playerid)
+
+        for playerid in self.selection1[1]:
+            if playerid != 0:
+                players[0].append(playerid)
+
+        for playerid in self.selection2[1]:
+            if playerid != 0:
+                players[1].append(playerid)
+
+        assisters = []
+        assists = [[], []]
+
+        for playerid in self.scorers[0]:
+            for count in range(0, self.final_score[0]):
+                for playerid in players[0]:
+                    player = game.players[playerid]
+
+                    maximum = 0
+
+                    if player.position == "GK":
+                        maximum = 2
+                    elif player.position in ("DL", "DR", "DC", "D"):
+                        maximum = player.shooting * 0.2
+                    elif player.position in ("ML", "MR", "MC", "M"):
+                        maximum = player.shooting
+                    elif player.position in ("AS", "AF"):
+                        maximum = player.shooting * 0.25
+
+                    for x in range(0, int(maximum)):
+                        assisters.append(playerid)
+
+            if self.final_score[0] > 0:
+                choice = random.choice(assisters)
+                assists[0].append(choice)
+
+        assisters = []
+
+        for playerid in self.scorers[1]:
+            for count in range(0, self.final_score[1]):
+                for playerid in players[1]:
+                    player = game.players[playerid]
+
+                    maximum = 0
+
+                    if player.position == "GK":
+                        maximum = 2
+                    elif player.position in ("DL", "DR", "DC", "D"):
+                        maximum = player.shooting * 0.2
+                    elif player.position in ("ML", "MR", "MC", "M"):
+                        maximum = player.shooting
+                    elif player.position in ("AS", "AF"):
+                        maximum = player.shooting * 0.25
+
+                    for x in range(0, int(maximum)):
+                        assisters.append(playerid)
+
+            if self.final_score[1] > 0:
+                choice = random.choice(assisters)
+                assists[1].append(choice)
+
+        self.assists = assists
+
+    def cards(self):
+        '''
+        Generate cards for each match based on tackling style. There is some
+        randomness however, and in theory the likeliness of a card being
+        issued diminishes as more cards are given.
+
+        If a player receives a red, or two yellows, a suspension is also
+        generated.
+        '''
+        def generate(clubid):
+            match_cards = [{}, {}]
+
+            multiplier = game.clubs[clubid].tactics[6] + 1
+
+            fouls = random.randint(0, multiplier * 6) * 10
+            yellow = random.randint(0, int(fouls * 0.5))
+            red = random.randint(0, int(fouls / 8))
+
+            count = 0
+
+            while count < int(yellow):
+                choice = random.randint(0, (100 * (10 - len(match_cards[0]))))
+
+                if choice < int(yellow) and len(players[0]) > 0:
+                    playerid = random.choice(players[0])
+                    player = game.players[playerid]
+
+                    if playerid in match_cards[0]:
+                        match_cards[0][playerid] += 1
+                        match_cards[1][playerid] = 1
+                        player.yellow_cards += 1
+                        player.red_cards += 1
+
+                        player.suspension_period = 1
+                        player.suspension_type = 1
+
+                        players[0].remove(playerid)
+                        players[1].remove(playerid)
+
+                        if player.club == game.teamid:
+                            name = display.name(player, mode=1)
+                            news.publish("SU01", player=name, period="1")
+                    else:
+                        match_cards[0][playerid] = 1
+                        player.yellow_cards += 1
+
+                    # Ban player for one match if five/ten/etc yellows
+                    if player.yellow_cards * 0.2 >= 1 and player.yellow_cards % 5 == 0:
+                        player.suspension_period = 1
+                        player.suspension_type = 9
+
+                        if player.club == game.teamid:
+                            name = display.name(player, mode=1)
+                            news.publish("SU03", player=name, period="1", cards=player.yellow_cards)
+
+                count += 1
+
+            count = 0
+
+            while count < int(red):
+                choice = random.randint(0, (100 * (10 - len(match_cards[0]))))
+
+                if choice < int(red):
+                    playerid = random.choice(players[1])
+                    player = game.players[playerid]
+                    player.red_cards += 1
+
+                    suspensionid = random.choice(list(constants.suspensions.keys())[2:8])
+                    suspension = constants.suspensions[suspensionid]
+                    player.suspension_type = suspensionid
+                    player.suspension_period = random.randint(suspension[1], suspension[2])
+
+                    players[0].remove(playerid)
+                    players[1].remove(playerid)
+
+                    if player.club == game.teamid:
+                        name = display.name(player, mode=1)
+                        news.publish("SU02", player=name, period=player.suspension_period, suspension=suspension[0])
+
+                count += 1
+
+            # Process cards and add to chart
+            for playerid, amount in match_cards[0].items():
+                if playerid not in game.cards.keys():
+                    cards = structures.Cards()
+                    game.cards[playerid] = cards
+                else:
+                    cards = game.cards[playerid]
+
+                cards.yellow_cards += amount
+                cards.points += amount * 1
+
+            for playerid, amount in match_cards[1].items():
+                if playerid not in game.cards.keys():
+                    cards = structures.Cards()
+                    game.cards[playerid] = cards
+                else:
+                    cards = game.cards[playerid]
+
+                cards.red_cards += amount
+                cards.points += 3
+
+            return len(match_cards[0]), len(match_cards[1])
+
+        players = [[], []]
+
+        for playerid in game.clubs[self.clubid1].team.values():
+            if playerid != 0:
+                players[0].append(playerid)
+                players[1].append(playerid)
+
+        total1 = generate(self.clubid1)
+
+        for playerid in game.clubs[self.clubid2].team.values():
+            if playerid != 0:
+                players[0].append(playerid)
+                players[1].append(playerid)
+
+        total2 = generate(self.clubid2)
+
+        self.yellows = total1[0] + total2[0]
+        self.reds = total1[1] + total2[1]
+
+    def injury(self):
+        for teamid in (self.clubid1, self.clubid2):
+            team = game.clubs[teamid].team
+
+            selection = []
+
+            for playerid in team.values():
+                if playerid != 0:
+                    player = game.players[playerid]
+
+                    if player.fitness == 100:
+                        selection.append(playerid)
+                    else:
+                        value = 100 - player.fitness
+                        count = round(value % 4)
+
+                        number = 0
+
+                        while number < count:
+                            selection.append(playerid)
+                            number += 1
+
+            random.shuffle(selection)
+
+            if random.randint(0, 100) < 25:
+                name = display.name(player, mode=1)
+
+                injuryid = random.choice(list(constants.injuries.keys()))
+                injury = constants.injuries[injuryid]
+
+                weighting = []
+
+                ranges = list(range(injury[4], injury[3] - 1, -1))
+                count = 0
+
+                for value in ranges:
+                    for x in range(0, count):
+                        weighting.append(value)
+
+                    count += 1
+
+                random.shuffle(weighting)
+
+                period = random.choice(weighting)
+
+                player.injury_type = injuryid
+                player.injury_period = period
+                player.fitness -= random.randint(10, 30)
+
+                if teamid == game.teamid:
+                    news.publish("IN02", player=name, weeks=period, injury=injury[0])
+
+    def ratings(self):
+        ratings = [{}, {}]
+        ratings[0] = actions.rating(self.selection1)
+        ratings[1] = actions.rating(self.selection2)
+
+        self.ratings = dict(ratings[0].items() | ratings[1].items())
+
+        self.man_of_the_match()
+
+    def man_of_the_match(self):
+        motm = []
+        value = 0
+
+        for playerid, rating in self.ratings.items():
+            if rating > value:
+                motm.append(playerid)
+                value = rating
+
+        self.man_of_the_match_id = random.choice(motm)
 
 
 def team_training():

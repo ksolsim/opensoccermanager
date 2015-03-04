@@ -362,56 +362,24 @@ class Match(Gtk.Grid):
 
     def start_button_clicked(self, button):
         # Generate player match result and display
-        result = ai.Result(self.team1.teamid, self.team2.teamid)
+        airesult = ai.Result(self.team1.teamid, self.team2.teamid)
 
-        self.score.update_score(result.final_score)
+        self.score.update_score(airesult.final_score)
 
-        result = self.team1.teamid, result.final_score[0], result.final_score[1], self.team2.teamid
-
-        # Decrement matches player is suspended for
-        for playerid, player in game.players.items():
-            if player.suspension_period > 0:
-                player.suspension_period -= 1
-
-                if player.suspension_period == 0:
-                    player.suspension_type = 0
+        result = self.team1.teamid, airesult.final_score[0], airesult.final_score[1], self.team2.teamid
 
         # Standings
         league.update(result)
         game.results[game.fixturesindex].append(result)
 
-        selection1, selection2 = events.increment_appearances(self.team1, self.team2)
-
-        # Events
-        scorers = actions.goalscorers(result, selection1, selection2)
-        assists = actions.assists(result, selection1, selection2, scorers)
-        yellows, reds = actions.cards(self.team1, self.team2)
-        actions.injury(self.team1, self.team2)
-
-        events.increment_referee(self.refereeid, yellows, reds)
-
-        # Player match ratings
-        ratings = [{}, {}]
-        ratings[0] = actions.rating(selection1)
-        ratings[1] = actions.rating(selection2)
-
-        ratings = dict(ratings[0].items() | ratings[1].items())
+        events.increment_referee(self.refereeid, airesult.yellows, airesult.reds)
 
         # Man of the match selection
-        motm = []
-        value = 0
-
-        for playerid, rating in ratings.items():
-            if rating > value:
-                motm.append(playerid)
-                value = rating
-
-        playerid = random.choice(motm)
-        game.players[playerid].man_of_the_match += 1
+        game.players[airesult.man_of_the_match_id].man_of_the_match += 1
 
         # Team Events
-        self.team1events.update(scorers[0])
-        self.team2events.update(scorers[1])
+        self.team1events.update(airesult.scorers[0])
+        self.team2events.update(airesult.scorers[1])
 
         # Update player morale
         if result[1] > result[2]:
@@ -452,10 +420,19 @@ class Match(Gtk.Grid):
             if result[2] > result[1]:
                 money.pay_bonus()
 
-        events.increment_goalscorers(scorers[0], scorers[1])
-        events.increment_assists(assists[0], assists[1])
+        events.increment_goalscorers(airesult.scorers[0], airesult.scorers[1])
+        events.increment_assists(airesult.assists[0], airesult.assists[1])
+
         events.update_statistics(result)
         events.update_records()
+
+        # Decrement matches player is suspended for
+        for playerid, player in game.players.items():
+            if player.suspension_period > 0:
+                player.suspension_period -= 1
+
+                if player.suspension_period == 0:
+                    player.suspension_type = 0
 
         # Televised games
         if game.televised[game.fixturesindex] == game.teamid:
@@ -473,6 +450,7 @@ class Match(Gtk.Grid):
             sales.merchandise(attendance)
             sales.catering(attendance)
 
+        # Process remaining matches
         self.process_remaining()
 
         widgets.continuegame.set_sensitive(True)
@@ -496,9 +474,9 @@ class Match(Gtk.Grid):
                 ai.generate_team(club1.teamid)
                 ai.generate_team(club2.teamid)
 
-                result = ai.Result(club1.teamid, club2.teamid)
+                airesult = ai.Result(club1.teamid, club2.teamid)
 
-                score = club1.teamid, result.final_score[0], result.final_score[1], club2.teamid
+                score = club1.teamid, airesult.final_score[0], airesult.final_score[1], club2.teamid
 
                 league.update(score)
                 game.results[game.fixturesindex].append(score)
@@ -506,17 +484,11 @@ class Match(Gtk.Grid):
                 selection1, selection2 = events.increment_appearances(club1, club2)
 
                 # Events
-                scorers = actions.goalscorers(score, selection1, selection2)
-                assists = actions.assists(score, selection1, selection2, scorers)
-                yellows, reds = actions.cards(club1, club2)
-                actions.injury(club1, club2)
-
                 refereeid = self.referee.select(index + 1)
-                self.referee.increment(refereeid, yellows, reds)
+                self.referee.increment(refereeid, airesult.yellows, airesult.reds)
 
-                events.increment_goalscorers(scorers[0], scorers[1])
-                events.increment_assists(assists[0], assists[1])
+                events.increment_goalscorers(airesult.scorers[0], airesult.scorers[1])
+                events.increment_assists(airesult.assists[0], airesult.assists[1])
+
                 events.update_statistics(score)
                 events.update_records()
-
-                del(result)
