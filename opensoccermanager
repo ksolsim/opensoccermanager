@@ -38,6 +38,7 @@ import fileio
 import finances
 import game
 import information
+import interface
 import match
 import menu
 import money
@@ -102,11 +103,11 @@ class ScreenMain(Gtk.Grid):
         buttonbox.add(buttonLoadGame)
         buttonDeleteGame = widgets.Button("_Delete Game")
         buttonDeleteGame.set_tooltip_text("Delete a previously saved game")
-        buttonDeleteGame.connect("clicked", lambda a: dialogs.delete_dialog())
+        buttonDeleteGame.connect("clicked", self.delete_game_clicked)
         buttonbox.add(buttonDeleteGame)
         buttonPreferences = widgets.Button("_Preferences")
         buttonPreferences.set_tooltip_text("Adjust game settings")
-        buttonPreferences.connect("clicked", lambda a: dialogs.preferences_dialog())
+        buttonPreferences.connect("clicked", self.preferences_dialog_clicked)
         buttonbox.add(buttonPreferences)
         buttonEditor = widgets.Button("_Data Editor")
         buttonEditor.set_tooltip_text("Create new or edit existing game database")
@@ -132,7 +133,7 @@ class ScreenMain(Gtk.Grid):
         screendetails.run()
 
     def load_game_clicked(self, button):
-        open_dialog = dialogs.OpenDialog()
+        open_dialog = interface.OpenDialog()
 
         if open_dialog.display():
             game.window.remove(screenmain)
@@ -141,12 +142,22 @@ class ScreenMain(Gtk.Grid):
 
             screen_loader(game.active_screen_id)
 
+    def delete_game_clicked(self, button):
+        delete_dialog = interface.DeleteDialog()
+        delete_dialog.run()
+        delete_dialog.destroy()
+
     def editor_clicked(self, button):
         try:
             filepath = os.path.join("editor", "editor.py")
             subprocess.Popen(filepath, shell=False)
         except FileNotFoundError:
             dialogs.file_not_found_error()
+
+    def preferences_dialog_clicked(self, button):
+        preferences_dialog = interface.PreferencesDialog()
+        preferences_dialog.run()
+        preferences_dialog.destroy()
 
 
 class ScreenDetails(Gtk.Grid):
@@ -344,11 +355,11 @@ class ScreenGame(Gtk.Grid):
         game.menu.menuitemNew.connect("activate", self.new_game_clicked)
         game.menu.menuitemLoad.connect("activate", self.load_game_clicked)
         game.menu.menuitemSave.connect("activate", self.save_game_clicked)
-        game.menu.menuitemDelete.connect("activate", lambda a: dialogs.delete_dialog())
+        game.menu.menuitemDelete.connect("activate", self.delete_game_clicked)
         game.menu.menuitemQuit.connect("activate", exit_game)
 
         game.menu.menuitemManager.connect("activate", self.name_change)
-        game.menu.menuitemPreferences.connect("activate", self.preferences_dialog)
+        game.menu.menuitemPreferences.connect("activate", self.preferences_dialog_clicked)
 
         game.menu.menuitemPlayers.connect("activate", lambda i: screen_loader(20))
         game.menu.menuitemComparison.connect("activate", self.player_comparison)
@@ -381,9 +392,9 @@ class ScreenGame(Gtk.Grid):
         game.menu.menuitemInjSus.connect("activate", lambda i: screen_loader(24))
         game.menu.menuitemStaff.connect("activate", lambda i: screen_loader(23))
 
-        game.menu.menuitemContents.connect("activate", lambda a: dialogs.help_content())
-        game.menu.menuitemInformation.connect("activate", lambda a: dialogs.information_dialog())
-        game.menu.menuitemAbout.connect("activate", lambda a: dialogs.about())
+        game.menu.menuitemContents.connect("activate", self.help_content_clicked)
+        game.menu.menuitemInformation.connect("activate", self.info_dialog_clicked)
+        game.menu.menuitemAbout.connect("activate", self.aboutdialog_clicked)
 
         grid = Gtk.Grid()
         grid.set_border_width(1)
@@ -414,7 +425,7 @@ class ScreenGame(Gtk.Grid):
         club = game.clubs[game.teamid]
         previous = club.manager
 
-        name_change = dialogs.NameChange()
+        name_change = interface.NameChange()
 
         if name_change.display():
             news = []
@@ -445,7 +456,9 @@ class ScreenGame(Gtk.Grid):
         opposition_dialog.display()
 
     def new_game_clicked(self, menuitem):
-        if not dialogs.exit_game(leave=True):
+        exit_dialog = interface.ExitDialog()
+
+        if not exit_dialog.display(leave=True):
             game.window.remove(screengame)
             game.window.add(screenmain)
 
@@ -453,7 +466,7 @@ class ScreenGame(Gtk.Grid):
             game.teamid = 0
 
     def load_game_clicked(self, menuitem):
-        open_dialog = dialogs.OpenDialog()
+        open_dialog = interface.OpenDialog()
 
         if open_dialog.display():
             screen_loader(game.active_screen_id)
@@ -461,14 +474,36 @@ class ScreenGame(Gtk.Grid):
         open_dialog.destroy()
 
     def save_game_clicked(self, menuitem):
-        save_dialog = dialogs.SaveDialog()
+        save_dialog = interface.SaveDialog()
         save_dialog.display()
         save_dialog.destroy()
 
-    def preferences_dialog(self, menuitem):
-        dialogs.preferences_dialog()
+    def delete_game_clicked(self, button):
+        delete_dialog = interface.DeleteDialog()
+        delete_dialog.run()
+        delete_dialog.destroy()
+
+    def preferences_dialog_clicked(self, menuitem):
+        preferences_dialog = interface.PreferencesDialog()
+        preferences_dialog.run()
+        preferences_dialog.destroy()
 
         screen_loader(game.active_screen_id)
+
+    def aboutdialog_clicked(self, menuitem):
+        aboutdialog = interface.AboutDialog()
+        aboutdialog.run()
+        aboutdialog.destroy()
+
+    def help_content_clicked(self, menuitem):
+        helpdialog = interface.HelpContent()
+        helpdialog.display()
+        helpdialog.destroy()
+
+    def info_dialog_clicked(self, menuitem):
+        infodialog = interface.InfoDialog()
+        infodialog.run()
+        infodialog.destroy()
 
 
 class ContinueGame:
@@ -718,7 +753,8 @@ def exit_game(widget=None, event=None):
         update_window_config()
         Gtk.main_quit()
     else:
-        state = dialogs.exit_game()
+        exit_dialog = interface.ExitDialog()
+        state = exit_dialog.display()
 
         if not state:
             update_window_config()

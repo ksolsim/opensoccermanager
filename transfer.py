@@ -14,6 +14,24 @@ import structures
 import widgets
 
 
+class Dialog(Gtk.Dialog):
+    def __init__(self):
+        Gtk.Dialog.__init__(self)
+        self.set_transient_for(game.window)
+        self.set_border_width(5)
+        self.set_resizable(False)
+
+    def insert(self, child):
+        self.vbox.add(child)
+
+    def display(self):
+        self.show_all()
+        response = self.run()
+        self.destroy()
+
+        return response
+
+
 def make_enquiry(playerid, transfer_type):
     for negotiationid in game.negotiations:
         if playerid == game.negotiations[negotiationid].playerid:
@@ -666,10 +684,8 @@ def extend_loan(playerid):
     player = game.players[playerid]
     name = display.name(player, mode=1)
 
-    dialog = Gtk.Dialog()
+    dialog = Dialog()
     dialog.set_title("Extend Loan")
-    dialog.set_transient_for(game.window)
-    dialog.set_border_width(5)
     dialog.add_button("_Cancel", Gtk.ResponseType.CANCEL)
     dialog.add_button("_Extend", Gtk.ResponseType.OK)
     dialog.set_default_response(Gtk.ResponseType.OK)
@@ -677,9 +693,9 @@ def extend_loan(playerid):
     grid = Gtk.Grid()
     grid.set_row_spacing(5)
     grid.set_column_spacing(5)
-    dialog.vbox.add(grid)
+    dialog.insert(grid)
 
-    label = widgets.AlignedLabel("Extend loan deal for %s:" % (name))
+    label = widgets.AlignedLabel("Extend loan deal for an additional %s." % (name))
     grid.attach(label, 0, 0, 3, 1)
 
     label = widgets.AlignedLabel("Period:")
@@ -691,13 +707,9 @@ def extend_loan(playerid):
     spinbutton.set_increments(1, 1)
     grid.attach(spinbutton, 1, 1, 1, 1)
 
-    dialog.show_all()
-
-    if dialog.run() == Gtk.ResponseType.OK:
+    if dialog.display() == Gtk.ResponseType.OK:
         if consider_extension(playerid):
             game.loans[playerid][1] += spinbutton.get_value_as_int()
-
-    dialog.destroy()
 
 
 def consider_extension(playerid):
@@ -721,6 +733,9 @@ def consider_extension(playerid):
 
 
 def end_loan(playerid):
+    '''
+    Cleanup details of loan and reassign player back to parent club.
+    '''
     player = game.players[playerid]
 
     # Remove player from squad of loaned club
@@ -756,20 +771,24 @@ def process_loan():
         name = display.name(player, mode=1)
         club = game.clubs[value[0]].name
 
-        if value[1] in (12, 8, 4):
+        if value[1] in (4, 8, 12):
             news.publish("LA01", player=name, team=club, weeks=value[1])
 
 
 def rejection(negotiationid, transfer, index):
     '''
-    This function handles rejection of the enquiry, amount and contract
-    steps of the negotiation.
+    Display details about negotiation being rejected.
     '''
     playerid = game.negotiations[negotiationid].playerid
     player = game.players[playerid]
     name = display.name(player, mode=1)
 
-    message = (("Your enquiry into the availability of %s has been turned down, as the club does wish to transfer him at this moment in time." % (name), "The transfer negotiations for %s have broken down, as the club believe he is worth more than has been offered." % (name), "%s has rejected the contract offered to him as he wishes to stay at his current club." % (name)), ("The enquiry lodged into the loan availability of %s has been rejected as the club does not wish to loan him." % (name), "Negotiations for the loan move of %s have been cancelled as the club do not wish to loan for that length of time." % (name)))
+    message = (("Your enquiry into the availability of %s has been turned down, as the club does wish to transfer him at this moment in time." % (name),
+                "The transfer negotiations for %s have broken down, as the club believe he is worth more than has been offered." % (name),
+                "%s has rejected the contract offered to him as he wishes to stay at his current club." % (name)),
+               ("The enquiry lodged into the loan availability of %s has been rejected as the club does not wish to loan him." % (name),
+                "Negotiations for the loan move of %s have been cancelled as the club do not wish to loan for that length of time." % (name))
+              )
     title = ("Transfer Offer", "Loan Offer")[transfer]
 
     messagedialog = Gtk.MessageDialog(type=Gtk.MessageType.INFO)
