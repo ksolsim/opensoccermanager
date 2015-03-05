@@ -420,10 +420,17 @@ class Match(Gtk.Grid):
             if result[2] > result[1]:
                 money.pay_bonus()
 
+        # Declare attendance
+        attendance = actions.attendance(self.team1, self.team2)
+        self.stats.labelAttendance.set_label("%s" % (attendance))
+
+        if self.team1.teamid == game.teamid:
+            game.clubs[game.teamid].attendances.append(attendance)
+
         events.increment_goalscorers(airesult.scorers[0], airesult.scorers[1])
         events.increment_assists(airesult.assists[0], airesult.assists[1])
 
-        events.update_statistics(result)
+        events.update_statistics(airesult)
         events.update_records()
 
         # Decrement matches player is suspended for
@@ -439,10 +446,6 @@ class Match(Gtk.Grid):
             reputation = game.clubs[game.teamid].reputation
             amount = reputation * 3 * random.randint(950, 1050)
             money.deposit(amount, 8)
-
-        # Declare attendance
-        attendance = actions.attendance(self.team1, self.team2)
-        self.stats.labelAttendance.set_label("%s" % (attendance))
 
         # Matchday ticket sales
         if self.team1 == game.teamid:
@@ -489,6 +492,3 @@ class Match(Gtk.Grid):
 
                 events.increment_goalscorers(airesult.scorers[0], airesult.scorers[1])
                 events.increment_assists(airesult.assists[0], airesult.assists[1])
-
-                events.update_statistics(score)
-                events.update_records()

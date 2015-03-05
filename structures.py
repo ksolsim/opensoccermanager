@@ -68,6 +68,7 @@ class Club:
         self.evaluation = [0, 0, 0, 0, 0]
         self.statistics = [0] * 3
         self.form = []
+        self.attendances = []
 
 
 class Nation:
@@ -158,3 +159,15 @@ class Cards:
         self.yellow_cards = 0
         self.red_cards = 0
         self.points = 0
+
+
+class Statistics:
+    def __init__(self):
+        self.yellows = 0
+        self.reds = 0
+
+        self.win = (0, ())
+        self.loss = (0, ())
+
+        self.highattendance = 0
+        self.lowattendance = 0

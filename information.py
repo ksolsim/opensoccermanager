@@ -325,9 +325,9 @@ class Fixtures(Gtk.Grid):
 
 
 class Results(Gtk.Grid):
-    page = 0
-
     def __init__(self):
+        self.page = 0
+
         Gtk.Grid.__init__(self)
         self.set_border_width(5)
         self.set_row_spacing(5)
@@ -837,8 +837,12 @@ class Statistics(Gtk.Grid):
 
         label = widgets.AlignedLabel("Yellow Cards")
         grid.attach(label, 0, 0, 1, 1)
+        self.labelYellowCards = widgets.AlignedLabel()
+        grid.attach(self.labelYellowCards, 1, 0, 1, 1)
         label = widgets.AlignedLabel("Red Cards")
         grid.attach(label, 0, 1, 1, 1)
+        self.labelRedCards = widgets.AlignedLabel()
+        grid.attach(self.labelRedCards, 1, 1, 1, 1)
 
         commonframe = widgets.CommonFrame("Stadium")
         self.attach(commonframe, 1, 1, 1, 1)
@@ -850,16 +854,16 @@ class Statistics(Gtk.Grid):
 
         label = widgets.AlignedLabel("Highest Attendance")
         grid.attach(label, 0, 0, 1, 1)
-        labelHighAttendance = widgets.AlignedLabel()
-        grid.attach(labelHighAttendance, 1, 0, 1, 1)
+        self.labelHighAttendance = widgets.AlignedLabel()
+        grid.attach(self.labelHighAttendance, 1, 0, 1, 1)
         label = widgets.AlignedLabel("Lowest Attendance")
         grid.attach(label, 0, 1, 1, 1)
-        labelLowAttendance = widgets.AlignedLabel()
-        grid.attach(labelLowAttendance, 1, 1, 1, 1)
+        self.labelLowAttendance = widgets.AlignedLabel()
+        grid.attach(self.labelLowAttendance, 1, 1, 1, 1)
         label = widgets.AlignedLabel("Average Attendance")
         grid.attach(label, 0, 2, 1, 1)
-        labelAverageAttendance = widgets.AlignedLabel()
-        grid.attach(labelAverageAttendance, 1, 2, 1, 1)
+        self.labelAverageAttendance = widgets.AlignedLabel()
+        grid.attach(self.labelAverageAttendance, 1, 2, 1, 1)
 
         commonframe = widgets.CommonFrame("Salary")
         self.attach(commonframe, 2, 0, 1, 1)
@@ -939,19 +943,19 @@ class Statistics(Gtk.Grid):
         self.liststoreRecordCurrent.insert(0, game.record[0])
 
         # Highest win / loss
-        if game.statistics[0][0]:
-            clubid = game.statistics[0][0]
+        if game.statistics.win != (0, ()):
+            clubid = game.statistics.win[0]
             opposition = game.clubs[clubid].name
-            self.labelWin.set_label("%i - %i (against %s)" % (game.statistics[0][1][0],
-                                                              game.statistics[0][1][1],
+            self.labelWin.set_label("%i - %i (against %s)" % (game.statistics.win[1][0],
+                                                              game.statistics.win[1][1],
                                                               opposition)
                                    )
 
-        if game.statistics[1][0]:
-            clubid = game.statistics[1][0]
+        if game.statistics.loss != (0, ()):
+            clubid = game.statistics.loss[0]
             opposition = game.clubs[clubid].name
-            self.labelLoss.set_label("%i - %i (against %s)" % (game.statistics[1][1][0],
-                                                               game.statistics[1][1][1],
+            self.labelLoss.set_label("%i - %i (against %s)" % (game.statistics.loss[1][0],
+                                                               game.statistics.loss[1][1],
                                                                opposition)
                                     )
 
@@ -1006,3 +1010,15 @@ class Statistics(Gtk.Grid):
         self.labelLowValue.set_label("%s" % (minimum))
         average = display.currency(statistics.mean(value))
         self.labelAvgValue.set_label("%s" % (average))
+
+        # Cards
+        self.labelYellowCards.set_label("%i" % (game.statistics.yellows))
+        self.labelRedCards.set_label("%i" % (game.statistics.reds))
+
+        # Attendance
+        attendance = game.clubs[game.teamid].attendances
+
+        if len(attendance) > 0:
+            self.labelHighAttendance.set_label("%i" % (max(attendance)))
+            self.labelLowAttendance.set_label("%i" % (min(attendance)))
+            self.labelAverageAttendance.set_label("%i" % (statistics.mean(attendance)))

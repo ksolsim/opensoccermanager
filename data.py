@@ -250,6 +250,9 @@ def dataloader(finances):
     game.flotation.timeout = 0
     game.flotation.status = 0
 
+    # Statistics
+    game.statistics = structures.Statistics()
+
     # Initiate season ticket sales based on percentage of capacity
     club.season_tickets = events.season_tickets()
     game.season_tickets_status = 0

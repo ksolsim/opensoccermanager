@@ -740,10 +740,10 @@ def end_of_season():
 
     # Reset referee stats
     for referee in game.referees:
-        game.referees[referee][1] = 0
-        game.referees[referee][2] = 0
-        game.referees[referee][3] = 0
-        game.referees[referee][4] = 0
+        game.referees[referee].matches = 0
+        game.referees[referee].fouls = 0
+        game.referees[referee].yellows = 0
+        game.referees[referee].reds = 0
 
     # Age staff at end of season
     for scout in game.clubs[game.teamid].scouts_hired.values():
@@ -821,24 +821,25 @@ def update_records():
 
 
 def update_statistics(result):
-    if result[0] == game.teamid:
-        if result[1] > result[2]:
-            if [result[1], result[2]] > game.statistics[0][1]:
-                game.statistics[0][0] = result[3]
-                game.statistics[0][1] = [result[1], result[2]]
-        elif result[2] > result[1]:
-            if [result[1], result[2]] > game.statistics[1][1]:
-                game.statistics[1][0] = result[3]
-                game.statistics[1][1] = [result[1], result[2]]
-    elif result[3] == game.teamid:
-        if result[1] < result[2]:
-            if [result[2], result[1]] > game.statistics[0][1]:
-                game.statistics[0][0] = result[0]
-                game.statistics[0][1] = [result[1], result[2]]
-        elif result[2] < result[1]:
-            if [result[2], result[1]] > game.statistics[1][1]:
-                game.statistics[1][0] = result[0]
-                game.statistics[1][1] = [result[1], result[2]]
+    score = result.final_score
+
+    if result.clubid1 == game.teamid:
+        if score[0] > score[1]:
+            if score > game.statistics.win[1]:
+                game.statistics.win = (result.clubid2, score)
+        elif score[1] > score[0]:
+            if score > game.statistics.loss[1]:
+                game.statistics.loss = (result.clubid2, score)
+    elif result.clubid2 == game.teamid:
+        if score[0] < score[1]:
+            if score > game.statistics.win[1]:
+                game.statistics.win = (result.clubid1, score)
+        elif score[1] < score[0]:
+            if score > game.statistics.loss[1]:
+                game.statistics.loss = (result.clubid1, score)
+
+    game.statistics.yellows += result.yellows
+    game.statistics.reds += result.reds
 
 
 def renew_contract(playerid):
