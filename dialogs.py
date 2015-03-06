@@ -1241,7 +1241,7 @@ class Opposition(Gtk.Dialog):
         treemodelsort = Gtk.TreeModelSort(self.liststoreClubs)
         treemodelsort.set_sort_column_id(1, Gtk.SortType.ASCENDING)
 
-        label = widgets.Label("Opposition")
+        label = widgets.Label("_Opposition")
         grid2.attach(label, 0, 0, 1, 1)
         cellrenderertext = Gtk.CellRendererText()
         self.combobox = Gtk.ComboBox()
@@ -1250,6 +1250,7 @@ class Opposition(Gtk.Dialog):
         self.combobox.connect("changed", self.combobox_changed)
         self.combobox.pack_start(cellrenderertext, True)
         self.combobox.add_attribute(cellrenderertext, "text", 1)
+        label.set_mnemonic_widget(self.combobox)
         grid2.attach(self.combobox, 1, 0, 1, 1)
 
         commonframe = widgets.CommonFrame("Details")
@@ -1260,10 +1261,10 @@ class Opposition(Gtk.Dialog):
         grid1.set_column_spacing(5)
         commonframe.insert(grid1)
 
-        label = widgets.AlignedLabel("Name")
+        label = widgets.AlignedLabel("Manager")
         grid1.attach(label, 0, 0, 1, 1)
-        self.labelName = widgets.AlignedLabel()
-        grid1.attach(self.labelName, 1, 0, 1, 1)
+        self.labelManager = widgets.AlignedLabel()
+        grid1.attach(self.labelManager, 1, 0, 1, 1)
 
         label = widgets.AlignedLabel("Position")
         grid1.attach(label, 0, 1, 1, 1)
@@ -1278,9 +1279,18 @@ class Opposition(Gtk.Dialog):
         commonframe = widgets.CommonFrame("Squad")
         grid.attach(commonframe, 1, 1, 2, 2)
 
+        self.notebook = Gtk.Notebook()
+        self.notebook.set_show_tabs(False)
+        commonframe.insert(self.notebook)
+
+        cellrenderertext = Gtk.CellRendererText()
+
+        # Squad Tab
         scrolledwindow = Gtk.ScrolledWindow()
-        scrolledwindow.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
-        commonframe.insert(scrolledwindow)
+        scrolledwindow.set_policy(Gtk.PolicyType.NEVER,
+                                  Gtk.PolicyType.AUTOMATIC)
+        label = widgets.Label("_Squad")
+        self.notebook.append_page(scrolledwindow, label)
 
         self.liststoreSquad = Gtk.ListStore(str)
         treemodelsort = Gtk.TreeModelSort(self.liststoreSquad)
@@ -1295,10 +1305,34 @@ class Opposition(Gtk.Dialog):
         treeview.set_search_column(-1)
         treeselection = treeview.get_selection()
         treeselection.set_mode(Gtk.SelectionMode.NONE)
-        cellrenderertext = Gtk.CellRendererText()
         treeviewcolumn = Gtk.TreeViewColumn(None,
                                             cellrenderertext,
                                             text=0)
+        treeview.append_column(treeviewcolumn)
+        scrolledwindow.add(treeview)
+
+        # Team Selection Tab
+        scrolledwindow = Gtk.ScrolledWindow()
+        scrolledwindow.set_policy(Gtk.PolicyType.NEVER,
+                                  Gtk.PolicyType.AUTOMATIC)
+        label = widgets.Label("_Team")
+        self.notebook.append_page(scrolledwindow, label)
+
+        self.liststoreTeam = Gtk.ListStore(str, str)
+
+        treeview = Gtk.TreeView()
+        treeview.set_vexpand(True)
+        treeview.set_hexpand(True)
+        treeview.set_model(self.liststoreTeam)
+        treeview.set_enable_search(False)
+        treeview.set_search_column(-1)
+        treeviewcolumn = Gtk.TreeViewColumn("Position",
+                                            cellrenderertext,
+                                            text=0)
+        treeview.append_column(treeviewcolumn)
+        treeviewcolumn = Gtk.TreeViewColumn("Player",
+                                            cellrenderertext,
+                                            text=1)
         treeview.append_column(treeviewcolumn)
         scrolledwindow.add(treeview)
 
@@ -1324,9 +1358,14 @@ class Opposition(Gtk.Dialog):
 
         position = display.find_position(clubid)
 
-        self.labelName.set_label(club.name)
+        self.labelManager.set_label(club.manager)
         self.labelPosition.set_label(position)
-        self.labelForm.set_label("".join(club.form))
+
+        if len(club.form) > 0:
+            form = "".join(club.form[-6:])
+            self.labelForm.set_label(form)
+        else:
+            self.labelForm.set_label("N/A")
 
         self.liststoreSquad.clear()
 
@@ -1334,6 +1373,23 @@ class Opposition(Gtk.Dialog):
             player = game.players[playerid]
             name = display.name(player)
             self.liststoreSquad.append([name])
+
+        if game.eventindex > 0:
+            self.notebook.set_show_tabs(True)
+            self.liststoreTeam.clear()
+
+            for positionid, playerid in club.team.items():
+                formationid = club.tactics[0]
+
+                if positionid < 11:
+                    position = constants.formations[formationid][1][positionid]
+                else:
+                    position = "Sub %i" % (positionid - 10)
+
+                if playerid != 0:
+                    player = game.players[playerid]
+                    name = display.name(player)
+                    self.liststoreTeam.append([position, name])
 
     def response_handler(self, dialog, response):
         self.destroy()
