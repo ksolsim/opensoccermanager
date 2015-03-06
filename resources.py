@@ -1,21 +1,24 @@
 #!/usr/bin/env python3
 
+import xml.dom.minidom
 import os
-import lxml.etree as ET
 
 import constants
 
 
 def import_news():
-    xmlpath = os.path.join("resources", "news.xml")
-    tree = ET.parse(xmlpath)
-    root = tree.getroot()
+    filepath = os.path.join("resources", "news.xml")
+    news = xml.dom.minidom.parse(filepath)
 
-    for value, child in enumerate(root):
-        newsid = root[value].attrib["id"]
-        title = root[value][0].text
-        message = root[value][1].text
-        category = root[value][2].text
+    for item in news.getElementsByTagName("article"):
+        newsid = item.getAttribute("id")
+
+        title = item.getElementsByTagName("title")[0]
+        title = title.firstChild.data
+        message = item.getElementsByTagName("message")[0]
+        message = message.firstChild.data
+        category = item.getElementsByTagName("category")[0]
+        category = category.firstChild.data
 
         if newsid in constants.news.keys():
             constants.news[newsid].append([title, message, category])
@@ -24,19 +27,25 @@ def import_news():
 
 
 def import_evaluation():
-    xmlpath = os.path.join("resources", "evaluation.xml")
-    tree = ET.parse(xmlpath)
-    root = tree.getroot()
+    filepath = os.path.join("resources", "evaluation.xml")
+    evaluation = xml.dom.minidom.parse(filepath)
 
-    for count in range(0, 5):
-        constants.evaluation.append({})
+    count = 0
 
-        for value, child in enumerate(root[count]):
-            evaluationid = root[count][value].attrib["id"]
-            evaluationid = int(evaluationid)
-            message = root[count][value].text
+    for item in evaluation.firstChild.childNodes:
+        if item.nodeType == item.ELEMENT_NODE:
+            constants.evaluation.append({})
 
-            if evaluationid in constants.evaluation[count].keys():
-                constants.evaluation[count][evaluationid].append(message)
-            else:
-                constants.evaluation[count][evaluationid] = [message]
+            messages = item.getElementsByTagName("message")
+
+            for text in messages:
+                evaluationid = text.getAttribute("id")
+                evaluationid = int(evaluationid)
+                message = text.firstChild.data
+
+                if evaluationid in constants.evaluation[count].keys():
+                    constants.evaluation[count][evaluationid].append(message)
+                else:
+                    constants.evaluation[count][evaluationid] = [message]
+
+            count += 1

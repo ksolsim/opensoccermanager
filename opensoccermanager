@@ -118,8 +118,11 @@ class ScreenMain(Gtk.Grid):
         buttonQuit.connect("clicked", exit_game)
         buttonbox.add(buttonQuit)
 
-        label = widgets.AlignedLabel("Version %s (Build %s)" % (version.VERSION, version.DATE))
-        self.attach(label, 0, 2, 1, 1)
+        self.buttonInfo = widgets.Button()
+        self.buttonInfo.set_relief(Gtk.ReliefStyle.NONE)
+        self.buttonInfo.set_label("Version %s (Build %s)" % (version.VERSION, version.DATE))
+        self.buttonInfo.connect("clicked", self.information_button_clicked)
+        self.attach(self.buttonInfo, 0, 2, 1, 1)
 
         label = Gtk.Label()
         label.set_markup("<a href='%s'>%s Website</a>" % (version.WEBSITE, version.NAME))
@@ -158,6 +161,11 @@ class ScreenMain(Gtk.Grid):
         preferences_dialog = interface.PreferencesDialog()
         preferences_dialog.run()
         preferences_dialog.destroy()
+
+    def information_button_clicked(self, button):
+        about_dialog = interface.AboutDialog()
+        about_dialog.run()
+        about_dialog.destroy()
 
 
 class ScreenDetails(Gtk.Grid):

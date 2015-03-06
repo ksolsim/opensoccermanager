@@ -127,14 +127,15 @@ class DeleteDialog(Gtk.Dialog):
         self.add_button("_Close", Gtk.ResponseType.CLOSE)
         self.vbox.set_spacing(5)
 
-        filechooserbutton = Gtk.FileChooserButton()
-        filechooserbutton.set_action(Gtk.FileChooserAction.SELECT_FOLDER)
-        filechooserbutton.set_current_folder(game.save_location)
-        filechooserbutton.connect("file-set", self.load_directory)
-        self.vbox.add(filechooserbutton)
+        filechooser = Gtk.FileChooserButton()
+        filechooser.set_action(Gtk.FileChooserAction.SELECT_FOLDER)
+        filechooser.set_current_folder(game.save_location)
+        filechooser.connect("file-set", self.load_directory)
+        self.vbox.add(filechooser)
 
         scrolledwindow = Gtk.ScrolledWindow()
-        scrolledwindow.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+        scrolledwindow.set_policy(Gtk.PolicyType.NEVER,
+                                  Gtk.PolicyType.AUTOMATIC)
         self.vbox.add(scrolledwindow)
 
         self.liststore = Gtk.ListStore(str, str)
@@ -154,7 +155,9 @@ class DeleteDialog(Gtk.Dialog):
         scrolledwindow.add(treeview)
 
         cellrenderertext = Gtk.CellRendererText()
-        treeviewcolumn = Gtk.TreeViewColumn(None, cellrenderertext, text=1)
+        treeviewcolumn = Gtk.TreeViewColumn(None,
+                                            cellrenderertext,
+                                            text=1)
         treeview.append_column(treeviewcolumn)
 
         buttonbox = Gtk.ButtonBox()
@@ -167,11 +170,11 @@ class DeleteDialog(Gtk.Dialog):
 
         self.show_all()
 
-    def load_directory(self, filechooserbutton=None, location=None):
+    def load_directory(self, filechooser=None, location=None):
         self.liststore.clear()
 
-        if filechooserbutton:
-            location = filechooserbutton.get_uri()
+        if filechooser:
+            location = filechooser.get_uri()
             location = location[7:]
 
         filenames = glob.glob("%s/*.osm" % (location))
@@ -182,11 +185,7 @@ class DeleteDialog(Gtk.Dialog):
 
     def selection_changed(self, treeselection):
         model, treepath = treeselection.get_selected_rows()
-
-        if treepath:
-            self.buttonDelete.set_sensitive(True)
-        else:
-            self.buttonDelete.set_sensitive(False)
+        self.buttonDelete.set_sensitive(treepath)
 
     def delete_file(self, button):
         model, treepath = self.treeselection.get_selected_rows()
@@ -466,15 +465,15 @@ class PreferencesDialog(Gtk.Dialog):
 
         game.start_screen = int(game.start_screen)
 
-    def change_database_default(self, filechooserbutton):
-        directory = filechooserbutton.get_uri()
+    def change_database_default(self, filechooser):
+        directory = filechooser.get_uri()
         game.database_filename = directory[7:]
 
         game.preferences["DATABASE"]["Database"] = game.database_filename
         game.preferences.writefile()
 
-    def change_data_location(self, filechooserbutton):
-        directory = filechooserbutton.get_uri()
+    def change_data_location(self, filechooser):
+        directory = filechooser.get_uri()
         game.data_location = directory[7:]
 
         game.preferences["SAVE"]["Data"] = game.data_location
