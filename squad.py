@@ -3,6 +3,8 @@
 from gi.repository import Gtk
 from gi.repository import Gdk
 import random
+import re
+import unicodedata
 
 import constants
 import dialogs
@@ -17,6 +19,110 @@ import transfer
 import widgets
 
 
+class PlayerSelect(Gtk.Dialog):
+    def __init__(self):
+        Gtk.Dialog.__init__(self)
+        self.set_transient_for(game.window)
+        self.set_default_size(-1, 250)
+        self.set_title("Player Selection")
+        self.add_button("_Cancel", Gtk.ResponseType.CANCEL)
+        self.add_button("_Select", Gtk.ResponseType.OK)
+        self.set_default_response(Gtk.ResponseType.OK)
+
+        grid = Gtk.Grid()
+        grid.set_row_spacing(5)
+        self.vbox.add(grid)
+
+        scrolledwindow = Gtk.ScrolledWindow()
+        grid.attach(scrolledwindow, 0, 0, 1, 1)
+
+        self.liststore = Gtk.ListStore(str, str)
+        treemodelsort = Gtk.TreeModelSort(self.liststore)
+        treemodelsort.set_sort_column_id(1, Gtk.SortType.ASCENDING)
+
+        cellrenderertext = Gtk.CellRendererText()
+        treeview = Gtk.TreeView()
+        treeview.set_hexpand(True)
+        treeview.set_vexpand(True)
+        treeview.set_headers_visible(False)
+        treeview.set_model(treemodelsort)
+        treeview.set_enable_search(False)
+        treeview.set_search_column(-1)
+        treeviewcolumn = Gtk.TreeViewColumn(None,
+                                            cellrenderertext,
+                                            text=1)
+        treeview.append_column(treeviewcolumn)
+        self.treeselection = treeview.get_selection()
+        self.treeselection.connect("changed", self.selection_changed)
+        scrolledwindow.add(treeview)
+
+        searchentry = Gtk.SearchEntry()
+        searchentry.connect("activate", self.search_activated)
+        searchentry.connect("changed", self.search_changed)
+        searchentry.connect("icon-press", self.search_cleared)
+        grid.attach(searchentry, 0, 1, 1, 1)
+
+    def search_activated(self, searchentry):
+        criteria = searchentry.get_text()
+
+        values = {}
+
+        for playerid in game.clubs[game.teamid].squad:
+            player = game.players[playerid]
+            both = "%s %s" % (player.first_name, player.second_name)
+
+            for search in (player.second_name, player.common_name, player.first_name, both):
+                search = ''.join((c for c in unicodedata.normalize('NFD', search) if unicodedata.category(c) != 'Mn'))
+
+                if re.findall(criteria, search, re.IGNORECASE):
+                    values[playerid] = player
+
+                    break
+
+        self.populate_data(values)
+
+    def search_changed(self, searchentry):
+        if searchentry.get_text_length() == 0:
+            self.populate_data(game.clubs[game.teamid].squad)
+
+    def search_cleared(self, searchentry, icon, entry):
+        if icon == Gtk.EntryIconPosition.SECONDARY:
+            self.populate_data(game.clubs[game.teamid].squad)
+
+    def selection_changed(self, treeselection):
+        model, treeiter = treeselection.get_selected()
+
+        if treeiter:
+            self.set_response_sensitive(Gtk.ResponseType.OK, True)
+        else:
+            self.set_response_sensitive(Gtk.ResponseType.OK, False)
+
+    def populate_data(self, data=None):
+        self.liststore.clear()
+
+        for playerid in data:
+            player = game.players[playerid]
+            name = display.name(player)
+
+            self.liststore.append([str(playerid), name])
+
+    def display(self):
+        self.populate_data(game.clubs[game.teamid].squad)
+
+        self.show_all()
+
+        selected = 0
+
+        if self.run() == Gtk.ResponseType.OK:
+            model, treeiter = self.treeselection.get_selected()
+            selected = model[treeiter][0]
+            selected = int(selected)
+
+        self.hide()
+
+        return selected
+
+
 class Squad(Gtk.Grid):
     def __init__(self):
         targets = [('MY_TREE_MODEL_ROW', Gtk.TargetFlags.SAME_APP, 0),
@@ -24,6 +130,8 @@ class Squad(Gtk.Grid):
                    ('TEXT', 0, 2),
                    ('STRING', 0, 3),
                   ]
+
+        self.playerselect = PlayerSelect()
 
         self.tree_columns = ([], [], [])
 
@@ -131,7 +239,8 @@ class Squad(Gtk.Grid):
 
         [(column.set_expand(True),
           column.set_visible(False),
-          treeviewSquad.append_column(column)) for column in self.tree_columns[0]]
+          treeviewSquad.append_column(column)
+         ) for column in self.tree_columns[0]]
 
         # Skills
         for count, item in enumerate(constants.short_skill, start=3):
@@ -150,7 +259,8 @@ class Squad(Gtk.Grid):
         self.tree_columns[1].append(treeviewcolumn)
 
         [(column.set_expand(True),
-          treeviewSquad.append_column(column)) for column in self.tree_columns[1]]
+          treeviewSquad.append_column(column)
+         ) for column in self.tree_columns[1]]
 
         # Form
         treeviewcolumn = Gtk.TreeViewColumn("Games",
@@ -181,18 +291,13 @@ class Squad(Gtk.Grid):
         [(column.set_expand(True),
           column.set_visible(False),
           column.set_fixed_width(50),
-          treeviewSquad.append_column(column)) for column in self.tree_columns[2]]
+          treeviewSquad.append_column(column)
+         ) for column in self.tree_columns[2]]
 
         self.notebook = Gtk.Notebook()
+        self.notebook.set_size_request(200, -1)
         self.notebook.set_hexpand(False)
         self.notebook.set_vexpand(True)
-        self.checkbuttonLimit = Gtk.CheckButton("_Limit Listed Players")
-        self.checkbuttonLimit.set_use_underline(True)
-        self.checkbuttonLimit.set_border_width(1)
-        self.checkbuttonLimit.set_tooltip_text("Show only players in each position which are best suited")
-        self.checkbuttonLimit.connect("toggled", self.limit_player_list)
-        self.checkbuttonLimit.show()
-        self.notebook.set_action_widget(self.checkbuttonLimit, Gtk.PackType.END)
         self.attach(self.notebook, 1, 0, 1, 2)
 
         # Team notebook page
@@ -206,7 +311,6 @@ class Squad(Gtk.Grid):
         self.notebook.append_page(self.gridTeam, label)
 
         self.comboSquadList = []
-        self.comboDCList = [None] * 16
 
         self.labelTeam = []
 
@@ -245,59 +349,49 @@ class Squad(Gtk.Grid):
         self.contextmenu.menuitemExtendLoan.connect("activate", self.extend_loan)
         self.contextmenu.menuitemCancelLoan.connect("activate", self.cancel_loan)
 
-        cellrenderertext = Gtk.CellRendererText()
-
         for count in range(0, 16):
-            combobox = Gtk.ComboBox()
-            combobox.set_hexpand(True)
-            combobox.set_id_column(0)
-            combobox.pack_start(cellrenderertext, True)
-            combobox.add_attribute(cellrenderertext, "text", 1)
-            combobox.drag_dest_set(Gtk.DestDefaults.ALL, [], Gdk.DragAction.COPY)
-            combobox.drag_dest_add_text_targets()
-            combobox.connect("drag-data-received", self.on_drag_data_received)
-            connectid = combobox.connect("changed", self.update_squad, count)
-            self.comboDCList[count] = connectid
-            self.comboSquadList.append(combobox)
+            button = Gtk.Button("")
+            button.set_hexpand(True)
+            button.drag_dest_set(Gtk.DestDefaults.ALL, [], Gdk.DragAction.COPY)
+            button.drag_dest_add_text_targets()
+            button.connect("drag-data-received", self.on_drag_data_received)
+            button.connect("clicked", self.squad_dialog, count)
+            self.comboSquadList.append(button)
 
             if count < 11:
-                self.gridTeam.attach(combobox, 1, count, 1, 1)
+                self.gridTeam.attach(button, 1, count, 1, 1)
             else:
-                self.gridSubs.attach(combobox, 1, count - 11, 1, 1)
+                self.gridSubs.attach(button, 1, count - 11, 1, 1)
+
+    def squad_dialog(self, button, count):
+        selected = self.playerselect.display()
+
+        if selected != 0:
+            self.update_squad(selected, count)
+        else:
+            button.set_label("")
+            game.clubs[game.teamid].team[count] = 0
 
     def run(self):
         formationid = game.clubs[game.teamid].tactics[0]
 
         for count in range(0, 16):
+            button = self.comboSquadList[count]
+
+            playerid = game.clubs[game.teamid].team[count]
+
             if count < 11:
                 position = constants.formations[formationid][1][count]
                 self.labelTeam[count].set_label("_%s" % (position))
+                self.labelTeam[count].set_mnemonic_widget(button)
+
+                if playerid != 0:
+                    player = game.players[playerid]
+                    name = display.name(player)
+                    button.set_label("%s" % (name))
             else:
                 self.labelSubs[count - 11].set_label("Sub _%s" % (count - 10))
-
-            liststore = Gtk.ListStore(str, str)
-            liststore.append([str(0), "Not Selected"])
-            for playerid in game.clubs[game.teamid].squad:
-                player = game.players[playerid]
-                name = display.name(player)
-
-                liststore.append([str(playerid), name])
-
-            combobox = self.comboSquadList[count]
-            combobox.set_model(liststore)
-            combobox.set_id_column(0)
-            combobox.disconnect(self.comboDCList[count])
-
-            playerid = game.clubs[game.teamid].team[count]
-            combobox.set_active_id(str(playerid))
-
-            connectid = combobox.connect("changed", self.update_squad, count)
-            self.comboDCList[count] = connectid
-
-            if count < 11:
-                self.labelTeam[count].set_mnemonic_widget(combobox)
-            else:
-                self.labelSubs[count - 11].set_mnemonic_widget(combobox)
+                self.labelSubs[count - 11].set_mnemonic_widget(button)
 
         # Context menu for "Add To Position"
         self.menuPosition = Gtk.Menu()
@@ -315,7 +409,6 @@ class Squad(Gtk.Grid):
 
         # Populate data across squad screen
         self.populate_data()
-        self.limit_player_list()
 
         self.show_all()
 
@@ -326,75 +419,40 @@ class Squad(Gtk.Grid):
         data = bytes(data, "utf-8")
         selection.set(selection.get_target(), 8, data)
 
-    def on_drag_data_received(self, combobox, context, x, y, selection, info, time):
+    def on_drag_data_received(self, button, context, x, y, selection, info, time):
         playerid = selection.get_data().decode("utf-8")
+        playerid = int(playerid)
 
-        if not combobox.set_active_id(playerid):
-            self.checkbuttonLimit.set_active(False)
-            combobox.set_active_id(playerid)
+        count = 0
+
+        for widget in self.comboSquadList:
+            if button is widget:
+                key = count
+
+            count += 1
+
+        self.update_squad(playerid, key)
 
         if context.get_actions() == Gdk.DragAction.COPY:
             context.finish(True, False, time)
 
         return
 
-    def update_squad(self, combobox, index):
-        active = combobox.get_active()
-        model = combobox.get_model()
-        playerid = model[active][0]
-
+    def update_squad(self, playerid, count):
+        '''
+        Remove player if they already exist in the squad list, and then
+        set the player into the new position.
+        '''
         for key, item in game.clubs[game.teamid].team.items():
             if item != 0 and str(item) == str(playerid):
                 game.clubs[game.teamid].team[key] = 0
-                self.comboSquadList[key].set_active(0)
+                self.comboSquadList[key].set_label("")
 
-        game.clubs[game.teamid].team[index] = int(playerid)
-
-    def limit_player_list(self, checkbutton=None):
-        formationid = game.clubs[game.teamid].tactics[0]
-        formation = constants.formations[formationid][0]
-        formation = formation.split("-")
-        formation.insert(0, 1)
-        formation = tuple(map(int, formation))
-
-        positions = (("GK"), ("DL", "DR", "DC", "D"), ("ML", "MR", "MC", "M"), ("AS", "AF"))
-
-        tuple_index = 0
-        position_count = 0
-
-        for count in range(0, 11):
-            combobox = self.comboSquadList[count]
-            combobox.disconnect(self.comboDCList[count])
-
-            model = combobox.get_model()
-            model.clear()
-            model.append([str(0), "Not Selected"])
-
-            for playerid in game.clubs[game.teamid].squad:
-                player = game.players[playerid]
-                name = display.name(player)
-
-                if self.checkbuttonLimit.get_active():
-                    if player.position in positions[tuple_index]:
-                        model.append([str(playerid), name])
-                else:
-                    model.append([str(playerid), name])
-
-            # Set player onto combobox, however if the set is not valid
-            # it will be cleared and player will be removed from team
-            playerid = game.clubs[game.teamid].team[count]
-
-            if not combobox.set_active_id(str(playerid)):
-                combobox.set_active(0)
-                game.clubs[game.teamid].team[count] = 0
-
-            self.comboDCList[count] = combobox.connect("changed", self.update_squad, count)
-
-            if position_count == formation[tuple_index] - 1:
-                tuple_index += 1
-                position_count = 0
-            else:
-                position_count += 1
+        player = game.players[playerid]
+        name = display.name(player)
+        button = self.comboSquadList[count]
+        button.set_label("%s" % (name))
+        game.clubs[game.teamid].team[count] = playerid
 
     def row_activated(self, treeview, path, treeviewcolumn):
         '''
