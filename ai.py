@@ -36,6 +36,7 @@ class Result:
                     skills = player.skills()
                     self.weights[count] = sum(skills)
 
+
         self.total = sum(self.weights)
 
         self.calculate_percentages()

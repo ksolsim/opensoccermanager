@@ -168,6 +168,3 @@ class Statistics:
 
         self.win = (0, ())
         self.loss = (0, ())
-
-        self.highattendance = 0
-        self.lowattendance = 0
