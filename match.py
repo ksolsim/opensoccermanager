@@ -3,7 +3,6 @@
 from gi.repository import Gtk
 import random
 
-import actions
 import ai
 import constants
 import display
@@ -421,7 +420,7 @@ class Match(Gtk.Grid):
                 money.pay_bonus()
 
         # Declare attendance
-        attendance = actions.attendance(self.team1, self.team2)
+        attendance = airesult.attendance(self.team1, self.team2)
         self.stats.labelAttendance.set_label("%s" % (attendance))
 
         if self.team1.teamid == game.teamid:

@@ -310,7 +310,7 @@ class Squad(Gtk.Grid):
         self.gridTeam.set_column_spacing(5)
         self.notebook.append_page(self.gridTeam, label)
 
-        self.comboSquadList = []
+        self.buttonTeam = []
 
         self.labelTeam = []
 
@@ -356,7 +356,7 @@ class Squad(Gtk.Grid):
             button.drag_dest_add_text_targets()
             button.connect("drag-data-received", self.on_drag_data_received)
             button.connect("clicked", self.squad_dialog, count)
-            self.comboSquadList.append(button)
+            self.buttonTeam.append(button)
 
             if count < 11:
                 self.gridTeam.attach(button, 1, count, 1, 1)
@@ -376,7 +376,7 @@ class Squad(Gtk.Grid):
         formationid = game.clubs[game.teamid].tactics[0]
 
         for count in range(0, 16):
-            button = self.comboSquadList[count]
+            button = self.buttonTeam[count]
 
             playerid = game.clubs[game.teamid].team[count]
 
@@ -409,8 +409,23 @@ class Squad(Gtk.Grid):
 
         # Populate data across squad screen
         self.populate_data()
+        self.display_squad()
 
         self.show_all()
+
+    def display_squad(self):
+        '''
+        Display the set items within the squad button list, or clear if
+        player is no longer set. Also used to clear the button text when
+        starting a game from new.
+        '''
+        for count, playerid in enumerate(game.clubs[game.teamid].team.values()):
+            if playerid != 0:
+                player = game.players[playerid]
+                name = display.name(player)
+                self.buttonTeam[count].set_label(name)
+            else:
+                self.buttonTeam[count].set_label("")
 
     def on_drag_data_get(self, treeview, context, selection, info, time):
         treeselection = treeview.get_selection()
@@ -425,7 +440,7 @@ class Squad(Gtk.Grid):
 
         count = 0
 
-        for widget in self.comboSquadList:
+        for widget in self.buttonTeam:
             if button is widget:
                 key = count
 
@@ -446,11 +461,11 @@ class Squad(Gtk.Grid):
         for key, item in game.clubs[game.teamid].team.items():
             if item != 0 and str(item) == str(playerid):
                 game.clubs[game.teamid].team[key] = 0
-                self.comboSquadList[key].set_label("")
+                self.buttonTeam[key].set_label("")
 
         player = game.players[playerid]
         name = display.name(player)
-        button = self.comboSquadList[count]
+        button = self.buttonTeam[count]
         button.set_label("%s" % (name))
         game.clubs[game.teamid].team[count] = playerid
 
@@ -486,10 +501,7 @@ class Squad(Gtk.Grid):
                 self.contextmenu.menuitemExtendLoan.set_visible(True)
                 self.contextmenu.menuitemCancelLoan.set_visible(True)
             else:
-                transfer = player.transfer[0]
-                loan = player.transfer[1]
-
-                if transfer is True:
+                if player.transfer[0] is True:
                     self.contextmenu.menuitemAddTransfer.set_sensitive(False)
                     self.contextmenu.menuitemRemoveTransfer.set_sensitive(True)
                     self.contextmenu.menuitemNotForSale.set_active(False)
@@ -498,7 +510,7 @@ class Squad(Gtk.Grid):
                     self.contextmenu.menuitemAddTransfer.set_sensitive(True)
                     self.contextmenu.menuitemRemoveTransfer.set_sensitive(False)
 
-                if loan is True:
+                if player.transfer[1] is True:
                     self.contextmenu.menuitemAddLoan.set_sensitive(False)
                     self.contextmenu.menuitemRemoveLoan.set_sensitive(True)
                 else:
@@ -562,7 +574,7 @@ class Squad(Gtk.Grid):
         model, treeiter = self.treeselection.get_selected()
         playerid = model[treeiter][0]
 
-        self.comboSquadList[index].set_active_id(str(playerid))
+        self.buttonTeam[index].set_active_id(str(playerid))
 
     def remove_from_position(self, menuitem):
         model, treeiter = self.treeselection.get_selected()
@@ -571,7 +583,7 @@ class Squad(Gtk.Grid):
         for key, item in game.clubs[game.teamid].team.items():
             if item == playerid:
                 game.clubs[game.teamid].team[key] = 0
-                self.comboSquadList[key].set_active(0)
+                self.buttonTeam[key].set_active(0)
 
     def renew_contract(self, menuitem):
         model, treeiter = self.treeselection.get_selected()
@@ -613,7 +625,7 @@ class Squad(Gtk.Grid):
                 for key, item in game.clubs[game.teamid].team.items():
                     if item == playerid:
                         game.clubs[game.teamid].team[key] = 0
-                        self.comboSquadList[key].set_active(0)
+                        self.buttonTeam[key].set_active(0)
 
                 money.deposit(value, 6)
 
@@ -641,7 +653,7 @@ class Squad(Gtk.Grid):
             for key, item in game.clubs[game.teamid].team.items():
                 if item == playerid:
                     game.clubs[game.teamid].team[key] = 0
-                    self.comboSquadList[key].set_active(0)
+                    self.buttonTeam[key].set_active(0)
 
             self.populate_data()
 

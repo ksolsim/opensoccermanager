@@ -2,7 +2,6 @@
 
 import random
 
-import actions
 import calculator
 import constants
 import display
@@ -488,12 +487,36 @@ class Result:
 
     def ratings(self):
         ratings = [{}, {}]
-        ratings[0] = actions.rating(self.selection1)
-        ratings[1] = actions.rating(self.selection2)
+        ratings[0] = self.rating(self.selection1)
+        ratings[1] = self.rating(self.selection2)
 
         self.ratings = dict(ratings[0].items() | ratings[1].items())
 
         self.man_of_the_match()
+
+    def rating(self, selection):
+        '''
+        Calculate player ratings for both teams at end of each match.
+        '''
+        ratings = {}
+
+        for playerid in selection[0]:
+            player = game.players[playerid]
+
+            rating = random.randint(1, 10)
+            player.rating.append(rating)
+
+            ratings[playerid] = rating
+
+        for playerid in selection[1]:
+            player = game.players[playerid]
+
+            rating = random.randint(1, 10)
+            player.rating.append(rating)
+
+            ratings[playerid] = rating
+
+        return ratings
 
     def man_of_the_match(self):
         motm = []
@@ -505,6 +528,49 @@ class Result:
                 value = rating
 
         self.man_of_the_match_id = random.choice(motm)
+
+    def attendance(self, team1, team2):
+        club = game.clubs[team1.teamid]
+
+        capacity = game.stadiums[club.stadium].capacity
+        base_capacity = (74000 * 0.05) * club.reputation
+
+        capacity -= club.school_tickets
+
+        attendance = 0
+
+        if base_capacity > capacity:
+            attendance += capacity * 0.5
+        else:
+            attendance += base_capacity * 0.5
+
+        # Form
+        points = 0
+
+        for form in club.form:
+            if form == "W":
+                points += 3
+            elif form == "D":
+                points += 1
+
+        attendance += (points / (len(club.form) * 3)) * (base_capacity * 0.5)
+
+        # Reputation
+        diff = club.reputation - game.clubs[team2.teamid].reputation
+
+        if diff == 0:
+            diff = 1
+
+        attendance += (base_capacity * 0.5) / diff
+
+        if attendance > capacity:
+            attendance = capacity
+
+        attendance += club.school_tickets
+
+        attendance = int(attendance)
+
+        return attendance
 
 
 def team_training():
