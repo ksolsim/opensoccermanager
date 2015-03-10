@@ -453,12 +453,9 @@ class Standings(Gtk.Grid):
         self.attach(scrolledwindow, 0, 0, 1, 1)
 
         self.liststoreStandings = Gtk.ListStore(str, int, int, int, int, int, int, int, int, str)
-        self.treemodelsort = Gtk.TreeModelSort(self.liststoreStandings)
-        self.treemodelsort.set_sort_column_id(0, Gtk.SortType.ASCENDING)
-        self.treemodelsort.set_sort_func(0, self.standings_sort)
 
         treeviewStandings = Gtk.TreeView()
-        treeviewStandings.set_model(self.treemodelsort)
+        treeviewStandings.set_model(self.liststoreStandings)
         treeviewStandings.set_enable_search(False)
         treeviewStandings.set_search_column(-1)
         treeviewStandings.set_vexpand(True)
@@ -531,46 +528,25 @@ class Standings(Gtk.Grid):
         treeviewcolumn.set_fixed_width(96)
         treeviewStandings.append_column(treeviewcolumn)
 
-    def standings_sort(self, treesortable, treeiter1, treeiter2, data):
-        if game.eventindex == 0:
-            # Sort by club name if zero games played
-            team2 = treesortable[treeiter1][0]
-            team1 = treesortable[treeiter2][0]
-        else:
-            # Sort by points, goal difference, goals for, goals against
-            team1 = (treesortable[treeiter1][8],
-                     treesortable[treeiter1][7],
-                     treesortable[treeiter1][5],
-                     treesortable[treeiter1][6])
-            team2 = (treesortable[treeiter2][8],
-                     treesortable[treeiter2][7],
-                     treesortable[treeiter2][5],
-                     treesortable[treeiter2][6])
-
-        if team1 < team2:
-            return 1
-        elif team1 == team2:
-            return 0
-        else:
-            return -1
-
     def run(self):
         self.liststoreStandings.clear()
 
-        for clubid, details in game.standings.items():
-            club = game.clubs[clubid]
+        standings = display.sorted_standings()
+
+        for item in standings:
+            club = game.clubs[item[0]]
 
             form = "".join(club.form[-6:])
 
-            self.liststoreStandings.append([club.name,
-                                            details.played,
-                                            details.wins,
-                                            details.draws,
-                                            details.losses,
-                                            details.goals_for,
-                                            details.goals_against,
-                                            details.goal_difference,
-                                            details.points,
+            self.liststoreStandings.append([item[1],
+                                            item[2],
+                                            item[3],
+                                            item[4],
+                                            item[5],
+                                            item[6],
+                                            item[7],
+                                            item[8],
+                                            item[9],
                                             form])
 
         self.show_all()
@@ -745,43 +721,63 @@ class Statistics(Gtk.Grid):
             self.set_search_column(-1)
 
             cellrenderertext = Gtk.CellRendererText()
-            treeviewcolumn = Gtk.TreeViewColumn("Season", cellrenderertext, text=0)
+            treeviewcolumn = Gtk.TreeViewColumn("Season",
+                                                cellrenderertext,
+                                                text=0)
             treeviewcolumn.set_fixed_width(75)
             treeviewcolumn.set_sizing(Gtk.TreeViewColumnSizing.FIXED)
             self.append_column(treeviewcolumn)
-            treeviewcolumn = Gtk.TreeViewColumn("Played", cellrenderertext, text=1)
+            treeviewcolumn = Gtk.TreeViewColumn("Played",
+                                                cellrenderertext,
+                                                text=1)
             treeviewcolumn.set_fixed_width(50)
             treeviewcolumn.set_sizing(Gtk.TreeViewColumnSizing.FIXED)
             self.append_column(treeviewcolumn)
-            treeviewcolumn = Gtk.TreeViewColumn("Won", cellrenderertext, text=2)
+            treeviewcolumn = Gtk.TreeViewColumn("Won",
+                                                cellrenderertext,
+                                                text=2)
             treeviewcolumn.set_fixed_width(50)
             treeviewcolumn.set_sizing(Gtk.TreeViewColumnSizing.FIXED)
             self.append_column(treeviewcolumn)
-            treeviewcolumn = Gtk.TreeViewColumn("Drawn", cellrenderertext, text=3)
+            treeviewcolumn = Gtk.TreeViewColumn("Drawn",
+                                                cellrenderertext,
+                                                text=3)
             treeviewcolumn.set_fixed_width(50)
             treeviewcolumn.set_sizing(Gtk.TreeViewColumnSizing.FIXED)
             self.append_column(treeviewcolumn)
-            treeviewcolumn = Gtk.TreeViewColumn("Lost", cellrenderertext, text=4)
+            treeviewcolumn = Gtk.TreeViewColumn("Lost",
+                                                cellrenderertext,
+                                                text=4)
             treeviewcolumn.set_fixed_width(50)
             treeviewcolumn.set_sizing(Gtk.TreeViewColumnSizing.FIXED)
             self.append_column(treeviewcolumn)
-            treeviewcolumn = Gtk.TreeViewColumn("Goals For", cellrenderertext, text=5)
+            treeviewcolumn = Gtk.TreeViewColumn("Goals For",
+                                                cellrenderertext,
+                                                text=5)
             treeviewcolumn.set_fixed_width(100)
             treeviewcolumn.set_sizing(Gtk.TreeViewColumnSizing.FIXED)
             self.append_column(treeviewcolumn)
-            treeviewcolumn = Gtk.TreeViewColumn("Goals Against", cellrenderertext, text=6)
+            treeviewcolumn = Gtk.TreeViewColumn("Goals Against",
+                                                cellrenderertext,
+                                                text=6)
             treeviewcolumn.set_fixed_width(100)
             treeviewcolumn.set_sizing(Gtk.TreeViewColumnSizing.FIXED)
             self.append_column(treeviewcolumn)
-            treeviewcolumn = Gtk.TreeViewColumn("Goal Difference", cellrenderertext, text=7)
+            treeviewcolumn = Gtk.TreeViewColumn("Goal Difference",
+                                                cellrenderertext,
+                                                text=7)
             treeviewcolumn.set_fixed_width(100)
             treeviewcolumn.set_sizing(Gtk.TreeViewColumnSizing.FIXED)
             self.append_column(treeviewcolumn)
-            treeviewcolumn = Gtk.TreeViewColumn("Points", cellrenderertext, text=8)
+            treeviewcolumn = Gtk.TreeViewColumn("Points",
+                                                cellrenderertext,
+                                                text=8)
             treeviewcolumn.set_fixed_width(50)
             treeviewcolumn.set_sizing(Gtk.TreeViewColumnSizing.FIXED)
             self.append_column(treeviewcolumn)
-            treeviewcolumn = Gtk.TreeViewColumn("Position", cellrenderertext, text=9)
+            treeviewcolumn = Gtk.TreeViewColumn("Position",
+                                                cellrenderertext,
+                                                text=9)
             treeviewcolumn.set_sizing(Gtk.TreeViewColumnSizing.FIXED)
             self.append_column(treeviewcolumn)
 

@@ -429,9 +429,6 @@ class Match(Gtk.Grid):
         events.increment_goalscorers(airesult.scorers[0], airesult.scorers[1])
         events.increment_assists(airesult.assists[0], airesult.assists[1])
 
-        events.update_statistics(airesult)
-        events.update_records()
-
         # Decrement matches player is suspended for
         for playerid, player in game.players.items():
             if player.suspension_period > 0:
@@ -454,6 +451,9 @@ class Match(Gtk.Grid):
 
         # Process remaining matches
         self.process_remaining()
+
+        events.update_statistics(airesult)
+        events.update_records()
 
         widgets.continuegame.set_sensitive(True)
         self.buttonStart.set_sensitive(False)

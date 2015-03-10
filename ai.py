@@ -584,16 +584,20 @@ def team_training():
             values = [count for count in range(2, 17)]
             random.shuffle(values)
 
-            for x in range(0, 6):
-                club.team_training[x * 6] = values[x * 2]
-                club.team_training[x * 6 + 1] = values[x * 2 + 1]
-                club.team_training[x * 6 + 2] = 1
-                club.team_training[x * 6 + 3] = 0
-                club.team_training[x * 6 + 4] = 0
-                club.team_training[x * 6 + 5] = 0
+            for count in range(0, 6):
+                club.team_training[count * 6] = values[count * 2]
+                club.team_training[count * 6 + 1] = values[count * 2 + 1]
+                club.team_training[count * 6 + 2] = 1
+                club.team_training[count * 6 + 3] = 0
+                club.team_training[count * 6 + 4] = 0
+                club.team_training[count * 6 + 5] = 0
 
 
 def renew_contract():
+    '''
+    Renew player contracts, and announce big name players who have
+    agreed to renew their contract for other clubs.
+    '''
     for playerid, player in game.players.items():
         if player.club != game.teamid:
             if 0 < player.contract < 24:
@@ -623,6 +627,9 @@ def renew_contract():
 
 
 def transfer_list():
+    '''
+    Identify which players should be added to the transfer list.
+    '''
     for clubid, club in game.clubs.items():
         if clubid != game.teamid:
             score = {}
@@ -631,16 +638,7 @@ def transfer_list():
             for count, playerid in enumerate(club.squad, start=1):
                 player = game.players[playerid]
 
-                skills = (player.keeping,
-                          player.tackling,
-                          player.passing,
-                          player.shooting,
-                          player.heading,
-                          player.pace,
-                          player.stamina,
-                          player.ball_control,
-                          player.set_pieces)
-
+                skills = player.skills()
                 score[playerid] = sum(skills) * random.randint(1, 3)
 
                 average += score[playerid] / count
@@ -655,6 +653,9 @@ def transfer_list():
 
 
 def loan_list():
+    '''
+    Determine which players should be placed on the loan list.
+    '''
     for clubid, club in game.clubs.items():
         if clubid != game.teamid:
             score = {}
@@ -663,16 +664,7 @@ def loan_list():
             for count, playerid in enumerate(club.squad, start=1):
                 player = game.players[playerid]
 
-                skills = (player.keeping,
-                          player.tackling,
-                          player.passing,
-                          player.shooting,
-                          player.heading,
-                          player.pace,
-                          player.stamina,
-                          player.ball_control,
-                          player.set_pieces)
-
+                skills = player.skills()
                 score[playerid] = sum(skills) * random.randint(1, 3)
 
                 if player.age < 24:
@@ -710,15 +702,7 @@ def generate_team(clubid):
             if playerid not in selection:
                 player = game.players[playerid]
 
-                skills = (player.keeping,
-                          player.tackling,
-                          player.passing,
-                          player.shooting,
-                          player.heading,
-                          player.pace,
-                          player.stamina,
-                          player.ball_control,
-                          player.set_pieces)
+                skills = player.skills()
                 score = sum(skills)
 
                 if position == player.position:
@@ -745,15 +729,7 @@ def generate_team(clubid):
         for playerid in squad:
             if playerid not in selection and playerid not in substitutes:
                 player = game.players[playerid]
-                skills = (player.keeping,
-                          player.tackling,
-                          player.passing,
-                          player.shooting,
-                          player.heading,
-                          player.pace,
-                          player.stamina,
-                          player.ball_control,
-                          player.set_pieces)
+                skills = player.skills()
                 score = sum(skills)
 
                 if position == player.position:

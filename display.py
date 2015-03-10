@@ -46,14 +46,12 @@ def format_position(value):
     return output
 
 
-def find_champion():
-    '''
-    Returns clubid of the team at the top of the league.
-    '''
+def sorted_standings():
     standings = []
 
     for clubid, details in game.standings.items():
         details = (clubid,
+                   game.clubs[clubid].name,
                    details.played,
                    details.wins,
                    details.draws,
@@ -65,10 +63,22 @@ def find_champion():
                   )
         standings.append(details)
 
-    standings = sorted(standings,
-                       key=operator.itemgetter(8, 7, 5, 6),
-                       reverse=True)
+    if game.eventindex > 0:
+        standings = sorted(standings,
+                           key=operator.itemgetter(9, 8, 6, 7),
+                           reverse=True)
+    else:
+        standings = sorted(standings,
+                           key=operator.itemgetter(1))
 
+    return standings
+
+
+def find_champion():
+    '''
+    Returns clubid of the team at the top of the league.
+    '''
+    standings = sorted_standings()
     champion = standings[0][0]
 
     return champion
@@ -78,28 +88,13 @@ def find_position(teamid, ordinal=True):
     '''
     Returns the position in standings of specified club.
     '''
-    standings = []
+    standings = sorted_standings()
 
-    for clubid, details in game.standings.items():
-        details = (clubid,
-                   details.played,
-                   details.wins,
-                   details.draws,
-                   details.losses,
-                   details.goals_for,
-                   details.goals_against,
-                   details.goal_difference,
-                   details.points
-                  )
-        standings.append(details)
+    position = 0
 
-    standings = sorted(standings,
-                       key=operator.itemgetter(8, 7, 5, 6),
-                       reverse=True)
-
-    for position, item in enumerate(standings, start=1):
+    for count, item in enumerate(standings, start=1):
         if item[0] == teamid:
-            break
+            position = count
 
     if ordinal:
         position = format_position(position)

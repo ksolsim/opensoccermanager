@@ -384,11 +384,6 @@ class Squad(Gtk.Grid):
                 position = constants.formations[formationid][1][count]
                 self.labelTeam[count].set_label("_%s" % (position))
                 self.labelTeam[count].set_mnemonic_widget(button)
-
-                if playerid != 0:
-                    player = game.players[playerid]
-                    name = display.name(player)
-                    button.set_label("%s" % (name))
             else:
                 self.labelSubs[count - 11].set_label("Sub _%s" % (count - 10))
                 self.labelSubs[count - 11].set_mnemonic_widget(button)
