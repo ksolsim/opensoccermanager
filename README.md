@@ -13,7 +13,6 @@ The game requires several dependencies to run:
     gobject-introspection
     python-sqlite
     sqlite
-    python3-lxml
     gir1.2-gtk-3.0
 
 
