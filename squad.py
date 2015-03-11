@@ -25,6 +25,7 @@ class PlayerSelect(Gtk.Dialog):
         self.set_transient_for(game.window)
         self.set_default_size(-1, 250)
         self.set_title("Player Selection")
+        self.add_button("C_lear", Gtk.ResponseType.REJECT)
         self.add_button("_Cancel", Gtk.ResponseType.CANCEL)
         self.add_button("_Select", Gtk.ResponseType.OK)
         self.set_default_response(Gtk.ResponseType.OK)
@@ -48,6 +49,7 @@ class PlayerSelect(Gtk.Dialog):
         treeview.set_model(treemodelsort)
         treeview.set_enable_search(False)
         treeview.set_search_column(-1)
+        treeview.connect("row-activated", self.row_activated)
         treeviewcolumn = Gtk.TreeViewColumn(None,
                                             cellrenderertext,
                                             text=1)
@@ -61,6 +63,9 @@ class PlayerSelect(Gtk.Dialog):
         searchentry.connect("changed", self.search_changed)
         searchentry.connect("icon-press", self.search_cleared)
         grid.attach(searchentry, 0, 1, 1, 1)
+
+    def row_activated(self, treeview, treepath, column):
+        self.response(Gtk.ResponseType.OK)
 
     def search_activated(self, searchentry):
         criteria = searchentry.get_text()
@@ -110,13 +115,16 @@ class PlayerSelect(Gtk.Dialog):
         self.populate_data(game.clubs[game.teamid].squad)
 
         self.show_all()
+        response = self.run()
 
         selected = 0
 
-        if self.run() == Gtk.ResponseType.OK:
+        if response == Gtk.ResponseType.OK:
             model, treeiter = self.treeselection.get_selected()
             selected = model[treeiter][0]
             selected = int(selected)
+        elif response == Gtk.ResponseType.REJECT:
+            selected = -1
 
         self.hide()
 
@@ -366,11 +374,13 @@ class Squad(Gtk.Grid):
     def squad_dialog(self, button, count):
         selected = self.playerselect.display()
 
-        if selected != 0:
-            self.update_squad(selected, count)
-        else:
+        if selected == 0:
+            pass
+        elif selected == -1:
             button.set_label("")
             game.clubs[game.teamid].team[count] = 0
+        else:
+            self.update_squad(selected, count)
 
     def run(self):
         formationid = game.clubs[game.teamid].tactics[0]
