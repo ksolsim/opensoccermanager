@@ -418,9 +418,11 @@ class Match(Gtk.Grid):
         if result[0] == game.teamid:
             if result[1] > result[2]:
                 money.pay_bonus()
+                money.pay_win_bonus()
         elif result[3] == game.teamid:
             if result[2] > result[1]:
                 money.pay_bonus()
+                money.pay_win_bonus()
 
         # Declare attendance
         attendance = airesult.attendance(self.team1, self.team2)

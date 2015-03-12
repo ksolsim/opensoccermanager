@@ -69,8 +69,7 @@ def pay_wages():
 
 def pay_bonus():
     '''
-    Calculates the win bonus on top of wages, then resets the bonus
-    statement.
+    Calculate the user-specified win bonus on the tactics screen.
     '''
     if game.clubs[game.teamid].tactics[8] != 0:
         total = 0
@@ -83,6 +82,16 @@ def pay_bonus():
         withdraw(bonus, 12)
 
         game.clubs[game.teamid].tactics[8] = 0
+
+
+def pay_win_bonus():
+    '''
+    Pay the win bonus amount defined within the players contract.
+    '''
+    for playerid in game.clubs[game.teamid].team:
+        if playerid != 0:
+            amount = game.players[playerid].bonus[2]
+            withdraw(amount, 12)
 
 
 def request(amount):

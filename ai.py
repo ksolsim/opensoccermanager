@@ -188,8 +188,6 @@ class Result:
                 player.missed += 1
                 evaluation.morale(playerid, 3)
 
-                print(display.name(player))
-
     def goalscorers(self):
         '''
         Determines the goalscorers for each club when passed both club
@@ -260,6 +258,11 @@ class Result:
             choice = random.choice(players[1])
 
             scorers[1].append(choice)
+
+        if self.clubid1 == game.teamid:
+            self.pay_goal_bonus(scorers, 0)
+        elif self.clubid2 == game.teamid:
+            self.pay_goal_bonus(scorers, 1)
 
         self.scorers = scorers
 
@@ -599,6 +602,11 @@ class Result:
 
         return attendance
 
+    def pay_goal_bonus(self, scorers, index):
+        for playerid in scorers[index]:
+            amount = game.players[playerid].bonus[3]
+            money.withdraw(amount, 12)
+
 
 def team_training():
     '''
@@ -774,11 +782,7 @@ def generate_team(clubid):
                 scores[playerid] = score
 
         sorted_scores = sorted(scores, key = lambda x: scores[x], reverse = True)
-
-        try:
-            substitutes.append(sorted_scores[0])
-        except KeyError:
-            print("Key error")
+        substitutes.append(sorted_scores[0])
 
     for count, player in enumerate(selection):
         team[count] = player
