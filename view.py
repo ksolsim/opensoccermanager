@@ -259,7 +259,7 @@ class Players(Gtk.Grid):
             self.reset_activated()
 
     def reset_activated(self, widget=None, position=None, event=None):
-        self.menuitemRecommends.set_active(False)
+        self.contextmenu.menuitemRecommends.set_active(False)
         self.buttonReset.set_sensitive(False)
         self.entrySearch.set_text("")
 

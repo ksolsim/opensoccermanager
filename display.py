@@ -129,8 +129,9 @@ def player_of_the_season():
 
     for playerid, player in game.players.items():
         if player.man_of_the_match > top[1]:
-            top[0] = playerid
-            top[1] = statistics.mean(player.rating)
+            if len(player.rating) > 0:
+                top[0] = playerid
+                top[1] = statistics.mean(player.rating)
 
     return top
 

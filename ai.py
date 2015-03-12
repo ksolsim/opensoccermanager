@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 
+import operator
 import random
 
 import calculator
 import constants
 import display
+import evaluation
 import game
 import money
 import news
@@ -162,7 +164,31 @@ class Result:
                 self.selection2[1].append(choice)
                 subs.remove(choice)
 
+        self.increment_appearances(self.selection1, self.clubid1)
+        self.increment_appearances(self.selection2, self.clubid2)
+
         self.calculate_skills()
+
+    def increment_appearances(self, selection, clubid):
+        players = []
+
+        for playerid in selection[0]:
+            player = game.players[playerid]
+            player.appearances += 1
+
+        for playerid in selection[1]:
+            player = game.players[playerid]
+            player.substitute += 1
+
+        team = operator.concat(selection[0], selection[1])
+
+        for playerid in game.clubs[clubid].squad:
+            if playerid not in team:
+                player = game.players[playerid]
+                player.missed += 1
+                evaluation.morale(playerid, 3)
+
+                print(display.name(player))
 
     def goalscorers(self):
         '''

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import operator
 import random
 
 import calculator
@@ -15,83 +16,12 @@ import staff
 import widgets
 
 
-def increment_appearances(team1, team2):
-    '''
-    Update the number of appearances made by each player on the team.
-    '''
-    # Team 1
-    selection1 = [[], []]
-    subs = []
-
-    for key, playerid in game.clubs[team1.teamid].team.items():
-        if playerid != 0 and key < 11:
-            selection1[0].append(playerid)
-
-        if playerid != 0 and key >= 11:
-            subs.append(playerid)
-
-    for count in range(1, 4):
-        if len(subs) > 0:
-            choice = random.choice(subs)
-            selection1[1].append(choice)
-            subs.remove(choice)
-
-    for playerid in selection1[0]:
-        player = game.players[playerid]
-        player.appearances += 1
-        evaluation.morale(playerid, 3)
-
-    for playerid in selection1[1]:
-        player = game.players[playerid]
-        player.substitute += 1
-
-    for playerid in game.clubs[team1.teamid].squad:
-        if playerid not in selection1[0] and playerid not in selection1[1]:
-            player = game.players[playerid]
-            player.missed += 1
-            evaluation.morale(playerid, 3)
-
-    # Team 2
-    selection2 = [[], []]
-    subs = []
-
-    for key, playerid in game.clubs[team2.teamid].team.items():
-        if playerid != 0 and key < 11:
-            selection2[0].append(playerid)
-
-        if playerid != 0 and key >= 11:
-            subs.append(playerid)
-
-    for count in range(1, 4):
-        if len(subs) > 0:
-            choice = random.choice(subs)
-            selection2[1].append(choice)
-            subs.remove(choice)
-
-    for playerid in selection2[0]:
-        player = game.players[playerid]
-        player.appearances += 1
-        evaluation.morale(playerid, 3)
-
-    for playerid in selection2[1]:
-        player = game.players[playerid]
-        player.substitute += 1
-
-    for playerid in game.clubs[team2.teamid].squad:
-        if playerid not in selection2[0] and playerid not in selection2[1]:
-            player = game.players[playerid]
-            player.missed += 1
-            evaluation.morale(playerid, 3)
-
-    return selection1, selection2
-
-
 def increment_goalscorers(scorers1, scorers2):
     '''
     Increment goals total for each player who scored, and increase the
     morale
     '''
-    scorers = scorers1 + scorers2  # Cat lists, not a sum
+    scorers = operator.concat(scorers1, scorers2)
 
     for playerid in scorers:
         player = game.players[playerid]
@@ -108,7 +38,7 @@ def increment_assists(assists1, assists2):
     '''
     Increments assists for players, and increase morale
     '''
-    assists = assists1 + assists2  # Cat lists, not a sum
+    assists = operator.concat(assists1, assists2)
 
     for playerid in assists:
         player = game.players[playerid]
@@ -350,17 +280,20 @@ def update_advertising():
     that are available.
     '''
     for club in game.clubs.values():
+        '''
         for advert in club.hoardings[1]:
+            advert = list(advert)
             advert[2] -= 1
 
             if advert[2] == 0:
                 club.hoardings[1].remove(advert)
 
         for advert in club.programmes[1]:
+            advert = list(advert)
             advert[2] -= 1
 
             if advert[2] == 0:
-                club.programmes[1].remove(advert)
+                club.programmes[1].remove(advert)'''
 
     # Generate news alert if advertising needs looking at by user
     if game.advertising_alert == 0:
@@ -695,10 +628,7 @@ def end_of_season():
 
     Also pay out prize money for finish on previous season.
     '''
-    position = display.find_position(game.teamid, ordinal=False)
-
     dialogs.end_of_season()
-    #print("You finished in position %i" % (position))
 
     # Reset and increment all values where appropriate
     game.date = 1

@@ -626,10 +626,13 @@ class Squad(Gtk.Grid):
                 negotiation.transfer_type = 2
                 game.negotiations[game.negotiationid] = negotiation
 
-                transfer.move(game.negotiationid)
-                game.negotiationid += 1
+                valid = transfer.check(game.negotiationid)
 
-                self.populate_data()
+                if valid == 0:
+                    transfer.move(game.negotiationid)
+                    game.negotiationid += 1
+
+                    self.populate_data()
 
     def quick_sell(self, menuitem):
         model, treeiter = self.treeselection.get_selected()

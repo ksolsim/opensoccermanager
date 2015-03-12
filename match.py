@@ -365,7 +365,10 @@ class Match(Gtk.Grid):
 
         self.score.update_score(airesult.final_score)
 
-        result = self.team1.teamid, airesult.final_score[0], airesult.final_score[1], self.team2.teamid
+        result = (self.team1.teamid,
+                  airesult.final_score[0],
+                  airesult.final_score[1],
+                  self.team2.teamid)
 
         # Standings
         league.update(result)
@@ -411,7 +414,7 @@ class Match(Gtk.Grid):
                 score = "%i - %i" % (result[1], result[2])
                 news.publish("RE02", result=score, team=club)
 
-        # Pay player bonus
+        # Pay player win bonus
         if result[0] == game.teamid:
             if result[1] > result[2]:
                 money.pay_bonus()
@@ -482,8 +485,6 @@ class Match(Gtk.Grid):
 
                 league.update(score)
                 game.results[game.fixturesindex].append(score)
-
-                selection1, selection2 = events.increment_appearances(club1, club2)
 
                 # Events
                 refereeid = self.referee.select(index + 1)
