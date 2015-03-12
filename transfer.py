@@ -143,7 +143,7 @@ def move(negotiationid):
     new_club = negotiation.club
 
     # Remove from squad
-    if negotiation.transfer_type == 0:
+    if negotiation.transfer_type in (0, 2):
         game.clubs[old_club].squad.remove(playerid)
     elif negotiation.transfer_type == 1:
         game.loans[negotiation.playerid] = [old_club, negotiation.weeks]
@@ -155,7 +155,9 @@ def move(negotiationid):
             del(game.clubs[old_club].individual_training[playerid])
 
     player.club = new_club
-    game.clubs[new_club].squad.append(playerid)
+
+    if player.club != 0:
+        game.clubs[player.club].squad.append(playerid)
 
     # Reset transfer status
     player.transfer = [False, False]
@@ -167,7 +169,11 @@ def move(negotiationid):
 
     # Add player to list of transfers
     name = display.name(player)
-    new_club = game.clubs[new_club].name
+
+    if negotiation.transfer_type != 2:
+        new_club = game.clubs[new_club].name
+    else:
+        new_club = "N/A"
 
     if negotiation.transfer_type == 0:
         old_club = game.clubs[old_club].name
@@ -176,7 +182,11 @@ def move(negotiationid):
         old_club = game.clubs[old_club].name
         fee = "Loan"
     elif negotiation.transfer_type == 2:
-        old_club = ""
+        if player.club == 0:
+            old_club = game.clubs[old_club].name
+        else:
+            old_club = ""
+
         fee = "Free Transfer"
 
     game.transfers.append([name, old_club, new_club, fee])

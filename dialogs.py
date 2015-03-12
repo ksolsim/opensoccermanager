@@ -14,6 +14,27 @@ import version
 import widgets
 
 
+def free_transfer(name, cost):
+    cost = display.currency(cost)
+    messagedialog = Gtk.MessageDialog(type=Gtk.MessageType.QUESTION)
+    messagedialog.set_transient_for(game.window)
+    messagedialog.set_title("Release On Free Transfer")
+    messagedialog.add_button("_Cancel", Gtk.ResponseType.CANCEL)
+    messagedialog.add_button("C_onfirm", Gtk.ResponseType.OK)
+    messagedialog.set_default_response(Gtk.ResponseType.CANCEL)
+    messagedialog.set_markup("Release %s from his contract?" % (name))
+    messagedialog.format_secondary_text("This will cost %s to pay off his contract." % (cost))
+
+    state = False
+
+    if messagedialog.run() == Gtk.ResponseType.OK:
+        state = True
+
+    messagedialog.destroy()
+
+    return state
+
+
 def quick_sell(name, club, amount):
     messagedialog = Gtk.MessageDialog(type=Gtk.MessageType.QUESTION)
     messagedialog.set_transient_for(game.window)

@@ -351,6 +351,7 @@ class Squad(Gtk.Grid):
         self.contextmenu.menuitemRemoveTransfer.connect("activate", self.transfer_status, 0)
         self.contextmenu.menuitemAddLoan.connect("activate", self.transfer_status, 1)
         self.contextmenu.menuitemRemoveLoan.connect("activate", self.transfer_status, 1)
+        self.contextmenu.menuitemRelease.connect("activate", self.free_transfer)
         self.contextmenu.menuitemQuickSell.connect("activate", self.quick_sell)
         self.contextmenu.menuitemRenewContract.connect("activate", self.renew_contract)
         self.contextmenu.menuitemNotForSale.connect("toggled", self.not_for_sale)
@@ -500,6 +501,7 @@ class Squad(Gtk.Grid):
                 self.contextmenu.menuitemRemoveTransfer.set_visible(False)
                 self.contextmenu.menuitemAddLoan.set_visible(False)
                 self.contextmenu.menuitemRemoveLoan.set_visible(False)
+                self.contextmenu.menuitemRelease.set_visible(False)
                 self.contextmenu.menuitemQuickSell.set_visible(False)
                 self.contextmenu.menuitemRenewContract.set_visible(False)
                 self.contextmenu.menuitemNotForSale.set_visible(False)
@@ -509,11 +511,11 @@ class Squad(Gtk.Grid):
                 if player.transfer[0] is True:
                     self.contextmenu.menuitemAddTransfer.set_sensitive(False)
                     self.contextmenu.menuitemRemoveTransfer.set_sensitive(True)
-                    self.contextmenu.menuitemNotForSale.set_active(False)
                     self.contextmenu.menuitemNotForSale.set_sensitive(False)
                 else:
                     self.contextmenu.menuitemAddTransfer.set_sensitive(True)
                     self.contextmenu.menuitemRemoveTransfer.set_sensitive(False)
+                    self.contextmenu.menuitemNotForSale.set_sensitive(True)
 
                 if player.transfer[1] is True:
                     self.contextmenu.menuitemAddLoan.set_sensitive(False)
@@ -522,6 +524,8 @@ class Squad(Gtk.Grid):
                     self.contextmenu.menuitemAddLoan.set_sensitive(True)
                     self.contextmenu.menuitemRemoveLoan.set_sensitive(False)
 
+                self.contextmenu.menuitemRelease.set_visible(True)
+                self.contextmenu.menuitemQuickSell.set_visible(True)
                 self.contextmenu.menuitemNotForSale.set_visible(True)
                 self.contextmenu.menuitemExtendLoan.set_visible(False)
                 self.contextmenu.menuitemCancelLoan.set_visible(False)
@@ -578,8 +582,12 @@ class Squad(Gtk.Grid):
     def add_to_position(self, menuitem, event, index):
         model, treeiter = self.treeselection.get_selected()
         playerid = model[treeiter][0]
+        player = game.players[playerid]
 
-        self.buttonTeam[index].set_active_id(str(playerid))
+        name = display.name(player)
+
+        self.buttonTeam[index].set_label(name)
+        game.clubs[game.teamid].team[index] = playerid
 
     def remove_from_position(self, menuitem):
         model, treeiter = self.treeselection.get_selected()
@@ -588,7 +596,7 @@ class Squad(Gtk.Grid):
         for key, item in game.clubs[game.teamid].team.items():
             if item == playerid:
                 game.clubs[game.teamid].team[key] = 0
-                self.buttonTeam[key].set_active(0)
+                self.buttonTeam[key].set_label("")
 
     def renew_contract(self, menuitem):
         model, treeiter = self.treeselection.get_selected()
@@ -599,6 +607,29 @@ class Squad(Gtk.Grid):
                 self.populate_data()
         else:
             dialogs.error(8)
+
+    def free_transfer(self, menuitem):
+        model, treeiter = self.treeselection.get_selected()
+        playerid = model[treeiter][0]
+        player = game.players[playerid]
+
+        name = display.name(player)
+        cost = player.contract * player.wage
+
+        if dialogs.free_transfer(name, cost):
+            if money.request(cost):
+                money.withdraw(cost, 12)
+
+                negotiation = structures.Negotiation()
+                negotiation.playerid = playerid
+                negotiation.club = 0
+                negotiation.transfer_type = 2
+                game.negotiations[game.negotiationid] = negotiation
+
+                transfer.move(game.negotiationid)
+                game.negotiationid += 1
+
+                self.populate_data()
 
     def quick_sell(self, menuitem):
         model, treeiter = self.treeselection.get_selected()
@@ -630,7 +661,7 @@ class Squad(Gtk.Grid):
                 for key, item in game.clubs[game.teamid].team.items():
                     if item == playerid:
                         game.clubs[game.teamid].team[key] = 0
-                        self.buttonTeam[key].set_active(0)
+                        self.buttonTeam[key].set_label("")
 
                 money.deposit(value, 6)
 
@@ -658,7 +689,7 @@ class Squad(Gtk.Grid):
             for key, item in game.clubs[game.teamid].team.items():
                 if item == playerid:
                     game.clubs[game.teamid].team[key] = 0
-                    self.buttonTeam[key].set_active(0)
+                    self.buttonTeam[key].set_label("")
 
             self.populate_data()
 
@@ -678,6 +709,7 @@ class Squad(Gtk.Grid):
             if player.transfer[0]:
                 value = random.randint(15, 25)
                 evaluation.morale(playerid, value)
+                player.not_for_sale = False
         elif index == 1:
             player.transfer[1] = not loan
 
