@@ -280,20 +280,17 @@ def update_advertising():
     that are available.
     '''
     for club in game.clubs.values():
-        '''
         for advert in club.hoardings[1]:
-            advert = list(advert)
             advert[2] -= 1
 
             if advert[2] == 0:
                 club.hoardings[1].remove(advert)
 
         for advert in club.programmes[1]:
-            advert = list(advert)
             advert[2] -= 1
 
             if advert[2] == 0:
-                club.programmes[1].remove(advert)'''
+                club.programmes[1].remove(advert)
 
     # Generate news alert if advertising needs looking at by user
     if game.advertising_alert == 0:

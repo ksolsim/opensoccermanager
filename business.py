@@ -207,41 +207,6 @@ class Advertising(Gtk.Grid):
         self.active = None
         self.model = None
 
-        def on_drag_data_get(treeview, context, selection, info, time, index):
-            treeselection = treeview.get_selection()
-            model, treeiter = treeselection.get_selected()
-            data = '%i/%s/%s/%s/%s' % (index, model[treeiter][0], model[treeiter][1], model[treeiter][2], model[treeiter][3])
-            data = bytes(data, "utf-8")
-            selection.set(selection.get_target(), 8, data)
-
-            self.active = treeiter
-            self.model = model
-
-        def on_drag_data_received(treeview, context, x, y, selection, info, time, index):
-            model = treeview.get_model()
-            data = selection.get_data().decode("utf-8")
-            drop_info = treeview.get_dest_row_at_pos(x, y)
-
-            advertid = data.split("/")[0]
-
-            if index == int(advertid):
-                name = data.split("/")[1]
-                period = int(data.split("/")[2])
-                quantity = int(data.split("/")[3])
-                amount = int(data.split("/")[4])
-                data = [name, period, quantity, amount]
-
-                treeiter = model.append(data)
-                path = model.get_path(treeiter)
-
-                state = self.advertising_add_dnd(model, path, index)
-
-                if state:
-                    if context.get_actions() == Gdk.DragAction.MOVE:
-                        context.finish(True, True, time)
-
-            return
-
         Gtk.Grid.__init__(self)
         self.set_vexpand(True)
         self.set_hexpand(True)
@@ -283,7 +248,7 @@ class Advertising(Gtk.Grid):
         treeviewHoardings1.enable_model_drag_source(Gdk.ModifierType.BUTTON1_MASK, targets, Gdk.DragAction.MOVE)
         treeviewHoardings1.drag_source_set(Gdk.ModifierType.BUTTON1_MASK, [(target)], Gdk.DragAction.MOVE)
         treeviewHoardings1.connect("row-activated", self.advertising_add, 0)
-        treeviewHoardings1.connect("drag-data-get", on_drag_data_get, 0)
+        treeviewHoardings1.connect("drag-data-get", self.on_drag_data_get, 0)
         scrolledwindow.add(treeviewHoardings1)
         treeviewcolumn = Gtk.TreeViewColumn("Name", cellrenderertext, text=0)
         treeviewcolumn.set_expand(True)
@@ -305,7 +270,7 @@ class Advertising(Gtk.Grid):
         treeviewHoardings2.set_enable_search(False)
         treeviewHoardings2.set_search_column(-1)
         treeviewHoardings2.enable_model_drag_dest(targets, Gdk.DragAction.MOVE)
-        treeviewHoardings2.connect("drag-data-received", on_drag_data_received, 0)
+        treeviewHoardings2.connect("drag-data-received", self.on_drag_data_received, 0)
         scrolledwindow.add(treeviewHoardings2)
         treeselection = treeviewHoardings2.get_selection()
         treeselection.set_mode(Gtk.SelectionMode.NONE)
@@ -343,7 +308,7 @@ class Advertising(Gtk.Grid):
         treeviewProgrammes1.enable_model_drag_source(Gdk.ModifierType.BUTTON1_MASK, targets, Gdk.DragAction.MOVE)
         treeviewProgrammes1.drag_source_set(Gdk.ModifierType.BUTTON1_MASK, [(target)], Gdk.DragAction.MOVE)
         treeviewProgrammes1.connect("row-activated", self.advertising_add, 1)
-        treeviewProgrammes1.connect("drag-data-get", on_drag_data_get, 1)
+        treeviewProgrammes1.connect("drag-data-get", self.on_drag_data_get, 1)
         scrolledwindow.add(treeviewProgrammes1)
         treeviewcolumn = Gtk.TreeViewColumn("Name", cellrenderertext, text=0)
         treeviewcolumn.set_expand(True)
@@ -365,7 +330,7 @@ class Advertising(Gtk.Grid):
         treeviewProgrammes2.set_enable_search(False)
         treeviewProgrammes2.set_search_column(-1)
         treeviewProgrammes2.enable_model_drag_dest(targets, Gdk.DragAction.MOVE)
-        treeviewProgrammes2.connect("drag-data-received", on_drag_data_received, 1)
+        treeviewProgrammes2.connect("drag-data-received", self.on_drag_data_received, 1)
         scrolledwindow.add(treeviewProgrammes2)
         treeselection = treeviewProgrammes2.get_selection()
         treeselection.set_mode(Gtk.SelectionMode.NONE)
@@ -525,6 +490,41 @@ class Advertising(Gtk.Grid):
             self.programmes_quantity += item[1]
 
         self.update_totals()
+
+    def on_drag_data_get(self, treeview, context, selection, info, time, index):
+        treeselection = treeview.get_selection()
+        model, treeiter = treeselection.get_selected()
+        data = '%i/%s/%s/%s/%s' % (index, model[treeiter][0], model[treeiter][1], model[treeiter][2], model[treeiter][3])
+        data = bytes(data, "utf-8")
+        selection.set(selection.get_target(), 8, data)
+
+        self.active = treeiter
+        self.model = model
+
+    def on_drag_data_received(self, treeview, context, x, y, selection, info, time, index):
+        model = treeview.get_model()
+        data = selection.get_data().decode("utf-8")
+        drop_info = treeview.get_dest_row_at_pos(x, y)
+
+        advertid = data.split("/")[0]
+
+        if index == int(advertid):
+            name = data.split("/")[1]
+            period = int(data.split("/")[2])
+            quantity = int(data.split("/")[3])
+            amount = int(data.split("/")[4])
+            data = [name, period, quantity, amount]
+
+            treeiter = model.append(data)
+            path = model.get_path(treeiter)
+
+            state = self.advertising_add_dnd(model, path, index)
+
+            if state:
+                if context.get_actions() == Gdk.DragAction.MOVE:
+                    context.finish(True, True, time)
+
+        return
 
     def run(self):
         self.populate_data()
