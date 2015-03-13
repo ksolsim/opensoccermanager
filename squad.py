@@ -11,6 +11,7 @@ import dialogs
 import display
 import evaluation
 import events
+import filters
 import game
 import menu
 import money
@@ -140,6 +141,7 @@ class Squad(Gtk.Grid):
                   ]
 
         self.playerselect = PlayerSelect()
+        self.squadfilter = filters.SquadFilter()
 
         self.tree_columns = ([], [], [])
 
@@ -540,7 +542,8 @@ class Squad(Gtk.Grid):
                 column.set_visible(count == index)
 
     def filter_squad(self, button):
-        dialogs.squad_filter()
+        self.squadfilter.display()
+        self.squadfilter.hide()
 
         sensitive = not game.squad_filter == constants.squad_filter
         self.buttonReset.set_sensitive(sensitive)

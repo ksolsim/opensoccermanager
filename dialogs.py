@@ -753,47 +753,6 @@ def cancel_loan(name):
     return state
 
 
-def squad_filter():
-    dialog = Gtk.Dialog()
-    dialog.set_transient_for(game.window)
-    dialog.set_title("Filter Squad")
-    dialog.add_button("_Cancel", Gtk.ResponseType.CANCEL)
-    dialog.add_button("_Filter", Gtk.ResponseType.OK)
-    dialog.set_default_response(Gtk.ResponseType.OK)
-    dialog.set_border_width(5)
-
-    grid = Gtk.Grid()
-    grid.set_row_spacing(5)
-    grid.set_column_spacing(5)
-    dialog.vbox.add(grid)
-
-    label = widgets.AlignedLabel("Position")
-    grid.attach(label, 0, 0, 1, 1)
-    comboboxPosition = Gtk.ComboBoxText()
-    comboboxPosition.append("0", "All")
-    comboboxPosition.append("1", "Goalkeeper")
-    comboboxPosition.append("2", "Defender")
-    comboboxPosition.append("3", "Midfielder")
-    comboboxPosition.append("4", "Attacker")
-    comboboxPosition.set_active(game.squad_filter[0])
-    grid.attach(comboboxPosition, 1, 0, 1, 1)
-
-    checkbuttonAvailable = Gtk.CheckButton("Show Only Available Players")
-    checkbuttonAvailable.set_tooltip_text("Injured or suspended players will not be displayed")
-    checkbuttonAvailable.set_active(game.squad_filter[1])
-    grid.attach(checkbuttonAvailable, 0, 1, 3, 1)
-
-    dialog.show_all()
-
-    if dialog.run() == Gtk.ResponseType.OK:
-        position = int(comboboxPosition.get_active())
-        available = checkbuttonAvailable.get_active()
-
-        game.squad_filter = (position, available)
-
-    dialog.destroy()
-
-
 def sponsorship():
     club = game.clubs[game.teamid]
 
