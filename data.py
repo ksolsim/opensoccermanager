@@ -200,6 +200,10 @@ def datainit():
 
 
 def dataloader(finances):
+    '''
+    Load remaining data attributes for user selected club. This includes the
+    finances, sponsorship and advertising, and publishing initial new articles.
+    '''
     club = game.clubs[game.teamid]
 
     if finances == -1:
@@ -265,8 +269,8 @@ def dataloader(finances):
     club.school_tickets = tickets * 100
 
     # Initiate values for merchandise / catering
-    club.merchandise = [100 for item in constants.merchandise]
-    club.catering = [100 for item in constants.catering]
+    club.merchandise = [100] * len(constants.merchandise)
+    club.catering = [100] * len(constants.merchandise)
 
     # Import resources
     resources.import_news()
@@ -280,7 +284,8 @@ def dataloader(finances):
     for count, week in enumerate(game.fixtures):
         for match in week:
             if game.teamid in (match[0], match[1]) and count < 3:
-                match = "%s - %s" % (game.clubs[match[0]].name, game.clubs[match[1]].name)
+                match = "%s - %s" % (game.clubs[match[0]].name,
+                                     game.clubs[match[1]].name)
                 initial_fixtures.append(match)
 
     # Publish initial news articles
