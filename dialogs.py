@@ -509,7 +509,7 @@ def remove_individual_training(playerid):
 
     if messagedialog.run() == Gtk.ResponseType.OK:
         training = game.clubs[game.teamid].individual_training
-        del(training[playerid])
+        del training[playerid]
 
         state = True
 

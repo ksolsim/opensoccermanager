@@ -812,7 +812,7 @@ def advertising():
             if current_quantity + item[1] <= club.hoardings[2]:
                 club.hoardings[1].append(item[0:4])
                 current_quantity += item[1]
-                del(club.hoardings[0][position])
+                del club.hoardings[0][position]
 
                 money.deposit(item[3], 2)
 
@@ -830,7 +830,7 @@ def advertising():
             if current_quantity + item[1] <= club.programmes[2]:
                 club.programmes[1].append(item[0:4])
                 current_quantity += item[1]
-                del(club.programmes[0][position])
+                del club.programmes[0][position]
 
                 money.deposit(item[3], 2)
 

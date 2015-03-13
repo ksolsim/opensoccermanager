@@ -152,7 +152,7 @@ def move(negotiationid):
     # Remove player from individual training
     if negotiation.transfer_type != 2:
         if playerid in game.clubs[old_club].individual_training:
-            del(game.clubs[old_club].individual_training[playerid])
+            del game.clubs[old_club].individual_training[playerid]
 
     player.club = new_club
 
@@ -191,7 +191,7 @@ def move(negotiationid):
 
     game.transfers.append([name, old_club, new_club, fee])
 
-    del(game.negotiations[negotiationid])
+    del game.negotiations[negotiationid]
 
 
 def transfer():
@@ -222,7 +222,7 @@ def transfer():
                 remove.append(negotiationid)
 
     for key in remove:
-        del(game.negotiations[key])
+        del game.negotiations[key]
 
 
 def consider_enquiry(negotiationid):
@@ -369,7 +369,7 @@ def transfer_enquiry_accepted(negotiationid):
             negotiation.status = 3
             negotiation.timeout = random.randint(1, 4)
     elif response == Gtk.ResponseType.REJECT:
-        del(game.negotiations[negotiationid])
+        del game.negotiations[negotiationid]
 
     dialog.destroy()
 
@@ -455,7 +455,7 @@ def transfer_offer_accepted(negotiationid):
         negotiation.status = 6
         negotiation.timeout = random.randint(1, 4)
     elif response == Gtk.ResponseType.CANCEL:
-        del(game.negotiations[negotiationid])
+        del game.negotiations[negotiationid]
 
     dialog.destroy()
 
@@ -490,7 +490,7 @@ def transfer_contract_accepted(negotiationid):
             if negotiation.transfer_type == 0:
                 money.withdraw(amount, 13)
     elif response == Gtk.ResponseType.CANCEL:
-        del(game.negotiations[negotiationid])
+        del game.negotiations[negotiationid]
 
     messagedialog.destroy()
 
@@ -546,7 +546,7 @@ def loan_enquiry_accepted(negotiationid):
         else:
             game.negotiations[negotiationid].weeks = spinbuttonWeeks.get_value_as_int()
     elif response == Gtk.ResponseType.REJECT:
-        del(game.negotiations[negotiationid])
+        del game.negotiations[negotiationid]
 
     dialog.destroy()
 
@@ -572,7 +572,7 @@ def loan_offer_accepted(negotiationid):
         if check(negotiationid) == 0:
             move(negotiationid)
     elif response == Gtk.ResponseType.CANCEL:
-        del(game.negotiations[negotiationid])
+        del game.negotiations[negotiationid]
 
     messagedialog.destroy()
 
@@ -618,7 +618,7 @@ def transfer_enquiry_respond(negotiationid):
         negotiation.status = 1
         negotiation.timeout = random.randint(1, 4)
     else:
-        del(game.negotiations[negotiationid])
+        del game.negotiations[negotiationid]
 
     dialog.destroy()
 
@@ -663,7 +663,7 @@ def transfer_offer_respond(negotiationid):
         negotiation.status = 1
         negotiation.timeout = random.randint(1, 4)
     else:
-        del(game.negotiations[negotiationid])
+        del game.negotiations[negotiationid]
 
     dialog.destroy()
 
@@ -685,7 +685,7 @@ def transfer_confirm_respond(negotiationid):
         if check(negotiationid) == 0:
             move(negotiationid)
     else:
-        del(game.negotiations[game.negotiationid])
+        del game.negotiations[game.negotiationid]
 
     messagedialog.destroy()
 
@@ -753,13 +753,13 @@ def end_loan(playerid):
 
     # Remove from individual training if added
     if playerid in game.clubs[player.club].individual_training:
-        del(game.clubs[player.club].individual_training[playerid])
+        del game.clubs[player.club].individual_training[playerid]
 
     # Set club back to parent club
     player.club = game.loans[playerid][0]
 
     # Delete loan information
-    del(game.loans[playerid])
+    del game.loans[playerid]
 
     name = display.name(player, mode=1)
     club = game.clubs[player.club].name

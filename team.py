@@ -382,7 +382,7 @@ class Staff(Gtk.Grid):
                     coach.morale = 9
 
                     club.coaches_hired[coachid] = club.coaches_available[coachid]
-                    del(club.coaches_available[coachid])
+                    del club.coaches_available[coachid]
 
                     self.populate_data()
 
@@ -406,7 +406,7 @@ class Staff(Gtk.Grid):
                     payout = coach.wage * coach.contract
 
                     if dialogs.fire_staff(0, coach.name, payout):
-                        del(game.clubs[game.teamid].coaches_hired[staffid])
+                        del game.clubs[game.teamid].coaches_hired[staffid]
                         money.withdraw(payout, 10)
 
                         self.populate_data()
@@ -605,7 +605,7 @@ class Staff(Gtk.Grid):
                     scout.morale = 9
 
                     club.scouts_hired[scoutid] = club.scouts_available[scoutid]
-                    del(club.scouts_available[scoutid])
+                    del club.scouts_available[scoutid]
 
                     self.populate_data()
 
@@ -618,7 +618,7 @@ class Staff(Gtk.Grid):
                 payout = scout.wage * scout.contract
 
                 if dialogs.fire_staff(0, scout.name, payout):
-                    del(game.clubs[game.teamid].scouts_hired[staffid])
+                    del game.clubs[game.teamid].scouts_hired[staffid]
                     money.withdraw(payout, 10)
 
                     self.populate_data()

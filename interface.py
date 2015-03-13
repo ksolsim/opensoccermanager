@@ -335,7 +335,7 @@ class NameChange(Gtk.Dialog):
                 if item[0] == game.clubs[game.teamid].manager:
                     add = False
 
-                    del(self.liststoreName[count])
+                    del self.liststoreName[count]
                     self.liststoreName.prepend([game.clubs[game.teamid].manager])
 
             if add:

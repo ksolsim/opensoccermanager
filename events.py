@@ -213,7 +213,7 @@ def update_contracts():
                             delete = True
 
                     if delete:
-                        del(game.negotiations[negotiationid])
+                        del game.negotiations[negotiationid]
 
                     # Notify user contract has ended
                     if player.club == game.teamid:
@@ -231,7 +231,7 @@ def update_contracts():
 
                 if coach.contract == 0:
                     news.publish("CC01", coach=coach.name)
-                    del(game.clubs[game.teamid].coaches_hired[coachid])
+                    del game.clubs[game.teamid].coaches_hired[coachid]
                 elif coach.contract == 1:
                     news.publish("CC02", coach=coach.name)
 
@@ -241,7 +241,7 @@ def update_contracts():
 
                 if scout.contract == 0:
                     news.publish("SC01", scout=scout.name)
-                    del(game.clubs[game.teamid].scouts_hired[scoutid])
+                    del game.clubs[game.teamid].scouts_hired[scoutid]
                 elif scout.contract == 1:
                     news.publish("SC02", scout=scout.name)
 
@@ -684,7 +684,7 @@ def end_of_season():
                 scout.retiring = True
 
         if scout.retiring and scout.contract == 0:
-            del(game.clubs[game.teamid].scouts_hired[scoutid])
+            del game.clubs[game.teamid].scouts_hired[scoutid]
 
     for coach in game.clubs[game.teamid].coaches_hired.values():
         coach.age += 1
