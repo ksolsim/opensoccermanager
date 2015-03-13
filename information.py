@@ -15,6 +15,8 @@ import evaluation
 
 
 class News(Gtk.Grid):
+    __name__ = "news"
+
     def __init__(self):
         Gtk.Grid.__init__(self)
         self.set_border_width(5)
@@ -201,6 +203,8 @@ class News(Gtk.Grid):
 
 
 class Fixtures(Gtk.Grid):
+    __name__ = "fixtures"
+
     def __init__(self):
         Gtk.Grid.__init__(self)
         self.set_border_width(5)
@@ -325,6 +329,8 @@ class Fixtures(Gtk.Grid):
 
 
 class Results(Gtk.Grid):
+    __name__ = "results"
+
     def __init__(self):
         self.page = 0
 
@@ -445,6 +451,8 @@ class Results(Gtk.Grid):
 
 
 class Standings(Gtk.Grid):
+    __name__ = "standings"
+
     def __init__(self):
         Gtk.Grid.__init__(self)
         self.set_border_width(5)
@@ -553,14 +561,16 @@ class Standings(Gtk.Grid):
 
 
 class Charts(Gtk.Grid):
-    views = {0: chart.GoalScorers(),
-             1: chart.Assists(),
-             2: chart.Cards(),
-             3: chart.Transfers(),
-             4: chart.Referees(),
-            }
+    __name__ = "charts"
 
     def __init__(self):
+        self.views = {0: chart.GoalScorers(),
+                      1: chart.Assists(),
+                      2: chart.Cards(),
+                      3: chart.Transfers(),
+                      4: chart.Referees(),
+                     }
+
         self.charts = self.views[0]
 
         Gtk.Grid.__init__(self)
@@ -618,6 +628,8 @@ class Charts(Gtk.Grid):
 
 
 class Evaluation(Gtk.Grid):
+    __name__ = "evaluation"
+
     def __init__(self):
         Gtk.Grid.__init__(self)
         self.set_vexpand(True)
@@ -712,6 +724,8 @@ class Evaluation(Gtk.Grid):
 
 
 class Statistics(Gtk.Grid):
+    __name__ = "statistics"
+
     class TreeView(Gtk.TreeView):
         def __init__(self):
             Gtk.TreeView.__init__(self)

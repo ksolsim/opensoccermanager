@@ -17,6 +17,8 @@ import widgets
 
 
 class Players(Gtk.Grid):
+    __name__ = "players"
+
     def __init__(self):
         self.tree_columns = [[], [], []]
 
@@ -474,6 +476,8 @@ class Players(Gtk.Grid):
 
 
 class Negotiations(Gtk.Grid):
+    __name__ = "negotiations"
+
     def __init__(self):
         Gtk.Grid.__init__(self)
         self.set_vexpand(True)
@@ -689,6 +693,8 @@ class Negotiations(Gtk.Grid):
 
 
 class Shortlist(Gtk.Grid):
+    __name__ = "shortlist"
+
     def __init__(self):
         Gtk.Grid.__init__(self)
         self.set_vexpand(True)
@@ -839,6 +845,8 @@ class Shortlist(Gtk.Grid):
 
 
 class InjSus(Gtk.Grid):
+    __name__ = "injsus"
+
     def __init__(self):
         Gtk.Grid.__init__(self)
         self.set_border_width(5)

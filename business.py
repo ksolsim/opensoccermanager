@@ -11,14 +11,9 @@ import money
 import widgets
 
 
-targets = [('MY_TREE_MODEL_ROW', Gtk.TargetFlags.SAME_APP, 0),
-           ('text/plain', 0, 1),
-           ('TEXT', 0, 2),
-           ('STRING', 0, 3),
-          ]
-
-
 class Tickets(Gtk.Grid):
+    __name__ = "tickets"
+
     def __init__(self):
         self.scales = []
 
@@ -203,7 +198,15 @@ class Tickets(Gtk.Grid):
 
 
 class Advertising(Gtk.Grid):
+    __name__ = "advertising"
+
     def __init__(self):
+        targets = [('MY_TREE_MODEL_ROW', Gtk.TargetFlags.SAME_APP, 0),
+                   ('text/plain', 0, 1),
+                   ('TEXT', 0, 2),
+                   ('STRING', 0, 3),
+                  ]
+
         self.active = None
         self.model = None
 
@@ -533,6 +536,8 @@ class Advertising(Gtk.Grid):
 
 
 class Merchandise(Gtk.Grid):
+    __name__ = "merchandise"
+
     def __init__(self):
         self.display = []
         self.spins = []
@@ -644,6 +649,8 @@ class Merchandise(Gtk.Grid):
 
 
 class Catering(Gtk.Grid):
+    __name__ = "catering"
+
     def __init__(self):
         self.display = []
         self.spins = []

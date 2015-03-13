@@ -12,6 +12,8 @@ import widgets
 
 
 class Tactics(Gtk.Grid):
+    __name__ = "tactics"
+
     def __init__(self):
         self.style = []
         self.passing = []
@@ -254,6 +256,8 @@ class Tactics(Gtk.Grid):
 
 
 class Staff(Gtk.Grid):
+    __name__ = "staff"
+
     class Coach(Gtk.Grid):
         def __init__(self):
             def selection_changed(treeselection, index):

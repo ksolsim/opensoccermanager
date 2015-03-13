@@ -67,8 +67,76 @@ class Window(Gtk.Window):
         game.accelgroup = Gtk.AccelGroup()
         self.add_accel_group(game.accelgroup)
 
+    def screen_loader(self, index):
+        screens = {1: self.screenSquad,
+                   2: self.screenFixtures,
+                   3: self.screenNews,
+                   4: self.screenTactics,
+                   5: self.screenStandings,
+                   6: self.screenResults,
+                   7: self.screenTeamTraining,
+                   8: self.screenTrainingCamp,
+                   9: self.screenIndividualTraining,
+                   10: self.screenStadium,
+                   11: self.screenFinances,
+                   12: self.screenAccounts,
+                   14: self.screenBuildings,
+                   16: self.screenAdvertising,
+                   17: self.screenMerchandise,
+                   18: self.screenCatering,
+                   19: self.screenTickets,
+                   20: self.screenPlayers,
+                   21: self.screenNegotiations,
+                   22: self.screenShortlist,
+                   23: self.screenStaff,
+                   24: self.screenInjSus,
+                   25: self.screenEvaluation,
+                   29: self.screenStatistics,
+                   30: self.screenCharts,
+                   99: self.screenMatch,
+                  }
+
+        if game.active_screen:
+            game.window.screenGame.remove(game.active_screen)
+
+        game.active_screen = screens[index]
+        game.active_screen_id = index
+        game.window.screenGame.attach(game.active_screen, 0, 1, 1, 1)
+        game.active_screen.run()
+
     def run(self):
-        self.add(screenmain)
+        self.screenMain = ScreenMain()
+        self.screenDetails = ScreenDetails()
+        self.screenGame = ScreenGame()
+
+        self.screenSquad = squad.Squad()
+        self.screenNews = information.News()
+        self.screenEvaluation = information.Evaluation()
+        self.screenCharts = information.Charts()
+        self.screenStatistics = information.Statistics()
+        self.screenFixtures = information.Fixtures()
+        self.screenResults = information.Results()
+        self.screenStandings = information.Standings()
+        self.screenNegotiations = view.Negotiations()
+        self.screenShortlist = view.Shortlist()
+        self.screenInjSus = view.InjSus()
+        self.screenTeamTraining = training.TeamTraining()
+        self.screenIndividualTraining = training.IndividualTraining()
+        self.screenTrainingCamp = training.TrainingCamp()
+        self.screenTickets = business.Tickets()
+        self.screenStaff = team.Staff()
+        self.screenTactics = team.Tactics()
+        self.screenAccounts = finances.Accounts()
+        self.screenMatch = match.Match()
+        self.screenAdvertising = business.Advertising()
+        self.screenMerchandise = business.Merchandise()
+        self.screenCatering = business.Catering()
+        self.screenBuildings = stadium.Buildings()
+        self.screenPlayers = view.Players()
+        self.screenFinances = finances.Finances()
+        self.screenStadium = stadium.Stadium()
+
+        self.add(self.screenMain)
 
         game.preferences.readfile()
         fileio.check_config()
@@ -130,20 +198,20 @@ class ScreenMain(Gtk.Grid):
         self.attach(label, 2, 2, 1, 1)
 
     def new_game_clicked(self, button):
-        game.window.remove(screenmain)
-        game.window.add(screendetails)
+        game.window.remove(game.window.screenMain)
+        game.window.add(game.window.screenDetails)
 
-        screendetails.run()
+        game.window.screenDetails.run()
 
     def load_game_clicked(self, button):
         open_dialog = interface.OpenDialog()
 
         if open_dialog.display():
-            game.window.remove(screenmain)
-            game.window.add(screengame)
-            screengame.run()
+            game.window.remove(game.window.screenMain)
+            game.window.add(game.window.screenGame)
+            game.window.screenGame.run()
 
-            screen_loader(game.active_screen_id)
+            game.window.screen_loader(game.active_screen_id)
 
     def delete_game_clicked(self, button):
         delete_dialog = interface.DeleteDialog()
@@ -292,8 +360,8 @@ class ScreenDetails(Gtk.Grid):
         self.buttonContinue.set_sensitive(sensitive)
 
     def back_button_clicked(self, button):
-        game.window.remove(screendetails)
-        game.window.add(screenmain)
+        game.window.remove(game.window.screenDetails)
+        game.window.add(game.window.screenMain)
 
     def continue_button_clicked(self, button):
         # Get club ID number from combobox
@@ -321,10 +389,10 @@ class ScreenDetails(Gtk.Grid):
 
         self.complete_data_load()
 
-        game.window.remove(screendetails)
-        game.window.add(screengame)
-        screen_loader(game.start_screen)
-        screengame.run()
+        game.window.remove(game.window.screenDetails)
+        game.window.add(game.window.screenGame)
+        game.window.screen_loader(game.start_screen)
+        game.window.screenGame.run()
 
     def complete_data_load(self):
         '''
@@ -369,36 +437,36 @@ class ScreenGame(Gtk.Grid):
         game.menu.menuitemManager.connect("activate", self.name_change)
         game.menu.menuitemPreferences.connect("activate", self.preferences_dialog_clicked)
 
-        game.menu.menuitemPlayers.connect("activate", lambda i: screen_loader(20))
+        game.menu.menuitemPlayers.connect("activate", lambda i: game.window.screen_loader(20))
         game.menu.menuitemComparison.connect("activate", self.player_comparison)
-        game.menu.menuitemNews.connect("activate", lambda i: screen_loader(3))
-        game.menu.menuitemFixtures.connect("activate", lambda i: screen_loader(2))
-        game.menu.menuitemResults.connect("activate", lambda i: screen_loader(6))
-        game.menu.menuitemStandings.connect("activate", lambda i: screen_loader(5))
-        game.menu.menuitemCharts.connect("activate", lambda i: screen_loader(30))
-        game.menu.menuitemEvaluation.connect("activate", lambda i: screen_loader(25))
+        game.menu.menuitemNews.connect("activate", lambda i: game.window.screen_loader(3))
+        game.menu.menuitemFixtures.connect("activate", lambda i: game.window.screen_loader(2))
+        game.menu.menuitemResults.connect("activate", lambda i: game.window.screen_loader(6))
+        game.menu.menuitemStandings.connect("activate", lambda i: game.window.screen_loader(5))
+        game.menu.menuitemCharts.connect("activate", lambda i: game.window.screen_loader(30))
+        game.menu.menuitemEvaluation.connect("activate", lambda i: game.window.screen_loader(25))
         game.menu.menuitemOpposition.connect("activate", self.view_opposition)
-        game.menu.menuitemNegotiations.connect("activate", lambda i: screen_loader(21))
-        game.menu.menuitemShortlist.connect("activate", lambda i: screen_loader(22))
-        game.menu.menuitemStatistics.connect("activate", lambda i: screen_loader(29))
+        game.menu.menuitemNegotiations.connect("activate", lambda i: game.window.screen_loader(21))
+        game.menu.menuitemShortlist.connect("activate", lambda i: game.window.screen_loader(22))
+        game.menu.menuitemStatistics.connect("activate", lambda i: game.window.screen_loader(29))
 
-        game.menu.menuitemStadium.connect("activate", lambda i: screen_loader(10))
-        game.menu.menuitemBuildings.connect("activate", lambda i: screen_loader(14))
-        game.menu.menuitemTickets.connect("activate", lambda i: screen_loader(19))
+        game.menu.menuitemStadium.connect("activate", lambda i: game.window.screen_loader(10))
+        game.menu.menuitemBuildings.connect("activate", lambda i: game.window.screen_loader(14))
+        game.menu.menuitemTickets.connect("activate", lambda i: game.window.screen_loader(19))
         game.menu.menuitemSponsorship.connect("activate", lambda i: dialogs.sponsorship())
-        game.menu.menuitemAdvertising.connect("activate", lambda i: screen_loader(16))
-        game.menu.menuitemMerchandise.connect("activate", lambda i: screen_loader(17))
-        game.menu.menuitemCatering.connect("activate", lambda i: screen_loader(18))
-        game.menu.menuitemFinances.connect("activate", lambda i: screen_loader(11))
-        game.menu.menuitemAccounts.connect("activate", lambda i: screen_loader(12))
+        game.menu.menuitemAdvertising.connect("activate", lambda i: game.window.screen_loader(16))
+        game.menu.menuitemMerchandise.connect("activate", lambda i: game.window.screen_loader(17))
+        game.menu.menuitemCatering.connect("activate", lambda i: game.window.screen_loader(18))
+        game.menu.menuitemFinances.connect("activate", lambda i: game.window.screen_loader(11))
+        game.menu.menuitemAccounts.connect("activate", lambda i: game.window.screen_loader(12))
 
-        game.menu.menuitemSquad.connect("activate", lambda i: screen_loader(1))
-        game.menu.menuitemTactics.connect("activate", lambda i: screen_loader(4))
-        game.menu.menuitemTeamTraining.connect("activate", lambda i: screen_loader(7))
-        game.menu.menuitemIndTraining.connect("activate", lambda i: screen_loader(9))
-        game.menu.menuitemTrainingCamp.connect("activate", lambda i: screen_loader(8))
-        game.menu.menuitemInjSus.connect("activate", lambda i: screen_loader(24))
-        game.menu.menuitemStaff.connect("activate", lambda i: screen_loader(23))
+        game.menu.menuitemSquad.connect("activate", lambda i: game.window.screen_loader(1))
+        game.menu.menuitemTactics.connect("activate", lambda i: game.window.screen_loader(4))
+        game.menu.menuitemTeamTraining.connect("activate", lambda i: game.window.screen_loader(7))
+        game.menu.menuitemIndTraining.connect("activate", lambda i: game.window.screen_loader(9))
+        game.menu.menuitemTrainingCamp.connect("activate", lambda i: game.window.screen_loader(8))
+        game.menu.menuitemInjSus.connect("activate", lambda i: game.window.screen_loader(24))
+        game.menu.menuitemStaff.connect("activate", lambda i: game.window.screen_loader(23))
 
         game.menu.menuitemContents.connect("activate", self.help_content_clicked)
         game.menu.menuitemInformation.connect("activate", self.info_dialog_clicked)
@@ -467,8 +535,8 @@ class ScreenGame(Gtk.Grid):
         exit_dialog = interface.ExitDialog()
 
         if not exit_dialog.display(leave=True):
-            game.window.remove(screengame)
-            game.window.add(screenmain)
+            game.window.remove(game.window.screenGame)
+            game.window.add(game.window.screenMain)
 
             # Reset teamid to zero to prevent having to confirm quit
             game.teamid = 0
@@ -477,7 +545,7 @@ class ScreenGame(Gtk.Grid):
         open_dialog = interface.OpenDialog()
 
         if open_dialog.display():
-            screen_loader(game.active_screen_id)
+            game.window.screen_loader(game.active_screen_id)
 
         open_dialog.destroy()
 
@@ -496,7 +564,7 @@ class ScreenGame(Gtk.Grid):
         preferences_dialog.run()
         preferences_dialog.destroy()
 
-        screen_loader(game.active_screen_id)
+        game.window.screen_loader(game.active_screen_id)
 
     def aboutdialog_clicked(self, menuitem):
         aboutdialog = interface.AboutDialog()
@@ -561,7 +629,7 @@ class ContinueGame:
         elif game.proceed and update_valid:
             self.update_date()
         elif not game.proceed:
-            screen_loader(1)
+            game.window.screen_loader(1)
 
             game.menu.set_sensitive(True)
             widgets.news.set_sensitive(True)
@@ -648,10 +716,10 @@ class ContinueGame:
         widgets.date.update()
 
         # Comment to prevent screen refresh on continue game - FASTER!
-        screen_loader(game.active_screen_id)
+        game.window.screen_loader(game.active_screen_id)
 
     def initiate_game(self):
-        screen_loader(99)
+        game.window.screen_loader(99)
 
     def check_squad(self):
         '''
@@ -696,52 +764,6 @@ class ContinueGame:
         return error
 
 
-def screen_loader(index):
-    # Screen to load and name of the screen to use for help file
-    screens = {1: (obj_squad, "squad"),
-               2: (obj_fixtures, "fixtures"),
-               3: (obj_news, "news"),
-               4: (obj_tactics, "tactics"),
-               5: (obj_standings, "standings"),
-               6: (obj_results, "results"),
-               7: (obj_teamtraining, "teamtraining"),
-               8: (obj_trainingcamp, "trainingcamp"),
-               9: (obj_individualtraining, "individualtraining"),
-               10: (obj_stadium, "stadium"),
-               11: (obj_finances, "finances"),
-               12: (obj_accounts, "accounts"),
-               14: (obj_buildings, "buildings"),
-               16: (obj_advertising, "advertising"),
-               17: (obj_merchandise, "merchandise"),
-               18: (obj_catering, "catering"),
-               19: (obj_tickets, "tickets"),
-               20: (obj_players, "players"),
-               21: (obj_negotiations, "negotiations"),
-               22: (obj_shortlist, "shortlist"),
-               23: (obj_staff, "staff"),
-               24: (obj_injsus, "injsus"),
-               25: (obj_evaluation, "evaluation"),
-               29: (obj_statistics, "statistics"),
-               30: (obj_charts, "charts"),
-               99: (obj_match, "match"),
-              }
-
-    if game.active_screen:
-        if game.active_screen_id == index:
-            game.active_screen.run()
-
-            return
-        else:
-            screengame.remove(game.active_screen)
-
-    screen = screens[index]
-    game.active_screen = screen[0]
-    game.active_screen.__name__ = screen[1]
-    game.active_screen_id = index
-    screengame.attach(game.active_screen, 0, 1, 1, 1)
-    game.active_screen.run()
-
-
 def exit_game(widget=None, event=None):
     def update_window_config():
         '''
@@ -780,37 +802,6 @@ widgets.date = widgets.Date()
 widgets.news = widgets.News()
 
 game.window = Window()
-screenmain = ScreenMain()
-screendetails = ScreenDetails()
-screengame = ScreenGame()
-
-obj_news = information.News()
-obj_evaluation = information.Evaluation()
-obj_charts = information.Charts()
-obj_statistics = information.Statistics()
-obj_fixtures = information.Fixtures()
-obj_results = information.Results()
-obj_standings = information.Standings()
-obj_negotiations = view.Negotiations()
-obj_shortlist = view.Shortlist()
-obj_injsus = view.InjSus()
-obj_teamtraining = training.TeamTraining()
-obj_individualtraining = training.IndividualTraining()
-obj_trainingcamp = training.TrainingCamp()
-obj_tickets = business.Tickets()
-obj_squad = squad.Squad()
-obj_staff = team.Staff()
-obj_tactics = team.Tactics()
-obj_accounts = finances.Accounts()
-obj_match = match.Match()
-obj_advertising = business.Advertising()
-obj_merchandise = business.Merchandise()
-obj_catering = business.Catering()
-obj_buildings = stadium.Buildings()
-obj_players = view.Players()
-obj_finances = finances.Finances()
-obj_stadium = stadium.Stadium()
-
 game.window.run()
 
 

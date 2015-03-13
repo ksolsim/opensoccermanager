@@ -12,6 +12,8 @@ import widgets
 
 
 class Stadium(Gtk.Grid):
+    __name__ = "stadium"
+
     def __init__(self):
         self.main_stand_widget = []
         self.corner_stand_widget = []
@@ -474,6 +476,8 @@ class Stadium(Gtk.Grid):
 
 
 class Buildings(Gtk.Grid):
+    __name__ = "buildings"
+
     def __init__(self):
         self.plots = 0
         self.total = 0            # Total cost

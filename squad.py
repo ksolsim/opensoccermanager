@@ -133,6 +133,8 @@ class PlayerSelect(Gtk.Dialog):
 
 
 class Squad(Gtk.Grid):
+    __name__ = "squad"
+
     def __init__(self):
         targets = [('MY_TREE_MODEL_ROW', Gtk.TargetFlags.SAME_APP, 0),
                    ('text/plain', 0, 1),

@@ -13,6 +13,8 @@ import widgets
 
 
 class TeamTraining(Gtk.Grid):
+    __name__ = "teamtraining"
+
     def __init__(self):
         Gtk.Grid.__init__(self)
         self.set_row_spacing(5)
@@ -133,6 +135,8 @@ class TeamTraining(Gtk.Grid):
 
 
 class IndividualTraining(Gtk.Grid):
+    __name__ = "indtraining"
+
     def __init__(self):
         Gtk.Grid.__init__(self)
         self.set_border_width(5)
@@ -325,6 +329,8 @@ class IndividualTraining(Gtk.Grid):
 
 
 class TrainingCamp(Gtk.Grid):
+    __name__ = "trainingcamp"
+
     def __init__(self):
         self.subtotals = [1, 0, 0, 0, 0]
         self.options = [0, 0, 0, 0, 0]
