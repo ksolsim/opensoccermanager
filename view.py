@@ -8,6 +8,7 @@ import re
 import constants
 import dialogs
 import display
+import filters
 import game
 import menu
 import scout
@@ -198,6 +199,8 @@ class Players(Gtk.Grid):
         self.contextmenu.menuitemComparison2.connect("activate", self.add_to_comparison, 1)
         self.contextmenu.menuitemRecommends.connect("activate", self.scout_recommends)
 
+        self.searchfilter = filters.SearchFilter()
+
     def run(self):
         self.populate_data(game.players)
 
@@ -317,7 +320,8 @@ class Players(Gtk.Grid):
                     self.contextmenu.popup(None, None, None, None, event.button, event.time)
 
     def filter_dialog(self, button):
-        dialogs.player_filter()
+        self.searchfilter.display()
+        self.searchfilter.hide()
 
         if game.player_filter == constants.player_filter:
             self.buttonReset.set_sensitive(False)
@@ -337,7 +341,7 @@ class Players(Gtk.Grid):
 
         # Filter position
         if criteria[1] == 1:
-            if model[treeiter][6] == "GK":
+            if model[treeiter][6] != "GK":
                 show = False
         elif criteria[1] == 2:
             if model[treeiter][6] not in ("DL", "DR", "DC", "D"):
@@ -374,20 +378,28 @@ class Players(Gtk.Grid):
         # Filter skills
         if model[treeiter][7] < criteria[5][0] or model[treeiter][7] > criteria[5][1]:
             show = False
+
         if model[treeiter][8] < criteria[6][0] or model[treeiter][8] > criteria[6][1]:
             show = False
+
         if model[treeiter][9] < criteria[7][0] or model[treeiter][9] > criteria[7][1]:
             show = False
+
         if model[treeiter][10] < criteria[8][0] or model[treeiter][10] > criteria[8][1]:
             show = False
+
         if model[treeiter][11] < criteria[9][0] or model[treeiter][11] > criteria[9][1]:
             show = False
+
         if model[treeiter][12] < criteria[10][0] or model[treeiter][12] > criteria[10][1]:
             show = False
+
         if model[treeiter][13] < criteria[11][0] or model[treeiter][13] > criteria[11][1]:
             show = False
+
         if model[treeiter][14] < criteria[12][0] or model[treeiter][14] > criteria[12][1]:
             show = False
+
         if model[treeiter][15] < criteria[13][0] or model[treeiter][15] > criteria[13][1]:
             show = False
 

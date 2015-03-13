@@ -15,7 +15,7 @@ targets = [('MY_TREE_MODEL_ROW', Gtk.TargetFlags.SAME_APP, 0),
            ('text/plain', 0, 1),
            ('TEXT', 0, 2),
            ('STRING', 0, 3),
-           ]
+          ]
 
 
 class Tickets(Gtk.Grid):
@@ -121,11 +121,11 @@ class Tickets(Gtk.Grid):
 
         return True
 
-    def school_tickets(self, scale):
-        game.clubs[game.teamid].school_tickets = scale.get_value_as_int()
+    def school_tickets(self, spinbutton):
+        game.clubs[game.teamid].school_tickets = spinbutton.get_value_as_int()
 
-    def season_tickets(self, scale):
-        game.clubs[game.teamid].season_tickets = scale.get_value_as_int()
+    def season_tickets(self, spinbutton):
+        game.clubs[game.teamid].season_tickets = spinbutton.get_value_as_int()
 
     def run(self):
         stadiumid = game.clubs[game.teamid].stadium
@@ -169,7 +169,7 @@ class Tickets(Gtk.Grid):
         for row in range(1, 6):
             for column in range(1, 4):
                 price = game.clubs[game.teamid].tickets[count]
-                self.scales[count].set_range(0, price * 2)
+                self.scales[count].set_range(0, 999)
                 self.scales[count].set_value(price)
 
                 if row == 1:
