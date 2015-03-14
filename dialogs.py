@@ -310,11 +310,9 @@ def proceed_to_game(team):
     messagedialog.set_markup("<span size='12000'><b>Proceed to next match?</b></span>")
     messagedialog.format_secondary_text("Your next match is against %s." % (team))
 
-    response = messagedialog.run()
-
     proceed = False
 
-    if response == Gtk.ResponseType.YES:
+    if messagedialog.run() == Gtk.ResponseType.YES:
         proceed = True
 
     messagedialog.destroy()
@@ -707,7 +705,6 @@ def renew_staff_contract_error(staff):
     messagedialog.set_title("Renew Contract")
     messagedialog.add_button("_Close", Gtk.ResponseType.CLOSE)
     messagedialog.set_markup("%s has decided to retire once his current contract expires, and will not negotiate an extension." % (staff.name))
-
     messagedialog.run()
     messagedialog.destroy()
 

@@ -328,11 +328,15 @@ class ScreenDetails(Gtk.Grid):
 
         # Load manager names
         self.liststoreName.clear()
-        [self.liststoreName.append([name]) for name in fileio.read_names()]
+
+        for name in fileio.read_names():
+            self.liststoreName.append([name])
 
         # Load list of clubs
         self.liststoreClubs.clear()
-        [self.liststoreClubs.append([clubid, club.name]) for clubid, club in game.clubs.items()]
+
+        for clubid, club in game.clubs.items():
+            self.liststoreClubs.append([clubid, club.name])
 
         self.entryName.set_text("")
         self.comboboxClub.set_active(0)
@@ -348,7 +352,10 @@ class ScreenDetails(Gtk.Grid):
         data.datainit()
 
         self.liststoreClubs.clear()
-        [self.liststoreClubs.append([clubid, club.name]) for clubid, club in game.clubs.items()]
+
+        for clubid, club in game.clubs.items():
+            self.liststoreClubs.append([clubid, club.name])
+
         self.comboboxClub.set_active(0)
 
     def finances_changed(self, radiobutton):
@@ -514,10 +521,10 @@ class ScreenGame(Gtk.Grid):
 
             game.news = news
 
-            screen_loader(game.active_screen_id)
+            game.window.screen_loader(game.active_screen_id)
 
     def news_activated(self, button):
-        screen_loader(3)
+        game.window.screen_loader(3)
 
     def player_comparison(self, menuitem):
         if game.comparison == [None, None]:
@@ -624,7 +631,7 @@ class ContinueGame:
 
             if not error:
                 game.eventindex += 1
-                self.initiate_game()
+                game.window.screen_loader(99)
                 game.proceed = False
         elif game.proceed and update_valid:
             self.update_date()
@@ -717,9 +724,6 @@ class ContinueGame:
 
         # Comment to prevent screen refresh on continue game - FASTER!
         game.window.screen_loader(game.active_screen_id)
-
-    def initiate_game(self):
-        game.window.screen_loader(99)
 
     def check_squad(self):
         '''
