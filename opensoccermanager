@@ -44,6 +44,7 @@ import menu
 import money
 import music
 import preferences
+import printing
 import sales
 import squad
 import stadium
@@ -439,6 +440,7 @@ class ScreenGame(Gtk.Grid):
         game.menu.menuitemLoad.connect("activate", self.load_game_clicked)
         game.menu.menuitemSave.connect("activate", self.save_game_clicked)
         game.menu.menuitemDelete.connect("activate", self.delete_game_clicked)
+        game.menu.menuitemPrint.connect("activate", self.print_clicked)
         game.menu.menuitemQuit.connect("activate", exit_game)
 
         game.menu.menuitemManager.connect("activate", self.name_change)
@@ -561,10 +563,14 @@ class ScreenGame(Gtk.Grid):
         save_dialog.display()
         save_dialog.destroy()
 
-    def delete_game_clicked(self, button):
+    def delete_game_clicked(self, menuitem):
         delete_dialog = interface.DeleteDialog()
         delete_dialog.run()
         delete_dialog.destroy()
+
+    def print_clicked(self, menuitem):
+        print_dialog = printing.PrintType()
+        print_dialog.display()
 
     def preferences_dialog_clicked(self, menuitem):
         preferences_dialog = interface.PreferencesDialog()

@@ -45,6 +45,16 @@ class Menu(Gtk.MenuBar):
         menu.append(self.menuitemDelete)
         separator = Gtk.SeparatorMenuItem()
         menu.append(separator)
+        self.menuitemPrint = widgets.MenuItem("_Print")
+        key, mod = Gtk.accelerator_parse("<CONTROL>P")
+        self.menuitemPrint.add_accelerator("activate",
+                                          game.accelgroup,
+                                          key,
+                                          mod,
+                                          Gtk.AccelFlags.VISIBLE)
+        menu.append(self.menuitemPrint)
+        separator = Gtk.SeparatorMenuItem()
+        menu.append(separator)
         self.menuitemQuit = widgets.MenuItem("_Quit")
         key, mod = Gtk.accelerator_parse("<CONTROL>Q")
         self.menuitemQuit.add_accelerator("activate",

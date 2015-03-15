@@ -6,12 +6,12 @@ import random
 import re
 import statistics
 
-import game
-import constants
-import widgets
-import display
 import chart
+import constants
+import display
 import evaluation
+import game
+import widgets
 
 
 class News(Gtk.Grid):
