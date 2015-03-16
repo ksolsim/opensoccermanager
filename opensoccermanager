@@ -189,12 +189,14 @@ class ScreenMain(Gtk.Grid):
 
         self.buttonInfo = widgets.Button()
         self.buttonInfo.set_relief(Gtk.ReliefStyle.NONE)
-        self.buttonInfo.set_label("Version %s (Build %s)" % (version.VERSION, version.DATE))
+        self.buttonInfo.set_label("Version %s (Build %s)" % (version.VERSION,
+                                                             version.DATE))
         self.buttonInfo.connect("clicked", self.information_button_clicked)
         self.attach(self.buttonInfo, 0, 2, 1, 1)
 
         label = Gtk.Label()
-        label.set_markup("<a href='%s'>%s Website</a>" % (version.WEBSITE, version.NAME))
+        label.set_markup("<a href='%s'>%s Website</a>" % (version.WEBSITE,
+                                                          version.NAME))
         label.set_alignment(1, 0.5)
         self.attach(label, 2, 2, 1, 1)
 
@@ -328,9 +330,14 @@ class ScreenDetails(Gtk.Grid):
             self.comboboxFinances.append(str(key), "%s (%s)" % (item[1], amount))
 
         # Load manager names
-        self.liststoreName.clear()
+        self.manager_names = []
 
         for name in fileio.read_names():
+            self.manager_names.append(name)
+
+        self.liststoreName.clear()
+
+        for name in self.manager_names:
             self.liststoreName.append([name])
 
         # Load list of clubs
@@ -378,21 +385,15 @@ class ScreenDetails(Gtk.Grid):
         game.teamid = model[treeiter][0]
 
         # Save manager name entered by player
-        game.clubs[game.teamid].manager = self.entryName.get_text()
+        manager = self.entryName.get_text()
+        game.clubs[game.teamid].manager = manager
 
-        add = True
+        if manager in self.manager_names:
+            self.manager_names.remove(manager)
 
-        for count, item in enumerate(self.liststoreName):
-            if item[0] == game.clubs[game.teamid].manager:
-                add = False
+        self.manager_names.insert(0, manager)
 
-                del(self.liststoreName[count])
-                self.liststoreName.prepend([game.clubs[game.teamid].manager])
-
-        if add:
-            self.liststoreName.prepend([game.clubs[game.teamid].manager])
-
-        names = [key[0] for key in self.liststoreName]
+        names = [name for name in self.manager_names]
         fileio.write_names(names)
 
         self.complete_data_load()

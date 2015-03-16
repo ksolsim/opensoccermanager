@@ -66,7 +66,10 @@ class Date(Gtk.Label):
     Used to the display the current date in the game.
     '''
     def __init__(self):
-        def tooltip(item, x, y, keyboard_mode, tooltip):
+        def tooltip(item=None, x=0, y=0, mode=None, tooltip=None):
+            '''
+            Set tooltip information (i.e. nickname, chairman) and display.
+            '''
             club = game.clubs[game.teamid]
 
             infotip.name = "%s" % (club.name)
@@ -89,6 +92,9 @@ class Date(Gtk.Label):
         self.connect("query-tooltip", tooltip)
 
     def update(self):
+        '''
+        Update when called the current date shown in the date label.
+        '''
         self.set_label("%i/%i/%i" % (game.year, game.month, game.date))
 
 
@@ -173,9 +179,9 @@ class SpinButton(Gtk.SpinButton):
     SpinButton with default incrementation and value snapping. Also,
     prevents alphabetical characters being entered.
     '''
-    def __init__(self, maximum):
+    def __init__(self, minimum=0, maximum=0):
         Gtk.SpinButton.__init__(self)
-        self.set_range(0, maximum)
+        self.set_range(minimum, maximum)
         self.set_increments(10, 100)
         self.set_snap_to_ticks(True)
         self.set_numeric(True)
