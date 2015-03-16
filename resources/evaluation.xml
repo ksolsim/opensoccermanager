@@ -2,7 +2,7 @@
 <evaluation>
     <chairman>
         <message id="0">You will be fired unless we have an immediate improvement.</message>
-        <message id="0">Prepare to find another job unless we start winning.</message>
+        <message id="0">Prepare to find another job unless you sort out the current problems.</message>
         <message id="1">We need a serious improvement if we are to improve our form.</message>
         <message id="2">The team needs to make improvements in their performances.</message>
         <message id="3">We're performing reasonably however more work must be done.</message>
@@ -10,9 +10,10 @@
         <message id="4">Everything is going okay, however a strong run will boost morale.</message>
         <message id="5">I'm very happy with the current situation at the club.</message>
         <message id="5">The situation at the club makes the future look very promising.</message>
+        <message id="5">The board are very haooy with the state of the club.</message>
         <message id="6">I'm delighted with the way the club looks at the moment.</message>
         <message id="6">The club is in a very healthy shape and looks good for the future.</message>
-        <message id="6">Your reign has been highly successful, and the club is very healthy.</message>
+        <message id="6">Your reign has been highly successful, and the club state is very healthy.</message>
     </chairman>
     <fans>
         <message id="0">Huge numbers of fans are very unhappy at the current position.</message>
@@ -21,32 +22,44 @@
         <message id="2">Some of our fans are unhappy with the way the team is playing.</message>
         <message id="3">The fans believe we need to make a good push to improve on this season.</message>
         <message id="4">The fans are relatively happy with the current state of things.</message>
+        <message id="4">A majority of fans are pleased with the current performances being shown.</message>
         <message id="5">Most fans are very happy with the club as things currently stand.</message>
         <message id="6">The fans are delighted with the current status of the club.</message>
+        <message id="6">Fans are reportedly very happy with the league position of the club.</message>
     </fans>
     <finances>
         <message id="0">The financial situation is perilous, and needs urgent attention.</message>
+        <message id="0">Our finances are in a dire state and require immediate remedy.</message>
         <message id="1">The club is dangerously close to the red and needs to be resolved.</message>
+        <message id="1">Attention needs to be paid quickly to prevent us losing anymore money.</message>
         <message id="2">We need to begin on improving the finances to provide more of a cushion.</message>
         <message id="3">The finances of the club is relatively secure for the short term.</message>
+        <message id="3">The board are content with the current financial outlook.</message>
         <message id="4">Financial reports for the club show that we are in a good state.</message>
+        <message id="4">Our bank accounts show that the club is healty with regards to finance.</message>
         <message id="5">The club is in a very good position financially and is set for the long term.</message>
         <message id="6">The current financial situation is the best the club has even seen.</message>
         <message id="6">The club has never been more secure in its financial position.</message>
     </finances>
     <players>
         <message id="0">A majority of players are calling for your immediate departure.</message>
+        <message id="0">The leaders of the team believe you should be fired immediately.</message>
         <message id="1">Some players believe it would be best if you left the club.</message>
         <message id="2">A number of players think you are doing a poor job.</message>
+        <message id="2">Several players are restless as they believe we should be performing better.</message>
         <message id="3">The players are relatively pleased with the current club position.</message>
         <message id="4">The players are confident in your ability to improve the club.</message>
+        <message id="4">Players are reported to be satisfied with your reign as manager.</message>
         <message id="5">Most players are very happy with the football that we are playing.</message>
+        <message id="5">The team spirit is very good at this time.</message>
         <message id="6">The squad is delighted with the job you are currently doing.</message>
         <message id="6">Many players in the team believe you are the best manager in the world.</message>
     </players>
     <staff>
         <message id="0">The staff are very unhappy with the current working conditions.</message>
+        <message id="0">Staff members are reportedly very demoralised by the working situation.</message>
         <message id="1">The staff want to see notable improvements in working conditions.</message>
+        <message id="1">A number of staff are concerned with their job position.</message>
         <message id="2">Some staff believe they are not listened to or appreciated.</message>
         <message id="3">Staff report that they are reasonably happy at the club.</message>
         <message id="4">Most staff believe the club is heading in the right direction.</message>
