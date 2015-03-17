@@ -18,12 +18,14 @@
 
 import random
 
+import ai
 import calculator
 import constants
 import evaluation
 import events
 import fixtures
 import game
+import money
 import news
 import resources
 import staff
@@ -37,8 +39,6 @@ def datainit():
     the season. Initially used to populate details screen for collecting player
     information.
     '''
-    database = game.database
-
     game.clubs = {}
     game.players = {}
     game.nations = {}
@@ -50,12 +50,12 @@ def datainit():
     game.month = 8
     game.week = 1
 
-    game.year, database.version = database.importer("about")[0]
+    game.year, game.database.version = game.database.importer("about")[0]
 
     widgets.date.update()
 
     # Import clubs and populate club data structure
-    for item in database.importer("club"):
+    for item in game.database.importer("club"):
         club = structures.Club()
         clubid = item[0]
         game.clubs[clubid] = club
@@ -74,7 +74,7 @@ def datainit():
         game.standings[clubid] = structures.League()
 
     # Import players
-    for item in database.importer("player"):
+    for item in game.database.importer("player"):
         player = structures.Player()
         playerid = item[0]
         game.players[playerid] = player
@@ -106,7 +106,7 @@ def datainit():
         game.clubs[player.club].squad.append(playerid)
 
     # Import nations
-    for item in database.importer("nation"):
+    for item in game.database.importer("nation"):
         nation = structures.Nation()
         nationid = item[0]
         game.nations[nationid] = nation
@@ -117,7 +117,7 @@ def datainit():
     adjacent = (0, 1), (2, 0), (3, 2), (1, 3), # DO NOT REORDER/CHANGE!
 
     # Import stadiums
-    for item in database.importer("stadium"):
+    for item in game.database.importer("stadium"):
         stadium = structures.Stadium()
         stadiumid = item[0]
         game.stadiums[stadiumid] = stadium
@@ -175,11 +175,11 @@ def datainit():
             stadium.plots = 40
 
     # Import injuries
-    for item in database.importer("injury"):
+    for item in game.database.importer("injury"):
         constants.injuries[item[0]] = item[1:]
 
     # Import suspensions
-    for item in database.importer("suspension"):
+    for item in game.database.importer("suspension"):
         constants.suspensions[item[0]] = item[1:]
 
     # Setup fixture list
@@ -198,17 +198,17 @@ def datainit():
         team = random.choice(week)
         game.televised.append(team)
 
-    constants.buildings = database.importer("buildings")
-    constants.merchandise = database.importer("merchandise")
-    constants.catering = database.importer("catering")
-    game.companies = database.importer("company")
+    constants.buildings = game.database.importer("buildings")
+    constants.merchandise = game.database.importer("merchandise")
+    constants.catering = game.database.importer("catering")
+    game.companies = game.database.importer("company")
 
     # Import surnames for staff
-    surnames = database.importer("staff")
+    surnames = game.database.importer("staff")
     game.surnames = [name[0] for name in surnames]
 
     # Import referees
-    for item in database.importer("referee"):
+    for item in game.database.importer("referee"):
         referee = structures.Referee()
         refereeid = item[0]
         referee.name = item[1]
@@ -281,7 +281,7 @@ def dataloader(finances):
     club.tickets = calculator.ticket_prices()
 
     # Calculate free school tickets
-    tickets = int((20 - club.reputation) * 0.25) + 1  # Leave int to round
+    tickets = int((20 - club.reputation) * 0.5) + 1  # Leave int to round
     club.school_tickets = tickets * 100
 
     # Initiate values for merchandise / catering
@@ -293,6 +293,16 @@ def dataloader(finances):
     resources.import_evaluation()
 
     evaluation.update()
+
+    money.calculate_loan()
+    money.calculate_overdraft()
+    money.calculate_grant()
+    money.flotation()
+    events.update_records()
+    events.expectation()
+    ai.transfer_list()
+    ai.loan_list()
+    ai.team_training()
 
     # Retrieve first three fixtures for news
     initial_fixtures = []

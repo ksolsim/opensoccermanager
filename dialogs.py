@@ -978,7 +978,10 @@ def end_of_season():
     dialog.destroy()
 
 
-def file_not_found_error():
+def editor_not_found_error():
+    '''
+    Shown when editor folder is not installed.
+    '''
     messagedialog = Gtk.MessageDialog()
     messagedialog.set_transient_for(game.window)
     messagedialog.set_title("Editor Not Available")

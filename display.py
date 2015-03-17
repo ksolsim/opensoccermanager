@@ -217,6 +217,10 @@ def wage(wage):
 
 
 def currency(amount, mode=0):
+    '''
+    Format the amount into the selected currency and convert to appropriate
+    exchange rate.
+    '''
     currency = constants.currency[game.currency][0]
     amount *= constants.currency[game.currency][1]
 
@@ -229,6 +233,9 @@ def currency(amount, mode=0):
 
 
 def contract(period):
+    '''
+    Format the number of weeks on the contract remaining.
+    '''
     if period > 1:
         text = "%i Weeks" % (period)
     elif period == 1:
@@ -241,7 +248,7 @@ def contract(period):
 
 def club(clubid):
     '''
-    Used for players who are out of contract
+    Return club name for the specified id or nothing when player is unattached.
     '''
     if clubid == 0:
         text = ""
@@ -252,6 +259,9 @@ def club(clubid):
 
 
 def nation(nationid):
+    '''
+    Return the nation name for the specified id.
+    '''
     text = game.nations[nationid].name
 
     return text
@@ -276,6 +286,9 @@ def suspension(value):
 
 
 def rating(player):
+    '''
+    Display the average player rating.
+    '''
     if player.rating != []:
         rating = "%.1f" % (statistics.mean(player.rating))
     else:
@@ -285,6 +298,9 @@ def rating(player):
 
 
 def season():
+    '''
+    Return the season in yyyy/yyyy format.
+    '''
     season = "%i/%i" % (game.year, game.year + 1)
 
     return season
