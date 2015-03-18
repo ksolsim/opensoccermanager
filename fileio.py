@@ -29,10 +29,12 @@ import structures
 import widgets
 
 
-db = database.SaveFile()
+db = database.DB()
 
 
 def open_file(filename):
+    db.connect(filename)
+
     # Clear existing data structures
     game.clubs = {}
     game.players = {}
@@ -104,7 +106,7 @@ def open_file(filename):
     widgets.date.update()
 
     # Nation
-    for item in db.load("nation"):
+    for item in db.importer("nation"):
         nation = structures.Nation()
         nationid = item[0]
         game.nations[nationid] = nation
@@ -113,7 +115,7 @@ def open_file(filename):
         nation.denonym = item[2]
 
     # Stadium
-    for item in db.load("stadium"):
+    for item in db.importer("stadium"):
         stadium = structures.Stadium()
         stadiumid = item[0]
         game.stadiums[stadiumid] = stadium
@@ -156,7 +158,7 @@ def open_file(filename):
         stadium.buildings = list(item[30:38])
 
     # Club
-    for item in db.load("club"):
+    for item in db.importer("club"):
         club = structures.Club()
         clubid = item[0]
         game.clubs[clubid] = club
@@ -243,7 +245,7 @@ def open_file(filename):
             club.shortlist.add(item[1])
 
     # Player
-    for item in db.load("player"):
+    for item in db.importer("player"):
         player = structures.Player()
         playerid = item[0]
         game.players[playerid] = player
@@ -292,7 +294,7 @@ def open_file(filename):
         player.age = events.age(item[4])
 
     # Squad
-    for item in db.load("squad"):
+    for item in db.importer("squad"):
         clubid = item[0]
         playerid = item[1]
 
@@ -300,7 +302,7 @@ def open_file(filename):
         game.players[playerid].club = clubid
 
     # News
-    for item in db.load("news"):
+    for item in db.importer("news"):
         game.news.append(item[0:5])
 
     # Fixtures
@@ -320,7 +322,7 @@ def open_file(filename):
             game.results[item[0]].append(item[1:5])
 
     # Standings
-    for item in db.load("standings"):
+    for item in db.importer("standings"):
         item = list(map(int, item))
         clubid = item[0]
         game.standings[clubid] = structures.League()
@@ -334,7 +336,7 @@ def open_file(filename):
         game.standings[clubid].points = item[8]
 
     # Negotiations
-    for item in db.load("negotiations"):
+    for item in db.importer("negotiations"):
         negotiation = structures.Negotiation()
         key = item[0]
         negotiation.playerid = item[1]
@@ -346,45 +348,45 @@ def open_file(filename):
         game.negotiations[key] = negotiation
 
     # Loans
-    for item in db.load("loans"):
+    for item in db.importer("loans"):
         game.loans[item[0]] = [item[1], item[2]]
 
     # Charts
-    for item in db.load("transfers"):
+    for item in db.importer("transfers"):
         game.transfers.append(item)
 
     # Buildings
-    for item in db.load("buildings"):
+    for item in db.importer("buildings"):
         constants.buildings.append(item)
 
     # Injuries
-    for item in db.load("injuries"):
+    for item in db.importer("injuries"):
         constants.injuries[item[0]] = item[1:]
 
     # Suspensions
-    for item in db.load("suspensions"):
+    for item in db.importer("suspensions"):
         constants.suspensions[item[0]] = item[1:]
 
     # Companies
-    for item in db.load("companies"):
+    for item in db.importer("companies"):
         game.companies.append(item)
 
     # Surnames
-    for item in db.load("surnames"):
+    for item in db.importer("surnames"):
         game.surnames.append(item[0])
 
     # Merchandise
-    for item in db.load("merchandise"):
+    for item in db.importer("merchandise"):
         constants.merchandise.append(item)
 
     # Catering
-    for item in db.load("catering"):
+    for item in db.importer("catering"):
         constants.catering.append(item)
 
     club = game.clubs[game.teamid]
 
     # Staff
-    for item in db.load("coachavailable"):
+    for item in db.importer("coachavailable"):
         coach = structures.Staff()
         coach.name = item[1]
         coach.age = item[2]
@@ -396,7 +398,7 @@ def open_file(filename):
         coachid = item[0]
         club.coaches_available[coachid] = coach
 
-    for item in db.load("coachhired"):
+    for item in db.importer("coachhired"):
         coach = structures.Staff()
         coach.name = item[1]
         coach.age = item[2]
@@ -410,7 +412,7 @@ def open_file(filename):
         coachid = item[0]
         club.coaches_hired[coachid] = coach
 
-    for item in db.load("scoutavailable"):
+    for item in db.importer("scoutavailable"):
         scout = structures.Staff()
         scout.name = item[1]
         scout.age = item[2]
@@ -421,7 +423,7 @@ def open_file(filename):
         scoutid = item[0]
         club.scouts_available[scoutid] = scout
 
-    for item in db.load("scouthired"):
+    for item in db.importer("scouthired"):
         scout = structures.Staff()
         scout.name = item[1]
         scout.age = item[2]
@@ -435,7 +437,7 @@ def open_file(filename):
         club.scouts_hired[scoutid] = scout
 
     # Referees
-    for item in db.load("referee"):
+    for item in db.importer("referee"):
         referee = structures.Referee()
         referee.name = item[1]
         referee.matches = item[2]
@@ -449,16 +451,16 @@ def open_file(filename):
     club = game.clubs[game.teamid]
 
     # Advertising
-    for item in db.load("hoardingsavailable"):
+    for item in db.importer("hoardingsavailable"):
         club.hoardings[0].append(item)
 
-    for item in db.load("hoardingscurrent"):
+    for item in db.importer("hoardingscurrent"):
         club.hoardings[1].append(item)
 
-    for item in db.load("programmesavailable"):
+    for item in db.importer("programmesavailable"):
         club.programmes[0].append(item)
 
-    for item in db.load("programmescurrent"):
+    for item in db.importer("programmescurrent"):
         club.programmes[1].append(item)
 
     # Records
@@ -479,7 +481,7 @@ def open_file(filename):
 
     game.statistics = structures.Statistics()
 
-    for item in db.load("statistics"):
+    for item in db.importer("statistics"):
         if item[0] != "":
             win = item[0].split(",")
             win = list(map(int, win))

@@ -68,11 +68,19 @@ class PrintType(Gtk.Dialog):
 
 class PrintOperation(Gtk.PrintOperation):
     def __init__(self, parent, info):
+        Gtk.PrintOperation.__init__(self)
+
         self.info = info
 
         self.pagesetup = Gtk.PageSetup()
 
-        Gtk.PrintOperation.__init__(self)
+        if self.info == "0":
+            self.pagesetup.set_orientation(Gtk.PageOrientation.LANDSCAPE)
+            self.set_job_name("OpenSoccerManager - Squad")
+        elif self.info == "1":
+            self.pagesetup.set_orientation(Gtk.PageOrientation.PORTRAIT)
+            self.set_job_name("OpenSoccerManager - Fixtures")
+
         self.set_n_pages(1)
         self.set_default_page_setup(self.pagesetup)
         self.connect("draw-page", self.draw_page)
@@ -80,12 +88,8 @@ class PrintOperation(Gtk.PrintOperation):
 
     def draw_page(self, operation, context, page):
         if self.info == "0":
-            self.pagesetup.set_orientation(Gtk.PageOrientation.LANDSCAPE)
-            self.set_job_name("OpenSoccerManager - Squad")
             context = SquadContext(context)
         elif self.info == "1":
-            self.pagesetup.set_orientation(Gtk.PageOrientation.PORTRAIT)
-            self.set_job_name("OpenSoccerManager - Fixtures")
             context = FixtureContext(context)
         elif self.info == "2":
             context = ShortlistContext(context)

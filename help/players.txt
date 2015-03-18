@@ -1,0 +1,13 @@
+The players search screen displays all the players in the game. The view provides a way to display a variety of information such as goals, contract information, value, wage, and position.
+
+Search
+
+Players can be search by first, second, common or combined first and second name. The search function will attempt to match any string within the name.
+
+Filter
+
+Filtering players is possible from the player filter dialog, and allows player skills, contract, position and age filtering. To reset the view to the default setup, press the 'Reset' button.
+
+Context Menu
+
+Right-clicking on each player produces a context menu allowing players to be bought, loaned, adding to or removing from the shortlist, or checking for scout recommendations.
