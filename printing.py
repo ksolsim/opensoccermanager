@@ -80,6 +80,9 @@ class PrintOperation(Gtk.PrintOperation):
         elif self.info == "1":
             self.pagesetup.set_orientation(Gtk.PageOrientation.PORTRAIT)
             self.set_job_name("OpenSoccerManager - Fixtures")
+        elif self.info == "2":
+            self.pagesetup.set_orientation(Gtk.PageOrientation.LANDSCAPE)
+            self.set_job_name("OpenSoccerManager - Shortlist")
 
         self.set_n_pages(1)
         self.set_default_page_setup(self.pagesetup)
@@ -224,5 +227,76 @@ class SquadContext:
 
             context.move_to(760, y)
             context.show_text("%i" % (player.assists))
+
+            y += 15
+
+
+class ShortlistContext:
+    def __init__(self, context):
+        context = context.get_cairo_context()
+        context.set_font_size(8)
+
+        # Draw column titles
+        context.select_font_face("Droid Sans Mono",
+                                 cairo.FONT_SLANT_NORMAL,
+                                 cairo.FONT_WEIGHT_BOLD)
+
+        context.move_to(10, 10)
+        context.show_text("Name")
+        context.move_to(165, 10)
+        context.show_text("Position")
+        context.move_to(220, 10)
+        context.show_text("Club")
+        context.move_to(340, 10)
+        context.show_text("Nationality")
+        context.move_to(420, 10)
+        context.show_text("Value")
+        context.move_to(460, 10)
+        context.show_text("Wage")
+        context.move_to(500, 10)
+        context.show_text("Contract")
+
+        for count, item in enumerate(constants.short_skill, start=1):
+            context.move_to(550 + (count * 20), 10)
+            context.show_text("%s" % (item))
+
+        context.select_font_face("Droid Sans Mono",
+                                 cairo.FONT_SLANT_NORMAL,
+                                 cairo.FONT_WEIGHT_NORMAL)
+
+        x, y = 10, 25
+
+        for playerid in game.clubs[game.teamid].shortlist:
+            player = game.players[playerid]
+
+            context.move_to(x, y)
+            name = display.name(player)
+            context.show_text("%s" % (name))
+
+            context.move_to(165, y)
+            context.show_text("%s" % (player.position))
+
+            context.move_to(220, y)
+            club = game.clubs[player.club].name
+            context.show_text("%s" % (club))
+
+            context.move_to(340, y)
+            nationality = game.nations[player.nationality].name
+            context.show_text("%s" % (nationality))
+
+            context.move_to(420, y)
+            value = display.value(player.value)
+            context.show_text("%s" % (value))
+
+            context.move_to(460, y)
+            wage = display.wage(player.wage)
+            context.show_text("%s" % (wage))
+
+            context.move_to(500, y)
+            context.show_text("%i Weeks" % (player.contract))
+
+            for count, skill in enumerate(player.skills(), start=1):
+                context.move_to(550 + (count * 20), y)
+                context.show_text("%i" % (skill))
 
             y += 15
