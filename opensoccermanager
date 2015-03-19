@@ -314,7 +314,6 @@ class ScreenDetails(Gtk.Grid):
 
     def run(self):
         game.database.connect()
-        data.datainit()
 
         # Set database
         filepath = os.path.join("databases", "%s" % (game.database_filename))
@@ -339,10 +338,7 @@ class ScreenDetails(Gtk.Grid):
             self.liststoreName.append([name])
 
         # Load list of clubs
-        self.liststoreClubs.clear()
-
-        for clubid, club in game.clubs.items():
-            self.liststoreClubs.append([clubid, club.name])
+        self.load_club_list()
 
         self.entryName.set_text("")
         self.comboboxClub.set_active(0)
@@ -352,17 +348,21 @@ class ScreenDetails(Gtk.Grid):
         self.show_all()
         self.entryName.grab_focus()
 
-    def file_chooser_set(self, filechooserbutton):
-        game.database_filename = filechooserbutton.get_filename()
-        game.database.connect(game.database_filename)
-        data.datainit()
+    def load_club_list(self):
+        data = game.database.importer("club")
 
         self.liststoreClubs.clear()
 
-        for clubid, club in game.clubs.items():
-            self.liststoreClubs.append([clubid, club.name])
+        for club in data:
+            self.liststoreClubs.append([club[0], club[1]])
 
         self.comboboxClub.set_active(0)
+
+    def file_chooser_set(self, filechooserbutton):
+        game.database_filename = filechooserbutton.get_filename()
+        game.database.connect(game.database_filename)
+
+        self.load_club_list()
 
     def finances_changed(self, radiobutton):
         active = self.radiobuttonFinancesUSM.get_active()
@@ -377,6 +377,8 @@ class ScreenDetails(Gtk.Grid):
         game.window.add(game.window.screenMain)
 
     def continue_button_clicked(self, button):
+        data.datainit()
+
         # Get club ID number from combobox
         treeiter = self.comboboxClub.get_active_iter()
         model = self.comboboxClub.get_model()
