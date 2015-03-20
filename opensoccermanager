@@ -686,7 +686,7 @@ class ContinueGame:
         # Process everyday events
         transfer.transfer()
         events.injury()
-        transfer.ai_enquiry()
+        ai.enquiry()
         ai.advertising()
         evaluation.update()
 

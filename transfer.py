@@ -49,13 +49,17 @@ class Dialog(Gtk.Dialog):
 
 
 def make_enquiry(playerid, transfer_type):
+    '''
+    Construct the enquiry object for the appropriate transfer type, and generate
+    a random timeout for when the response will be received.
+    '''
     for negotiationid in game.negotiations:
         if playerid == game.negotiations[negotiationid].playerid:
             dialogs.error(9)
 
             return
 
-    state = enquiry_dialog(playerid, transfer_type)
+    state = enquiry_dialog(playerid)
 
     if state:
         negotiation = structures.Negotiation()
@@ -71,32 +75,13 @@ def make_enquiry(playerid, transfer_type):
         game.clubs[game.teamid].shortlist.add(playerid)
 
 
-def ai_enquiry():
-    position = random.choice((("GK", 3), ("DL", 2), ("DR", 2), ("DC", 4), ("D", 0), ("ML", 2), ("MR", 2), ("MC", 4), ("M", 0), ("AS", 2), ("AF", 2)))
-
-    count = 0
-
-    for clubid in game.clubs:
-        squad = game.clubs[clubid].squad
-
-        for playerid in squad:
-            player = game.players[playerid]
-
-            if player.position == position[0]:
-                count += 1
-
-        if count < position[1]:
-            suggestion = position[0]
-
-
-def enquiry_dialog(playerid, index):
+def enquiry_dialog(playerid):
     '''
     Initiate transfer enquiry dialog for transfers, loans and free
     transfers.
     '''
     player = game.players[playerid]
     name = display.name(player, mode=1)
-    transfer = ("purchase", "loan", "free transfer")[index]
     club = display.club(player.club)
 
     messagedialog = Gtk.MessageDialog(type=Gtk.MessageType.QUESTION)
@@ -106,10 +91,12 @@ def enquiry_dialog(playerid, index):
     messagedialog.add_button("_Approach", Gtk.ResponseType.OK)
     messagedialog.set_default_response(Gtk.ResponseType.OK)
 
-    if index == 2:
-        messagedialog.set_markup("Approach %s for %s?" % (name, transfer))
-    else:
-        messagedialog.set_markup("Approach %s for %s from %s?" % (name, transfer, club))
+    if index == 0:
+        messagedialog.set_markup("Approach %s for purchase from %s?" % (name, club))
+    elif index == 1:
+        messagedialog.set_markup("Approach %s for loan from %s?" % (name, club))
+    elif index == 2:
+        messagedialog.set_markup("Approach %s for free transfer?" % (name))
 
     state = False
 
@@ -221,17 +208,19 @@ def transfer():
             negotiation.timeout -= 1
 
             if negotiation.transfer_type != 2:
-                if negotiation.timeout == 0 and negotiation.status == 0:
-                    consider_enquiry(negotiationid)
-                elif negotiation.timeout == 0 and negotiation.status == 3:
-                    consider_offer(negotiationid)
-                elif negotiation.timeout == 0 and negotiation.status == 6 or negotiation.status == 9:
-                    consider_contract(negotiationid)
+                if negotiation.timeout == 0:
+                    if negotiation.status == 0:
+                        consider_enquiry(negotiationid)
+                    elif negotiation.status == 3:
+                        consider_offer(negotiationid)
+                    elif negotiation.status == 6 or negotiation.status == 9:
+                        consider_contract(negotiationid)
             else:
-                if negotiation.timeout == 0 and negotiation.status == 0:
-                    consider_enquiry(negotiationid)
-                elif negotiation.timeout == 0 and negotiation.status == 6:
-                    consider_contract(negotiationid)
+                if negotiation.timeout == 0:
+                    if negotiation.status == 0:
+                        consider_enquiry(negotiationid)
+                    elif negotiation.status == 6:
+                        consider_contract(negotiationid)
 
         if negotiation.timeout == 0:
             if negotiation.status in (1, 4, 7, 10):
@@ -291,6 +280,10 @@ def consider_enquiry(negotiationid):
 
 
 def consider_offer(negotiationid):
+    '''
+    Determine whether the offer is suitable, and announce to the user whether it
+    is or not.
+    '''
     negotiation = game.negotiations[negotiationid]
 
     player = game.players[negotiation.playerid]
@@ -318,6 +311,10 @@ def consider_offer(negotiationid):
 
 
 def consider_contract(negotiationid):
+    '''
+    Determine whether the contract offered is appropriate, and whether the
+    player wishes to make the move.
+    '''
     negotiation = game.negotiations[negotiationid]
     player = game.players[negotiation.playerid]
     name = display.name(player, mode=1)
@@ -707,6 +704,10 @@ def transfer_confirm_respond(negotiationid):
 
 
 def extend_loan(playerid):
+    '''
+    Display dialog with the option for defining how long the player wishes to
+    extend the loan period.
+    '''
     player = game.players[playerid]
     name = display.name(player, mode=1)
 

@@ -300,3 +300,141 @@ class ShortlistContext:
                 context.show_text("%i" % (skill))
 
             y += 15
+
+
+class AccountsContext:
+    def __init__(self, context):
+        context = context.get_cairo_context()
+        context.set_font_size(8)
+
+        # Draw column titles
+        context.select_font_face("Droid Sans Mono",
+                                 cairo.FONT_SLANT_NORMAL,
+                                 cairo.FONT_WEIGHT_BOLD)
+
+        # Income
+        context.move_to(10, 10)
+        context.show_text("INCOME")
+
+        context.move_to(25, 40)
+        context.show_text("Category")
+        context.move_to(250, 40)
+        context.show_text("Week")
+        context.move_to(400, 40)
+        context.show_text("Season")
+
+        context.move_to(25, 60)
+        context.show_text("Prize Money")
+        context.move_to(25, 75)
+        context.show_text("Sponsorship")
+        context.move_to(25, 90)
+        context.show_text("Advertising")
+        context.move_to(25, 105)
+        context.show_text("Merchandise")
+        context.move_to(25, 120)
+        context.show_text("Catering")
+        context.move_to(25, 135)
+        context.show_text("Ticket Sales")
+        context.move_to(25, 150)
+        context.show_text("Transfer Fees")
+        context.move_to(25, 165)
+        context.show_text("Loan")
+        context.move_to(25, 180)
+        context.show_text("Television Money")
+
+        context.move_to(25, 210)
+        context.show_text("Total Income")
+
+        # Expenditure
+        context.move_to(10, 250)
+        context.show_text("EXPENDITURE")
+
+        context.move_to(25, 280)
+        context.show_text("Category")
+        context.move_to(250, 280)
+        context.show_text("Week")
+        context.move_to(400, 280)
+        context.show_text("Season")
+
+        context.move_to(25, 300)
+        context.show_text("Fines")
+        context.move_to(25, 315)
+        context.show_text("Stadium")
+        context.move_to(25, 330)
+        context.show_text("Staff Wages")
+        context.move_to(25, 345)
+        context.show_text("Player Wages")
+        context.move_to(25, 360)
+        context.show_text("Transfer Fees")
+        context.move_to(25, 375)
+        context.show_text("Merchandise")
+        context.move_to(25, 390)
+        context.show_text("Catering")
+        context.move_to(25, 405)
+        context.show_text("Loan Repayment")
+        context.move_to(25, 420)
+        context.show_text("Overdraft Repayment")
+        context.move_to(25, 435)
+        context.show_text("Training")
+
+        context.move_to(25, 465)
+        context.show_text("Total Expenditure")
+
+        context.select_font_face("Droid Sans Mono",
+                                 cairo.FONT_SLANT_NORMAL,
+                                 cairo.FONT_WEIGHT_NORMAL)
+
+        y = 60
+
+        # Amounts
+        for count in range(0, 9):
+            context.move_to(250, y)
+
+            amount = display.currency(game.clubs[game.teamid].accounts[count][0])
+            context.show_text("%s" % (amount))
+
+            context.move_to(400, y)
+
+            amount = display.currency(game.clubs[game.teamid].accounts[count][1])
+            context.show_text("%s" % (amount))
+
+            y += 15
+
+        y = 300
+
+        for count in range(9, 19):
+            context.move_to(250, y)
+
+            amount = display.currency(game.clubs[game.teamid].accounts[count][0])
+            context.show_text("%s" % (amount))
+
+            context.move_to(400, y)
+
+            amount = display.currency(game.clubs[game.teamid].accounts[count][1])
+            context.show_text("%s" % (amount))
+
+            y += 15
+
+        # Total
+        context.move_to(400, 210)
+        total = display.currency(game.clubs[game.teamid].income)
+        context.show_text("%s" % (total))
+
+        context.move_to(400, 465)
+        total = display.currency(game.clubs[game.teamid].expenditure)
+        context.show_text("%s" % (total))
+
+        context.select_font_face("Droid Sans Mono",
+                                 cairo.FONT_SLANT_NORMAL,
+                                 cairo.FONT_WEIGHT_BOLD)
+
+        context.move_to(10, 500)
+        context.show_text("TOTAL")
+
+        context.select_font_face("Droid Sans Mono",
+                                 cairo.FONT_SLANT_NORMAL,
+                                 cairo.FONT_WEIGHT_NORMAL)
+
+        context.move_to(150, 500)
+        total = display.currency(game.clubs[game.teamid].balance)
+        context.show_text("%s" % (total))
