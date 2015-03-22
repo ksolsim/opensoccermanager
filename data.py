@@ -50,22 +50,23 @@ def datainit():
     game.month = 8
     game.week = 1
 
-    game.year, game.database.version = game.database.importer("about")[0]
-
     widgets.date.update()
 
     # Import clubs and populate club data structure
-    for item in game.database.importer("club"):
+    game.database.cursor.execute("SELECT * FROM club JOIN clubattr ON club.id = clubattr.club WHERE year = ?", (game.year,))
+    data = game.database.cursor.fetchall()
+
+    for item in data:
         club = structures.Club()
         clubid = item[0]
         game.clubs[clubid] = club
 
         club.name = item[1]
         club.nickname = item[2]
-        club.manager = item[3]
-        club.chairman = item[4]
-        club.stadium = item[5]
-        club.reputation = item[6]
+        club.manager = item[6]
+        club.chairman = item[7]
+        club.stadium = item[8]
+        club.reputation = item[9]
 
         # Initialise playerid in team to 0
         for count in range(0, 16):
@@ -74,7 +75,10 @@ def datainit():
         game.standings[clubid] = structures.League()
 
     # Import players
-    for item in game.database.importer("player"):
+    game.database.cursor.execute("SELECT * FROM player JOIN playerattr ON player.id = playerattr.player WHERE year = ?", (game.year,))
+    data = game.database.cursor.fetchall()
+
+    for item in data:
         player = structures.Player()
         playerid = item[0]
         game.players[playerid] = player
@@ -83,19 +87,19 @@ def datainit():
         player.second_name = item[2]
         player.common_name = item[3]
         player.date_of_birth = item[4]
-        player.club = item[5]
-        player.nationality = item[6]
-        player.position = item[7]
-        player.keeping = item[8]
-        player.tackling = item[9]
-        player.passing = item[10]
-        player.shooting = item[11]
-        player.heading = item[12]
-        player.pace = item[13]
-        player.stamina = item[14]
-        player.ball_control = item[15]
-        player.set_pieces = item[16]
-        player.training = item[17]
+        player.nationality = item[5]
+        player.club = item[9]
+        player.position = item[10]
+        player.keeping = item[11]
+        player.tackling = item[12]
+        player.passing = item[13]
+        player.shooting = item[14]
+        player.heading = item[15]
+        player.pace = item[16]
+        player.stamina = item[17]
+        player.ball_control = item[18]
+        player.set_pieces = item[19]
+        player.training = item[20]
         player.contract = random.randint(24, 260)
 
         player.age = events.age(item[4])
@@ -117,7 +121,12 @@ def datainit():
     adjacent = (0, 1), (2, 0), (3, 2), (1, 3), # DO NOT REORDER/CHANGE!
 
     # Import stadiums
-    for item in game.database.importer("stadium"):
+    #game.database.cursor.execute("SELECT * FROM stadium JOIN stadiumattr ON stadium.id = stadiumattr.stadium")
+    #game.database.cursor.execute("SELECT stadium FROM clubattr JOIN stadium ON clubattr.stadium = stadium.id WHERE year = ?", (game.year,))
+    game.database.cursor.execute("SELECT * FROM stadium JOIN stadiumattr, clubattr ON stadium.id = stadiumattr.stadium WHERE clubattr.year = ?", (game.year,))
+    data = game.database.cursor.fetchall()
+
+    for item in data:
         stadium = structures.Stadium()
         stadiumid = item[0]
         game.stadiums[stadiumid] = stadium
@@ -208,7 +217,10 @@ def datainit():
     game.surnames = [name[0] for name in surnames]
 
     # Import referees
-    for item in game.database.importer("referee"):
+    game.database.cursor.execute("SELECT id, name FROM referee WHERE year = ?", (game.year,))
+    data = game.database.cursor.fetchall()
+
+    for item in data:
         referee = structures.Referee()
         refereeid = item[0]
         referee.name = item[1]
