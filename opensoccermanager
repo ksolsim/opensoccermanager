@@ -680,7 +680,7 @@ class ContinueGame:
             widgets.news.show()
 
         # Display next match
-        if "%i/%i" % (game.date, game.month) == constants.events[game.fixturesindex - 1]:
+        if "%i/%i" % (game.date, game.month) == constants.events[game.fixturesindex]:
             for match in game.fixtures[game.fixturesindex]:
                 if game.teamid in match:
                     team1 = game.clubs[match[0]].name
