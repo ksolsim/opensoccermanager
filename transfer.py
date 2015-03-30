@@ -59,7 +59,7 @@ def make_enquiry(playerid, transfer_type):
 
             return
 
-    state = enquiry_dialog(playerid)
+    state = enquiry_dialog(playerid, transfer_type)
 
     if state:
         negotiation = structures.Negotiation()
@@ -75,7 +75,7 @@ def make_enquiry(playerid, transfer_type):
         game.clubs[game.teamid].shortlist.add(playerid)
 
 
-def enquiry_dialog(playerid):
+def enquiry_dialog(playerid, index):
     '''
     Initiate transfer enquiry dialog for transfers, loans and free
     transfers.
@@ -125,10 +125,11 @@ def check(negotiationid):
         elif len(game.clubs[player.club].squad) >= 30:
             error = 2
 
-    if len(game.clubs[negotiation.club].squad) <= 16:
-        error = 1
-    elif len(game.clubs[negotiation.club].squad) >= 30:
-        error = 2
+    if negotiation.club != 0:
+        if len(game.clubs[negotiation.club].squad) <= 16:
+            error = 1
+        elif len(game.clubs[negotiation.club].squad) >= 30:
+            error = 2
 
     return error
 
