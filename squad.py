@@ -372,7 +372,6 @@ class Squad(Gtk.Grid):
         self.contextmenu.menuitemAddLoan.connect("activate", self.transfer_status, 1)
         self.contextmenu.menuitemRemoveLoan.connect("activate", self.transfer_status, 1)
         self.contextmenu.menuitemRelease.connect("activate", self.free_transfer)
-        self.contextmenu.menuitemQuickSell.connect("activate", self.quick_sell)
         self.contextmenu.menuitemRenewContract.connect("activate", self.renew_contract)
         self.contextmenu.menuitemNotForSale.connect("toggled", self.not_for_sale)
         self.contextmenu.menuitemExtendLoan.connect("activate", self.extend_loan)
@@ -522,7 +521,6 @@ class Squad(Gtk.Grid):
                 self.contextmenu.menuitemAddLoan.set_visible(False)
                 self.contextmenu.menuitemRemoveLoan.set_visible(False)
                 self.contextmenu.menuitemRelease.set_visible(False)
-                self.contextmenu.menuitemQuickSell.set_visible(False)
                 self.contextmenu.menuitemRenewContract.set_visible(False)
                 self.contextmenu.menuitemNotForSale.set_visible(False)
                 self.contextmenu.menuitemExtendLoan.set_visible(True)
@@ -545,7 +543,6 @@ class Squad(Gtk.Grid):
                     self.contextmenu.menuitemRemoveLoan.set_sensitive(False)
 
                 self.contextmenu.menuitemRelease.set_visible(True)
-                self.contextmenu.menuitemQuickSell.set_visible(True)
                 self.contextmenu.menuitemNotForSale.set_visible(True)
                 self.contextmenu.menuitemExtendLoan.set_visible(False)
                 self.contextmenu.menuitemCancelLoan.set_visible(False)
@@ -634,7 +631,7 @@ class Squad(Gtk.Grid):
         playerid = model[treeiter][0]
         player = game.players[playerid]
 
-        name = display.name(player)
+        name = display.name(player, mode=1)
         cost = player.contract * player.wage
 
         if dialogs.free_transfer(name, cost):
@@ -654,44 +651,6 @@ class Squad(Gtk.Grid):
                     game.negotiationid += 1
 
                     self.populate_data()
-
-    def quick_sell(self, menuitem):
-        model, treeiter = self.treeselection.get_selected()
-        playerid = model[treeiter][0]
-        player = game.players[playerid]
-
-        name = display.name(player, mode=1)
-        value = player.value * 0.5
-        amount = display.value(value)
-        new_club = transfer.quick_sell(player)
-
-        club = game.clubs[new_club].name
-        state = dialogs.quick_sell(name, club, amount)
-
-        if state:
-            negotiation = structures.Negotiation()
-            negotiation.playerid = playerid
-            negotiation.club = new_club
-            negotiation.transfer_type = 0
-            negotiation.amount = value
-            game.negotiations[game.negotiationid] = negotiation
-
-            valid = transfer.check(game.negotiationid)
-
-            if valid == 0:
-                transfer.move(game.negotiationid)
-                game.negotiationid += 1
-
-                for key, item in game.clubs[game.teamid].team.items():
-                    if item == playerid:
-                        game.clubs[game.teamid].team[key] = 0
-                        self.buttonTeam[key].set_label("")
-
-                money.deposit(value, 6)
-
-                self.populate_data()
-            else:
-                dialogs.error(state)
 
     def extend_loan(self, menuitem):
         model, treeiter = self.treeselection.get_selected()

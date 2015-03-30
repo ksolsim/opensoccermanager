@@ -54,6 +54,7 @@ class Match(Gtk.Grid):
         def __init__(self):
             Gtk.Grid.__init__(self)
             self.set_hexpand(True)
+            self.set_column_homogeneous(True)
 
             self.labelTeam1 = widgets.Label()
             self.labelTeam1.set_hexpand(True)
@@ -157,6 +158,24 @@ class Match(Gtk.Grid):
 
             self.show_all()
 
+    class Information(Gtk.Grid):
+        def __init__(self):
+            Gtk.Grid.__init__(self)
+            self.set_hexpand(True)
+            self.set_row_spacing(5)
+
+            self.labelVenue = Gtk.Label()
+            self.labelVenue.set_hexpand(True)
+            self.attach(self.labelVenue, 0, 0, 1, 1)
+
+            self.labelReferee = Gtk.Label()
+            self.labelReferee.set_hexpand(True)
+            self.attach(self.labelReferee, 0, 1, 1, 1)
+
+        def update(self, venue, referee):
+            self.labelVenue.set_label("Venue: %s" % (venue))
+            self.labelReferee.set_label("Referee: %s" % (referee))
+
     class Statistics(Gtk.Grid):
         def __init__(self):
             Gtk.Grid.__init__(self)
@@ -249,6 +268,7 @@ class Match(Gtk.Grid):
 
         grid = Gtk.Grid()
         grid.set_hexpand(True)
+        grid.set_column_homogeneous(True)
         self.attach(grid, 1, 0, 1, 1)
 
         # Score
@@ -263,24 +283,14 @@ class Match(Gtk.Grid):
         grid.attach(self.team2events, 2, 1, 1, 3)
 
         # Information
-        gridInfo = Gtk.Grid()
-        grid.set_row_spacing(5)
-        grid.attach(gridInfo, 1, 1, 1, 2)
-
-        self.labelStadium = Gtk.Label()
-        self.labelStadium.set_hexpand(True)
-        self.labelStadium.set_alignment(0.5, 0)
-        gridInfo.attach(self.labelStadium, 0, 0, 1, 1)
-        self.labelReferee = Gtk.Label()
-        self.labelReferee.set_hexpand(True)
-        self.labelReferee.set_alignment(0.5, 0)
-        gridInfo.attach(self.labelReferee, 0, 1, 1, 1)
+        self.information = self.Information()
+        grid.attach(self.information, 1, 1, 1, 3)
 
         # Notebook
         self.notebook = Gtk.Notebook()
         self.notebook.set_hexpand(True)
         self.notebook.set_vexpand(True)
-        grid.attach(self.notebook, 0, 4, 4, 1)
+        self.attach(self.notebook, 1, 1, 1, 1)
 
         self.teams = self.Teams()
         label = widgets.Label("_Teams")
@@ -351,17 +361,16 @@ class Match(Gtk.Grid):
 
         self.score.update_teams(self.team1.name, self.team2.name)
 
-        # Determine referee
-        self.referee = Referee()
-        self.referee.generate()
-
+        # Determine venue and referee
         stadiumid = game.clubs[self.team1.teamid].stadium
         venue = game.stadiums[stadiumid].name
-        self.labelStadium.set_label("Venue: %s" % (venue))
 
+        self.referee = Referee()
+        self.referee.generate()
         self.refereeid = self.referee.select(0)
         referee = game.referees[self.refereeid].name
-        self.labelReferee.set_label("Referee: %s" % (referee))
+
+        self.information.update(venue, referee)
 
         game.menu.set_sensitive(False)
         widgets.continuegame.set_sensitive(False)

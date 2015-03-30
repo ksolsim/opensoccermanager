@@ -826,22 +826,3 @@ def rejection(negotiationid, transfer, index):
 
     messagedialog.run()
     messagedialog.destroy()
-
-
-def quick_sell(player):
-    '''
-    Find club to transfer quick sell player to, with a focus on finding
-    a club of similar to the current owning club.
-    '''
-    selection = []
-
-    current_reputation = game.clubs[player.club].reputation
-
-    for clubid, club in game.clubs.items():
-        if clubid != player.club:
-            if current_reputation - 2 < club.reputation:
-                selection.append(clubid)
-
-    club = random.choice(selection)
-
-    return club

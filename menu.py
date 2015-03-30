@@ -429,8 +429,6 @@ class SquadContextMenu(Gtk.Menu):
         self.append(self.menuitemAddLoan)
         self.menuitemRemoveLoan = widgets.MenuItem("_Remove From Loan List")
         self.append(self.menuitemRemoveLoan)
-        self.menuitemQuickSell = widgets.MenuItem("_Quick Sell")
-        self.append(self.menuitemQuickSell)
         self.menuitemRelease = widgets.MenuItem("Release On _Free Transfer")
         self.append(self.menuitemRelease)
         self.menuitemRenewContract = widgets.MenuItem("Renew _Contract")
