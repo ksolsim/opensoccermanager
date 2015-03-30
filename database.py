@@ -23,6 +23,10 @@ import game
 
 
 class DB:
+    def __init__(self):
+        self.connection = None
+        self.cursor = None
+
     def connect(self, filename=None):
         if not filename:
             game.preferences.readfile()
@@ -30,15 +34,9 @@ class DB:
         else:
             filepath = filename
 
-        if os.path.exists(filepath):
-            self.connection = sqlite3.connect(filepath)
-            self.connection.execute("PRAGMA foreign_keys = on")
-            self.cursor = self.connection.cursor()
-            state = 0
-        else:
-            state = 1
-
-        return state
+        self.connection = sqlite3.connect(filepath)
+        self.connection.execute("PRAGMA foreign_keys = on")
+        self.cursor = self.connection.cursor()
 
     def importer(self, table):
         self.cursor.execute("SELECT * FROM %s" % (table))
