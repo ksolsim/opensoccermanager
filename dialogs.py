@@ -52,6 +52,7 @@ def free_transfer(name, cost):
 
 
 def quick_sell(name, club, amount):
+    amount = display.currency(amount)
     messagedialog = Gtk.MessageDialog(type=Gtk.MessageType.QUESTION)
     messagedialog.set_transient_for(game.window)
     messagedialog.set_title("Quick Sell")
@@ -85,7 +86,6 @@ def renew_player_contract(playerid):
 
     wage = calculator.wage(playerid)
     wage = wage * 1.1
-    wage = calculator.wage_rounder(wage)
     leaguewin, leaguerunnerup, winbonus, goalbonus = calculator.bonus(wage)
 
     if player.age < 25:
@@ -175,9 +175,9 @@ def renew_player_contract(playerid):
 
 def scout_report(player, status):
     message = {0: "The scouting team report that %s would not be a good signing." % (player),
-              1: "%s would be considered a good signing by the scouting team." % (player),
-              2: "After some scouting, %s would be an excellent addition to the squad." % (player),
-              3: "The scouts report that %s would be a top prospect for the future." % (player),
+               1: "%s would be considered a good signing by the scouting team." % (player),
+               2: "After some scouting, %s would be an excellent addition to the squad." % (player),
+               3: "The scouts report that %s would be a top prospect for the future." % (player),
               }
 
     messagedialog = Gtk.MessageDialog(type=Gtk.MessageType.INFO)

@@ -224,7 +224,7 @@ class ScreenMain(Gtk.Grid):
             filepath = os.path.join("editor", "editor.py")
             subprocess.Popen(filepath, shell=False)
         except FileNotFoundError:
-            dialogs.file_not_found_error()
+            dialogs.editor_not_found_error()
 
     def preferences_dialog_clicked(self, button):
         dialog = interface.PreferencesDialog()
@@ -249,6 +249,7 @@ class ScreenDetails(Gtk.Grid):
         self.set_border_width(5)
 
         self.liststoreName = Gtk.ListStore(str)
+        self.liststoreYears = Gtk.ListStore(int)
         self.liststoreClubs = Gtk.ListStore(int, str)
 
         treemodelsort = Gtk.TreeModelSort(self.liststoreClubs)
@@ -276,20 +277,25 @@ class ScreenDetails(Gtk.Grid):
         label.set_mnemonic_widget(self.filechooserDatabase)
         self.attach(self.filechooserDatabase, 1, 1, 1, 1)
 
+        cellrenderertext = Gtk.CellRendererText()
+
         label = widgets.AlignedLabel("_Year")
         self.attach(label, 0, 2, 1, 1)
-        self.comboboxYear = Gtk.ComboBoxText()
+        self.comboboxYear = Gtk.ComboBox()
+        self.comboboxYear.set_model(self.liststoreYears)
+        self.comboboxYear.pack_start(cellrenderertext, True)
+        self.comboboxYear.add_attribute(cellrenderertext, "text", 0)
         self.comboboxYear.connect("changed", self.year_changed)
         label.set_mnemonic_widget(self.comboboxYear)
         self.attach(self.comboboxYear, 1, 2, 1, 1)
 
         label = widgets.AlignedLabel("_Club")
         self.attach(label, 0, 3, 1, 1)
-        cellrenderertext = Gtk.CellRendererText()
         self.comboboxClub = Gtk.ComboBox()
         self.comboboxClub.set_model(treemodelsort)
         self.comboboxClub.pack_start(cellrenderertext, True)
         self.comboboxClub.add_attribute(cellrenderertext, "text", 1)
+        self.comboboxClub.connect("changed", self.continue_status)
         label.set_mnemonic_widget(self.comboboxClub)
         self.attach(self.comboboxClub, 1, 3, 1, 1)
 
@@ -320,7 +326,7 @@ class ScreenDetails(Gtk.Grid):
         buttonbox.add(self.buttonContinue)
 
     def run(self):
-        game.database.connect()
+        state = game.database.connect()
 
         # Set database
         filepath = os.path.join("databases", "%s" % (game.database_filename))
@@ -334,10 +340,7 @@ class ScreenDetails(Gtk.Grid):
             self.comboboxFinances.append(str(key), "%s (%s)" % (item[1], amount))
 
         # Load manager names
-        self.manager_names = []
-
-        for name in fileio.read_names():
-            self.manager_names.append(name)
+        self.manager_names = [name for name in fileio.read_names()]
 
         self.liststoreName.clear()
 
@@ -345,11 +348,11 @@ class ScreenDetails(Gtk.Grid):
             self.liststoreName.append([name])
 
         self.entryName.set_text("")
-        self.comboboxClub.set_active(0)
         self.radiobuttonFinancesRep.set_active(True)
         self.comboboxFinances.set_active(0)
 
-        self.load_year_list()
+        if state == 0:
+            self.load_year_list()
 
         self.show_all()
         self.entryName.grab_focus()
@@ -358,25 +361,31 @@ class ScreenDetails(Gtk.Grid):
         self.load_club_list()
 
     def load_year_list(self):
-        data = game.database.cursor.execute("SELECT * FROM year")
+        data = game.database.cursor.execute("SELECT * FROM year ORDER BY year ASC")
 
-        self.comboboxYear.remove_all()
+        self.liststoreYears.clear()
 
-        for year in data:
-            self.comboboxYear.append_text("%i" % (year))
+        for year in data.fetchall():
+            year = year[0]
+            self.liststoreYears.append([year])
+
+        sensitive = len(self.liststoreClubs) > 0
+        self.comboboxClub.set_sensitive(sensitive)
 
         self.comboboxYear.set_active(0)
 
         self.load_club_list()
 
     def load_club_list(self):
-        if self.comboboxYear.get_active_text():
-            year = int(self.comboboxYear.get_active_text())
-            data = game.database.cursor.execute("SELECT club.id, club.name FROM club, clubattr WHERE club.id = clubattr.club AND year = ?", (year,))
+        active = self.comboboxYear.get_active()
+
+        if active != -1:
+            year = self.liststoreYears[active][0]
+            data = game.database.cursor.execute("SELECT club.id, club.name FROM club, clubattr WHERE club.id = clubattr.club AND year=?", (year,))
 
             self.liststoreClubs.clear()
 
-            for club in data:
+            for club in data.fetchall():
                 self.liststoreClubs.append([club[0], club[1]])
 
             sensitive = len(self.liststoreClubs) > 0
@@ -394,8 +403,15 @@ class ScreenDetails(Gtk.Grid):
         active = self.radiobuttonFinancesUSM.get_active()
         self.comboboxFinances.set_sensitive(active)
 
-    def continue_status(self, entry):
-        sensitive = entry.get_text_length() > 0
+    def continue_status(self, widget=None):
+        sensitive = self.entryName.get_text_length() > 0
+
+        if sensitive:
+            if self.comboboxClub.get_active() != -1:
+                sensitive = True
+            else:
+                sensitive = False
+
         self.buttonContinue.set_sensitive(sensitive)
 
     def back_button_clicked(self, button):
@@ -403,7 +419,8 @@ class ScreenDetails(Gtk.Grid):
         game.window.add(game.window.screenMain)
 
     def continue_button_clicked(self, button):
-        game.year = int(self.comboboxYear.get_active_text())
+        active = self.comboboxYear.get_active()
+        game.year = int(self.liststoreYears[active][0])
 
         # Get club ID number from combobox
         treeiter = self.comboboxClub.get_active_iter()

@@ -30,9 +30,15 @@ class DB:
         else:
             filepath = filename
 
-        self.connection = sqlite3.connect(filepath)
-        self.connection.execute("PRAGMA foreign_keys = on")
-        self.cursor = self.connection.cursor()
+        if os.path.exists(filepath):
+            self.connection = sqlite3.connect(filepath)
+            self.connection.execute("PRAGMA foreign_keys = on")
+            self.cursor = self.connection.cursor()
+            state = 0
+        else:
+            state = 1
+
+        return state
 
     def importer(self, table):
         self.cursor.execute("SELECT * FROM %s" % (table))

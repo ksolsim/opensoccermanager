@@ -121,8 +121,6 @@ def datainit():
     adjacent = (0, 1), (2, 0), (3, 2), (1, 3), # DO NOT REORDER/CHANGE!
 
     # Import stadiums
-    #game.database.cursor.execute("SELECT * FROM stadium JOIN stadiumattr ON stadium.id = stadiumattr.stadium")
-    #game.database.cursor.execute("SELECT stadium FROM clubattr JOIN stadium ON clubattr.stadium = stadium.id WHERE year = ?", (game.year,))
     game.database.cursor.execute("SELECT * FROM stadium JOIN stadiumattr, clubattr ON stadium.id = stadiumattr.stadium WHERE clubattr.year = ?", (game.year,))
     data = game.database.cursor.fetchall()
 
