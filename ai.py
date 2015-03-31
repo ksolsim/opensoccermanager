@@ -565,6 +565,10 @@ class Result:
         return ratings
 
     def man_of_the_match(self):
+        '''
+        Determine the man of the match winner based on performance rating for
+        the match.
+        '''
         motm = []
         value = 0
 
@@ -576,49 +580,27 @@ class Result:
         self.man_of_the_match_id = random.choice(motm)
 
     def attendance(self, team1, team2):
+        '''
+        Calculate the attendance for the match taking into account ticket price,
+        form, player transfers, etc.
+        '''
         club = game.clubs[team1.teamid]
+        stadium = game.stadiums[club.stadium]
 
-        capacity = game.stadiums[club.stadium].capacity
-        base_capacity = (74000 * 0.05) * club.reputation
+        minimum = int(club.base_attendance * -0.1)
+        maximum = int(club.base_attendance * 0.1)
+        attendance = club.base_attendance + random.randrange(minimum, maximum)
 
-        capacity -= club.school_tickets
-
-        attendance = 0
-
-        if base_capacity > capacity:
-            attendance += capacity * 0.5
-        else:
-            attendance += base_capacity * 0.5
-
-        # Form
-        points = 0
-
-        for form in club.form:
-            if form == "W":
-                points += 3
-            elif form == "D":
-                points += 1
-
-        attendance += (points / (len(club.form) * 3)) * (base_capacity * 0.5)
-
-        # Reputation
-        diff = club.reputation - game.clubs[team2.teamid].reputation
-
-        if diff == 0:
-            diff = 1
-
-        attendance += (base_capacity * 0.5) / diff
-
-        if attendance > capacity:
-            attendance = capacity
-
-        attendance += club.school_tickets
-
-        attendance = int(attendance)
+        # Ensure attendance can't be higher than capacity
+        if attendance > stadium.capacity:
+            attendance = stadium.capacity
 
         return attendance
 
     def pay_goal_bonus(self, scorers, index):
+        '''
+        Iterate through each goalscorer and pay their contracted bonus amount.
+        '''
         for playerid in scorers[index]:
             amount = game.players[playerid].bonus[3]
             money.withdraw(amount, 12)

@@ -254,6 +254,8 @@ class Match(Gtk.Grid):
 
     def __init__(self):
         Gtk.Grid.__init__(self)
+        self.set_row_spacing(5)
+        self.set_column_spacing(5)
         self.set_border_width(5)
         self.set_vexpand(True)
         self.set_hexpand(True)

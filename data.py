@@ -72,6 +72,9 @@ def datainit():
         for count in range(0, 16):
             club.team[count] = 0
 
+        club.base_attendance = (74000 / (40 - club.reputation)) * club.reputation
+        club.base_attendance = int(club.base_attendance * 0.9)
+
         game.standings[clubid] = structures.League()
 
     # Import players
