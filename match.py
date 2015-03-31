@@ -476,7 +476,7 @@ class Match(Gtk.Grid):
             money.deposit(amount, 8)
 
         # Matchday ticket sales
-        if self.team1 == game.teamid:
+        if self.team1.teamid == game.teamid:
             sales.matchday_tickets(attendance)
             sales.merchandise(attendance)
             sales.catering(attendance)

@@ -152,8 +152,11 @@ def catering(attendance):
     club = game.clubs[game.teamid]
     club.sales[1] = []
 
+    print(club.catering)
+
     for count, profit_percentage in enumerate(club.catering):
         multiplier = constants.catering[count][2]
+        print(count)
         multiplier += random.randint(-3, 3)
 
         potential_sales = attendance * (multiplier * 0.01)

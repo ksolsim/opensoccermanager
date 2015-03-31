@@ -299,7 +299,7 @@ def dataloader(finances):
 
     # Initiate values for merchandise / catering
     club.merchandise = [100] * len(constants.merchandise)
-    club.catering = [100] * len(constants.merchandise)
+    club.catering = [100] * len(constants.catering)
 
     # Import resources
     resources.import_news()

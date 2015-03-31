@@ -661,6 +661,8 @@ class Merchandise(Gtk.Grid):
 
             self.display[count][3].set_label(sales)
 
+        print(club.sales)
+
         self.show_all()
 
 
