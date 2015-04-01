@@ -31,12 +31,17 @@ class DB:
         if not filename:
             game.preferences.readfile()
             filepath = os.path.join("databases", game.database_filename)
+
+            if not os.path.isfile(filepath):
+                return False
         else:
             filepath = filename
 
         self.connection = sqlite3.connect(filepath)
         self.connection.execute("PRAGMA foreign_keys = on")
         self.cursor = self.connection.cursor()
+
+        return True
 
     def importer(self, table):
         self.cursor.execute("SELECT * FROM %s" % (table))

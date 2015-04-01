@@ -326,12 +326,6 @@ class ScreenDetails(Gtk.Grid):
         buttonbox.add(self.buttonContinue)
 
     def run(self):
-        game.database.connect()
-
-        # Set database
-        filepath = os.path.join("databases", "%s" % (game.database_filename))
-        self.filechooserDatabase.select_filename(filepath)
-
         # Load financials
         self.comboboxFinances.remove_all()
 
@@ -351,7 +345,12 @@ class ScreenDetails(Gtk.Grid):
         self.radiobuttonFinancesRep.set_active(True)
         self.comboboxFinances.set_active(0)
 
-        self.load_year_list()
+        if game.database.connect():
+            # Set database to open
+            filepath = os.path.join("databases", "%s" % (game.database_filename))
+            self.filechooserDatabase.select_filename(filepath)
+
+            self.load_year_list()
 
         self.show_all()
         self.entryName.grab_focus()
