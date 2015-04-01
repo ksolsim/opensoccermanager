@@ -755,7 +755,7 @@ class ContinueGame:
 
         widgets.date.update()
 
-        # Comment to prevent screen refresh on continue game - FASTER!
+        # Reload screen after each continue game
         game.window.screen_loader(game.active_screen_id)
 
     def check_squad(self):
@@ -763,40 +763,51 @@ class ContinueGame:
         Check whether the squad has been selected, determine the numbers
         and return whether the game can proceed or not.
         '''
-        error = False
+        class Errors:
+            team_count = 0
+            injuries = []
+            suspensions = []
+            errored = False
 
-        for playerid in game.clubs[game.teamid].team.values():
-            if playerid != 0:
+        errors = Errors()
+
+        error = False
+        team_count = 0
+        sub_count = 0
+
+        for positionid, playerid in game.clubs[game.teamid].team.items():
+            if playerid:
                 player = game.players[playerid]
 
                 if player.injury_type != 0:
-                    dialogs.error(6)
-                    error = True
+                    errors.injuries.append(player)
+                    errors.errored = True
 
-                if player.suspension_type != 0 and not error:
-                    dialogs.error(7)
-                    error = True
+                if player.suspension_type != 0:
+                    errors.suspensions.append(player)
+                    errors.errored = True
 
-        if not error:
-            team_count = 0
-            sub_count = 0
+            if playerid != 0:
+                if positionid < 11:
+                    team_count += 1
 
-            for count, item in enumerate(game.clubs[game.teamid].team.items()):
-                if item[1] != 0:
-                    if count < 11:
-                        team_count += 1
+                if positionid >= 11:
+                    sub_count += 1
 
-                    if count >= 11:
-                        sub_count += 1
+        if team_count < 11:
+            errors.team_count = team_count
+            errors.errored = True
+        elif sub_count < 5:
+            answer = dialogs.not_enough_subs(sub_count)
 
-            if team_count + 1 < 11:
-                dialogs.not_enough_players(team_count)
+            if not answer:
                 error = True
-            elif sub_count + 1 < 5:
-                answer = dialogs.not_enough_subs(sub_count)
 
-                if not answer:
-                    error = True
+        if errors.errored:
+            error = True
+
+            dialog = dialogs.SquadReport()
+            dialog.display(errors)
 
         return error
 
