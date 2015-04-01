@@ -300,24 +300,6 @@ def player_info(playerid):
     dialog.destroy()
 
 
-def not_enough_players(number):
-    if number == 0:
-        text = "Currently there are no players chosen."
-    elif number == 1:
-        text = "Currently there is only %i player chosen." % (number)
-    else:
-        text = "Currently there are only %i players chosen." % (number)
-
-    messagedialog = Gtk.MessageDialog(type=Gtk.MessageType.ERROR)
-    messagedialog.format_secondary_text(text)
-    messagedialog.set_transient_for(game.window)
-    messagedialog.set_title("Not Enough Players")
-    messagedialog.add_button("_Close", Gtk.ResponseType.CLOSE)
-    messagedialog.set_markup("You have not selected enough players to proceed to the next game.")
-    messagedialog.run()
-    messagedialog.destroy()
-
-
 def not_enough_subs(number):
     messagedialog = Gtk.MessageDialog(type=Gtk.MessageType.WARNING)
     messagedialog.set_transient_for(game.window)
