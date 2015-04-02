@@ -217,10 +217,20 @@ def player_info(playerid):
     dialog.set_transient_for(game.window)
     dialog.set_title("Player Information")
     dialog.add_button("_Close", Gtk.ResponseType.CLOSE)
-    dialog.vbox.set_spacing(5)
+
+    notebook = Gtk.Notebook()
+    dialog.vbox.add(notebook)
+
+    grid1 = Gtk.Grid()
+    grid1.set_border_width(5)
+    grid1.set_row_spacing(5)
+    grid1.set_column_spacing(5)
+    label = widgets.Label("_Personal")
+    notebook.append_page(grid1, label)
 
     commonframe = widgets.CommonFrame("Contract")
-    dialog.vbox.add(commonframe)
+    grid1.attach(commonframe, 0, 0, 1, 1)
+
     grid = Gtk.Grid()
     grid.set_row_spacing(5)
     grid.set_column_spacing(5)
@@ -252,7 +262,8 @@ def player_info(playerid):
         grid.attach(label, 1, 3, 1, 1)
 
     commonframe = widgets.CommonFrame("Injuries / Suspensions")
-    dialog.vbox.add(commonframe)
+    grid1.attach(commonframe, 0, 1, 1, 1)
+
     grid = Gtk.Grid()
     grid.set_row_spacing(5)
     grid.set_column_spacing(5)
@@ -294,6 +305,45 @@ def player_info(playerid):
         grid.attach(label, 1, 2, 1, 1)
         label = widgets.AlignedLabel("%s" % (suspension_period))
         grid.attach(label, 1, 3, 1, 1)
+
+    grid2 = Gtk.Grid()
+    grid2.set_border_width(5)
+    label = widgets.Label("_History")
+    notebook.append_page(grid2, label)
+
+    scrolledwindow = Gtk.ScrolledWindow()
+    scrolledwindow.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+    grid2.attach(scrolledwindow, 0, 0, 1, 1)
+
+    player = game.players[playerid]
+    club = game.clubs[player.club].name
+    season = "%i/%i" % (game.year, game.year + 1)
+    games = "%i/%i" % (player.appearances, player.substitute)
+
+    liststore = Gtk.ListStore(str, str, str, int, int, int)
+    liststore.append([season, club, games, player.goals, player.assists, player.man_of_the_match])
+
+    treeview = Gtk.TreeView()
+    treeview.set_vexpand(True)
+    treeview.set_hexpand(True)
+    treeview.set_model(liststore)
+    treeview.set_enable_search(False)
+    treeview.set_search_column(-1)
+    treeselection = treeview.get_selection()
+    treeselection.set_mode(Gtk.SelectionMode.NONE)
+    treeviewcolumn = widgets.TreeViewColumn(title="Season", column=0)
+    treeview.append_column(treeviewcolumn)
+    treeviewcolumn = widgets.TreeViewColumn(title="Club", column=1)
+    treeview.append_column(treeviewcolumn)
+    treeviewcolumn = widgets.TreeViewColumn(title="Games", column=2)
+    treeview.append_column(treeviewcolumn)
+    treeviewcolumn = widgets.TreeViewColumn(title="Goals", column=3)
+    treeview.append_column(treeviewcolumn)
+    treeviewcolumn = widgets.TreeViewColumn(title="Assists", column=4)
+    treeview.append_column(treeviewcolumn)
+    treeviewcolumn = widgets.TreeViewColumn(title="MOTM", column=5)
+    treeview.append_column(treeviewcolumn)
+    scrolledwindow.add(treeview)
 
     dialog.show_all()
     dialog.run()

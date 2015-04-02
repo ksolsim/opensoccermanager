@@ -403,42 +403,6 @@ class Squad(Gtk.Grid):
         else:
             self.update_squad(selected, count)
 
-    def run(self):
-        formationid = game.clubs[game.teamid].tactics[0]
-
-        for count in range(0, 16):
-            button = self.buttonTeam[count]
-
-            playerid = game.clubs[game.teamid].team[count]
-
-            if count < 11:
-                position = constants.formations[formationid][1][count]
-                self.labelTeam[count].set_label("_%s" % (position))
-                self.labelTeam[count].set_mnemonic_widget(button)
-            else:
-                self.labelSubs[count - 11].set_label("Sub _%s" % (count - 10))
-                self.labelSubs[count - 11].set_mnemonic_widget(button)
-
-        # Context menu for "Add To Position"
-        self.menuPosition = Gtk.Menu()
-        self.contextmenu.menuitemAddPosition.set_submenu(self.menuPosition)
-
-        for count, item in enumerate(constants.formations[formationid][1]):
-            menuitem = Gtk.MenuItem("%s" % (item))
-            menuitem.connect_after("button-release-event", self.add_to_position, count)
-            self.menuPosition.append(menuitem)
-
-        for item in range(1, 6):
-            menuitem = Gtk.MenuItem("Sub %i" % (item))
-            menuitem.connect_after("button-release-event", self.add_to_position, item + 10)
-            self.menuPosition.append(menuitem)
-
-        # Populate data across squad screen
-        self.populate_data()
-        self.display_squad()
-
-        self.show_all()
-
     def display_squad(self):
         '''
         Display the set items within the squad button list, or clear if
@@ -746,3 +710,39 @@ class Squad(Gtk.Grid):
                                         player.injury_type,
                                         player.suspension_type,
                                         ])
+
+    def run(self):
+        formationid = game.clubs[game.teamid].tactics[0]
+
+        for count in range(0, 16):
+            button = self.buttonTeam[count]
+
+            playerid = game.clubs[game.teamid].team[count]
+
+            if count < 11:
+                position = constants.formations[formationid][1][count]
+                self.labelTeam[count].set_label("_%s" % (position))
+                self.labelTeam[count].set_mnemonic_widget(button)
+            else:
+                self.labelSubs[count - 11].set_label("Sub _%s" % (count - 10))
+                self.labelSubs[count - 11].set_mnemonic_widget(button)
+
+        # Context menu for "Add To Position"
+        self.menuPosition = Gtk.Menu()
+        self.contextmenu.menuitemAddPosition.set_submenu(self.menuPosition)
+
+        for count, item in enumerate(constants.formations[formationid][1]):
+            menuitem = Gtk.MenuItem("%s" % (item))
+            menuitem.connect_after("button-release-event", self.add_to_position, count)
+            self.menuPosition.append(menuitem)
+
+        for item in range(1, 6):
+            menuitem = Gtk.MenuItem("Sub %i" % (item))
+            menuitem.connect_after("button-release-event", self.add_to_position, item + 10)
+            self.menuPosition.append(menuitem)
+
+        # Populate data across squad screen
+        self.populate_data()
+        self.display_squad()
+
+        self.show_all()

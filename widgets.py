@@ -185,3 +185,15 @@ class SpinButton(Gtk.SpinButton):
         self.set_increments(10, 100)
         self.set_snap_to_ticks(True)
         self.set_numeric(True)
+
+
+class TreeViewColumn(Gtk.TreeViewColumn):
+    def __init__(self, title="", column=0):
+        Gtk.TreeViewColumn.__init__(self)
+
+        if title != "":
+            self.set_title(title)
+
+        cellrenderertext = Gtk.CellRendererText()
+        self.pack_start(cellrenderertext, True)
+        self.add_attribute(cellrenderertext, "text", column)
