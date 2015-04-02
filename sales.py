@@ -136,7 +136,7 @@ def merchandise(attendance):
         if sale_percentage < 0:
             sale_percentage = 0
 
-        sales = int((potential_sales * 0.01) * sale_percentage)
+        sales = int((potential_sales * 0.25 * 0.01) * sale_percentage)
 
         income = sales * (constants.merchandise[count][1] + (constants.merchandise[count][1] * (profit_percentage * 0.01)))
         profit = income - (sales * constants.merchandise[count][1])
@@ -162,7 +162,7 @@ def catering(attendance):
         if sale_percentage < 0:
             sale_percentage = 0
 
-        sales = int((potential_sales * 0.01) * sale_percentage)
+        sales = int((potential_sales * 0.25 * 0.01) * sale_percentage)
 
         income = sales * (constants.catering[count][1] + (constants.catering[count][1] * (profit_percentage * 0.01)))
         profit = income - (sales * constants.catering[count][1])

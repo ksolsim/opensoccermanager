@@ -376,6 +376,7 @@ class Squad(Gtk.Grid):
         self.contextmenu.menuitemNotForSale.connect("toggled", self.not_for_sale)
         self.contextmenu.menuitemExtendLoan.connect("activate", self.extend_loan)
         self.contextmenu.menuitemCancelLoan.connect("activate", self.cancel_loan)
+        self.contextmenu.menuitemPlayerInfo.connect("activate", self.row_activated)
 
         for count in range(0, 16):
             button = Gtk.Button("")
@@ -494,13 +495,13 @@ class Squad(Gtk.Grid):
         button.set_label("%s" % (name))
         game.clubs[game.teamid].team[count] = playerid
 
-    def row_activated(self, treeview, path, treeviewcolumn):
+    def row_activated(self, widget, path=None, treeviewcolumn=None):
         '''
         Display the extra player information dialog box when double
         clicking a row in the squad.
         '''
-        model = treeview.get_model()
-        playerid = model[path][0]
+        model, treeiter = self.treeselection.get_selected()
+        playerid = model[treeiter][0]
 
         dialogs.player_info(playerid)
 

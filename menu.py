@@ -441,3 +441,9 @@ class SquadContextMenu(Gtk.Menu):
         self.append(self.menuitemExtendLoan)
         self.menuitemCancelLoan = widgets.MenuItem("_Cancel Loan")
         self.append(self.menuitemCancelLoan)
+
+        separator = Gtk.SeparatorMenuItem()
+        self.append(separator)
+
+        self.menuitemPlayerInfo = widgets.MenuItem("_Player Information")
+        self.append(self.menuitemPlayerInfo)
