@@ -104,7 +104,7 @@ def pay_win_bonus():
     '''
     Pay the win bonus amount defined within the players contract.
     '''
-    for playerid in game.clubs[game.teamid].team:
+    for playerid in game.clubs[game.teamid].team.values():
         if playerid != 0:
             amount = game.players[playerid].bonus[2]
             withdraw(amount, 12)
