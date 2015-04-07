@@ -323,6 +323,9 @@ def player_info(playerid):
     liststore = Gtk.ListStore(str, str, str, int, int, int)
     liststore.append([season, club, games, player.goals, player.assists, player.man_of_the_match])
 
+    for item in player.history:
+        liststore.append(item)
+
     treeview = Gtk.TreeView()
     treeview.set_vexpand(True)
     treeview.set_hexpand(True)

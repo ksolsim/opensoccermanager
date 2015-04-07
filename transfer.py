@@ -193,7 +193,17 @@ def move(negotiationid):
 
         fee = "Free Transfer"
 
+    club = old_club
+    season = "%i/%i" % (game.year, game.year + 1)
+    games = "%i/%i" % (player.appearances, player.substitute)
+
     game.transfers.append([name, old_club, new_club, fee])
+    player.history.append([season,
+                           club,
+                           games,
+                           player.goals,
+                           player.assists,
+                           player.man_of_the_match])
 
     del game.negotiations[negotiationid]
 

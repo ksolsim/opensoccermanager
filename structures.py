@@ -37,6 +37,7 @@ class Player:
         self.assists = 0
         self.man_of_the_match = 0
         self.rating = []
+        self.history = []
 
     def skills(self):
         values = (self.keeping,
