@@ -705,6 +705,16 @@ def end_of_season():
     for coach in game.clubs[game.teamid].coaches_hired.values():
         coach.age += 1
 
+        if coach.age > 60:
+            likeliness = (coach.age - 60) * 20
+            value = random.randint(0, 100)
+
+            if value <= likeliness:
+                coach.retiring = True
+
+        if coach.retiring and coach.contract == 0:
+            del game.clubs[game.teamid].coaches_hired[coachid]
+
     # Reset charts
     game.goalscorers = {}
     game.assists = {}
