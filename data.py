@@ -134,20 +134,20 @@ def datainit():
 
         stadium.name = item[1]
         stadium.condition = 100
-        stadium.capacity = sum(item[2:14])
+        stadium.capacity = sum(item[5:17])
         stadium.main = []
         stadium.corner = []
 
-        for count, value in enumerate(item[2:6]):
+        for count, value in enumerate(item[5:9]):
             stand = structures.Stand()
             stand.capacity = value
 
             if stand.capacity > 0:
-                stand.seating = bool(item[count + 14])
-                stand.roof = bool(item[count + 22])
+                stand.seating = bool(item[count + 17])
+                stand.roof = bool(item[count + 25])
 
                 if stand.capacity >= 5000 and stand.roof:
-                    stand.box = item[count + 10]
+                    stand.box = item[count + 13]
                 else:
                     stand.box = 0
             else:
@@ -159,13 +159,13 @@ def datainit():
 
             stadium.main.append(stand)
 
-        for count, value in enumerate(item[6:10]):
+        for count, value in enumerate(item[9:13]):
             stand = structures.Stand()
             stand.capacity = value
 
             if stand.capacity > 0:
-                stand.seating = bool(item[count + 18])
-                stand.roof = bool(item[count + 26])
+                stand.seating = bool(item[count + 21])
+                stand.roof = bool(item[count + 29])
                 stand.available = [False, False]
             else:
                 stand.seating = False
@@ -174,7 +174,7 @@ def datainit():
 
             stadium.corner.append(stand)
 
-        stadium.buildings = list(item[30:38])
+        stadium.buildings = list(item[33:41])
 
     for clubid, club in game.clubs.items():
         stadium = game.stadiums[club.stadium]
