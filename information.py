@@ -829,11 +829,11 @@ class Statistics(Gtk.Grid):
 
         label = widgets.AlignedLabel("Largest Win")
         grid.attach(label, 0, 0, 1, 1)
-        self.labelWin = widgets.AlignedLabel("Not Applicable")
+        self.labelWin = widgets.AlignedLabel()
         grid.attach(self.labelWin, 1, 0, 1, 1)
         label = widgets.AlignedLabel("Largest Loss")
         grid.attach(label, 0, 1, 1, 1)
-        self.labelLoss = widgets.AlignedLabel("Not Applicable")
+        self.labelLoss = widgets.AlignedLabel()
         grid.attach(self.labelLoss, 1, 1, 1, 1)
 
         commonframe = widgets.CommonFrame("Goals")
@@ -976,6 +976,8 @@ class Statistics(Gtk.Grid):
                                                               game.statistics.win[1][1],
                                                               opposition)
                                    )
+        else:
+            self.labelWin.set_label("-")
 
         if game.statistics.loss != (0, ()):
             clubid = game.statistics.loss[0]
@@ -984,6 +986,8 @@ class Statistics(Gtk.Grid):
                                                                game.statistics.loss[1][1],
                                                                opposition)
                                     )
+        else:
+            self.labelLoss.set_label("-")
 
         # Top goalscorer
         top = [0, 0]
@@ -1000,7 +1004,7 @@ class Statistics(Gtk.Grid):
             name = display.name(player, mode=1)
             self.labelGoalscorer.set_label("%s (%i goals)" % (name, top[1]))
         else:
-            self.labelGoalscorer.set_label("Not applicable")
+            self.labelGoalscorer.set_label("-")
 
         # Top assister
         top = [0, 0]
@@ -1017,7 +1021,7 @@ class Statistics(Gtk.Grid):
             name = display.name(player, mode=1)
             self.labelAssister.set_label("%s (%i assists)" % (name, top[1]))
         else:
-            self.labelAssister.set_label("Not applicable")
+            self.labelAssister.set_label("-")
 
         # Highest wage / player value
         wage = [game.players[key].wage for key in game.clubs[game.teamid].squad]
@@ -1048,3 +1052,7 @@ class Statistics(Gtk.Grid):
             self.labelHighAttendance.set_label("%i" % (max(attendance)))
             self.labelLowAttendance.set_label("%i" % (min(attendance)))
             self.labelAverageAttendance.set_label("%i" % (statistics.mean(attendance)))
+        else:
+            self.labelHighAttendance.set_label("-")
+            self.labelLowAttendance.set_label("-")
+            self.labelAverageAttendance.set_label("-")
