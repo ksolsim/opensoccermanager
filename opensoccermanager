@@ -384,7 +384,7 @@ class ScreenDetails(Gtk.Grid):
 
         if active != -1:
             year = self.liststoreYears[active][0]
-            data = game.database.cursor.execute("SELECT club.id, club.name FROM club, clubattr WHERE club.id = clubattr.club AND year=?", (year,))
+            data = game.database.cursor.execute("SELECT club.id, club.name FROM club, clubattr WHERE club.id = clubattr.club AND year = ?", (year,))
 
             self.liststoreClubs.clear()
 

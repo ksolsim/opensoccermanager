@@ -45,6 +45,7 @@ def datainit():
     game.stadiums = {}
     game.negotiations = {}
     game.news = []
+    game.standings = {}
 
     game.date = 1
     game.month = 8
