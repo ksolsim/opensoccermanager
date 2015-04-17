@@ -164,7 +164,6 @@ class Squad(Gtk.Grid):
         self.tree_columns = ([], [], [])
 
         Gtk.Grid.__init__(self)
-        self.set_border_width(5)
         self.set_row_spacing(5)
         self.set_column_spacing(5)
 

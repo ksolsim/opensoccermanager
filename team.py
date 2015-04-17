@@ -36,9 +36,6 @@ class Tactics(Gtk.Grid):
         self.tackling = []
 
         Gtk.Grid.__init__(self)
-        self.set_border_width(5)
-        self.set_vexpand(True)
-        self.set_hexpand(True)
 
         grid = Gtk.Grid()
         grid.set_row_spacing(5)
@@ -713,9 +710,6 @@ class Staff(Gtk.Grid):
 
     def __init__(self):
         Gtk.Grid.__init__(self)
-        self.set_vexpand(True)
-        self.set_hexpand(True)
-        self.set_border_width(5)
 
         notebook = Gtk.Notebook()
         self.attach(notebook, 0, 0, 1, 1)

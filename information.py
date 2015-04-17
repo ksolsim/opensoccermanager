@@ -35,7 +35,6 @@ class News(Gtk.Grid):
 
     def __init__(self):
         Gtk.Grid.__init__(self)
-        self.set_border_width(5)
         self.set_row_spacing(5)
 
         self.liststoreNews = Gtk.ListStore(str, str, str, int, str, bool, int)
@@ -223,7 +222,6 @@ class Fixtures(Gtk.Grid):
 
     def __init__(self):
         Gtk.Grid.__init__(self)
-        self.set_border_width(5)
         self.set_row_spacing(5)
         self.set_column_spacing(5)
 
@@ -351,7 +349,6 @@ class Results(Gtk.Grid):
         self.page = 0
 
         Gtk.Grid.__init__(self)
-        self.set_border_width(5)
         self.set_row_spacing(5)
 
         scrolledwindow = Gtk.ScrolledWindow()
@@ -471,7 +468,6 @@ class Standings(Gtk.Grid):
 
     def __init__(self):
         Gtk.Grid.__init__(self)
-        self.set_border_width(5)
 
         scrolledwindow = Gtk.ScrolledWindow()
         self.attach(scrolledwindow, 0, 0, 1, 1)
@@ -590,10 +586,7 @@ class Charts(Gtk.Grid):
         self.charts = self.views[0]
 
         Gtk.Grid.__init__(self)
-        self.set_border_width(5)
         self.set_row_spacing(5)
-        self.set_vexpand(True)
-        self.set_hexpand(True)
 
         buttonbox = Gtk.ButtonBox()
         buttonbox.set_spacing(5)
@@ -648,9 +641,6 @@ class Evaluation(Gtk.Grid):
 
     def __init__(self):
         Gtk.Grid.__init__(self)
-        self.set_vexpand(True)
-        self.set_hexpand(True)
-        self.set_border_width(5)
         self.set_row_spacing(5)
         self.set_column_spacing(5)
 
@@ -813,9 +803,6 @@ class Statistics(Gtk.Grid):
 
     def __init__(self):
         Gtk.Grid.__init__(self)
-        self.set_vexpand(True)
-        self.set_hexpand(True)
-        self.set_border_width(5)
         self.set_row_spacing(5)
         self.set_column_spacing(5)
 

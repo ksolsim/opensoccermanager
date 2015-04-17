@@ -39,9 +39,6 @@ class Players(Gtk.Grid):
         self.tree_columns = [[], [], []]
 
         Gtk.Grid.__init__(self)
-        self.set_vexpand(True)
-        self.set_hexpand(True)
-        self.set_border_width(5)
         self.set_row_spacing(5)
 
         grid = Gtk.Grid()
@@ -498,9 +495,6 @@ class Negotiations(Gtk.Grid):
         Gtk.Grid.__init__(self)
         self.set_vexpand(True)
         self.set_hexpand(True)
-        self.set_border_width(5)
-        self.set_row_spacing(5)
-        self.set_column_spacing(5)
 
         self.liststoreInbound = Gtk.ListStore(int, str, str, str, str, str)
         self.liststoreOutbound = Gtk.ListStore(int, str, str, str, str, str)
@@ -713,14 +707,13 @@ class Shortlist(Gtk.Grid):
 
     def __init__(self):
         Gtk.Grid.__init__(self)
-        self.set_vexpand(True)
-        self.set_hexpand(True)
-        self.set_border_width(5)
         self.set_row_spacing(5)
 
         self.liststorePlayers = Gtk.ListStore(int, str, int, str, str, str, str, str)
 
         scrolledwindow = Gtk.ScrolledWindow()
+        scrolledwindow.set_policy(Gtk.PolicyType.NEVER,
+                                  Gtk.PolicyType.AUTOMATIC)
         scrolledwindow.set_vexpand(True)
         scrolledwindow.set_hexpand(True)
         self.attach(scrolledwindow, 0, 0, 1, 1)
@@ -735,19 +728,33 @@ class Shortlist(Gtk.Grid):
         scrolledwindow.add(treeview)
 
         cellrenderertext = Gtk.CellRendererText()
-        treeviewcolumn = Gtk.TreeViewColumn("Name", cellrenderertext, text=1)
+        treeviewcolumn = Gtk.TreeViewColumn("Name",
+                                            cellrenderertext,
+                                            text=1)
         treeview.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Age", cellrenderertext, text=2)
+        treeviewcolumn = Gtk.TreeViewColumn("Age",
+                                            cellrenderertext,
+                                            text=2)
         treeview.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Club", cellrenderertext, text=3)
+        treeviewcolumn = Gtk.TreeViewColumn("Club",
+                                            cellrenderertext,
+                                            text=3)
         treeview.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Nationality", cellrenderertext, text=4)
+        treeviewcolumn = Gtk.TreeViewColumn("Nationality",
+                                            cellrenderertext,
+                                            text=4)
         treeview.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Position", cellrenderertext, text=5)
+        treeviewcolumn = Gtk.TreeViewColumn("Position",
+                                            cellrenderertext,
+                                            text=5)
         treeview.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Value", cellrenderertext, text=6)
+        treeviewcolumn = Gtk.TreeViewColumn("Value",
+                                            cellrenderertext,
+                                            text=6)
         treeview.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Wage", cellrenderertext, text=7)
+        treeviewcolumn = Gtk.TreeViewColumn("Wage",
+                                            cellrenderertext,
+                                            text=7)
         treeview.append_column(treeviewcolumn)
 
         buttonbox = Gtk.ButtonBox()
@@ -805,12 +812,10 @@ class Shortlist(Gtk.Grid):
         model, treeiter = self.treeselection.get_selected()
         playerid = model[treeiter][0]
 
-        state = dialogs.remove_from_shortlist(playerid)
-
-        if state:
+        if dialogs.remove_from_shortlist(playerid):
             game.clubs[game.teamid].shortlist.remove(playerid)
 
-        self.populate_data()
+            self.populate_data()
 
     def scout_report(self, button):
         model, treeiter = self.treeselection.get_selected()
@@ -865,11 +870,8 @@ class InjSus(Gtk.Grid):
 
     def __init__(self):
         Gtk.Grid.__init__(self)
-        self.set_border_width(5)
         self.set_row_spacing(5)
         self.set_column_spacing(5)
-        self.set_vexpand(True)
-        self.set_hexpand(True)
 
         label = widgets.AlignedLabel("<b>Injuries</b>")
         label.set_use_markup(True)
