@@ -46,6 +46,16 @@ def datainit():
     game.negotiations = {}
     game.news = []
     game.standings = {}
+    game.referees = {}
+    game.injuries = {}
+    game.suspensions = {}
+    game.televised = []
+
+    game.goalscorers = {}
+    game.assists = {}
+    game.cleansheets = {}
+    game.cards = {}
+    game.transfers = []
 
     game.date = 1
     game.month = 8
