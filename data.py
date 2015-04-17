@@ -39,23 +39,29 @@ def datainit():
     the season. Initially used to populate details screen for collecting player
     information.
     '''
+    # Clear data structures and reset date
     game.clubs = {}
     game.players = {}
     game.nations = {}
     game.stadiums = {}
     game.negotiations = {}
-    game.news = []
-    game.standings = {}
     game.referees = {}
     game.injuries = {}
     game.suspensions = {}
     game.televised = []
+    game.surnames = []
 
     game.goalscorers = {}
     game.assists = {}
     game.cleansheets = {}
     game.cards = {}
     game.transfers = []
+
+    game.standings = {}
+    game.fixtures = []
+    game.results = []
+    game.record = [[], []]
+    game.news = []
 
     game.date = 1
     game.month = 8

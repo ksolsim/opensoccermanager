@@ -141,6 +141,10 @@ def top_assister():
 
 
 def player_of_the_season():
+    '''
+    Find player with the highest performance ratings for the season, and return
+    as the 'Player of the Year'.
+    '''
     top = [0, 0]
 
     for playerid, player in game.players.items():
@@ -188,8 +192,7 @@ def staff_morale(value):
 
 def value(value):
     value = calculator.value_rounder(value)
-    currency = constants.currency[game.currency][0]
-    exchange = constants.currency[game.currency][1]
+    currency, exchange = constants.currency[game.currency]
 
     if value >= 1000000:
         amount = (value / 1000000) * exchange
@@ -203,8 +206,7 @@ def value(value):
 
 def wage(wage):
     wage = calculator.wage_rounder(wage)
-    currency = constants.currency[game.currency][0]
-    exchange = constants.currency[game.currency][1]
+    currency, exchange = constants.currency[game.currency]
 
     if wage >= 1000:
         amount = (wage / 1000) * exchange
