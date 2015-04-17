@@ -226,7 +226,7 @@ class ScreenMain(Gtk.Grid):
 
     def editor_clicked(self, button):
         try:
-            filepath = os.path.join("editor", "editor.py")
+            filepath = os.path.join("editor", "editor")
             subprocess.Popen(filepath, shell=False)
         except FileNotFoundError:
             dialogs.editor_not_found_error()
