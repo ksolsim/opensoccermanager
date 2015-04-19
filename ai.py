@@ -606,24 +606,6 @@ class Result:
             money.withdraw(amount, 12)
 
 
-def enquiry():
-    position = random.choice((("GK", 3), ("DL", 2), ("DR", 2), ("DC", 4), ("D", 0), ("ML", 2), ("MR", 2), ("MC", 4), ("M", 0), ("AS", 2), ("AF", 2)))
-
-    count = 0
-
-    for clubid in game.clubs:
-        squad = game.clubs[clubid].squad
-
-        for playerid in squad:
-            player = game.players[playerid]
-
-            if player.position == position[0]:
-                count += 1
-
-        if count < position[1]:
-            suggestion = position[0]
-
-
 def team_training():
     '''
     Generate team training schedules for all teams. Sets mix of training
