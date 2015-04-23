@@ -52,35 +52,48 @@ def identify():
                         squad_average = skills[3] * 2
 
             for playerid, player in game.players.items():
-                if player.club != game.teamid:
-                    if position == player.position:
-                        skills = player.skills()
-                        other_average += sum(skills) / count
+                if position == player.position:
+                    skills = player.skills()
+                    other_average += sum(skills) / count
 
-                        if position == "GK":
-                            other_average = skills[0] * 2
-                        elif position in ("DL", "DR", "DC", "D"):
-                            other_average = skills[1] * 2
-                        elif position in ("ML", "MR", "MC", "M"):
-                            other_average = skills[2] * 2
-                        elif position in ("AF", "AS"):
-                            other_average = skills[3] * 2
+                    if position == "GK":
+                        other_average = skills[0] * 2
+                    elif position in ("DL", "DR", "DC", "D"):
+                        other_average = skills[1] * 2
+                    elif position in ("ML", "MR", "MC", "M"):
+                        other_average = skills[2] * 2
+                    elif position in ("AF", "AS"):
+                        other_average = skills[3] * 2
 
-                        if other_average > squad_average + 0 and other_average < squad_average + 100:
-                            potential.append(playerid)
+                    if other_average > squad_average + 0 and other_average < squad_average + 100:
+                        potential.append(playerid)
 
             if len(potential) > 0:
                 playerid = random.choice(potential)
+
+                game.negotiations[game.negotiationid] = Negotiation()
+                game.negotiations[game.negotiationid].playerid = playerid
+                game.negotiations[game.negotiationid].club = clubid
+                game.negotiations[game.negotiationid].enquiry_initialise()
+                game.negotiationid += 1
+
+    print(game.negotiations)
 
 
 class Negotiation:
     def __init__(self):
         self.playerid = 0
+        self.status = 0
+        self.timeout = 0
+        self.transfer_type = 0
+        self.club = 0
+        self.date = "%i/%i/%i" % (game.year, game.month, game.date)
 
     def enquiry_initialise(self):
         '''
         Initiate the enquiry from the buying club.
         '''
+        self.timeout = random.randint(1, 4)
 
     def enquiry_response(self):
         '''
@@ -92,6 +105,7 @@ class Negotiation:
         '''
         Set the offer details for the transfer.
         '''
+        self.timeout = random.randint(1, 4)
 
     def offer_response(self):
         '''
@@ -102,6 +116,7 @@ class Negotiation:
         '''
         Offer a contract to the player (transfer or free transfer only).
         '''
+        self.timeout = random.randint(1, 4)
 
     def contract_response(self):
         '''
@@ -122,3 +137,5 @@ class Negotiation:
         '''
         Update the transfer status for negotiation.
         '''
+        if self.timeout > 0:
+            self.timeout -= 1

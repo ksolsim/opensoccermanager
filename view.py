@@ -589,9 +589,7 @@ class Negotiations(Gtk.Grid):
         model, treeiter = self.treeselection.get_selected()
         negotiationid = model[treeiter][0]
 
-        state = dialogs.withdraw_transfer(negotiationid)
-
-        if state:
+        if dialogs.withdraw_transfer(negotiationid):
             del game.negotiations[negotiationid]
 
             self.populate_data()
