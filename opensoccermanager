@@ -25,6 +25,7 @@ import os
 import subprocess
 
 import ai
+import aitransfer
 import business
 import calculator
 import constants
@@ -736,6 +737,7 @@ class ContinueGame:
         events.injury()
         ai.advertising()
         evaluation.update()
+        aitransfer.identify()
 
         # Age players
         for playerid, player in game.players.items():

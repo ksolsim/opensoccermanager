@@ -18,7 +18,59 @@
 
 import random
 
+import constants
+import display
+import game
 import transfer
+
+
+def identify():
+    for clubid, club in game.clubs.items():
+        if clubid != game.teamid:
+            position = random.choice(constants.positions)
+
+            other_average = 0
+            squad_average = 0
+            selected = 0
+
+            potential = []
+
+            for count, playerid in enumerate(game.clubs[clubid].squad, start=1):
+                player = game.players[playerid]
+
+                if position == player.position:
+                    skills = player.skills()
+                    squad_average += sum(skills) / count
+
+                    if position == "GK":
+                        squad_average = skills[0] * 2
+                    elif position in ("DL", "DR", "DC", "D"):
+                        squad_average = skills[1] * 2
+                    elif position in ("ML", "MR", "MC", "M"):
+                        squad_average = skills[2] * 2
+                    elif position in ("AF", "AS"):
+                        squad_average = skills[3] * 2
+
+            for playerid, player in game.players.items():
+                if player.club != game.teamid:
+                    if position == player.position:
+                        skills = player.skills()
+                        other_average += sum(skills) / count
+
+                        if position == "GK":
+                            other_average = skills[0] * 2
+                        elif position in ("DL", "DR", "DC", "D"):
+                            other_average = skills[1] * 2
+                        elif position in ("ML", "MR", "MC", "M"):
+                            other_average = skills[2] * 2
+                        elif position in ("AF", "AS"):
+                            other_average = skills[3] * 2
+
+                        if other_average > squad_average + 0 and other_average < squad_average + 100:
+                            potential.append(playerid)
+
+            if len(potential) > 0:
+                playerid = random.choice(potential)
 
 
 class Negotiation:
