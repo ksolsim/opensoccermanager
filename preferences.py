@@ -39,7 +39,7 @@ class Preferences(ConfigParser):
                              "Width": 780,
                              "Height": 480,
                             }
-        self["DATABASE"] = {"Database": "osm1415.db"}
+        self["DATABASE"] = {"Database": "databases/opensoccermaanger.db"}
         self["SAVE"] = {"Data": data, "Saves": save}
 
     def writefile(self):

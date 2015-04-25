@@ -401,6 +401,9 @@ class ScreenDetails(Gtk.Grid):
         game.database_filename = filechooserbutton.get_filename()
         game.database.connect(game.database_filename)
 
+        game.preferences["DATABASE"]["Database"] = game.database_filename
+        game.preferences.writefile()
+
         self.load_year_list()
 
     def finances_changed(self, radiobutton):
