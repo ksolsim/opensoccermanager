@@ -19,6 +19,7 @@
 from gi.repository import Gtk
 import random
 
+import aitransfer
 import calculator
 import constants
 import dialogs
@@ -215,30 +216,33 @@ def transfer():
     remove = []
 
     for negotiationid, negotiation in game.negotiations.items():
-        if negotiation.timeout > 0:
-            negotiation.timeout -= 1
+        if negotiation.club == game.teamid:
+            if negotiation.timeout > 0:
+                negotiation.timeout -= 1
 
-            if negotiation.transfer_type != 2:
-                if negotiation.timeout == 0:
-                    if negotiation.status == 0:
-                        consider_enquiry(negotiationid)
-                    elif negotiation.status == 3:
-                        consider_offer(negotiationid)
-                    elif negotiation.status == 6 or negotiation.status == 9:
-                        consider_contract(negotiationid)
-            else:
-                if negotiation.timeout == 0:
-                    if negotiation.status == 0:
-                        consider_enquiry(negotiationid)
-                    elif negotiation.status == 6:
-                        consider_contract(negotiationid)
+                if negotiation.transfer_type != 2:
+                    if negotiation.timeout == 0:
+                        if negotiation.status == 0:
+                            consider_enquiry(negotiationid)
+                        elif negotiation.status == 3:
+                            consider_offer(negotiationid)
+                        elif negotiation.status == 6 or negotiation.status == 9:
+                            consider_contract(negotiationid)
+                else:
+                    if negotiation.timeout == 0:
+                        if negotiation.status == 0:
+                            consider_enquiry(negotiationid)
+                        elif negotiation.status == 6:
+                            consider_contract(negotiationid)
 
-        if negotiation.timeout == 0:
-            if negotiation.status in (1, 4, 7, 10):
-                remove.append(negotiationid)
+            if negotiation.timeout == 0:
+                if negotiation.status in (1, 4, 7, 10):
+                    remove.append(negotiationid)
 
     for key in remove:
         del game.negotiations[key]
+
+    aitransfer.transfer()
 
 
 def consider_enquiry(negotiationid):

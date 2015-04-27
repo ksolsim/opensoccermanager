@@ -642,13 +642,7 @@ class Negotiations(Gtk.Grid):
         negotiationid = model[path][0]
         negotiation = game.negotiations[negotiationid]
 
-        if negotiation.transfer_type == 0:
-            if negotiation.status == 0:
-                transfer.transfer_enquiry_respond(negotiationid)
-            elif negotiation.status == 2:
-                transfer.transfer_offer_respond(negotiationid)
-            elif negotiation.status == 4:
-                transfer.transfer_confirm_respond(negotiationid)
+        negotiation.response()
 
         self.populate_data()
 

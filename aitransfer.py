@@ -16,6 +16,7 @@
 #  OpenSoccerManager.  If not, see <http://www.gnu.org/licenses/>.
 
 
+from gi.repository import Gtk
 import random
 
 import constants
@@ -71,13 +72,24 @@ def identify():
             if len(potential) > 0:
                 playerid = random.choice(potential)
 
-                game.negotiations[game.negotiationid] = Negotiation()
-                game.negotiations[game.negotiationid].playerid = playerid
-                game.negotiations[game.negotiationid].club = clubid
-                game.negotiations[game.negotiationid].enquiry_initialise()
+                negotiation = Negotiation()
+                negotiation.negotiationid = game.negotiationid
+                negotiation.playerid = playerid
+                negotiation.club = clubid
+                game.negotiations[game.negotiationid] = negotiation
                 game.negotiationid += 1
 
-    print(game.negotiations)
+
+def transfer():
+    '''
+    Process AI initiated transfers. Player initiated transfer are currently
+    handled by transfer.transfer().
+    '''
+    remove = []
+
+    for negotiationid, negotiation in game.negotiations.items():
+        if negotiationid != game.teamid:
+            negotiation.update()
 
 
 class Negotiation:
@@ -88,35 +100,94 @@ class Negotiation:
         self.transfer_type = 0
         self.club = 0
         self.date = "%i/%i/%i" % (game.year, game.month, game.date)
-
-    def enquiry_initialise(self):
-        '''
-        Initiate the enquiry from the buying club.
-        '''
-        self.timeout = random.randint(1, 4)
+        self.timeout = 0
 
     def enquiry_response(self):
         '''
         Determine the response whether the selling club is willing to part with
         the player.
         '''
+        club = game.clubs[self.club].name
+        player = display.name(game.players[self.playerid], mode=1)
+
+        messagedialog = Gtk.MessageDialog()
+        messagedialog.set_transient_for(game.window)
+        messagedialog.set_title("Transfer Enquiry")
+        messagedialog.add_button("_Reject", Gtk.ResponseType.REJECT)
+        messagedialog.add_button("_Accept", Gtk.ResponseType.ACCEPT)
+        messagedialog.set_default_response(Gtk.ResponseType.ACCEPT)
+        messagedialog.set_markup("<span size='12000'><b>%s have enquired as to the transfer of %s.</b></span>" % (club, player))
+        messagedialog.format_secondary_text("Do you want to negotiate the transfer?")
+
+        response = messagedialog.run()
+
+        if response == Gtk.ResponseType.ACCEPT:
+            self.timeout = random.randint(1, 4)
+            self.status = 1
+        elif response == Gtk.ResponseType.REJECT:
+            self.cancel_transfer()
+
+        messagedialog.destroy()
 
     def offer_initialise(self):
         '''
         Set the offer details for the transfer.
         '''
-        self.timeout = random.randint(1, 4)
 
     def offer_response(self):
         '''
         Selling club response to the offer for the player.
+        '''
+        club = game.clubs[self.club].name
+        amount = display.currency(self.amount)
+        player = display.name(game.players[self.playerid], mode=1)
+
+        dialog = Gtk.Dialog()
+        dialog.set_transient_for(game.window)
+        dialog.set_title("Transfer Offer")
+        dialog.set_border_width(5)
+        dialog.add_button("_Reject", Gtk.ResponseType.REJECT)
+        dialog.add_button("_Negotiate", Gtk.ResponseType.OK)
+        dialog.add_button("_Accept", Gtk.ResponseType.ACCEPT)
+        dialog.set_default_response(Gtk.ResponseType.OK)
+
+        grid = Gtk.Grid()
+        grid.set_row_spacing(5)
+        grid.set_column_spacing(5)
+        dialog.vbox.add(grid)
+
+        label = Gtk.Label()
+        label.set_alignment(0, 0.5)
+        label.set_markup("%s have offered <b>%s</b> for %s." % (club, amount, player))
+        grid.attach(label, 0, 0, 3, 1)
+
+        label = Gtk.Label("The offer can either be accepted or negotiations over the fee can continue.")
+        label.set_alignment(0, 0.5)
+        grid.attach(label, 0, 1, 3, 1)
+
+        label = Gtk.Label("Fee to Negotiate:")
+        grid.attach(label, 0, 2, 1, 1)
+        spinbutton = Gtk.SpinButton.new_with_range(0, 25000000, 100000)
+        spinbutton.set_value(self.amount)
+        grid.attach(spinbutton, 1, 2, 1, 1)
+
+        dialog.show_all()
+        response = dialog.run()
+
+        if response == Gtk.ResponseType.REJECT:
+            self.cancel_transfer()
+
+        dialog.destroy()
+
+    def offer_negotiate(self):
+        '''
+        Negotiate the transfer fee for the player.
         '''
 
     def contract_initialise(self):
         '''
         Offer a contract to the player (transfer or free transfer only).
         '''
-        self.timeout = random.randint(1, 4)
 
     def contract_response(self):
         '''
@@ -132,10 +203,23 @@ class Negotiation:
         '''
         End the transfer negotiations and cleanup details.
         '''
+        del game.negotiations[self.negotiationid]
 
     def update(self):
         '''
-        Update the transfer status for negotiation.
+        Update the transfer negotiation timeout and status.
         '''
         if self.timeout > 0:
             self.timeout -= 1
+
+            if self.timeout == 0:
+                if self.status == 1:
+                    self.amount = game.players[self.playerid].value
+                    self.timeout = random.randint(1, 4)
+                    self.status = 2
+
+    def response(self):
+        if self.status == 0:
+            self.enquiry_response()
+        elif self.status == 2:
+            self.offer_response()
