@@ -644,6 +644,7 @@ class Negotiations(Gtk.Grid):
 
     def outbound_activated(self, treeview, path, column):
         model = treeview.get_model()
+
         negotiationid = model[path][0]
         negotiation = game.negotiations[negotiationid]
 

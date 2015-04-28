@@ -161,7 +161,7 @@ class Negotiation:
         label.set_markup("%s have offered <b>%s</b> for %s." % (club, amount, player))
         grid.attach(label, 0, 0, 3, 1)
 
-        label = Gtk.Label("The offer can either be accepted or negotiations over the fee can continue.")
+        label = Gtk.Label("The offer can either be accepted, rejected or negotiations over the fee can continue.")
         label.set_alignment(0, 0.5)
         grid.attach(label, 0, 1, 3, 1)
 
@@ -174,7 +174,13 @@ class Negotiation:
         dialog.show_all()
         response = dialog.run()
 
-        if response == Gtk.ResponseType.REJECT:
+        if response == Gtk.ResponseType.ACCEPT:
+            self.timeout = random.randint(1, 4)
+            self.status = 3
+        elif response == Gtk.ResponseType.OK:
+            self.timeout = random.randint(1, 4)
+            self.status = 1
+        elif response == Gtk.ResponseType.REJECT:
             self.cancel_transfer()
 
         dialog.destroy()
@@ -184,20 +190,32 @@ class Negotiation:
         Negotiate the transfer fee for the player.
         '''
 
-    def contract_initialise(self):
-        '''
-        Offer a contract to the player (transfer or free transfer only).
-        '''
-
-    def contract_response(self):
-        '''
-        Player response to the contract offer.
-        '''
-
     def complete_transfer(self):
         '''
         Finialise the transfer move.
         '''
+        player = display.name(game.players[self.playerid], mode=1)
+        club = game.clubs[self.club].name
+
+        messagedialog = Gtk.MessageDialog()
+        messagedialog.set_transient_for(game.window)
+        messagedialog.set_title("Complete Transfer")
+        messagedialog.add_button("_Cancel Transfer", Gtk.ResponseType.CANCEL)
+        messagedialog.add_button("_Delay Completion", 1)
+        messagedialog.add_button("_Complete Transfer", Gtk.ResponseType.OK)
+        messagedialog.set_markup("<span size='12000'><b>Complete transfer of %s to %s?</b></span>" % (player, club))
+        messagedialog.format_secondary_text("The transfer can be delayed if necessary.")
+
+        response = messagedialog.run()
+
+        if response == Gtk.ResponseType.CANCEL:
+            self.cancel_transfer()
+        elif response == 1:
+            print("Delay")
+        elif response == Gtk.ResponseType.OK:
+            print("Complete")
+
+        messagedialog.destroy()
 
     def cancel_transfer(self):
         '''
@@ -215,11 +233,15 @@ class Negotiation:
             if self.timeout == 0:
                 if self.status == 1:
                     self.amount = game.players[self.playerid].value
-                    self.timeout = random.randint(1, 4)
                     self.status = 2
+                elif self.status == 3:
+                    self.status = 4
+                    self.delay_allowed = True
 
     def response(self):
         if self.status == 0:
             self.enquiry_response()
         elif self.status == 2:
             self.offer_response()
+        elif self.status == 4:
+            self.complete_transfer()
