@@ -93,9 +93,9 @@ def enquiry_dialog(playerid, index):
     messagedialog.set_default_response(Gtk.ResponseType.OK)
 
     if index == 0:
-        messagedialog.set_markup("Approach %s for purchase from %s?" % (name, club))
+        messagedialog.set_markup("Approach %s for the purchase of %s?" % (club, name))
     elif index == 1:
-        messagedialog.set_markup("Approach %s for loan from %s?" % (name, club))
+        messagedialog.set_markup("Approach %s for the loan of %s?" % (club, name))
     elif index == 2:
         messagedialog.set_markup("Approach %s for free transfer?" % (name))
 
