@@ -590,6 +590,9 @@ def remove_individual_training(playerid):
 
 
 def withdraw_transfer(negotiationid):
+    '''
+    Confirm that the user wishes to withdraw from the transfer negotiations.
+    '''
     playerid = game.negotiations[negotiationid].playerid
     player = game.players[playerid]
     name = display.name(player, mode=1)
@@ -601,6 +604,32 @@ def withdraw_transfer(negotiationid):
     messagedialog.add_button("_Withdraw", Gtk.ResponseType.OK)
     messagedialog.set_default_response(Gtk.ResponseType.CANCEL)
     messagedialog.set_markup("Withdraw transfer offer for %s?" % (name))
+
+    state = False
+
+    if messagedialog.run() == Gtk.ResponseType.OK:
+        state = True
+
+    messagedialog.destroy()
+
+    return state
+
+
+def cancel_transfer(negotiationid):
+    '''
+    Confirm that the user wants to end transfer negotiations.
+    '''
+    playerid = game.negotiations[negotiationid].playerid
+    player = game.players[playerid]
+    name = display.name(player, mode=1)
+
+    messagedialog = Gtk.MessageDialog(type=Gtk.MessageType.QUESTION)
+    messagedialog.set_transient_for(game.window)
+    messagedialog.set_title("End Transfer Negotiations")
+    messagedialog.add_button("_Do Not End", Gtk.ResponseType.CANCEL)
+    messagedialog.add_button("_End", Gtk.ResponseType.OK)
+    messagedialog.set_default_response(Gtk.ResponseType.CANCEL)
+    messagedialog.set_markup("End transfer negotiations for %s?" % (name))
 
     state = False
 

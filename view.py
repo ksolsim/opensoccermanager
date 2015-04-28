@@ -493,8 +493,7 @@ class Negotiations(Gtk.Grid):
 
     def __init__(self):
         Gtk.Grid.__init__(self)
-        self.set_vexpand(True)
-        self.set_hexpand(True)
+        self.set_row_spacing(5)
 
         self.liststoreInbound = Gtk.ListStore(int, str, str, str, str, str)
         self.liststoreOutbound = Gtk.ListStore(int, str, str, str, str, str)
@@ -587,17 +586,23 @@ class Negotiations(Gtk.Grid):
 
     def cancel_transfer(self, menuitem):
         model, treeiter = self.treeselection.get_selected()
+
         negotiationid = model[treeiter][0]
+        negotiation = game.negotiations[negotiationid]
 
-        if dialogs.withdraw_transfer(negotiationid):
-            del game.negotiations[negotiationid]
+        if negotiation.club == game.teamid:
+            if dialogs.withdraw_transfer(negotiationid):
+                del game.negotiations[negotiationid]
+        else:
+            if dialogs.cancel_transfer(negotiationid):
+                del game.negotiations[negotiationid]
 
-            self.populate_data()
+        self.populate_data()
 
     def inbound_activated(self, treeview, path, column):
         model = treeview.get_model()
-        negotiationid = model[path][0]
 
+        negotiationid = model[path][0]
         negotiation = game.negotiations[negotiationid]
 
         if negotiation.transfer_type == 0:
