@@ -201,19 +201,23 @@ class Negotiation:
         messagedialog.set_transient_for(game.window)
         messagedialog.set_title("Complete Transfer")
         messagedialog.add_button("_Cancel Transfer", Gtk.ResponseType.CANCEL)
-        messagedialog.add_button("_Delay Completion", 1)
+
+        if self.delay_allowed:
+            messagedialog.add_button("_Delay Completion", 1)
+
         messagedialog.add_button("_Complete Transfer", Gtk.ResponseType.OK)
         messagedialog.set_markup("<span size='12000'><b>Complete transfer of %s to %s?</b></span>" % (player, club))
-        messagedialog.format_secondary_text("The transfer can be delayed if necessary.")
+        messagedialog.format_secondary_text("The transfer can be delayed for a short time if necessary.")
 
         response = messagedialog.run()
 
         if response == Gtk.ResponseType.CANCEL:
             self.cancel_transfer()
         elif response == 1:
-            print("Delay")
+            self.delay_allowed = False
+            self.timeout = random.randint(1, 4)
         elif response == Gtk.ResponseType.OK:
-            print("Complete")
+            self.move()
 
         messagedialog.destroy()
 
@@ -222,6 +226,56 @@ class Negotiation:
         End the transfer negotiations and cleanup details.
         '''
         del game.negotiations[self.negotiationid]
+
+    def move(self):
+        player = game.players[self.playerid]
+        old_club = game.clubs[player.club]
+        new_club = game.clubs[self.club]
+
+        # Remove player from squad and individual training
+        old_club.squad.remove(self.playerid)
+
+        if self.playerid in old_club.individual_training:
+            del old_club.individual_training[self.playerid]
+
+        player.not_for_sale = False
+
+        # Set new club and add to squad
+        player.club = self.club
+        new_club.squad.append(self.playerid)
+
+        name = display.name(player)
+
+        if self.transfer_type != 2:
+            new_club = new_club.name
+        else:
+            new_club = "N/A"
+
+        if self.transfer_type == 0:
+            old_club = old_club.name
+            fee = display.value(self.amount)
+        elif negotiation.transfer_type == 1:
+            old_club = old_club.name
+            fee = "Loan"
+        elif self.transfer_type == 2:
+            if player.club == 0:
+                old_club = old_club.name
+            else:
+                old_club = ""
+
+            fee = "Free Transfer"
+
+        club = old_club
+        season = "%i/%i" % (game.year, game.year + 1)
+        games = "%i/%i" % (player.appearances, player.substitute)
+
+        game.transfers.append([name, old_club, new_club, fee])
+        player.history.append([season,
+                               club,
+                               games,
+                               player.goals,
+                               player.assists,
+                               player.man_of_the_match])
 
     def update(self):
         '''
