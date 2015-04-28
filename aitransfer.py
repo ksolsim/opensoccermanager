@@ -26,6 +26,9 @@ import transfer
 
 
 def identify():
+    '''
+    Identify players to purchase based on comparison to current squad.
+    '''
     for clubid, club in game.clubs.items():
         if clubid != game.teamid:
             position = random.choice(constants.positions)
@@ -129,11 +132,6 @@ class Negotiation:
 
         messagedialog.destroy()
 
-    def offer_initialise(self):
-        '''
-        Set the offer details for the transfer.
-        '''
-
     def offer_response(self):
         '''
         Selling club response to the offer for the player.
@@ -185,11 +183,6 @@ class Negotiation:
 
         dialog.destroy()
 
-    def offer_negotiate(self):
-        '''
-        Negotiate the transfer fee for the player.
-        '''
-
     def complete_transfer(self):
         '''
         Finialise the transfer move.
@@ -228,6 +221,9 @@ class Negotiation:
         del game.negotiations[self.negotiationid]
 
     def move(self):
+        '''
+        Complete the player move and tidy data structures.
+        '''
         player = game.players[self.playerid]
         old_club = game.clubs[player.club]
         new_club = game.clubs[self.club]
@@ -277,6 +273,8 @@ class Negotiation:
                                player.assists,
                                player.man_of_the_match])
 
+        del game.negotiations[self.negotiationid]
+
     def update(self):
         '''
         Update the transfer negotiation timeout and status.
@@ -293,6 +291,9 @@ class Negotiation:
                     self.delay_allowed = True
 
     def response(self):
+        '''
+        Handle appropriate response on status.
+        '''
         if self.status == 0:
             self.enquiry_response()
         elif self.status == 2:
