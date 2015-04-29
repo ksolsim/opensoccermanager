@@ -17,7 +17,6 @@
 
 
 import os
-import sqlite3
 
 import constants
 import database

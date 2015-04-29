@@ -23,10 +23,8 @@ import calculator
 import constants
 import display
 import evaluation
-import fileio
 import game
 import money
-import version
 import widgets
 
 

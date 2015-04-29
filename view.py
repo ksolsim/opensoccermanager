@@ -605,40 +605,7 @@ class Negotiations(Gtk.Grid):
         negotiationid = model[path][0]
         negotiation = game.negotiations[negotiationid]
 
-        if negotiation.transfer_type == 0:
-            if negotiation.status == 1:
-                transfer.rejection(negotiationid, transfer=0, index=0)
-                del game.negotiations[negotiationid]
-            elif negotiation.status == 2:
-                transfer.transfer_enquiry_accepted(negotiationid)
-            elif negotiation.status == 4:
-                transfer.rejection(negotiationid, transfer=0, index=1)
-                del game.negotiations[negotiationid]
-            elif negotiation.status == 5:
-                transfer.transfer_offer_accepted(negotiationid)
-            elif negotiation.status == 7:
-                transfer.rejection(negotiationid, transfer=0, index=2)
-                del game.negotiations[negotiationid]
-            elif negotiation.status == 8:
-                transfer.transfer_contract_accepted(negotiationid)
-        elif negotiation.transfer_type == 1:
-            if negotiation.status == 1:
-                transfer.rejection(negotiationid, transfer=1, index=0)
-                del game.negotiations[negotiationid]
-            elif negotiation.status == 2:
-                transfer.loan_enquiry_accepted(negotiationid)
-            elif negotiation.status == 4:
-                transfer.rejection(negotiationid, transfer=1, index=1)
-                del game.negotiations[negotiationid]
-            elif negotiation.status == 5:
-                transfer.loan_offer_accepted(negotiationid)
-        elif negotiation.transfer_type == 2:
-            if negotiation.status in (4, 7, 9):
-                del game.negotiations[negotiationid]
-            elif negotiation.status == 10:
-                transfer.transfer_offer_accepted(negotiationid)
-            elif negotiation.status == 8:
-                transfer.transfer_contract_accepted(negotiationid)
+        negotiation.response()
 
         self.populate_data()
 

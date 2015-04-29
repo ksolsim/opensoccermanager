@@ -97,13 +97,13 @@ def transfer():
 
 class Negotiation:
     def __init__(self):
+        self.negotiationid = 0
         self.playerid = 0
         self.status = 0
         self.timeout = 0
         self.transfer_type = 0
         self.club = 0
         self.date = "%i/%i/%i" % (game.year, game.month, game.date)
-        self.timeout = 0
 
     def enquiry_response(self):
         '''
