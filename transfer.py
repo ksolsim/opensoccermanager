@@ -154,7 +154,7 @@ class Negotiation:
 
         dialog.destroy()
 
-    def transfer_offer_accepted(self, negotiationid):
+    def transfer_offer_accepted(self):
         player = game.players[self.playerid]
 
         name = display.name(player, mode=1)
@@ -237,7 +237,7 @@ class Negotiation:
 
         dialog.destroy()
 
-    def transfer_contract_accepted(self, negotiationid):
+    def transfer_contract_accepted(self):
         player = game.players[self.playerid]
 
         name = display.name(player, mode=1)
@@ -264,6 +264,84 @@ class Negotiation:
 
                 if self.transfer_type == 0:
                     money.withdraw(self.amount, 13)
+        elif response == Gtk.ResponseType.CANCEL:
+            del game.negotiations[self.negotiationid]
+
+        messagedialog.destroy()
+
+    def loan_enquiry_accepted(self):
+        def season_toggled(checkbutton):
+            spinbuttonWeeks.set_sensitive(not checkbutton.get_active())
+
+        player = game.players[self.playerid]
+        name = display.name(player, mode=1)
+        club = game.clubs[player.club].name
+
+        dialog = Gtk.Dialog()
+        dialog.set_transient_for(game.window)
+        dialog.set_title("Loan Offer")
+        dialog.set_border_width(5)
+        dialog.add_button("_Withdraw", Gtk.ResponseType.REJECT)
+        dialog.add_button("_Offer", Gtk.ResponseType.ACCEPT)
+        dialog.set_default_response(Gtk.ResponseType.ACCEPT)
+
+        grid = Gtk.Grid()
+        grid.set_row_spacing(5)
+        grid.set_column_spacing(5)
+        dialog.vbox.add(grid)
+
+        label = widgets.AlignedLabel("The offer for %s has been accepted.\n%s would like to arrange the details of the loan." % (name, club))
+        grid.attach(label, 0, 0, 2, 1)
+
+        checkbuttonSeason = Gtk.CheckButton("Season-Long Loan")
+        checkbuttonSeason.set_active(True)
+        checkbuttonSeason.connect("toggled", season_toggled)
+        grid.attach(checkbuttonSeason, 0, 1, 2, 1)
+        label = widgets.AlignedLabel("Number of weeks to loan:")
+        grid.attach(label, 0, 2, 1, 1)
+        spinbuttonWeeks = Gtk.SpinButton.new_with_range(1, len(constants.dates), 1)
+        spinbuttonWeeks.set_value(4)
+        spinbuttonWeeks.set_sensitive(False)
+        grid.attach(spinbuttonWeeks, 1, 2, 1, 1)
+
+        dialog.show_all()
+        response = dialog.run()
+
+        if response == Gtk.ResponseType.ACCEPT:
+            if player.contract < spinbuttonWeeks.get_value_as_int():
+                dialogs.error(14)
+
+            self.status = 3
+            self.timeout = random.randint(1, 4)
+
+            if checkbuttonSeason.get_active():
+                self.weeks = -1
+            else:
+                self.weeks = spinbuttonWeeks.get_value_as_int()
+        elif response == Gtk.ResponseType.REJECT:
+            del game.negotiations[self.negotiationid]
+
+        dialog.destroy()
+
+    def loan_offer_accepted(self):
+        player = game.players[self.playerid]
+
+        name = display.name(player, mode=1)
+        club = game.clubs[player.club].name
+
+        messagedialog = Gtk.MessageDialog(type=Gtk.MessageType.QUESTION)
+        messagedialog.set_transient_for(game.window)
+        messagedialog.set_title("Loan Accepted")
+        messagedialog.add_button("_Cancel", Gtk.ResponseType.CANCEL)
+        messagedialog.add_button("C_onfirm", Gtk.ResponseType.OK)
+        messagedialog.set_default_response(Gtk.ResponseType.OK)
+        messagedialog.set_markup("Confirm signing of %s from %s on loan?" % (name, club))
+
+        response = messagedialog.run()
+
+        if response == Gtk.ResponseType.OK:
+            if check(self.negotiationid) == 0:
+                move(self.negotiationid)
         elif response == Gtk.ResponseType.CANCEL:
             del game.negotiations[self.negotiationid]
 
@@ -305,13 +383,12 @@ def make_enquiry(playerid, transfer_type):
 
             return
 
-    state = enquiry_dialog(playerid, transfer_type)
-
-    if state:
+    if enquiry_dialog(playerid, transfer_type):
         negotiation = Negotiation()
         negotiation.negotiationid = game.negotiationid
         negotiation.playerid = playerid
         negotiation.club = game.teamid
+        negotiation.transfer_type = transfer_type
         game.negotiations[game.negotiationid] = negotiation
 
         game.negotiationid += 1
@@ -594,88 +671,6 @@ def consider_contract(negotiationid):
             negotiation.status = 7
             negotiation.timeout = random.randint(1, 4)
             news.publish("TO10", player=name)
-
-
-def loan_enquiry_accepted(negotiationid):
-    def season_toggled(checkbutton):
-        spinbuttonWeeks.set_sensitive(not checkbutton.get_active())
-
-    playerid = game.negotiations[negotiationid].playerid
-    player = game.players[playerid]
-    name = display.name(player, mode=1)
-    club = game.clubs[player.club].name
-
-    dialog = Gtk.Dialog()
-    dialog.set_transient_for(game.window)
-    dialog.set_title("Loan Offer")
-    dialog.set_border_width(5)
-    dialog.add_button("_Withdraw", Gtk.ResponseType.REJECT)
-    dialog.add_button("_Offer", Gtk.ResponseType.ACCEPT)
-    dialog.set_default_response(Gtk.ResponseType.ACCEPT)
-
-    grid = Gtk.Grid()
-    grid.set_row_spacing(5)
-    grid.set_column_spacing(5)
-    dialog.vbox.add(grid)
-
-    label = widgets.AlignedLabel("The offer for %s has been accepted.\n%s would like to arrange the details of the loan." % (name, club))
-    grid.attach(label, 0, 0, 2, 1)
-
-    checkbuttonSeason = Gtk.CheckButton("Season-Long Loan")
-    checkbuttonSeason.set_active(True)
-    checkbuttonSeason.connect("toggled", season_toggled)
-    grid.attach(checkbuttonSeason, 0, 1, 2, 1)
-    label = widgets.AlignedLabel("Number of weeks to loan:")
-    grid.attach(label, 0, 2, 1, 1)
-    spinbuttonWeeks = Gtk.SpinButton.new_with_range(1, len(constants.dates), 1)
-    spinbuttonWeeks.set_value(4)
-    spinbuttonWeeks.set_sensitive(False)
-    grid.attach(spinbuttonWeeks, 1, 2, 1, 1)
-
-    dialog.show_all()
-    response = dialog.run()
-
-    if response == Gtk.ResponseType.ACCEPT:
-        if player.contract < spinbuttonWeeks.get_value_as_int():
-            dialogs.error(14)
-
-        game.negotiations[negotiationid].status = 3
-        game.negotiations[negotiationid].timeout = random.randint(1, 4)
-
-        if checkbuttonSeason.get_active():
-            game.negotiations[negotiationid].weeks = -1
-        else:
-            game.negotiations[negotiationid].weeks = spinbuttonWeeks.get_value_as_int()
-    elif response == Gtk.ResponseType.REJECT:
-        del game.negotiations[negotiationid]
-
-    dialog.destroy()
-
-
-def loan_offer_accepted(negotiationid):
-    playerid = game.negotiations[negotiationid].playerid
-    player = game.players[playerid]
-
-    name = display.name(player, mode=1)
-    club = game.clubs[player.club].name
-
-    messagedialog = Gtk.MessageDialog(type=Gtk.MessageType.QUESTION)
-    messagedialog.set_transient_for(game.window)
-    messagedialog.set_title("Loan Accepted")
-    messagedialog.add_button("_Cancel", Gtk.ResponseType.CANCEL)
-    messagedialog.add_button("C_onfirm", Gtk.ResponseType.OK)
-    messagedialog.set_default_response(Gtk.ResponseType.OK)
-    messagedialog.set_markup("Confirm signing of %s from %s on loan?" % (name, club))
-
-    response = messagedialog.run()
-
-    if response == Gtk.ResponseType.OK:
-        if check(negotiationid) == 0:
-            move(negotiationid)
-    elif response == Gtk.ResponseType.CANCEL:
-        del game.negotiations[negotiationid]
-
-    messagedialog.destroy()
 
 
 def extend_loan(playerid):

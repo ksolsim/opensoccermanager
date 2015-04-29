@@ -91,7 +91,7 @@ def transfer():
     remove = []
 
     for negotiationid, negotiation in game.negotiations.items():
-        if negotiationid != game.teamid:
+        if negotiation.club != game.teamid:
             negotiation.update()
 
 

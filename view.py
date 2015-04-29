@@ -286,6 +286,9 @@ class Players(Gtk.Grid):
         self.treemodelfilter.refilter()
 
     def make_transfer_offer(self, menuitem, transfer_type):
+        '''
+        Initiate transfer offer for purchase, loan or free transfer.
+        '''
         model, treeiter = self.treeselection.get_selected()
 
         playerid = model[treeiter][0]
