@@ -158,7 +158,7 @@ class Negotiation:
         player = game.players[self.playerid]
 
         name = display.name(player, mode=1)
-        wage = calculator.wage(playerid)
+        wage = calculator.wage(self.playerid)
         wage = calculator.wage_rounder(wage)
         leaguewin, leaguerunnerup, winbonus, goalbonus = calculator.bonus(wage)
 
@@ -371,6 +371,28 @@ class Negotiation:
         messagedialog.run()
         messagedialog.destroy()
 
+    def update(self):
+        if self.timeout > 0:
+            self.timeout -= 1
+
+            if self.transfer_type != 2:
+                if self.timeout == 0:
+                    if self.status == 0:
+                        consider_enquiry(self.negotiationid)
+                    elif self.status == 3:
+                        consider_offer(self.negotiationid)
+                    elif self.status == 6 or self.status == 9:
+                        consider_contract(self.negotiationid)
+            else:
+                if self.timeout == 0:
+                    if self.status == 0:
+                        consider_enquiry(self.negotiationid)
+                    elif self.status == 6:
+                        consider_contract(self.negotiationid)
+
+        if self.timeout == 0:
+            if self.status in (1, 4, 7, 10):
+                remove.append(self.negotiationid)
 
 def make_enquiry(playerid, transfer_type):
     '''
@@ -535,30 +557,7 @@ def transfer():
     remove = []
 
     for negotiationid, negotiation in game.negotiations.items():
-        if negotiation.club == game.teamid:
-            if negotiation.timeout > 0:
-                negotiation.timeout -= 1
-
-                if negotiation.transfer_type != 2:
-                    if negotiation.timeout == 0:
-                        if negotiation.status == 0:
-                            consider_enquiry(negotiationid)
-                        elif negotiation.status == 3:
-                            consider_offer(negotiationid)
-                        elif negotiation.status == 6 or negotiation.status == 9:
-                            consider_contract(negotiationid)
-                else:
-                    if negotiation.timeout == 0:
-                        if negotiation.status == 0:
-                            consider_enquiry(negotiationid)
-                        elif negotiation.status == 6:
-                            consider_contract(negotiationid)
-
-            if negotiation.timeout == 0:
-                if negotiation.status in (1, 4, 7, 10):
-                    remove.append(negotiationid)
-        else:
-            negotiation.update()
+        negotiation.update()
 
     for key in remove:
         del game.negotiations[key]
