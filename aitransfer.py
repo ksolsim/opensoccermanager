@@ -83,18 +83,6 @@ def identify():
                 game.negotiationid += 1
 
 
-def transfer():
-    '''
-    Process AI initiated transfers. Player initiated transfer are currently
-    handled by transfer.transfer().
-    '''
-    remove = []
-
-    for negotiationid, negotiation in game.negotiations.items():
-        if negotiation.club != game.teamid:
-            negotiation.update()
-
-
 class Negotiation:
     def __init__(self):
         self.negotiationid = 0

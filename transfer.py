@@ -557,6 +557,8 @@ def transfer():
             if negotiation.timeout == 0:
                 if negotiation.status in (1, 4, 7, 10):
                     remove.append(negotiationid)
+        else:
+            negotiation.update()
 
     for key in remove:
         del game.negotiations[key]
