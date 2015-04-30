@@ -94,7 +94,7 @@ class PlayerSelect(Gtk.Dialog):
             both = "%s %s" % (player.first_name, player.second_name)
 
             for search in (player.second_name, player.common_name, player.first_name, both):
-                search = ''.join((c for c in unicodedata.normalize('NFD', search) if unicodedata.category(c) != 'Mn'))
+                search = "".join((c for c in unicodedata.normalize("NFD", search) if unicodedata.category(c) != "Mn"))
 
                 if re.findall(criteria, search, re.IGNORECASE):
                     values[playerid] = player

@@ -30,6 +30,17 @@ import structures
 import widgets
 
 
+def transfer():
+    '''
+    Process transfer negotiations for each club, and update loan periods.
+    '''
+    for negotiation in game.negotiations.values():
+        negotiation.update()
+
+    for loan in game.loans.values():
+        loan.update()
+
+
 class Negotiation:
     def __init__(self):
         self.negotiationid = 0
@@ -260,7 +271,7 @@ class Negotiation:
 
         if response == Gtk.ResponseType.OK:
             if check(self.negotiationid) == 0:
-                move(self.negotiationid)
+                self.move()
 
                 if self.transfer_type == 0:
                     money.withdraw(self.amount, 13)
@@ -341,7 +352,7 @@ class Negotiation:
 
         if response == Gtk.ResponseType.OK:
             if check(self.negotiationid) == 0:
-                move(self.negotiationid)
+                self.move(self.negotiationid)
         elif response == Gtk.ResponseType.CANCEL:
             del game.negotiations[self.negotiationid]
 
@@ -393,6 +404,130 @@ class Negotiation:
         if self.timeout == 0:
             if self.status in (1, 4, 7, 10):
                 remove.append(self.negotiationid)
+
+    def move(self):
+        '''
+        Move player between clubs when completing transfer, loan or free
+        transfer.
+        '''
+        negotiation = game.negotiations[self.negotiationid]
+
+        player = game.players[self.playerid]
+        old_club = player.club
+        new_club = negotiation.club
+
+        # Remove from squad
+        if negotiation.transfer_type in (0, 2):
+            game.clubs[old_club].squad.remove(self.playerid)
+        elif negotiation.transfer_type == 1:
+            loan = Loan()
+            loan.playerid = self.playerid
+            loan.parent_club = player.club
+            loan.period = negotiation.weeks
+            game.loans[playerid] = loan
+
+            game.clubs[old_club].squad.remove(self.playerid)
+
+        # Remove player from individual training
+        if negotiation.transfer_type != 2:
+            if self.playerid in game.clubs[old_club].individual_training:
+                del game.clubs[old_club].individual_training[self.playerid]
+
+        player.club = new_club
+
+        if player.club != 0:
+            game.clubs[player.club].squad.append(self.playerid)
+
+        # Reset transfer status
+        player.transfer = [False, False]
+
+        if negotiation.transfer_type in (0, 2):
+            player.not_for_sale = False
+        else:
+            player.not_for_sale = True
+
+        # Add player to list of transfers
+        name = display.name(player)
+
+        if negotiation.transfer_type != 2:
+            new_club = game.clubs[new_club].name
+        else:
+            new_club = "N/A"
+
+        if negotiation.transfer_type == 0:
+            old_club = game.clubs[old_club].name
+            fee = display.value(negotiation.amount)
+        elif negotiation.transfer_type == 1:
+            old_club = game.clubs[old_club].name
+            fee = "Loan"
+        elif negotiation.transfer_type == 2:
+            if player.club == 0:
+                old_club = game.clubs[old_club].name
+            else:
+                old_club = ""
+
+            fee = "Free Transfer"
+
+        club = old_club
+        season = "%i/%i" % (game.year, game.year + 1)
+        games = "%i/%i" % (player.appearances, player.substitute)
+
+        game.transfers.append([name, old_club, new_club, fee])
+        player.history.append([season,
+                               club,
+                               games,
+                               player.goals,
+                               player.assists,
+                               player.man_of_the_match])
+
+        del game.negotiations[self.negotiationid]
+
+
+class Loan:
+    def __init__(self):
+        self.playerid = 0
+        self.parent_club = 0
+        self.period = 0
+
+    def update(self):
+        '''
+        Decrement number of weeks remaining on loan, and return player to
+        parent club if loan period has expired.
+        '''
+        if self.period > 0:
+            self.period -= 1
+
+            if self.period in (4, 8, 12):
+                player = game.players[self.playerid]
+                name = display.name(player, mode=1)
+                club = game.clubs[self.parent_club].name
+
+                news.publish("LA01", player=name, team=club, weeks=self.period)
+        else:
+            self.end_loan()
+
+    def end_loan(self):
+        '''
+        Cleanup details of loan and reassign player back to parent club.
+        '''
+        player = game.players[self.playerid]
+
+        # Remove player from squad of loaned club
+        game.clubs[player.club].squad.remove(self.playerid)
+
+        # Remove from individual training if added
+        if self.playerid in game.clubs[player.club].individual_training:
+            del game.clubs[player.club].individual_training[self.playerid]
+
+        # Set club back to parent club
+        player.club = self.parent_club
+
+        name = display.name(player, mode=1)
+        club = game.clubs[player.club].name
+        news.publish("LE01", player=name, team=club)
+
+        # Delete loan information
+        del game.loans[self.playerid]
 
 
 def make_enquiry(playerid, transfer_type):
@@ -475,143 +610,6 @@ def check(negotiationid):
             error = 2
 
     return error
-
-
-def move(negotiationid):
-    '''
-    Move player between clubs when completing transfer, loan or free
-    transfer.
-    '''
-    negotiation = game.negotiations[negotiationid]
-
-    playerid = negotiation.playerid
-    player = game.players[playerid]
-    old_club = player.club
-    new_club = negotiation.club
-
-    # Remove from squad
-    if negotiation.transfer_type in (0, 2):
-        game.clubs[old_club].squad.remove(playerid)
-    elif negotiation.transfer_type == 1:
-        loan = Loan()
-        loan.playerid = playerid
-        loan.parent_club = player.club
-        loan.period = negotiation.weeks
-        game.loans[playerid] = loan
-
-        game.clubs[old_club].squad.remove(playerid)
-
-    # Remove player from individual training
-    if negotiation.transfer_type != 2:
-        if playerid in game.clubs[old_club].individual_training:
-            del game.clubs[old_club].individual_training[playerid]
-
-    player.club = new_club
-
-    if player.club != 0:
-        game.clubs[player.club].squad.append(playerid)
-
-    # Reset transfer status
-    player.transfer = [False, False]
-
-    if negotiation.transfer_type in (0, 2):
-        player.not_for_sale = False
-    else:
-        player.not_for_sale = True
-
-    # Add player to list of transfers
-    name = display.name(player)
-
-    if negotiation.transfer_type != 2:
-        new_club = game.clubs[new_club].name
-    else:
-        new_club = "N/A"
-
-    if negotiation.transfer_type == 0:
-        old_club = game.clubs[old_club].name
-        fee = display.value(negotiation.amount)
-    elif negotiation.transfer_type == 1:
-        old_club = game.clubs[old_club].name
-        fee = "Loan"
-    elif negotiation.transfer_type == 2:
-        if player.club == 0:
-            old_club = game.clubs[old_club].name
-        else:
-            old_club = ""
-
-        fee = "Free Transfer"
-
-    club = old_club
-    season = "%i/%i" % (game.year, game.year + 1)
-    games = "%i/%i" % (player.appearances, player.substitute)
-
-    game.transfers.append([name, old_club, new_club, fee])
-    player.history.append([season,
-                           club,
-                           games,
-                           player.goals,
-                           player.assists,
-                           player.man_of_the_match])
-
-    del game.negotiations[negotiationid]
-
-
-class Loan:
-    def __init__(self):
-        self.playerid = 0
-        self.parent_club = 0
-        self.period = 0
-
-    def update(self):
-        '''
-        Decrement number of weeks remaining on loan, and return player to
-        parent club if loan period has expired.
-        '''
-        if self.period > 0:
-            self.period -= 1
-
-            if self.period in (4, 8, 12):
-                player = game.players[self.playerid]
-                name = display.name(player, mode=1)
-                club = game.clubs[self.parent_club].name
-
-                news.publish("LA01", player=name, team=club, weeks=self.period)
-        else:
-            self.end_loan()
-
-    def end_loan(self):
-        '''
-        Cleanup details of loan and reassign player back to parent club.
-        '''
-        player = game.players[self.playerid]
-
-        # Remove player from squad of loaned club
-        game.clubs[player.club].squad.remove(self.playerid)
-
-        # Remove from individual training if added
-        if self.playerid in game.clubs[player.club].individual_training:
-            del game.clubs[player.club].individual_training[self.playerid]
-
-        # Set club back to parent club
-        player.club = self.parent_club
-
-        name = display.name(player, mode=1)
-        club = game.clubs[player.club].name
-        news.publish("LE01", player=name, team=club)
-
-        # Delete loan information
-        del game.loans[self.playerid]
-
-
-def transfer():
-    '''
-    Process transfer negotiations for each club, and update loan periods.
-    '''
-    for negotiation in game.negotiations.values():
-        negotiation.update()
-
-    for loan in game.loans.values():
-        loan.update()
 
 
 def consider_enquiry(negotiationid):
