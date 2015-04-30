@@ -212,16 +212,14 @@ class Players(Gtk.Grid):
         self.contextmenu.menuitemRemoveShortlist.connect("activate", self.remove_from_shortlist)
         self.contextmenu.menuitemComparison1.connect("activate", self.add_to_comparison, 0)
         self.contextmenu.menuitemComparison2.connect("activate", self.add_to_comparison, 1)
-        self.contextmenu.menuitemRecommends.connect("activate", self.scout_recommends)
+        self.scout_handler_id = self.contextmenu.menuitemRecommends.connect("activate", self.scout_recommends)
 
         self.searchfilter = filters.SearchFilter()
 
-    def run(self):
-        self.populate_data(game.players)
-
-        self.show_all()
-
     def scout_recommends(self, menuitem):
+        '''
+        View players determined by scout to be recommended for the club.
+        '''
         if len(game.clubs[game.teamid].scouts_hired) > 0:
             if menuitem.get_active():
                 players = scout.recommends()
@@ -230,13 +228,16 @@ class Players(Gtk.Grid):
             else:
                 self.populate_data(game.players)
         else:
+            menuitem.handler_block(self.scout_handler_id)
+            menuitem.set_active(False)
+            menuitem.handler_unblock(self.scout_handler_id)
+
             dialogs.error(10)
 
     def add_to_comparison(self, menuitem, index):
         model, treeiter = self.treeselection.get_selected()
-        playerid = model[treeiter][0]
 
-        game.comparison[index] = playerid
+        game.comparison[index] = model[treeiter][0]
 
     def row_activated(self, treeview, path, treeviewcolumn):
         model = treeview.get_model()
@@ -254,7 +255,7 @@ class Players(Gtk.Grid):
                 both = "%s %s" % (player.first_name, player.second_name)
 
                 for search in (player.second_name, player.common_name, player.first_name, both):
-                    search = ''.join((c for c in unicodedata.normalize('NFD', search) if unicodedata.category(c) != 'Mn'))
+                    search = "".join((c for c in unicodedata.normalize("NFD", search) if unicodedata.category(c) != "Mn"))
 
                     if re.findall(criteria, search, re.IGNORECASE):
                         data[playerid] = player
@@ -273,10 +274,17 @@ class Players(Gtk.Grid):
                 model.append([criteria])
 
     def backspace_activated(self, entry):
+        '''
+        Refilter search criteria when entry is emptied.
+        '''
         if entry.get_text_length() == 0:
-            self.reset_activated()
+            self.populate_data(game.players)
+            self.treemodelfilter.refilter()
 
     def reset_activated(self, widget=None, position=None, event=None):
+        '''
+        Clear applied settings and reset back to default view.
+        '''
         self.contextmenu.menuitemRecommends.set_active(False)
         self.buttonReset.set_sensitive(False)
         self.entrySearch.set_text("")
@@ -489,6 +497,11 @@ class Players(Gtk.Grid):
 
         self.treeviewPlayers.set_model(self.treemodelsort)
         self.treeviewPlayers.thaw_child_notify()
+
+    def run(self):
+        self.populate_data(game.players)
+
+        self.show_all()
 
 
 class Negotiations(Gtk.Grid):
