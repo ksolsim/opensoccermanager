@@ -625,13 +625,13 @@ class Squad(Gtk.Grid):
 
     def cancel_loan(self, menuitem):
         model, treeiter = self.treeselection.get_selected()
+
         playerid = model[treeiter][0]
         player = game.players[playerid]
-
         name = display.name(player, mode=1)
 
         if dialogs.cancel_loan(name):
-            transfer.end_loan(playerid)
+            game.loans[playerid].end_loan()
 
             for key, item in game.clubs[game.teamid].team.items():
                 if item == playerid:

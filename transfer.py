@@ -394,6 +394,7 @@ class Negotiation:
             if self.status in (1, 4, 7, 10):
                 remove.append(self.negotiationid)
 
+
 def make_enquiry(playerid, transfer_type):
     '''
     Construct the enquiry object for the appropriate transfer type, and generate
@@ -492,7 +493,12 @@ def move(negotiationid):
     if negotiation.transfer_type in (0, 2):
         game.clubs[old_club].squad.remove(playerid)
     elif negotiation.transfer_type == 1:
-        game.loans[negotiation.playerid] = [old_club, negotiation.weeks]
+        loan = Loan()
+        loan.playerid = playerid
+        loan.parent_club = player.club
+        loan.period = negotiation.weeks
+        game.loans[playerid] = loan
+
         game.clubs[old_club].squad.remove(playerid)
 
     # Remove player from individual training
@@ -550,17 +556,62 @@ def move(negotiationid):
     del game.negotiations[negotiationid]
 
 
+class Loan:
+    def __init__(self):
+        self.playerid = 0
+        self.parent_club = 0
+        self.period = 0
+
+    def update(self):
+        '''
+        Decrement number of weeks remaining on loan, and return player to
+        parent club if loan period has expired.
+        '''
+        if self.period > 0:
+            self.period -= 1
+
+            if self.period in (4, 8, 12):
+                player = game.players[self.playerid]
+                name = display.name(player, mode=1)
+                club = game.clubs[self.parent_club].name
+
+                news.publish("LA01", player=name, team=club, weeks=self.period)
+        else:
+            self.end_loan()
+
+    def end_loan(self):
+        '''
+        Cleanup details of loan and reassign player back to parent club.
+        '''
+        player = game.players[self.playerid]
+
+        # Remove player from squad of loaned club
+        game.clubs[player.club].squad.remove(self.playerid)
+
+        # Remove from individual training if added
+        if self.playerid in game.clubs[player.club].individual_training:
+            del game.clubs[player.club].individual_training[self.playerid]
+
+        # Set club back to parent club
+        player.club = self.parent_club
+
+        name = display.name(player, mode=1)
+        club = game.clubs[player.club].name
+        news.publish("LE01", player=name, team=club)
+
+        # Delete loan information
+        del game.loans[self.playerid]
+
+
 def transfer():
     '''
-    Process negotiations for each club, and each individual negotiation
+    Process transfer negotiations for each club, and update loan periods.
     '''
-    remove = []
-
-    for negotiationid, negotiation in game.negotiations.items():
+    for negotiation in game.negotiations.values():
         negotiation.update()
 
-    for key in remove:
-        del game.negotiations[key]
+    for loan in game.loans.values():
+        loan.update()
 
 
 def consider_enquiry(negotiationid):
@@ -683,9 +734,9 @@ def extend_loan(playerid):
     name = display.name(player, mode=1)
 
     dialog = Gtk.Dialog()
-    self.set_transient_for(game.window)
-    self.set_border_width(5)
-    self.set_resizable(False)
+    dialog.set_transient_for(game.window)
+    dialog.set_border_width(5)
+    dialog.set_resizable(False)
     dialog.set_title("Extend Loan")
     dialog.add_button("_Cancel", Gtk.ResponseType.CANCEL)
     dialog.add_button("_Extend", Gtk.ResponseType.OK)
@@ -694,7 +745,7 @@ def extend_loan(playerid):
     grid = Gtk.Grid()
     grid.set_row_spacing(5)
     grid.set_column_spacing(5)
-    self.vbox.add(grid)
+    dialog.vbox.add(grid)
 
     label = widgets.AlignedLabel("Extend loan deal for an additional %s." % (name))
     grid.attach(label, 0, 0, 3, 1)
@@ -708,13 +759,13 @@ def extend_loan(playerid):
     spinbutton.set_increments(1, 1)
     grid.attach(spinbutton, 1, 1, 1, 1)
 
-    self.show_all()
+    dialog.show_all()
 
-    if self.run() == Gtk.ResponseType.OK:
+    if dialog.run() == Gtk.ResponseType.OK:
         if consider_extension(playerid):
-            game.loans[playerid][1] += spinbutton.get_value_as_int()
+            game.loans[playerid].period += spinbutton.get_value_as_int()
 
-    self.destroy()
+    dialog.destroy()
 
 
 def consider_extension(playerid):
@@ -722,59 +773,6 @@ def consider_extension(playerid):
     Determine whether the parent club of the player will agree to a
     loan extension.
     '''
-    state = 0
-
-    if game.loans[playerid][1] == -1:
-        dialogs.error(11)
-        state = 1
-    else:
-        points = 0
-
-        if points <= 0:
-            dialogs.error(11)
-            state = 1
+    state = True
 
     return state
-
-
-def end_loan(playerid):
-    '''
-    Cleanup details of loan and reassign player back to parent club.
-    '''
-    player = game.players[playerid]
-
-    # Remove player from squad of loaned club
-    game.clubs[player.club].squad.remove(playerid)
-
-    # Remove from individual training if added
-    if playerid in game.clubs[player.club].individual_training:
-        del game.clubs[player.club].individual_training[playerid]
-
-    # Set club back to parent club
-    player.club = game.loans[playerid][0]
-
-    # Delete loan information
-    del game.loans[playerid]
-
-    name = display.name(player, mode=1)
-    club = game.clubs[player.club].name
-    news.publish("LE01", player=name, team=club)
-
-
-def process_loan():
-    '''
-    Decrement number of weeks remaining on loan, and return player to
-    parent club if loan period has expired.
-    '''
-    for playerid, value in game.loans.items():
-        if value[1] > 0:
-            value[1] -= 1
-        elif value[1] == 0:
-            end_loan(playerid)
-
-        player = game.players[playerid]
-        name = display.name(player, mode=1)
-        club = game.clubs[value[0]].name
-
-        if value[1] in (4, 8, 12):
-            news.publish("LA01", player=name, team=club, weeks=value[1])

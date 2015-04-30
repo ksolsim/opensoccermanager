@@ -725,7 +725,6 @@ class ContinueGame:
             events.refresh_staff()
             events.team_training()
             events.individual_training()
-            transfer.process_loan()
             ai.renew_contract()
             events.injury_period()
             events.update_condition()
