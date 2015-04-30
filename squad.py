@@ -621,7 +621,7 @@ class Squad(Gtk.Grid):
         playerid = model[treeiter][0]
         player = game.players[playerid]
 
-        transfer.extend_loan(playerid)
+        game.loans[playerid].extend_loan()
 
     def cancel_loan(self, menuitem):
         model, treeiter = self.treeselection.get_selected()

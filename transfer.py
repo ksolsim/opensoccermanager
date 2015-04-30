@@ -130,8 +130,9 @@ class Negotiation:
 
         dialog = Gtk.Dialog()
         dialog.set_transient_for(game.window)
-        dialog.set_title("Enquiry Accepted")
         dialog.set_border_width(5)
+        dialog.set_resizable(False)
+        dialog.set_title("Enquiry Accepted")
         dialog.add_button("_Withdraw", Gtk.ResponseType.REJECT)
         dialog.add_button("_Offer", Gtk.ResponseType.ACCEPT)
         dialog.set_default_response(Gtk.ResponseType.ACCEPT)
@@ -174,9 +175,10 @@ class Negotiation:
         leaguewin, leaguerunnerup, winbonus, goalbonus = calculator.bonus(wage)
 
         dialog = Gtk.Dialog()
-        dialog.set_title("Offer Accepted")
         dialog.set_transient_for(game.window)
         dialog.set_border_width(5)
+        dialog.set_resizable(False)
+        dialog.set_title("Offer Accepted")
         dialog.add_button("_Cancel", Gtk.ResponseType.CANCEL)
         dialog.add_button("_Offer", Gtk.ResponseType.OK)
         dialog.set_default_response(Gtk.ResponseType.OK)
@@ -290,8 +292,9 @@ class Negotiation:
 
         dialog = Gtk.Dialog()
         dialog.set_transient_for(game.window)
-        dialog.set_title("Loan Offer")
         dialog.set_border_width(5)
+        dialog.set_resizable(False)
+        dialog.set_title("Loan Offer")
         dialog.add_button("_Withdraw", Gtk.ResponseType.REJECT)
         dialog.add_button("_Offer", Gtk.ResponseType.ACCEPT)
         dialog.set_default_response(Gtk.ResponseType.ACCEPT)
@@ -352,7 +355,7 @@ class Negotiation:
 
         if response == Gtk.ResponseType.OK:
             if check(self.negotiationid) == 0:
-                self.move(self.negotiationid)
+                self.move()
         elif response == Gtk.ResponseType.CANCEL:
             del game.negotiations[self.negotiationid]
 
@@ -424,7 +427,7 @@ class Negotiation:
             loan.playerid = self.playerid
             loan.parent_club = player.club
             loan.period = negotiation.weeks
-            game.loans[playerid] = loan
+            game.loans[self.playerid] = loan
 
             game.clubs[old_club].squad.remove(self.playerid)
 
@@ -505,6 +508,49 @@ class Loan:
                 news.publish("LA01", player=name, team=club, weeks=self.period)
         else:
             self.end_loan()
+
+    def extend_loan(self):
+        '''
+        Display dialog with the option for defining how long the player wishes to
+        extend the loan period.
+        '''
+        player = game.players[self.playerid]
+        name = display.name(player, mode=1)
+
+        dialog = Gtk.Dialog()
+        dialog.set_transient_for(game.window)
+        dialog.set_border_width(5)
+        dialog.set_resizable(False)
+        dialog.set_title("Extend Loan")
+        dialog.add_button("_Cancel", Gtk.ResponseType.CANCEL)
+        dialog.add_button("_Extend", Gtk.ResponseType.OK)
+        dialog.set_default_response(Gtk.ResponseType.OK)
+
+        grid = Gtk.Grid()
+        grid.set_row_spacing(5)
+        grid.set_column_spacing(5)
+        dialog.vbox.add(grid)
+
+        label = widgets.AlignedLabel("Extend loan deal for an additional %s." % (name))
+        grid.attach(label, 0, 0, 3, 1)
+
+        label = widgets.AlignedLabel("Period:")
+        label.set_hexpand(False)
+        grid.attach(label, 0, 1, 1, 1)
+
+        spinbutton = Gtk.SpinButton()
+        spinbutton.set_range(0, len(constants.dates) - game.dateindex)
+        spinbutton.set_value(4)
+        spinbutton.set_increments(1, 1)
+        grid.attach(spinbutton, 1, 1, 1, 1)
+
+        dialog.show_all()
+
+        if dialog.run() == Gtk.ResponseType.OK:
+            if consider_extension(self.playerid):
+                game.loans[self.playerid].period += spinbutton.get_value_as_int()
+
+        dialog.destroy()
 
     def end_loan(self):
         '''
@@ -721,49 +767,6 @@ def consider_contract(negotiationid):
             negotiation.status = 7
             negotiation.timeout = random.randint(1, 4)
             news.publish("TO10", player=name)
-
-
-def extend_loan(playerid):
-    '''
-    Display dialog with the option for defining how long the player wishes to
-    extend the loan period.
-    '''
-    player = game.players[playerid]
-    name = display.name(player, mode=1)
-
-    dialog = Gtk.Dialog()
-    dialog.set_transient_for(game.window)
-    dialog.set_border_width(5)
-    dialog.set_resizable(False)
-    dialog.set_title("Extend Loan")
-    dialog.add_button("_Cancel", Gtk.ResponseType.CANCEL)
-    dialog.add_button("_Extend", Gtk.ResponseType.OK)
-    dialog.set_default_response(Gtk.ResponseType.OK)
-
-    grid = Gtk.Grid()
-    grid.set_row_spacing(5)
-    grid.set_column_spacing(5)
-    dialog.vbox.add(grid)
-
-    label = widgets.AlignedLabel("Extend loan deal for an additional %s." % (name))
-    grid.attach(label, 0, 0, 3, 1)
-
-    label = widgets.AlignedLabel("Period:")
-    grid.attach(label, 0, 1, 1, 1)
-
-    spinbutton = Gtk.SpinButton()
-    spinbutton.set_range(0, len(constants.dates) - game.dateindex)
-    spinbutton.set_value(4)
-    spinbutton.set_increments(1, 1)
-    grid.attach(spinbutton, 1, 1, 1, 1)
-
-    dialog.show_all()
-
-    if dialog.run() == Gtk.ResponseType.OK:
-        if consider_extension(playerid):
-            game.loans[playerid].period += spinbutton.get_value_as_int()
-
-    dialog.destroy()
 
 
 def consider_extension(playerid):
