@@ -124,6 +124,12 @@ errors = {1: ("The club needs a minimum of 16 players in the squad.", "Transfer 
           14: ("The loan period entered is longer than the players remaining contract length. The loan negotiations will continue, however if the contract expires before the agreed end of the loan period, the loan will end.", "Loan Period Warning", Gtk.MessageType.WARNING),
          }
 
+scout_report = {0: "The scouting team report that %s would not be a good signing.",
+                1: "%s would be considered a good signing by the scouting team.",
+                2: "After some scouting, %s would be an excellent addition to the squad.",
+                3: "The scouts report that %s would be a top prospect for the future.",
+               }
+
 team_training = ("No Training", "Individual", ("Attacking",
                                                "Ball Skills",
                                                "Corner Kicks",

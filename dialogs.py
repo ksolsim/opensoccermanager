@@ -194,25 +194,22 @@ def renew_player_contract(playerid):
 
 
 def scout_report(player, status):
-    message = {0: "The scouting team report that %s would not be a good signing." % (player),
-               1: "%s would be considered a good signing by the scouting team." % (player),
-               2: "After some scouting, %s would be an excellent addition to the squad." % (player),
-               3: "The scouts report that %s would be a top prospect for the future." % (player),
-              }
+    message = constants.scout_report[status] % (player)
 
     messagedialog = Gtk.MessageDialog(type=Gtk.MessageType.INFO)
     messagedialog.set_transient_for(game.window)
     messagedialog.set_title("Scout Report")
     messagedialog.add_button("_Close", Gtk.ResponseType.CLOSE)
-    messagedialog.set_markup(message[status])
+    messagedialog.set_markup(message)
     messagedialog.run()
     messagedialog.destroy()
 
 
 def player_info(playerid):
     dialog = Gtk.Dialog()
-    dialog.set_border_width(5)
     dialog.set_transient_for(game.window)
+    dialog.set_border_width(5)
+    dialog.set_resizable(False)
     dialog.set_title("Player Information")
     dialog.add_button("_Close", Gtk.ResponseType.CLOSE)
 
