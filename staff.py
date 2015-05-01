@@ -24,19 +24,23 @@ import game
 import structures
 
 
-def generate(role, number):
-    '''
-    Generates names for use as scouts and coaches. Takes a number, as in
-    the number of staff names to generate when run.
+class Staff:
+    def __init__(self, staff_type):
+        self.name = self.name()
+        self.age = self.age()
+        self.ability = self.ability()
+        self.wage = self.wage()
+        self.contract = self.contract()
 
-    On first run, the game will request five coaches and five scouts. When staff
-    are hired, the game will request a five minus the current number in the
-    list.
+        if staff_type == 0:
+            self.speciality = self.speciality()
 
-    Periodically the game will request new scouts and coaches to be generated,
-    around every three months.
-    '''
-    def name():
+        self.retiring = False
+
+    def name(self):
+        '''
+        Generate name of scout or coach.
+        '''
         letters = list(string.ascii_letters[26:])
         initial = random.choice(letters)
         surname = random.choice(game.surnames)
@@ -44,60 +48,42 @@ def generate(role, number):
 
         return name
 
-    def age():
+    def age(self):
+        '''
+        Select random age for staff member.
+        '''
         age = random.randint(43, 61)
 
         return age
 
-    def salary(level):
-        if level == 0:
+    def wage(self):
+        if self.ability == 0:
             lower = 335
-            upper = 380
-        elif level == 1:
-            lower = 370
-            upper = 555
-        elif level == 2:
-            lower = 545
-            upper = 730
+            upper = 435
+        elif self.ability == 1:
+            lower = 425
+            upper = 535
+        elif self.ability == 2:
+            lower = 525
+            upper = 635
 
         wage = random.randrange(lower, upper, 5)
 
         return wage
 
-    def ability():
+    def ability(self):
         keys = list(constants.ability.keys())
-        level = random.choice(keys)
+        ability = random.choice(keys)
 
-        return level
+        return ability
 
-    def speciality():
+    def speciality(self):
         keys = list(constants.speciality.keys())
         speciality = random.choice(keys)
 
         return speciality
 
-    def contract():
+    def contract(self):
         period = random.randint(24, 260)
 
         return period
-
-    members = {}
-
-    for count in range(0, number):
-        staff = structures.Staff()
-        staff.name = name()
-        staff.age = age()
-        staff.ability = ability()
-        staff.wage = salary(staff.ability)
-        staff.contract = contract()
-        staff.retiring = False
-
-        if role == 0:
-            staff.speciality = speciality()
-            members[game.coachid] = staff
-            game.coachid += 1
-        else:
-            members[game.scoutid] = staff
-            game.scoutid += 1
-
-    return members

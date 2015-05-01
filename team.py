@@ -523,8 +523,6 @@ class Staff(Gtk.Grid):
         def run(self):
             self.populate_data()
 
-            self.show_all()
-
     class Scout(Gtk.Grid):
         def __init__(self):
             def selection_changed(treeselection, index):
@@ -753,8 +751,6 @@ class Staff(Gtk.Grid):
 
         def run(self):
             self.populate_data()
-
-            self.show_all()
 
     def __init__(self):
         Gtk.Grid.__init__(self)
