@@ -827,26 +827,6 @@ def improve_wage(name, amount):
     return state
 
 
-def cancel_loan(name):
-    messagedialog = Gtk.MessageDialog(type=Gtk.MessageType.QUESTION)
-    messagedialog.set_transient_for(game.window)
-    messagedialog.set_title("Cancel Loan")
-    messagedialog.add_button("_Do Not Cancel", Gtk.ResponseType.REJECT)
-    messagedialog.add_button("_Cancel Loan", Gtk.ResponseType.ACCEPT)
-    messagedialog.set_default_response(Gtk.ResponseType.REJECT)
-    messagedialog.set_markup("<span size='12000'><b>Cancel loan contract for %s?</b></span>" % (name))
-    messagedialog.format_secondary_text("The player will be returned to his parent club.")
-
-    state = False
-
-    if messagedialog.run() == Gtk.ResponseType.ACCEPT:
-        state = True
-
-    messagedialog.destroy()
-
-    return state
-
-
 def sponsorship():
     club = game.clubs[game.teamid]
 

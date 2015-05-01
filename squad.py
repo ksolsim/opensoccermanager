@@ -490,7 +490,7 @@ class Squad(Gtk.Grid):
                 self.contextmenu.menuitemExtendLoan.set_visible(True)
                 self.contextmenu.menuitemCancelLoan.set_visible(True)
             else:
-                if player.transfer[0] is True:
+                if player.transfer[0]:
                     self.contextmenu.menuitemAddTransfer.set_sensitive(False)
                     self.contextmenu.menuitemRemoveTransfer.set_sensitive(True)
                     self.contextmenu.menuitemNotForSale.set_sensitive(False)
@@ -499,7 +499,7 @@ class Squad(Gtk.Grid):
                     self.contextmenu.menuitemRemoveTransfer.set_sensitive(False)
                     self.contextmenu.menuitemNotForSale.set_sensitive(True)
 
-                if player.transfer[1] is True:
+                if player.transfer[1]:
                     self.contextmenu.menuitemAddLoan.set_sensitive(False)
                     self.contextmenu.menuitemRemoveLoan.set_sensitive(True)
                 else:
@@ -630,8 +630,10 @@ class Squad(Gtk.Grid):
         player = game.players[playerid]
         name = display.name(player, mode=1)
 
-        if dialogs.cancel_loan(name):
-            game.loans[playerid].end_loan()
+        loan = game.loans[playerid]
+
+        if loan.cancel_loan():
+            loan.end_loan()
 
             for key, item in game.clubs[game.teamid].team.items():
                 if item == playerid:
