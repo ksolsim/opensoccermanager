@@ -318,19 +318,33 @@ class Staff(Gtk.Grid):
             self.treeselectionCurrent.connect("changed", selection_changed, 1)
 
             cellrenderertext = Gtk.CellRendererText()
-            treeviewcolumn = Gtk.TreeViewColumn("Name", cellrenderertext, text=1)
+            treeviewcolumn = Gtk.TreeViewColumn("Name",
+                                                cellrenderertext,
+                                                text=1)
             treeviewCurrent.append_column(treeviewcolumn)
-            treeviewcolumn = Gtk.TreeViewColumn("Age", cellrenderertext, text=2)
+            treeviewcolumn = Gtk.TreeViewColumn("Age",
+                                                cellrenderertext,
+                                                text=2)
             treeviewCurrent.append_column(treeviewcolumn)
-            treeviewcolumn = Gtk.TreeViewColumn("Rating", cellrenderertext, text=3)
+            treeviewcolumn = Gtk.TreeViewColumn("Rating",
+                                                cellrenderertext,
+                                                text=3)
             treeviewCurrent.append_column(treeviewcolumn)
-            treeviewcolumn = Gtk.TreeViewColumn("Speciality", cellrenderertext, text=4)
+            treeviewcolumn = Gtk.TreeViewColumn("Speciality",
+                                                cellrenderertext,
+                                                text=4)
             treeviewCurrent.append_column(treeviewcolumn)
-            treeviewcolumn = Gtk.TreeViewColumn("Wage", cellrenderertext, text=5)
+            treeviewcolumn = Gtk.TreeViewColumn("Wage",
+                                                cellrenderertext,
+                                                text=5)
             treeviewCurrent.append_column(treeviewcolumn)
-            treeviewcolumn = Gtk.TreeViewColumn("Contract", cellrenderertext, text=6)
+            treeviewcolumn = Gtk.TreeViewColumn("Contract",
+                                                cellrenderertext,
+                                                text=6)
             treeviewCurrent.append_column(treeviewcolumn)
-            treeviewcolumn = Gtk.TreeViewColumn("Morale", cellrenderertext, text=7)
+            treeviewcolumn = Gtk.TreeViewColumn("Morale",
+                                                cellrenderertext,
+                                                text=7)
             treeviewCurrent.append_column(treeviewcolumn)
 
             label = widgets.AlignedLabel("<b>Available</b>")
@@ -350,17 +364,29 @@ class Staff(Gtk.Grid):
             treeselectionAvailable = self.treeviewAvailable.get_selection()
             treeselectionAvailable.connect("changed", selection_changed, 0)
 
-            treeviewcolumn = Gtk.TreeViewColumn("Name", cellrenderertext, text=1)
+            treeviewcolumn = Gtk.TreeViewColumn("Name",
+                                                cellrenderertext,
+                                                text=1)
             self.treeviewAvailable.append_column(treeviewcolumn)
-            treeviewcolumn = Gtk.TreeViewColumn("Age", cellrenderertext, text=2)
+            treeviewcolumn = Gtk.TreeViewColumn("Age",
+                                                cellrenderertext,
+                                                text=2)
             self.treeviewAvailable.append_column(treeviewcolumn)
-            treeviewcolumn = Gtk.TreeViewColumn("Rating", cellrenderertext, text=3)
+            treeviewcolumn = Gtk.TreeViewColumn("Rating",
+                                                cellrenderertext,
+                                                text=3)
             self.treeviewAvailable.append_column(treeviewcolumn)
-            treeviewcolumn = Gtk.TreeViewColumn("Speciality", cellrenderertext, text=4)
+            treeviewcolumn = Gtk.TreeViewColumn("Speciality",
+                                                cellrenderertext,
+                                                text=4)
             self.treeviewAvailable.append_column(treeviewcolumn)
-            treeviewcolumn = Gtk.TreeViewColumn("Wage", cellrenderertext, text=5)
+            treeviewcolumn = Gtk.TreeViewColumn("Wage",
+                                                cellrenderertext,
+                                                text=5)
             self.treeviewAvailable.append_column(treeviewcolumn)
-            treeviewcolumn = Gtk.TreeViewColumn("Contract", cellrenderertext, text=6)
+            treeviewcolumn = Gtk.TreeViewColumn("Contract",
+                                                cellrenderertext,
+                                                text=6)
             self.treeviewAvailable.append_column(treeviewcolumn)
 
             buttonbox = Gtk.ButtonBox()
@@ -545,17 +571,29 @@ class Staff(Gtk.Grid):
             self.treeselectionCurrent = treeviewCurrent.get_selection()
             self.treeselectionCurrent.connect("changed", selection_changed, 1)
             cellrenderertext = Gtk.CellRendererText()
-            treeviewcolumn = Gtk.TreeViewColumn("Name", cellrenderertext, text=1)
+            treeviewcolumn = Gtk.TreeViewColumn("Name",
+                                                cellrenderertext,
+                                                text=1)
             treeviewCurrent.append_column(treeviewcolumn)
-            treeviewcolumn = Gtk.TreeViewColumn("Age", cellrenderertext, text=2)
+            treeviewcolumn = Gtk.TreeViewColumn("Age",
+                                                cellrenderertext,
+                                                text=2)
             treeviewCurrent.append_column(treeviewcolumn)
-            treeviewcolumn = Gtk.TreeViewColumn("Rating", cellrenderertext, text=3)
+            treeviewcolumn = Gtk.TreeViewColumn("Rating",
+                                                cellrenderertext,
+                                                text=3)
             treeviewCurrent.append_column(treeviewcolumn)
-            treeviewcolumn = Gtk.TreeViewColumn("Wage", cellrenderertext, text=4)
+            treeviewcolumn = Gtk.TreeViewColumn("Wage",
+                                                cellrenderertext,
+                                                text=4)
             treeviewCurrent.append_column(treeviewcolumn)
-            treeviewcolumn = Gtk.TreeViewColumn("Contract", cellrenderertext, text=5)
+            treeviewcolumn = Gtk.TreeViewColumn("Contract",
+                                                cellrenderertext,
+                                                text=5)
             treeviewCurrent.append_column(treeviewcolumn)
-            treeviewcolumn = Gtk.TreeViewColumn("Morale", cellrenderertext, text=6)
+            treeviewcolumn = Gtk.TreeViewColumn("Morale",
+                                                cellrenderertext,
+                                                text=6)
             treeviewCurrent.append_column(treeviewcolumn)
             scrolledwindow.add(treeviewCurrent)
 
@@ -576,15 +614,25 @@ class Staff(Gtk.Grid):
             treeselectionAvailable = self.treeviewAvailable.get_selection()
             treeselectionAvailable.connect("changed", selection_changed, 0)
 
-            treeviewcolumn = Gtk.TreeViewColumn("Name", cellrenderertext, text=1)
+            treeviewcolumn = Gtk.TreeViewColumn("Name",
+                                                cellrenderertext,
+                                                text=1)
             self.treeviewAvailable.append_column(treeviewcolumn)
-            treeviewcolumn = Gtk.TreeViewColumn("Age", cellrenderertext, text=2)
+            treeviewcolumn = Gtk.TreeViewColumn("Age",
+                                                cellrenderertext,
+                                                text=2)
             self.treeviewAvailable.append_column(treeviewcolumn)
-            treeviewcolumn = Gtk.TreeViewColumn("Rating", cellrenderertext, text=3)
+            treeviewcolumn = Gtk.TreeViewColumn("Rating",
+                                                cellrenderertext,
+                                                text=3)
             self.treeviewAvailable.append_column(treeviewcolumn)
-            treeviewcolumn = Gtk.TreeViewColumn("Wage", cellrenderertext, text=4)
+            treeviewcolumn = Gtk.TreeViewColumn("Wage",
+                                                cellrenderertext,
+                                                text=4)
             self.treeviewAvailable.append_column(treeviewcolumn)
-            treeviewcolumn = Gtk.TreeViewColumn("Contract", cellrenderertext, text=5)
+            treeviewcolumn = Gtk.TreeViewColumn("Contract",
+                                                cellrenderertext,
+                                                text=5)
             self.treeviewAvailable.append_column(treeviewcolumn)
 
             buttonbox = Gtk.ButtonBox()
