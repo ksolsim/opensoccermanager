@@ -25,6 +25,7 @@ import display
 import events
 import game
 import money
+import structures
 import widgets
 
 
@@ -36,43 +37,44 @@ class TeamTraining(Gtk.Grid):
         self.set_row_spacing(5)
         self.set_column_spacing(5)
 
-        label = Gtk.Label('09:00 - 10:00')
+        label = Gtk.Label("09:00 - 10:00")
         label.set_hexpand(True)
         self.attach(label, 1, 0, 1, 1)
-        label = Gtk.Label('10:00 - 11:00')
+        label = Gtk.Label("10:00 - 11:00")
         label.set_hexpand(True)
         self.attach(label, 2, 0, 1, 1)
-        label = Gtk.Label('11:00 - 12:00')
+        label = Gtk.Label("11:00 - 12:00")
         label.set_hexpand(True)
         self.attach(label, 3, 0, 1, 1)
-        label = Gtk.Label('12:00 - 13:00')
+        label = Gtk.Label("12:00 - 13:00")
         label.set_hexpand(True)
         self.attach(label, 4, 0, 1, 1)
-        label = Gtk.Label('13:00 - 14:00')
+        label = Gtk.Label("13:00 - 14:00")
         label.set_hexpand(True)
         self.attach(label, 5, 0, 1, 1)
-        label = Gtk.Label('14:00 - 15:00')
+        label = Gtk.Label("14:00 - 15:00")
         label.set_hexpand(True)
         self.attach(label, 6, 0, 1, 1)
 
-        label = widgets.AlignedLabel('Monday')
+        label = widgets.AlignedLabel("Monday")
         self.attach(label, 0, 1, 1, 1)
-        label = widgets.AlignedLabel('Tuesday')
+        label = widgets.AlignedLabel("Tuesday")
         self.attach(label, 0, 2, 1, 1)
-        label = widgets.AlignedLabel('Wednesday')
+        label = widgets.AlignedLabel("Wednesday")
         self.attach(label, 0, 3, 1, 1)
-        label = widgets.AlignedLabel('Thursday')
+        label = widgets.AlignedLabel("Thursday")
         self.attach(label, 0, 4, 1, 1)
-        label = widgets.AlignedLabel('Friday')
+        label = widgets.AlignedLabel("Friday")
         self.attach(label, 0, 5, 1, 1)
-        label = widgets.AlignedLabel('Saturday')
+        label = widgets.AlignedLabel("Saturday")
         self.attach(label, 0, 6, 1, 1)
-        label = widgets.AlignedLabel('Sunday')
+        label = widgets.AlignedLabel("Sunday")
         self.attach(label, 0, 7, 1, 1)
 
         liststoreTraining = Gtk.ListStore(str)
         liststoreTraining.append([constants.team_training[0]])
         liststoreTraining.append([constants.team_training[1]])
+
         for item in constants.team_training[2]:
             liststoreTraining.append([item])
 
@@ -101,14 +103,14 @@ class TeamTraining(Gtk.Grid):
 
     def assistant_generated(self, button):
         '''
-        Generate training sessions automatically, and overwrite any existing
-        setup
+        Clear existing session and randomly generate new schedule.
         '''
         values = [count for count in range(2, 18)]
         random.shuffle(values)
 
         # Reset comboboxes to zero
-        [item.set_active(0) for item in self.comboboxes]
+        for item in self.comboboxes:
+            item.set_active(0)
 
         self.comboboxes[0].set_active(values[0])
         self.comboboxes[1].set_active(values[1])
@@ -152,7 +154,7 @@ class IndividualTraining(Gtk.Grid):
 
     def __init__(self):
         Gtk.Grid.__init__(self)
-        self.set_border_width(5)
+        self.set_row_spacing(5)
 
         self.infobar = Gtk.InfoBar()
         self.infobar.set_message_type(Gtk.MessageType.WARNING)
@@ -182,17 +184,29 @@ class IndividualTraining(Gtk.Grid):
         self.overlay.add(self.treeview)
 
         cellrenderertext = Gtk.CellRendererText()
-        treeviewcolumn = Gtk.TreeViewColumn("Name", cellrenderertext, text=1)
+        treeviewcolumn = Gtk.TreeViewColumn("Name",
+                                            cellrenderertext,
+                                            text=1)
         self.treeview.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Coach", cellrenderertext, text=2)
+        treeviewcolumn = Gtk.TreeViewColumn("Coach",
+                                            cellrenderertext,
+                                            text=2)
         self.treeview.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Skill", cellrenderertext, text=3)
+        treeviewcolumn = Gtk.TreeViewColumn("Skill",
+                                            cellrenderertext,
+                                            text=3)
         self.treeview.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Intensity", cellrenderertext, text=4)
+        treeviewcolumn = Gtk.TreeViewColumn("Intensity",
+                                            cellrenderertext,
+                                            text=4)
         self.treeview.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Start Value", cellrenderertext, text=5)
+        treeviewcolumn = Gtk.TreeViewColumn("Start Value",
+                                            cellrenderertext,
+                                            text=5)
         self.treeview.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Current Value", cellrenderertext, text=6)
+        treeviewcolumn = Gtk.TreeViewColumn("Current Value",
+                                            cellrenderertext,
+                                            text=6)
         self.treeview.append_column(treeviewcolumn)
         treeviewcolumn = Gtk.TreeViewColumn("Notes")
         self.treeview.append_column(treeviewcolumn)
@@ -225,29 +239,22 @@ class IndividualTraining(Gtk.Grid):
             self.buttonRemove.set_sensitive(False)
 
     def dialog_add(self, button, mode=0):
-        if mode == 1:
+        if mode == 0:
+            training = dialogs.add_individual_training()
+        elif mode == 1:
             model, treeiter = self.treeselection.get_selected()
             playerid = model[treeiter][0]
             training = dialogs.add_individual_training(playerid)
-        else:
-            training = dialogs.add_individual_training()
 
         if training:
-            player = game.players[training[0]]
-            coach = training[1]
-
-            skills = (player.keeping,
-                      player.tackling,
-                      player.passing,
-                      player.shooting,
-                      player.heading,
-                      player.pace,
-                      player.stamina,
-                      player.ball_control,
-                      player.set_pieces)
+            playerid = training[0]
+            player = game.players[playerid]
+            coachid = training[1]
 
             if training[2] != 9:
                 skill = training[2]
+
+                skills = player.skills()
                 start_value = skills[skill]
             else:
                 skill = 9
@@ -255,11 +262,15 @@ class IndividualTraining(Gtk.Grid):
 
             intensity = training[3]
 
-            training_dict = game.clubs[game.teamid].individual_training
-            training_dict[training[0]] = (coach,
-                                          skill,
-                                          intensity,
-                                          start_value)
+            club = game.clubs[game.teamid]
+
+            individual_training = structures.IndividualTraining()
+            individual_training.playerid = playerid
+            individual_training.coachid = coachid
+            individual_training.skill = skill
+            individual_training.intensity = intensity
+            individual_training.start_value = start_value
+            club.individual_training[playerid] = individual_training
 
             self.populate_data()
 
@@ -267,9 +278,7 @@ class IndividualTraining(Gtk.Grid):
         model, treeiter = self.treeselection.get_selected()
         playerid = model[treeiter][0]
 
-        state = dialogs.remove_individual_training(playerid)
-
-        if state:
+        if dialogs.remove_individual_training(playerid):
             self.populate_data()
 
     def populate_data(self):
@@ -280,29 +289,21 @@ class IndividualTraining(Gtk.Grid):
         for playerid, item in training.items():
             player = game.players[playerid]
 
-            skills = (player.keeping,
-                      player.tackling,
-                      player.passing,
-                      player.shooting,
-                      player.heading,
-                      player.pace,
-                      player.stamina,
-                      player.ball_control,
-                      player.set_pieces)
+            skills = player.skills()
 
             name = display.name(player)
-            coachid = item[0]
+            coachid = int(item.coachid)
             coach = game.clubs[game.teamid].coaches_hired[coachid].name
 
-            if item[1] == 9:
+            if item.skill == 9:
                 skill = "Fitness"
                 current = player.fitness
             else:
-                skill = constants.skill[item[1]]
-                current = skills[item[1]]
+                skill = constants.skill[item.skill]
+                current = skills[item.skill]
 
-            intensity = constants.intensity[item[2]]
-            start = item[3]
+            intensity = constants.intensity[item.intensity]
+            start = item.start_value
 
             self.liststore.append([playerid,
                                    name,
@@ -317,25 +318,15 @@ class IndividualTraining(Gtk.Grid):
 
         self.show_all()
 
-        schedule = False
-
-        for item in game.clubs[game.teamid].team_training:
-            if item == 1:
-                schedule = True
-
-                break
-
-        if schedule:
+        if 1 in game.clubs[game.teamid].team_training:
             self.infobar.hide()
 
-        if len(game.clubs[game.teamid].coaches_hired) > 0:
-            self.treeview.set_sensitive(True)
-            self.buttonAdd.set_sensitive(True)
+        sensitive = len(game.clubs[game.teamid].coaches_hired) > 0
+        self.treeview.set_sensitive(sensitive)
+        self.buttonAdd.set_sensitive(sensitive)
 
+        if sensitive:
             self.labelNoStaff.hide()
-        else:
-            self.treeview.set_sensitive(False)
-            self.buttonAdd.set_sensitive(False)
 
 
 class TrainingCamp(Gtk.Grid):
@@ -356,10 +347,10 @@ class TrainingCamp(Gtk.Grid):
         self.attach(label, 0, 0, 1, 1)
         comboboxDays = Gtk.ComboBoxText()
         comboboxDays.append("1", "1 Day")
-        comboboxDays.append("2", "2 Day")
-        comboboxDays.append("3", "3 Day")
-        comboboxDays.append("4", "4 Day")
-        comboboxDays.append("5", "5 Day")
+        comboboxDays.append("2", "2 Days")
+        comboboxDays.append("3", "3 Days")
+        comboboxDays.append("4", "4 Days")
+        comboboxDays.append("5", "5 Days")
         comboboxDays.set_active(0)
         comboboxDays.connect("changed", self.update_days)
         self.attach(comboboxDays, 1, 0, 1, 1)
@@ -509,7 +500,6 @@ class TrainingCamp(Gtk.Grid):
                     self.buttonSquadWarning.show()
                 else:
                     self.buttonSquadWarning.hide()
-
             elif index == 1:
                 players = 0
 
@@ -533,13 +523,13 @@ class TrainingCamp(Gtk.Grid):
         if squad_index == 0:
             squad_count = 16
         elif squad_index == 1:
-            players = 0
+            count = 0
 
             for item in game.clubs[game.teamid].squad:
                 if item not in game.clubs[game.teamid].team.values():
-                    players += 1
+                    count += 1
 
-            squad_count = players
+            squad_count = count
         elif squad_index == 2:
             squad_count = len(game.clubs[game.teamid].squad)
 

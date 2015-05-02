@@ -184,3 +184,12 @@ class Statistics:
 
         self.win = (0, ())
         self.loss = (0, ())
+
+
+class IndividualTraining:
+    def __init__(self):
+        self.playerid = 0
+        self.coachid = 0
+        self.skill = 0
+        self.intensity = 1
+        self.start_value = 0

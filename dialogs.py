@@ -290,7 +290,7 @@ def player_info(playerid):
             suspension_period = "N/A"
         else:
             suspension_type = constants.suspensions[suspensionid][0]
-            suspension_period = "%i Weeks" % (player.suspension_period)
+            suspension_period = "%i Matches" % (player.suspension_period)
 
         label = widgets.AlignedLabel("%s" % (injury_type))
         grid.attach(label, 1, 0, 1, 1)
@@ -316,7 +316,12 @@ def player_info(playerid):
     games = "%i/%i" % (player.appearances, player.substitute)
 
     liststore = Gtk.ListStore(str, str, str, int, int, int)
-    liststore.append([season, club, games, player.goals, player.assists, player.man_of_the_match])
+    liststore.append([season,
+                      club,
+                      games,
+                      player.goals,
+                      player.assists,
+                      player.man_of_the_match])
 
     for item in player.history:
         liststore.append(item)
@@ -327,8 +332,11 @@ def player_info(playerid):
     treeview.set_model(liststore)
     treeview.set_enable_search(False)
     treeview.set_search_column(-1)
+    scrolledwindow.add(treeview)
+
     treeselection = treeview.get_selection()
     treeselection.set_mode(Gtk.SelectionMode.NONE)
+
     treeviewcolumn = widgets.TreeViewColumn(title="Season", column=0)
     treeview.append_column(treeviewcolumn)
     treeviewcolumn = widgets.TreeViewColumn(title="Club", column=1)
@@ -341,7 +349,6 @@ def player_info(playerid):
     treeview.append_column(treeviewcolumn)
     treeviewcolumn = widgets.TreeViewColumn(title="MOTM", column=5)
     treeview.append_column(treeviewcolumn)
-    scrolledwindow.add(treeview)
 
     dialog.show_all()
     dialog.run()
@@ -401,8 +408,8 @@ def add_individual_training(playerid=None):
     def update_speciality(combobox):
         active = combobox.get_active()
         model = combobox.get_model()
-        coachid = model[active][0]
 
+        coachid = int(model[active][0])
         coach = game.clubs[game.teamid].coaches_hired[coachid]
 
         if coach.speciality == 0:
@@ -421,16 +428,23 @@ def add_individual_training(playerid=None):
         labelSpeciality.set_label(speciality)
 
     dialog = Gtk.Dialog()
-    dialog.set_title("Individual Training")
     dialog.set_transient_for(game.window)
+    dialog.set_border_width(5)
+    dialog.set_resizable(False)
+    dialog.set_title("Individual Training")
     dialog.add_button("_Cancel", Gtk.ResponseType.CANCEL)
 
-    if playerid == None:
+    if not playerid:
         dialog.add_button("_Add", Gtk.ResponseType.OK)
     else:
         dialog.add_button("_Edit", Gtk.ResponseType.OK)
 
     dialog.set_default_response(Gtk.ResponseType.OK)
+
+    grid = Gtk.Grid()
+    grid.set_row_spacing(5)
+    grid.set_column_spacing(5)
+    dialog.vbox.add(grid)
 
     liststorePlayer = Gtk.ListStore(int, str)
 
@@ -440,16 +454,10 @@ def add_individual_training(playerid=None):
 
         liststorePlayer.append([item, name])
 
-    liststoreCoach = Gtk.ListStore(int, str)
+    liststoreCoach = Gtk.ListStore(str, str)
 
     for coachid, coach in game.clubs[game.teamid].coaches_hired.items():
-        liststoreCoach.append([coachid, coach.name])
-
-    grid = Gtk.Grid()
-    grid.set_border_width(5)
-    grid.set_row_spacing(5)
-    grid.set_column_spacing(5)
-    dialog.vbox.add(grid)
+        liststoreCoach.append([str(coachid), coach.name])
 
     for count, text in enumerate(("Coach", "Skill", "Intensity")):
         label = widgets.AlignedLabel("%s" % (text))
@@ -468,17 +476,19 @@ def add_individual_training(playerid=None):
         comboboxPlayer.add_attribute(cellrenderertext, "text", 1)
         grid.attach(comboboxPlayer, 1, 0, 1, 1)
 
-    comboboxCoach = Gtk.ComboBox()
-    comboboxCoach.set_model(liststoreCoach)
-    comboboxCoach.connect("changed", update_speciality)
-    comboboxCoach.pack_start(cellrenderertext, True)
-    comboboxCoach.add_attribute(cellrenderertext, "text", 1)
-    grid.attach(comboboxCoach, 1, 1, 1, 1)
-
     label = widgets.AlignedLabel("Specialities:")
     grid.attach(label, 2, 1, 1, 1)
     labelSpeciality = widgets.AlignedLabel()
     grid.attach(labelSpeciality, 3, 1, 1, 1)
+
+    comboboxCoach = Gtk.ComboBox()
+    comboboxCoach.set_model(liststoreCoach)
+    comboboxCoach.set_id_column(0)
+    comboboxCoach.pack_start(cellrenderertext, True)
+    comboboxCoach.add_attribute(cellrenderertext, "text", 1)
+    comboboxCoach.connect("changed", update_speciality)
+    comboboxCoach.set_active(0)
+    grid.attach(comboboxCoach, 1, 1, 1, 1)
 
     comboboxSkill = Gtk.ComboBoxText()
 
@@ -509,23 +519,15 @@ def add_individual_training(playerid=None):
 
     # Set values when editing
     if playerid:
-        training = game.clubs[game.teamid].individual_training
-        training = training[playerid]
+        club = game.clubs[game.teamid]
+        training = club.individual_training[playerid]
 
         # Set value for coach within combobox
-        count = 0
-        for key, item in game.clubs[game.teamid].coaches_hired.items():
-            if key == training[0]:
-                comboboxCoach.set_active(count)
+        if training in club.coaches_hired.keys():
+            comboboxCoach.set_active_id(str(training))
 
-            count += 1
-
-        comboboxSkill.set_active(training[1])
-        intensity_widget[training[2]].set_active(True)
-    else:
-        # Required to set default specialities for coach
-        # Do not remove unless setting it another "smarter" way
-        comboboxCoach.set_active(0)
+        comboboxSkill.set_active(training.skill)
+        intensity_widget[training.intensity].set_active(True)
 
     dialog.show_all()
 
@@ -533,13 +535,14 @@ def add_individual_training(playerid=None):
 
     if dialog.run() == Gtk.ResponseType.OK:
         if not playerid:
+            model = comboboxPlayer.get_model()
             active = comboboxPlayer.get_active()
-            playerid = liststorePlayer[active][0]
+            playerid = model[active][0]
 
         # Coach
-        active = comboboxCoach.get_active()
         model = comboboxCoach.get_model()
-        coach = model[active][0]
+        active = comboboxCoach.get_active()
+        coachid = int(model[active][0])
 
         # Skill
         skill = int(comboboxSkill.get_active_id())
@@ -552,7 +555,7 @@ def add_individual_training(playerid=None):
         else:
             intensity = 2
 
-        training = (playerid, coach, skill, intensity)
+        training = (playerid, coachid, skill, intensity)
 
     dialog.destroy()
 

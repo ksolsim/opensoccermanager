@@ -432,13 +432,13 @@ class Staff(Gtk.Grid):
         def staff_fire(self, button):
             model, treeiter = self.treeselectionCurrent.get_selected()
 
+            staffid = model[treeiter][0]
+
             count = 0
 
-            for item in game.clubs[game.teamid].individual_training:
-                if item[0] == model[treeiter][0]:
+            for item in game.clubs[game.teamid].individual_training.values():
+                if item[0] == staffid:
                     count += 1
-
-            staffid = model[treeiter][0]
 
             if count > 0:
                 coach = game.clubs[game.teamid].coaches_hired[staffid]
