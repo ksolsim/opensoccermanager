@@ -22,6 +22,7 @@ import random
 import constants
 import display
 import game
+import money
 import transfer
 
 
@@ -199,6 +200,9 @@ class Negotiation:
             self.timeout = random.randint(1, 4)
         elif response == Gtk.ResponseType.OK:
             self.move()
+
+            if self.transfer_type == 0:
+                money.deposit(self.amount, 6)
 
         messagedialog.destroy()
 

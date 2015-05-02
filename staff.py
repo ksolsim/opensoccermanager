@@ -20,6 +20,7 @@ import random
 import string
 
 import constants
+import dialogs
 import game
 import structures
 
@@ -35,6 +36,7 @@ class Staff:
         if staff_type == 0:
             self.speciality = self.speciality()
 
+        self.morale = 9
         self.retiring = False
 
     def name(self):
@@ -87,3 +89,59 @@ class Staff:
         period = random.randint(24, 260)
 
         return period
+
+    def hire(self):
+        '''
+        Hire the staff member.
+        '''
+        state = False
+
+        if dialogs.hire_staff(0, self.name):
+            state = True
+
+        return state
+
+    def fire(self):
+        '''
+        Fire the staff member.
+        '''
+        state = False
+
+        return state
+
+    def renew_contract(self):
+        '''
+        Renew the contract of the staff member.
+        '''
+        state = False
+
+        if self.retiring:
+            dialogs.renew_staff_contract_error(self)
+        else:
+            year = random.randint(2, 4)
+            amount = round(self.wage * 1.055)
+
+            if dialogs.renew_staff_contract(self.name, year, amount):
+                self.wage = amount
+                self.contract = year * 52
+                self.morale += random.randint(1, 3)
+
+                state = True
+
+        return state
+
+    def improve_wage(self):
+        '''
+        Offer a pay increase to the staff member.
+        '''
+        amount = round(self.wage * 1.025)
+
+        state = False
+
+        if dialogs.improve_wage(self.name, amount):
+            self.wage = amount
+            self.morale += 1
+
+            state = True
+
+        return state
