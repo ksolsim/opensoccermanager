@@ -397,19 +397,23 @@ def team_training():
             overwork += 1
 
     if game.team_training_alert == 0:
-        if sunday > 0 or overwork > 18:
+        if overwork > 18:
             game.team_training_alert = random.randint(12, 18)
 
             for playerid in game.players.keys():
                 evaluation.morale(playerid, -5)
+
+            news.publish("TT04")
+
+        if sunday > 0:
+            game.team_training_alert = random.randint(12, 18)
+
+            for playerid in game.players.keys():
+                evaluation.morale(playerid, -3)
+
+            news.publish("TT03")
     else:
         game.team_training_alert -= 1
-
-        if game.team_training_alert == 0:
-            if overwork > 18:
-                news.publish("TT04")
-            elif sunday > 0:
-                news.publish("TT03")
 
 
 def individual_training():
@@ -425,6 +429,8 @@ def individual_training():
         intensity = training.intensity + 1
 
         coach = club.coaches_hired[coachid]
+
+        ability = coach.ability + 1
 
         # Speciality
         if coach.speciality == 0:
@@ -461,7 +467,7 @@ def individual_training():
             if value == 1:
                 sessions += 0.4
 
-        points = (coach.ability * intensity * speciality * sessions) * (player.training * 0.1)
+        points = (ability * intensity * speciality * sessions) * (player.training * 0.1)
 
         player.training_points += points
         player.training_points = int(player.training_points)

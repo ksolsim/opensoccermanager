@@ -173,42 +173,31 @@ class IndividualTraining(Gtk.Grid):
         self.labelNoStaff = Gtk.Label("There are no coaches on staff. To assign players to individual training, at least one coach must be hired.")
         self.overlay.add_overlay(self.labelNoStaff)
 
-        self.liststore = Gtk.ListStore(int, str, str, str, str, int, int)
+        self.liststore = Gtk.ListStore(int, str, str, str, str, int, int, str)
+        treemodelsort = Gtk.TreeModelSort(self.liststore)
+        treemodelsort.set_sort_column_id(1, Gtk.SortType.ASCENDING)
 
         self.treeview = Gtk.TreeView()
-        self.treeview.set_model(self.liststore)
+        self.treeview.set_model(treemodelsort)
         self.treeview.set_enable_search(False)
         self.treeview.set_search_column(-1)
         self.treeselection = self.treeview.get_selection()
         self.treeselection.connect("changed", self.selection_changed)
         self.overlay.add(self.treeview)
 
-        cellrenderertext = Gtk.CellRendererText()
-        treeviewcolumn = Gtk.TreeViewColumn("Name",
-                                            cellrenderertext,
-                                            text=1)
+        treeviewcolumn = widgets.TreeViewColumn(title="Name", column=1)
         self.treeview.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Coach",
-                                            cellrenderertext,
-                                            text=2)
+        treeviewcolumn = widgets.TreeViewColumn(title="Coach", column=2)
         self.treeview.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Skill",
-                                            cellrenderertext,
-                                            text=3)
+        treeviewcolumn = widgets.TreeViewColumn(title="Skill", column=3)
         self.treeview.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Intensity",
-                                            cellrenderertext,
-                                            text=4)
+        treeviewcolumn = widgets.TreeViewColumn(title="Intensity", column=4)
         self.treeview.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Start Value",
-                                            cellrenderertext,
-                                            text=5)
+        treeviewcolumn = widgets.TreeViewColumn(title="Start Value", column=5)
         self.treeview.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Current Value",
-                                            cellrenderertext,
-                                            text=6)
+        treeviewcolumn = widgets.TreeViewColumn(title="Current Value", column=6)
         self.treeview.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Notes")
+        treeviewcolumn = widgets.TreeViewColumn(title="Notes", column=7)
         self.treeview.append_column(treeviewcolumn)
 
         buttonbox = Gtk.ButtonBox()
@@ -310,7 +299,8 @@ class IndividualTraining(Gtk.Grid):
                                    skill,
                                    intensity,
                                    item.start_value,
-                                   current])
+                                   current,
+                                   ""])
 
     def run(self):
         self.populate_data()

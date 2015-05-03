@@ -447,12 +447,15 @@ def add_individual_training(playerid=None):
     dialog.vbox.add(grid)
 
     liststorePlayer = Gtk.ListStore(int, str)
+    treemodelsort = Gtk.TreeModelSort(liststorePlayer)
+    treemodelsort.set_sort_column_id(1, Gtk.SortType.ASCENDING)
 
     for item in game.clubs[game.teamid].squad:
-        player = game.players[item]
-        name = display.name(player)
+        if item not in game.clubs[game.teamid].individual_training.keys():
+            player = game.players[item]
+            name = display.name(player)
 
-        liststorePlayer.append([item, name])
+            liststorePlayer.append([item, name])
 
     liststoreCoach = Gtk.ListStore(str, str)
 
@@ -470,7 +473,7 @@ def add_individual_training(playerid=None):
         grid.attach(label, 0, 0, 1, 1)
 
         comboboxPlayer = Gtk.ComboBox()
-        comboboxPlayer.set_model(liststorePlayer)
+        comboboxPlayer.set_model(treemodelsort)
         comboboxPlayer.set_active(0)
         comboboxPlayer.pack_start(cellrenderertext, True)
         comboboxPlayer.add_attribute(cellrenderertext, "text", 1)
