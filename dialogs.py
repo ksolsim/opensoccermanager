@@ -70,11 +70,14 @@ class SquadReport(Gtk.Dialog):
         self.destroy()
 
 
-def free_transfer(name, cost):
+def release_player(name, cost):
+    '''
+    Ask to release player and pay off remainder of contract.
+    '''
     cost = display.currency(cost)
     messagedialog = Gtk.MessageDialog(type=Gtk.MessageType.QUESTION)
     messagedialog.set_transient_for(game.window)
-    messagedialog.set_title("Release On Free Transfer")
+    messagedialog.set_title("Release Player")
     messagedialog.add_button("_Cancel", Gtk.ResponseType.CANCEL)
     messagedialog.add_button("C_onfirm", Gtk.ResponseType.OK)
     messagedialog.set_default_response(Gtk.ResponseType.CANCEL)
@@ -93,13 +96,7 @@ def free_transfer(name, cost):
 
 def renew_player_contract(playerid):
     '''
-    When renewing a contract, the current wage and player value must be taken
-    into account. Typically, renewing a contract instantly results in a 1-3
-    thousand raise, however the projected wage also needs to be looked at to
-    handle improvements in the players skill.
-
-    Also look at morale, as a player with less than a certain number of points
-    will not want to renew his contract.
+    Customise details of player contract renewal.
     '''
     player = game.players[playerid]
     name = display.name(player, mode=1)

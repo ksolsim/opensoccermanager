@@ -209,9 +209,9 @@ class Players(Gtk.Grid):
 
         game.comparison[index] = model[treeiter][0]
 
-    def row_activated(self, treeview, path, treeviewcolumn):
+    def row_activated(self, treeview, treepath, treeviewcolumn):
         model = treeview.get_model()
-        playerid = model[path][0]
+        playerid = model[treepath][0]
 
         dialogs.player_info(playerid)
 

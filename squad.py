@@ -243,83 +243,57 @@ class Squad(Gtk.Grid):
         treeviewSquad.append_column(treeviewcolumn)
 
         # Personal
-        treeviewcolumn = Gtk.TreeViewColumn("Nationality",
-                                            cellrenderertext,
-                                            text=13)
+        treeviewcolumn = widgets.TreeViewColumn(title="Nationality", column=13)
         self.tree_columns[0].append(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Value",
-                                            cellrenderertext,
-                                            text=14)
+        treeviewcolumn = widgets.TreeViewColumn(title="Value", column=14)
         self.tree_columns[0].append(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Wages",
-                                            cellrenderertext,
-                                            text=15)
+        treeviewcolumn = widgets.TreeViewColumn(title="Wages", column=15)
         self.tree_columns[0].append(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Contract",
-                                            cellrenderertext,
-                                            text=16)
+        treeviewcolumn = widgets.TreeViewColumn(title="Contract", column=16)
         self.tree_columns[0].append(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Morale",
-                                            cellrenderertext,
-                                            text=17)
+        treeviewcolumn = widgets.TreeViewColumn(title="Morale", column=17)
         self.tree_columns[0].append(treeviewcolumn)
 
-        [(column.set_expand(True),
-          column.set_visible(False),
-          treeviewSquad.append_column(column)
-         ) for column in self.tree_columns[0]]
+        for column in self.tree_columns[0]:
+            column.set_expand(True)
+            column.set_visible(False)
+            treeviewSquad.append_column(column)
 
         # Skills
         for count, item in enumerate(constants.short_skill, start=3):
             label = Gtk.Label("%s" % (item))
             label.set_tooltip_text(constants.skill[count - 3])
             label.show()
-            treeviewcolumn = Gtk.TreeViewColumn(None,
-                                                cellrenderertext,
-                                                text=count)
+            treeviewcolumn = widgets.TreeViewColumn(title="", column=count)
             treeviewcolumn.set_widget(label)
             self.tree_columns[1].append(treeviewcolumn)
 
-        treeviewcolumn = Gtk.TreeViewColumn("Fitness",
-                                            cellrenderertext,
-                                            text=12)
+        treeviewcolumn = widgets.TreeViewColumn(title="Fitness", column=12)
         self.tree_columns[1].append(treeviewcolumn)
 
-        [(column.set_expand(True),
-          treeviewSquad.append_column(column)
-         ) for column in self.tree_columns[1]]
+        for column in self.tree_columns[1]:
+            column.set_expand(True)
+            treeviewSquad.append_column(column)
 
         # Form
-        treeviewcolumn = Gtk.TreeViewColumn("Games",
-                                            cellrenderertext,
-                                            text=18)
+        treeviewcolumn = widgets.TreeViewColumn(title="Games", column=18)
         self.tree_columns[2].append(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Goals",
-                                            cellrenderertext,
-                                            text=19)
+        treeviewcolumn = widgets.TreeViewColumn(title="Goals", column=19)
         self.tree_columns[2].append(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Assists",
-                                            cellrenderertext,
-                                            text=20)
+        treeviewcolumn = widgets.TreeViewColumn(title="Assists", column=20)
         self.tree_columns[2].append(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Cards",
-                                            cellrenderertext,
-                                            text=21)
+        treeviewcolumn = widgets.TreeViewColumn(title="Cards", column=21)
         self.tree_columns[2].append(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("MOTM",
-                                            cellrenderertext,
-                                            text=22)
+        treeviewcolumn = widgets.TreeViewColumn(title="MOTM", column=22)
         self.tree_columns[2].append(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Rating",
-                                            cellrenderertext,
-                                            text=23)
+        treeviewcolumn = widgets.TreeViewColumn(title="Rating", column=23)
         self.tree_columns[2].append(treeviewcolumn)
 
-        [(column.set_expand(True),
-          column.set_visible(False),
-          column.set_fixed_width(50),
-          treeviewSquad.append_column(column)
-         ) for column in self.tree_columns[2]]
+        for column in self.tree_columns[2]:
+            column.set_expand(True)
+            column.set_visible(False)
+            column.set_fixed_width(50)
+            treeviewSquad.append_column(column)
 
         self.notebook = Gtk.Notebook()
         self.notebook.set_size_request(200, -1)
@@ -336,8 +310,6 @@ class Squad(Gtk.Grid):
         self.gridTeam.set_row_spacing(5)
         self.gridTeam.set_column_spacing(5)
         self.notebook.append_page(self.gridTeam, label)
-
-        self.buttonTeam = []
 
         self.labelTeam = []
 
@@ -363,19 +335,7 @@ class Squad(Gtk.Grid):
             self.gridSubs.attach(label, 0, count, 1, 1)
             self.labelSubs.append(label)
 
-        # Context menu
-        self.contextmenu = menu.SquadContextMenu()
-        self.contextmenu.menuitemRemovePosition.connect("activate", self.remove_from_position)
-        self.contextmenu.menuitemAddTransfer.connect("activate", self.transfer_status, 0)
-        self.contextmenu.menuitemRemoveTransfer.connect("activate", self.transfer_status, 0)
-        self.contextmenu.menuitemAddLoan.connect("activate", self.transfer_status, 1)
-        self.contextmenu.menuitemRemoveLoan.connect("activate", self.transfer_status, 1)
-        self.contextmenu.menuitemRelease.connect("activate", self.free_transfer)
-        self.contextmenu.menuitemRenewContract.connect("activate", self.renew_contract)
-        self.contextmenu.menuitemNotForSale.connect("toggled", self.not_for_sale)
-        self.contextmenu.menuitemExtendLoan.connect("activate", self.extend_loan)
-        self.contextmenu.menuitemCancelLoan.connect("activate", self.cancel_loan)
-        self.contextmenu.menuitemPlayerInfo.connect("activate", self.row_activated)
+        self.buttonTeam = []
 
         for count in range(0, 16):
             button = Gtk.Button("")
@@ -390,6 +350,20 @@ class Squad(Gtk.Grid):
                 self.gridTeam.attach(button, 1, count, 1, 1)
             else:
                 self.gridSubs.attach(button, 1, count - 11, 1, 1)
+
+        # Context menu
+        self.contextmenu = menu.SquadContextMenu()
+        self.contextmenu.menuitemRemovePosition.connect("activate", self.remove_from_position)
+        self.contextmenu.menuitemAddTransfer.connect("activate", self.transfer_status, 0)
+        self.contextmenu.menuitemRemoveTransfer.connect("activate", self.transfer_status, 0)
+        self.contextmenu.menuitemAddLoan.connect("activate", self.transfer_status, 1)
+        self.contextmenu.menuitemRemoveLoan.connect("activate", self.transfer_status, 1)
+        self.contextmenu.menuitemRelease.connect("activate", self.release_player)
+        self.contextmenu.menuitemRenewContract.connect("activate", self.renew_contract)
+        self.contextmenu.menuitemNotForSale.connect("toggled", self.not_for_sale)
+        self.contextmenu.menuitemExtendLoan.connect("activate", self.extend_loan)
+        self.contextmenu.menuitemCancelLoan.connect("activate", self.cancel_loan)
+        self.contextmenu.menuitemPlayerInfo.connect("activate", self.row_activated)
 
     def squad_dialog(self, button, count):
         selected = self.playerselect.display()
@@ -590,7 +564,10 @@ class Squad(Gtk.Grid):
         else:
             dialogs.error(8)
 
-    def free_transfer(self, menuitem):
+    def release_player(self, menuitem):
+        '''
+        Initiate release of selected player from the club.
+        '''
         model, treeiter = self.treeselection.get_selected()
         playerid = model[treeiter][0]
         player = game.players[playerid]
@@ -598,23 +575,14 @@ class Squad(Gtk.Grid):
         name = display.name(player, mode=1)
         cost = player.contract * player.wage
 
-        if dialogs.free_transfer(name, cost):
+        if dialogs.release_player(name, cost):
             if money.request(cost):
                 money.withdraw(cost, 12)
 
-                negotiation = structures.Negotiation()
-                negotiation.playerid = playerid
-                negotiation.club = 0
-                negotiation.transfer_type = 2
-                game.negotiations[game.negotiationid] = negotiation
+                player.club = 0
+                game.clubs[game.teamid].squad.remove(playerid)
 
-                valid = transfer.check(game.negotiationid)
-
-                if valid == 0:
-                    transfer.move(game.negotiationid)
-                    game.negotiationid += 1
-
-                    self.populate_data()
+                self.populate_data()
 
     def extend_loan(self, menuitem):
         model, treeiter = self.treeselection.get_selected()
