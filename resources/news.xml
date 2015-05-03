@@ -345,4 +345,14 @@
         <message>The board have now confirmed that the public offering on the club has now been completed and all the shares have been purchased. We are also pleased to announce that the club made more money than was originally estimated.</message>
         <category>5</category>
     </article>
+    <article id="IT01">
+        <title>_COACH_ has too much individual training work</title>
+        <message>_COACH_ is complaining that he has too much work to do, and that training more than nine players is making it difficult to do his job. Perhaps we should look at reducing his workload.</message>
+        <category>3</category>
+    </article>
+    <article id="IT01">
+        <title>Workload of coach _COACH_ too high</title>
+        <message>The workload of _COACH_ is too great, and it is affecting his ability to properly train the players assigned to him. We need to look at distributing the workload better.</message>
+        <category>3</category>
+    </article>
 </news>

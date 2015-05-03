@@ -259,12 +259,12 @@ def dataloader(finances):
 
     # Generate coaches and scouts
     for count in range(5):
-        club.coaches_available[game.coachid] = staff.Staff(staff_type=0)
-        game.coachid += 1
+        coach = staff.Staff(staff_type=0)
+        club.coaches_available[coach.staffid] = coach
 
     for count in range(5):
-        club.scouts_available[game.scoutid] = staff.Staff(staff_type=1)
-        game.scoutid += 1
+        scout = staff.Staff(staff_type=1)
+        club.scouts_available[scout.staffid] = scout
 
     # Generate sponsorship offer
     club.sponsor_status = 0

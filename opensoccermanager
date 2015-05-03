@@ -49,6 +49,7 @@ import printing
 import sales
 import squad
 import stadium
+import staff
 import team
 import training
 import transfer
@@ -740,6 +741,7 @@ class ContinueGame:
         ai.advertising()
         evaluation.update()
         aitransfer.identify()
+        staff.check_morale()
 
         # Age players
         for playerid, player in game.players.items():

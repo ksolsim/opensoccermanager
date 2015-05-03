@@ -422,12 +422,8 @@ class Staff(Gtk.Grid):
             if treeiter:
                 staffid = model[treeiter][0]
                 coach = game.clubs[game.teamid].coaches_hired[staffid]
-                payout = coach.wage * coach.contract
 
-                if dialogs.fire_staff(0, coach.name, payout):
-                    del game.clubs[game.teamid].coaches_hired[staffid]
-                    money.withdraw(payout, 10)
-
+                if coach.fire():
                     self.populate_data()
 
         def renew_contract(self, button):

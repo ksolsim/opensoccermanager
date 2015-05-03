@@ -303,14 +303,13 @@ class IndividualTraining(Gtk.Grid):
                 current = skills[item.skill]
 
             intensity = constants.intensity[item.intensity]
-            start = item.start_value
 
             self.liststore.append([playerid,
                                    name,
                                    coach,
                                    skill,
                                    intensity,
-                                   start,
+                                   item.start_value,
                                    current])
 
     def run(self):

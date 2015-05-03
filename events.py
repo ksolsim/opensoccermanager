@@ -420,46 +420,39 @@ def individual_training():
 
         training = club.individual_training[playerid]
 
-        coachid = training[0]
-        skill = training[1]
-        intensity = training[2] + 1
+        coachid = training.coachid
+        skill = training.skill
+        intensity = training.intensity + 1
 
         coach = club.coaches_hired[coachid]
 
-        if coach.skill == "Average":
-            ability = 1
-        elif coach.skill == "Good":
-            ability = 2
-        elif coach.skill == "Superb":
-            ability = 3
-
         # Speciality
-        if coach.speciality == "Goalkeeping":
+        if coach.speciality == 0:
             if skill == 0:
                 speciality = 1
             else:
                 speciality = 0.1
-        elif coach.speciality == "Defensive":
+        elif coach.speciality == 1:
             if skill in (1, 6):
                 speciality = 1
             else:
                 speciality = 0.1
-        elif coach.speciality == "Midfield":
+        elif coach.speciality == 2:
             if skill in (2, 7):
                 speciality = 1
             else:
                 speciality = 0.1
-        elif coach.speciality == "Attacking":
+        elif coach.speciality == 3:
             if skill == 3:
                 speciality = 1
             else:
                 speciality = 0.1
-        elif coach.speciality == "Fitness":
+        elif coach.speciality == 4:
             if skill in (9, 6, 7):
                 speciality = 1
             else:
                 speciality = 0.1
-        elif coach.speciality == "All":
+        elif coach.speciality == 5:
             speciality = 1
 
         sessions = 0.0
@@ -468,7 +461,7 @@ def individual_training():
             if value == 1:
                 sessions += 0.4
 
-        points = (ability * intensity * speciality * sessions) * (player.training * 0.1)
+        points = (coach.ability * intensity * speciality * sessions) * (player.training * 0.1)
 
         player.training_points += points
         player.training_points = int(player.training_points)
@@ -739,19 +732,26 @@ def end_of_season():
 
 def refresh_staff():
     '''
-    Regenerate the list of scouts and coaches every 8-12 weeks when
-    timer reaches zero.
+    Regenerate the list of scouts and coaches available every 8-12 weeks.
     '''
-    if game.staff_timeout == 0:
-        game.clubs[game.teamid].coaches_available = {}
-        game.clubs[game.teamid].coaches_available = staff.generate(role=0, number=5)
+    if game.staff_timeout > 0:
+        game.staff_timeout -= 1
 
-        game.clubs[game.teamid].scouts_available = {}
-        game.clubs[game.teamid].scouts_available = staff.generate(role=0, number=5)
+        if game.staff_timeout == 0:
+            club = game.clubs[game.teamid]
 
-        game.staff_timeout = random.randint(8, 12)
+            club.coaches_available = {}
+            club.scouts_available = {}
 
-    game.staff_timeout -= 1
+            for count in range(5):
+                coach = staff.Staff(staff_type=0)
+                club.coaches_available[coach.staffid] = coach
+
+            for count in range(5):
+                scout = staff.Staff(staff_type=1)
+                club.scouts_available[scout.staffid] = scout
+
+            game.staff_timeout = random.randint(8, 12)
 
 
 def update_records():

@@ -22,11 +22,20 @@ import string
 import constants
 import dialogs
 import game
+import money
+import news
 import structures
 
 
 class Staff:
     def __init__(self, staff_type):
+        if staff_type == 0:
+            self.staffid = game.coachid
+            game.coachid += 1
+        elif staff_type == 1:
+            self.staffid = game.scoutid
+            game.scoutid += 1
+
         self.name = self.name()
         self.age = self.age()
         self.ability = self.ability()
@@ -74,13 +83,13 @@ class Staff:
         return wage
 
     def ability(self):
-        keys = list(constants.ability.keys())
+        keys = tuple(constants.ability.keys())
         ability = random.choice(keys)
 
         return ability
 
     def speciality(self):
-        keys = list(constants.speciality.keys())
+        keys = tuple(constants.speciality.keys())
         speciality = random.choice(keys)
 
         return speciality
@@ -103,9 +112,18 @@ class Staff:
 
     def fire(self):
         '''
-        Fire the staff member.
+        Fire the staff member and payout remainder of the contract.
         '''
         state = False
+
+        payout = self.wage * self.contract
+
+        if dialogs.fire_staff(index=0, name=self.name, payout=payout):
+            money.withdraw(payout, 11)
+
+            del game.clubs[game.teamid].coaches_hired[self.staffid]
+
+            state = True
 
         return state
 
@@ -145,3 +163,31 @@ class Staff:
             state = True
 
         return state
+
+
+def check_morale():
+    '''
+    Check workload of other coaches and decrease morale if overworked.
+    '''
+    counts = {}
+
+    club = game.clubs[game.teamid]
+
+    for playerid, training in club.individual_training.items():
+        if training.coachid in counts:
+            counts[training.coachid] += 1
+        else:
+            counts[training.coachid] = 1
+
+    average = 0
+
+    for value in counts.values():
+        average += value
+
+    if len(counts) > 1:
+        average = average / len(counts)
+    else:
+        for coachid, count in counts.items():
+            if count > 9:
+                coach = club.coaches_hired[coachid]
+                news.publish("IT01", coach=coach.name)
