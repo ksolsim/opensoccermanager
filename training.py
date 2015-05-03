@@ -75,7 +75,7 @@ class TeamTraining(Gtk.Grid):
         liststoreTraining.append([constants.team_training[0]])
         liststoreTraining.append([constants.team_training[1]])
 
-        for item in constants.team_training[2]:
+        for item in sorted(constants.team_training[2]):
             liststoreTraining.append([item])
 
         self.comboboxes = []
@@ -158,7 +158,7 @@ class IndividualTraining(Gtk.Grid):
 
         self.infobar = Gtk.InfoBar()
         self.infobar.set_message_type(Gtk.MessageType.WARNING)
-        label = Gtk.Label("There is no individual training assigned in the team training schedule. Individual training must be allocated for if players are to improve.")
+        label = Gtk.Label("There is no individual training assigned in the team training schedule. Individual training time must be allocated for players to improve.")
         child = self.infobar.get_content_area()
         child.add(label)
         self.attach(self.infobar, 0, 0, 1, 1)

@@ -109,7 +109,7 @@ class Players(Gtk.Grid):
         self.treemodelfilter.set_visible_func(self.filter_visible, game.players)
 
         self.treemodelsort = Gtk.TreeModelSort(self.treemodelfilter)
-        self.treemodelsort.set_default_sort_func(lambda *args: -1)
+        self.treemodelsort.set_default_sort_func(self.default_sort)
         self.treemodelsort.set_sort_column_id(16, Gtk.SortType.DESCENDING)
 
         self.treeviewPlayers = Gtk.TreeView()
@@ -122,88 +122,58 @@ class Players(Gtk.Grid):
         self.treeselection = self.treeviewPlayers.get_selection()
         scrolledwindow.add(self.treeviewPlayers)
 
-        cellrenderertext = Gtk.CellRendererText()
-        treeviewcolumn = Gtk.TreeViewColumn("Name",
-                                            cellrenderertext,
-                                            text=1)
+        treeviewcolumn = widgets.TreeViewColumn(title="Name", column=1)
         treeviewcolumn.set_sort_column_id(1)
         self.treeviewPlayers.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Age",
-                                            cellrenderertext,
-                                            text=2)
+        treeviewcolumn = widgets.TreeViewColumn(title="Age", column=2)
         self.treeviewPlayers.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Club",
-                                            cellrenderertext,
-                                            text=4)
+        treeviewcolumn = widgets.TreeViewColumn(title="Club", column=4)
         self.treeviewPlayers.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Nationality",
-                                            cellrenderertext,
-                                            text=5)
+        treeviewcolumn = widgets.TreeViewColumn(title="Nationality", column=5)
         self.treeviewPlayers.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Position",
-                                            cellrenderertext,
-                                            text=6)
+        treeviewcolumn = widgets.TreeViewColumn(title="Position", column=6)
         self.treeviewPlayers.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Value",
-                                            cellrenderertext,
-                                            text=17)
+        treeviewcolumn = widgets.TreeViewColumn(title="Value", column=17)
         treeviewcolumn.set_sort_column_id(16)
         self.tree_columns[0].append(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Wages",
-                                            cellrenderertext,
-                                            text=19)
+        treeviewcolumn = widgets.TreeViewColumn(title="Wage", column=19)
         treeviewcolumn.set_sort_column_id(18)
         self.tree_columns[0].append(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Contract",
-                                            cellrenderertext,
-                                            text=21)
+        treeviewcolumn = widgets.TreeViewColumn(title="Contract", column=21)
         self.tree_columns[0].append(treeviewcolumn)
 
-        [(column.set_expand(True),
-          column.set_visible(False),
-          self.treeviewPlayers.append_column(column)) for column in self.tree_columns[0]]
+        for column in self.tree_columns[0]:
+            column.set_expand(True)
+            column.set_visible(False)
+            self.treeviewPlayers.append_column(column)
 
         for count, item in enumerate(constants.short_skill, start=7):
             label = Gtk.Label("%s" % (item))
             label.set_tooltip_text(constants.skill[count - 7])
             label.show()
-            treeviewcolumn = Gtk.TreeViewColumn(None,
-                                                cellrenderertext,
-                                                text=count)
+            treeviewcolumn = widgets.TreeViewColumn(title="", column=count)
             treeviewcolumn.set_widget(label)
+            treeviewcolumn.set_expand(True)
             self.tree_columns[1].append(treeviewcolumn)
+            self.treeviewPlayers.append_column(treeviewcolumn)
 
-        [(column.set_expand(True),
-          self.treeviewPlayers.append_column(column)) for column in self.tree_columns[1]]
-
-        treeviewcolumn = Gtk.TreeViewColumn("Games",
-                                            cellrenderertext,
-                                            text=24)
+        treeviewcolumn = widgets.TreeViewColumn(title="Games", column=24)
         self.tree_columns[2].append(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Goals",
-                                            cellrenderertext,
-                                            text=25)
+        treeviewcolumn = widgets.TreeViewColumn(title="Goals", column=25)
         self.tree_columns[2].append(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Assists",
-                                            cellrenderertext,
-                                            text=26)
+        treeviewcolumn = widgets.TreeViewColumn(title="Assists", column=26)
         self.tree_columns[2].append(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Cards",
-                                            cellrenderertext,
-                                            text=27)
+        treeviewcolumn = widgets.TreeViewColumn(title="Cards", column=27)
         self.tree_columns[2].append(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("MOTM",
-                                            cellrenderertext,
-                                            text=28)
+        treeviewcolumn = widgets.TreeViewColumn(title="MOTM", column=28)
         self.tree_columns[2].append(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Rating",
-                                            cellrenderertext,
-                                            text=29)
+        treeviewcolumn = widgets.TreeViewColumn(title="Rating", column=29)
         self.tree_columns[2].append(treeviewcolumn)
 
-        [(column.set_expand(True),
-          column.set_visible(False),
-          self.treeviewPlayers.append_column(column)) for column in self.tree_columns[2]]
+        for column in self.tree_columns[2]:
+            column.set_expand(True)
+            column.set_visible(False)
+            self.treeviewPlayers.append_column(column)
 
         self.contextmenu = menu.PlayersContextMenu()
         self.contextmenu.menuitemTransfer.connect("activate", self.make_transfer_offer, 0)
@@ -430,6 +400,12 @@ class Players(Gtk.Grid):
             show = False
 
         return show
+
+    def default_sort(self, treesortable, treeiter1, treeiter2, destroy):
+        if treesortable[treeiter1][16] < treesortable[treeiter2][16]:
+            return True
+        else:
+            return False
 
     def view_changed(self, combobox):
         index = int(combobox.get_active_id())

@@ -191,7 +191,7 @@ class TreeViewColumn(Gtk.TreeViewColumn):
     def __init__(self, title="", column=0):
         Gtk.TreeViewColumn.__init__(self)
 
-        if title != "":
+        if title is not "":
             self.set_title(title)
 
         cellrenderertext = Gtk.CellRendererText()
