@@ -141,7 +141,7 @@ def datainit():
     adjacent = (0, 1), (2, 0), (3, 2), (1, 3), # DO NOT REORDER/CHANGE!
 
     # Import stadiums
-    game.database.cursor.execute("SELECT * FROM stadium JOIN stadiumattr, clubattr ON stadium.id = stadiumattr.stadium WHERE clubattr.year = ?", (game.year,))
+    game.database.cursor.execute("SELECT * FROM stadium JOIN stadiumattr, clubattr ON clubattr.stadium = stadium.id WHERE clubattr.year = ?", (game.year,))
     data = game.database.cursor.fetchall()
 
     for item in data:
@@ -151,6 +151,7 @@ def datainit():
 
         stadium.name = item[1]
         stadium.condition = 100
+        stadium.plots = 0
         stadium.capacity = sum(item[5:17])
         stadium.main = []
         stadium.corner = []
@@ -193,7 +194,7 @@ def datainit():
 
         stadium.buildings = list(item[33:41])
 
-    for clubid, club in game.clubs.items():
+    for club in game.clubs.values():
         stadium = game.stadiums[club.stadium]
 
         if club.reputation > 12:

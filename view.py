@@ -309,11 +309,10 @@ class Players(Gtk.Grid):
                         self.contextmenu.menuitemLoan.set_sensitive(False)
                     else:
                         self.contextmenu.menuitemLoan.set_sensitive(True)
-
-                    self.contextmenu.popup(None, None, None, None, event.button, event.time)
                 else:
                     self.contextmenu.display(mode=1)
-                    self.contextmenu.popup(None, None, None, None, event.button, event.time)
+
+                self.contextmenu.popup(None, None, None, None, event.button, event.time)
 
     def filter_dialog(self, button):
         self.searchfilter.display()
