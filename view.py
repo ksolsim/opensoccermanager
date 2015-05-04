@@ -508,26 +508,15 @@ class Negotiations(Gtk.Grid):
         self.treeselectionInbound = treeviewInbound.get_selection()
         scrolledwindow.add(treeviewInbound)
 
-        cellrenderertext = Gtk.CellRendererText()
-        treeviewcolumn = Gtk.TreeViewColumn("Name",
-                                            cellrenderertext,
-                                            text=1)
+        treeviewcolumn = widgets.TreeViewColumn(title="Name", column=1)
         treeviewInbound.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Offer Date",
-                                            cellrenderertext,
-                                            text=2)
+        treeviewcolumn = widgets.TreeViewColumn(title="Offer Date", column=2)
         treeviewInbound.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Offer Type",
-                                            cellrenderertext,
-                                            text=3)
+        treeviewcolumn = widgets.TreeViewColumn(title="Offer Type", column=3)
         treeviewInbound.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Club",
-                                            cellrenderertext,
-                                            text=4)
+        treeviewcolumn = widgets.TreeViewColumn(title="Club", column=4)
         treeviewInbound.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Status",
-                                            cellrenderertext,
-                                            text=5)
+        treeviewcolumn = widgets.TreeViewColumn(title="Status", column=5)
         treeviewInbound.append_column(treeviewcolumn)
 
         # Outbound transfers
@@ -549,25 +538,15 @@ class Negotiations(Gtk.Grid):
         self.treeselectionOutbound = treeviewOutbound.get_selection()
         scrolledwindow.add(treeviewOutbound)
 
-        treeviewcolumn = Gtk.TreeViewColumn("Name",
-                                            cellrenderertext,
-                                            text=1)
+        treeviewcolumn = widgets.TreeViewColumn(title="Name", column=1)
         treeviewOutbound.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Offer Date",
-                                            cellrenderertext,
-                                            text=2)
+        treeviewcolumn = widgets.TreeViewColumn(title="Offer Date", column=2)
         treeviewOutbound.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Offer Type",
-                                            cellrenderertext,
-                                            text=3)
+        treeviewcolumn = widgets.TreeViewColumn(title="Offer Type", column=3)
         treeviewOutbound.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Club",
-                                            cellrenderertext,
-                                            text=4)
+        treeviewcolumn = widgets.TreeViewColumn(title="Club", column=4)
         treeviewOutbound.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Status",
-                                            cellrenderertext,
-                                            text=5)
+        treeviewcolumn = widgets.TreeViewColumn(title="Status", column=5)
         treeviewOutbound.append_column(treeviewcolumn)
 
         self.contextmenu = Gtk.Menu()
@@ -683,34 +662,19 @@ class Shortlist(Gtk.Grid):
         self.treeselection.connect("changed", self.selection_changed)
         scrolledwindow.add(treeview)
 
-        cellrenderertext = Gtk.CellRendererText()
-        treeviewcolumn = Gtk.TreeViewColumn("Name",
-                                            cellrenderertext,
-                                            text=1)
+        treeviewcolumn = widgets.TreeViewColumn(title="Name", column=1)
         treeview.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Age",
-                                            cellrenderertext,
-                                            text=2)
+        treeviewcolumn = widgets.TreeViewColumn(title="Age", column=2)
         treeview.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Club",
-                                            cellrenderertext,
-                                            text=3)
+        treeviewcolumn = widgets.TreeViewColumn(title="Club", column=3)
         treeview.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Nationality",
-                                            cellrenderertext,
-                                            text=4)
+        treeviewcolumn = widgets.TreeViewColumn(title="Nationality", column=4)
         treeview.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Position",
-                                            cellrenderertext,
-                                            text=5)
+        treeviewcolumn = widgets.TreeViewColumn(title="Position", column=5)
         treeview.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Value",
-                                            cellrenderertext,
-                                            text=6)
+        treeviewcolumn = widgets.TreeViewColumn(title="Value", column=6)
         treeview.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Wage",
-                                            cellrenderertext,
-                                            text=7)
+        treeviewcolumn = widgets.TreeViewColumn(title="Wage", column=7)
         treeview.append_column(treeviewcolumn)
 
         buttonbox = Gtk.ButtonBox()
@@ -757,9 +721,7 @@ class Shortlist(Gtk.Grid):
 
             self.buttonRemove.set_sensitive(True)
         else:
-            if len(game.clubs[game.teamid].scouts_hired) == 0:
-                self.buttonScout.set_sensitive(False)
-
+            self.buttonScout.set_sensitive(False)
             self.buttonBuy.set_sensitive(False)
             self.buttonLoan.set_sensitive(False)
             self.buttonRemove.set_sensitive(False)
@@ -853,14 +815,13 @@ class InjSus(Gtk.Grid):
         treeselection.set_mode(Gtk.SelectionMode.NONE)
         overlay.add(self.treeviewInjuries)
 
-        cellrenderertext = Gtk.CellRendererText()
-        treeviewcolumn = Gtk.TreeViewColumn("Name", cellrenderertext, text=0)
+        treeviewcolumn = widgets.TreeViewColumn(title="Name", column=0)
         self.treeviewInjuries.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Fitness", cellrenderertext, text=1)
+        treeviewcolumn = widgets.TreeViewColumn(title="Fitness", column=1)
         self.treeviewInjuries.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Injury", cellrenderertext, text=2)
+        treeviewcolumn = widgets.TreeViewColumn(title="Injury", column=2)
         self.treeviewInjuries.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Duration", cellrenderertext, text=3)
+        treeviewcolumn = widgets.TreeViewColumn(title="Duration", column=3)
         self.treeviewInjuries.append_column(treeviewcolumn)
 
         label = widgets.AlignedLabel("<b>Suspensions</b>")
@@ -873,8 +834,8 @@ class InjSus(Gtk.Grid):
         self.attach(scrolledwindow, 1, 1, 1, 1)
 
         overlay = Gtk.Overlay()
-        self.labelNoSuspension = Gtk.Label("No players are currently suspended.")
-        overlay.add_overlay(self.labelNoSuspension)
+        self.labelNoSuspensions = Gtk.Label("No players are currently suspended.")
+        overlay.add_overlay(self.labelNoSuspensions)
         scrolledwindow.add(overlay)
 
         self.liststoreSuspensions = Gtk.ListStore(str, str, str)
@@ -887,11 +848,11 @@ class InjSus(Gtk.Grid):
         treeselection.set_mode(Gtk.SelectionMode.NONE)
         overlay.add(self.treeviewSuspensions)
 
-        treeviewcolumn = Gtk.TreeViewColumn("Name", cellrenderertext, text=0)
+        treeviewcolumn = widgets.TreeViewColumn(title="Name", column=0)
         self.treeviewSuspensions.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Suspension", cellrenderertext, text=1)
+        treeviewcolumn = widgets.TreeViewColumn(title="Suspension", column=1)
         self.treeviewSuspensions.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Duration", cellrenderertext, text=2)
+        treeviewcolumn = widgets.TreeViewColumn(title="Duration", column=2)
         self.treeviewSuspensions.append_column(treeviewcolumn)
 
     def run(self):
@@ -926,6 +887,6 @@ class InjSus(Gtk.Grid):
 
         if len(self.liststoreSuspensions) > 0:
             self.treeviewSuspensions.set_sensitive(True)
-            self.labelNoSuspension.hide()
+            self.labelNoSuspensions.hide()
         else:
             self.treeviewSuspensions.set_sensitive(False)

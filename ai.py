@@ -654,9 +654,19 @@ def renew_contract():
                         name = display.name(player, mode=1)
                         club = game.clubs[player.club].name
 
-                        news.publish("RC01", player=name,
-                                             team=club,
-                                             period=contract)
+                        news.publish("RC01",
+                                     player=name,
+                                     team=club,
+                                     period=contract)
+
+                    if playerid in game.clubs[game.teamid].shortlist:
+                        name = display.name(player, mode=1)
+                        club = game.clubs[player.club].name
+
+                        news.publish("RC02",
+                                     player=name,
+                                     team=club,
+                                     period=contract)
 
 
 def transfer_list():
@@ -752,7 +762,7 @@ def generate_team(clubid):
 
                 scores[playerid] = score
 
-        sorted_scores = sorted(scores, key = lambda x: scores[x], reverse = True)
+        sorted_scores = sorted(scores, key=lambda x: scores[x], reverse=True)
 
         selection.append(sorted_scores[0])
 
@@ -760,7 +770,7 @@ def generate_team(clubid):
         scores = {}
 
         for playerid in squad:
-            if playerid not in selection and playerid not in substitutes:
+            if playerid not in (selection, substitutes):
                 player = game.players[playerid]
                 skills = player.skills()
                 score = sum(skills)
@@ -779,13 +789,13 @@ def generate_team(clubid):
 
                 scores[playerid] = score
 
-        sorted_scores = sorted(scores, key = lambda x: scores[x], reverse = True)
+        sorted_scores = sorted(scores, key=lambda x: scores[x], reverse=True)
         substitutes.append(sorted_scores[0])
 
     for count, player in enumerate(selection):
         team[count] = player
 
-    for count, player in enumerate(substitutes, start = 11):
+    for count, player in enumerate(substitutes, start=11):
         team[count] = player
 
 

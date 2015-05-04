@@ -280,6 +280,11 @@
         <message>_PLAYER_ has reported that he has signed a new contract with _TEAM_. The new deal will see him stay at the club for _PERIOD_ years. The club are said to be extremely happy to have finalised the deal.</message>
         <category>1</category>
     </article>
+    <article id="RC02">
+        <title>Shortlisted player has renewed his contract</title>
+        <message>Shortlisted player _PLAYER_ has renewed his contract with _TEAM_ in a new _PERIOD_ year deal.</message>
+        <category>1</category>
+    </article>
     <article id="RE01">
         <title>Chairman reaction to recent result</title>
         <message>That was a fantastic performance in the _RESULT_ win against _TEAM_. The performance was one of the best this club has seen in recent history.</message>

@@ -530,6 +530,9 @@ def individual_training():
 
 
 def training_camp(options):
+    '''
+    Take options provided by training camp screen and determine player changes.
+    '''
     days = options[0]
 
     # Determine players to take on training camp
