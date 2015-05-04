@@ -546,20 +546,20 @@ def training_camp(options):
     else:
         squad = [playerid for playerid in game.clubs[game.teamid].squad]
 
-    if options[3] == 0:
+    if options[3] == 1:
         # Leisure
-        morale = (options[1] + 1) + (options[2] + 1) * days
+        morale = (options[1]) + (options[2]) * days
         morale = morale * 3
         fitness = 1
-    elif options[3] == 1:
+    elif options[3] == 2:
         # Schedule
-        morale = (options[1] + 1) + (options[2] + 1) * days
+        morale = (options[1]) + (options[2]) * days
         morale = morale * 1.5
         individual_training()
         fitness = 3
-    elif options[3] == 2:
+    elif options[3] == 3:
         # Intensive
-        morale = (-options[1] + 1) + (-options[2] + 1) * -days
+        morale = (-options[1]) + (-options[2]) * -days
         morale = -morale * 2
         fitness = 8
 

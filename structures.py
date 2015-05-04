@@ -16,6 +16,9 @@
 #  OpenSoccerManager.  If not, see <http://www.gnu.org/licenses/>.
 
 
+import game
+
+
 class Player:
     def __init__(self):
         self.fitness = 100
@@ -193,3 +196,53 @@ class IndividualTraining:
         self.skill = 0
         self.intensity = 1
         self.start_value = 0
+
+
+class TrainingCamp:
+    def __init__(self):
+        self.days = 1
+        self.quality = 1
+        self.location = 1
+        self.purpose = 1
+        self.squad = 0
+
+    def calculate_player(self):
+        quality = (self.quality * 550) * self.quality
+        location = (self.location * 425) * self.location
+        purpose = self.purpose * 350
+
+        cost = (quality + location + purpose) * self.days
+
+        return cost
+
+    def calculate_total(self):
+        player = self.calculate_player()
+
+        if self.squad == 0:
+            squad = 16
+        elif self.squad == 1:
+            count = 0
+
+            for item in game.clubs[game.teamid].squad:
+                if item not in game.clubs[game.teamid].team.values():
+                    count += 1
+
+            squad = count
+        elif self.squad == 2:
+            squad = len(game.clubs[game.teamid].squad)
+
+        total = player * squad
+
+        return total
+
+    def revert_options(self):
+        self.days = 1
+        self.quality = 1
+        self.location = 1
+        self.purpose = 1
+        self.squad = 0
+
+    def retrieve_options(self):
+        options = self.days, self.quality, self.location, self.purpose, self.squad
+
+        return options

@@ -322,10 +322,7 @@ class TrainingCamp(Gtk.Grid):
     __name__ = "trainingcamp"
 
     def __init__(self):
-        self.subtotals = [1, 0, 0, 0, 0]
-        self.options = [0, 0, 0, 0, 0]
-        self.cost_per_player = 0
-        self.cost = 0
+        self.training_camp = structures.TrainingCamp()
         self.defaults = []
 
         Gtk.Grid.__init__(self)
@@ -347,13 +344,13 @@ class TrainingCamp(Gtk.Grid):
         label = widgets.AlignedLabel("Quality")
         self.attach(label, 0, 1, 1, 1)
         radiobuttonAverage = Gtk.RadioButton("Average")
-        radiobuttonAverage.connect("toggled", self.update_quality, 0)
+        radiobuttonAverage.connect("toggled", self.update_quality, 1)
         self.attach(radiobuttonAverage, 1, 1, 1, 1)
         radiobuttonGood = Gtk.RadioButton("Good", group=radiobuttonAverage)
-        radiobuttonGood.connect("toggled", self.update_quality, 1)
+        radiobuttonGood.connect("toggled", self.update_quality, 2)
         self.attach(radiobuttonGood, 2, 1, 1, 1)
         radiobuttonSuperb = Gtk.RadioButton("Superb", group=radiobuttonAverage)
-        radiobuttonSuperb.connect("toggled", self.update_quality, 2)
+        radiobuttonSuperb.connect("toggled", self.update_quality, 3)
         self.attach(radiobuttonSuperb, 3, 1, 1, 1)
 
         label = widgets.AlignedLabel("Location")
@@ -368,13 +365,13 @@ class TrainingCamp(Gtk.Grid):
         label = widgets.AlignedLabel("Purpose")
         self.attach(label, 0, 3, 1, 1)
         radiobuttonLeisure = Gtk.RadioButton("Leisure")
-        radiobuttonLeisure.connect("toggled", self.update_purpose, 0)
+        radiobuttonLeisure.connect("toggled", self.update_purpose, 1)
         self.attach(radiobuttonLeisure, 1, 3, 1, 1)
         self.radiobuttonSchedule = Gtk.RadioButton("Schedule", group=radiobuttonLeisure)
-        self.radiobuttonSchedule.connect("toggled", self.update_purpose, 1)
+        self.radiobuttonSchedule.connect("toggled", self.update_purpose, 2)
         self.attach(self.radiobuttonSchedule, 2, 3, 1, 1)
         radiobuttonIntensive = Gtk.RadioButton("Intensive", group=radiobuttonLeisure)
-        radiobuttonIntensive.connect("toggled", self.update_purpose, 2)
+        radiobuttonIntensive.connect("toggled", self.update_purpose, 3)
         self.attach(radiobuttonIntensive, 3, 3, 1, 1)
         self.buttonScheduleWarning = widgets.Button()
         image = Gtk.Image()
@@ -436,59 +433,34 @@ class TrainingCamp(Gtk.Grid):
 
     def update_days(self, combobox):
         index = int(combobox.get_active_id())
-        self.subtotals[0] = index
-        self.options[0] = index
+        self.training_camp.days = index
 
         self.update_total()
 
     def update_quality(self, radiobutton, index):
         if radiobutton.get_active():
-            self.subtotals[1] = (index * 300) + (index * 2300)
-            self.options[1] = index
+            self.training_camp.quality = index
 
             self.update_total()
 
     def update_location(self, radiobutton, index):
         if radiobutton.get_active():
-            self.subtotals[2] = (index * 800) + (index * 3700)
-            self.options[2] = index
+            self.training_camp.location = index
 
             self.update_total()
 
     def update_purpose(self, radiobutton, index):
         if radiobutton.get_active():
-            self.subtotals[3] = (index * 1000) + (index * 1200) * index
-            self.options[3] = index
+            self.training_camp.purpose = index
 
-            schedule = False
-
-            for item in game.clubs[game.teamid].team_training:
-                if item != 0:
-                    schedule = True
-
-                    break
-
-            if index == 1:
-                if not schedule:
-                    self.buttonScheduleWarning.show()
-            else:
-                self.buttonScheduleWarning.hide()
+            self.training_schedule_warning()
 
             self.update_total()
 
     def update_squad(self, radiobutton, index):
         if radiobutton.get_active():
             if index == 0:
-                players = 0
-
-                for item in game.clubs[game.teamid].team.values():
-                    if item != 0:
-                        players += 1
-
-                if players < 16:
-                    self.buttonSquadWarning.show()
-                else:
-                    self.buttonSquadWarning.hide()
+                self.squad_count_warning()
             elif index == 1:
                 players = 0
 
@@ -501,61 +473,45 @@ class TrainingCamp(Gtk.Grid):
                 players = len(game.clubs[game.teamid].squad)
                 self.buttonSquadWarning.hide()
 
-            self.subtotals[4] = index
-            self.options[4] = index
+            self.training_camp.squad = index
 
             self.update_total()
 
     def update_total(self):
-        squad_index = self.subtotals[4]
+        player = self.training_camp.calculate_player()
+        player = display.currency(player)
+        self.labelPlayerCost.set_label("%s" % (player))
 
-        if squad_index == 0:
-            squad_count = 16
-        elif squad_index == 1:
-            count = 0
-
-            for item in game.clubs[game.teamid].squad:
-                if item not in game.clubs[game.teamid].team.values():
-                    count += 1
-
-            squad_count = count
-        elif squad_index == 2:
-            squad_count = len(game.clubs[game.teamid].squad)
-
-        self.cost_per_player = (self.subtotals[0] * 500) + sum(self.subtotals[1:4])
-        self.cost = self.cost_per_player * squad_count
-
-        cost = display.currency(self.cost_per_player)
-        self.labelPlayerCost.set_label("%s" % (cost))
-
-        cost = display.currency(self.cost)
-        self.labelTotal.set_label("<b>%s</b>" % (cost))
+        total = self.training_camp.calculate_total()
+        total = display.currency(total)
+        self.labelTotal.set_label("<b>%s</b>" % (total))
 
     def revert_training(self, button=None):
-        self.subtotals = [1, 0, 0, 0, 0]
-        self.cost = 0
+        self.training_camp.revert_options()
 
         self.defaults[0].set_active(0)
 
         for item in self.defaults[1:5]:
             item.set_active(True)
 
+        self.update_total()
+
     def confirm_training(self, button):
-        state = dialogs.confirm_training(self.cost)
+        cost = self.training_camp.calculate_total()
 
-        if state:
-            if money.request(self.cost):
-                money.withdraw(self.cost, 18)
+        if dialogs.confirm_training(cost):
+            if money.request(cost):
+                money.withdraw(cost, 18)
 
-                events.training_camp(self.options)
+                options = self.training_camp.retrieve_options()
+                events.training_camp(options)
 
             self.revert_training()
 
-    def run(self):
-        self.update_total()
-
-        self.show_all()
-
+    def squad_count_warning(self):
+        '''
+        Display warning if number of players in team is less than 16.
+        '''
         count = 0
 
         for item in game.clubs[game.teamid].team.values():
@@ -567,6 +523,10 @@ class TrainingCamp(Gtk.Grid):
         else:
             self.buttonSquadWarning.hide()
 
+    def training_schedule_warning(self):
+        '''
+        Display warning if there is no team training schedule assigned.
+        '''
         schedule = False
 
         for item in game.clubs[game.teamid].team_training:
@@ -580,3 +540,12 @@ class TrainingCamp(Gtk.Grid):
                 self.buttonScheduleWarning.show()
         else:
             self.buttonScheduleWarning.hide()
+
+    def run(self):
+        self.update_total()
+
+        self.show_all()
+
+        self.squad_count_warning()
+        self.training_schedule_warning()
+
