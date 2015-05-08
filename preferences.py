@@ -38,6 +38,8 @@ class Preferences(ConfigParser):
                              "Maximized": False,
                              "Width": 780,
                              "Height": 480,
+                             "XPosition": 0,
+                             "YPosition": 0,
                             }
         self["DATABASE"] = {"Database": "databases/opensoccermaanger.db"}
         self["SAVE"] = {"Data": data, "Saves": save}
@@ -52,14 +54,13 @@ class Preferences(ConfigParser):
         game.currency = int(self["INTERFACE"]["Currency"])
         game.start_screen = int(self["INTERFACE"]["StartScreen"])
 
-        maximized = self["INTERFACE"].getboolean("Maximized")
+        self.maximized = self["INTERFACE"].getboolean("Maximized")
 
-        if maximized:
-            game.window.maximize()
+        self.width = int(self["INTERFACE"]["Width"])
+        self.height = int(self["INTERFACE"]["Height"])
 
-        width = int(self["INTERFACE"]["Width"])
-        height = int(self["INTERFACE"]["Height"])
-        game.window.set_default_size(width, height)
+        self.xposition = int(self["INTERFACE"]["XPosition"])
+        self.yposition = int(self["INTERFACE"]["YPosition"])
 
         game.music = self["AUDIO"].getboolean("PlayMusic")
         game.data_location = self["SAVE"]["Data"]

@@ -60,15 +60,30 @@ import widgets
 
 class Window(Gtk.Window):
     def __init__(self):
+        game.preferences.readfile()
+
         iconpath = os.path.join("resources", "logo.svg")
 
         Gtk.Window.__init__(self)
         self.set_title(version.NAME)
         self.set_icon_from_file(iconpath)
+        self.set_default_size(game.preferences.width, game.preferences.height)
+
+        if game.preferences.maximized:
+            self.maximize()
+        else:
+            self.move(game.preferences.xposition, game.preferences.yposition)
+
+        self.connect("window-state-event", self.window_state_event)
         self.connect("delete-event", exit_game)
 
         game.accelgroup = Gtk.AccelGroup()
         self.add_accel_group(game.accelgroup)
+
+    def window_state_event(self, widget, event):
+        print(self.is_maximized())
+        if self.is_maximized():
+            self.move(game.preferences.xposition, game.preferences.yposition)
 
     def screen_loader(self, index):
         screens = {1: self.screenSquad,
@@ -146,7 +161,6 @@ class Window(Gtk.Window):
 
         self.add(self.screenMain)
 
-        game.preferences.readfile()
         fileio.check_config()
 
         self.show_all()
@@ -829,9 +843,14 @@ def exit_game(widget=None, event=None):
             game.preferences["INTERFACE"]["Maximized"] = "True"
         else:
             game.preferences["INTERFACE"]["Maximized"] = "False"
+
             width, height = game.window.get_size()
             game.preferences["INTERFACE"]["Width"] = str(width)
             game.preferences["INTERFACE"]["Height"] = str(height)
+
+            xposition, yposition = game.window.get_position()
+            game.preferences["INTERFACE"]["XPosition"] = str(xposition)
+            game.preferences["INTERFACE"]["YPosition"] = str(yposition)
 
         game.preferences.writefile()
 
