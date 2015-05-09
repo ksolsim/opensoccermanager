@@ -24,6 +24,7 @@ import statistics
 
 import chart
 import constants
+import dialogs
 import display
 import evaluation
 import game
@@ -64,8 +65,10 @@ class News(Gtk.Grid):
         grid.attach(label, 1, 0, 1, 1)
         self.comboboxFilter = Gtk.ComboBoxText()
         self.comboboxFilter.append("0", "All")
+
         for categoryid, category in constants.category.items():
             self.comboboxFilter.append(str(categoryid), category)
+
         self.comboboxFilter.set_active(0)
         self.comboboxFilter.connect("changed", self.filter_changed)
         label.set_mnemonic_widget(self.comboboxFilter)
@@ -89,10 +92,7 @@ class News(Gtk.Grid):
         treeviewNews.connect("row-activated", self.item_selected)
         scrolledwindow.add(treeviewNews)
 
-        cellrenderertext = Gtk.CellRendererText()
-        treeviewcolumn = Gtk.TreeViewColumn("Date",
-                                            cellrenderertext,
-                                            text=0)
+        treeviewcolumn = widgets.TreeViewColumn(title="Date", column=0)
         treeviewNews.append_column(treeviewcolumn)
 
         treeviewcolumn = Gtk.TreeViewColumn("Title")
@@ -104,14 +104,11 @@ class News(Gtk.Grid):
         treeviewcolumn.add_attribute(cellrendererTitle, "weight-set", 5)
         treeviewcolumn.add_attribute(cellrendererTitle, "weight", 6)
 
-        treeviewcolumn = Gtk.TreeViewColumn("Category",
-                                            cellrenderertext,
-                                            text=4)
+        treeviewcolumn = widgets.TreeViewColumn(title="Category", column=4)
         treeviewNews.append_column(treeviewcolumn)
 
         scrolledwindow = Gtk.ScrolledWindow()
-        scrolledwindow.set_policy(Gtk.PolicyType.NEVER,
-                                  Gtk.PolicyType.ALWAYS)
+        scrolledwindow.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.ALWAYS)
         paned.add2(scrolledwindow)
 
         self.textviewNews = Gtk.TextView()
@@ -245,10 +242,7 @@ class Fixtures(Gtk.Grid):
         self.treeviewClubFixtures.set_search_column(-1)
         scrolledwindow.add(self.treeviewClubFixtures)
 
-        cellrenderertext = Gtk.CellRendererText()
-        treeviewcolumn = Gtk.TreeViewColumn(None,
-                                            cellrenderertext,
-                                            text=0)
+        treeviewcolumn = widgets.TreeViewColumn(title="", column=0)
         self.treeviewClubFixtures.append_column(treeviewcolumn)
 
         # Fixtures for all clubs
@@ -277,20 +271,13 @@ class Fixtures(Gtk.Grid):
         treeselection.set_mode(Gtk.SelectionMode.NONE)
         self.attach(treeviewFixtures, 1, 1, 2, 1)
 
-        cellrenderertext = Gtk.CellRendererText()
-        treeviewcolumn = Gtk.TreeViewColumn("Home",
-                                            cellrenderertext,
-                                            text=0)
+        treeviewcolumn = widgets.TreeViewColumn(title="Home", column=0)
         treeviewcolumn.set_expand(True)
         treeviewFixtures.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Away",
-                                            cellrenderertext,
-                                            text=1)
+        treeviewcolumn = widgets.TreeViewColumn(title="Away", column=1)
         treeviewcolumn.set_expand(True)
         treeviewFixtures.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Venue",
-                                            cellrenderertext,
-                                            text=2)
+        treeviewcolumn = widgets.TreeViewColumn(title="Venue", column=2)
         treeviewcolumn.set_expand(True)
         treeviewFixtures.append_column(treeviewcolumn)
 
@@ -305,15 +292,11 @@ class Fixtures(Gtk.Grid):
     def change_fixtures(self, button, direction):
         game.fixturespage += direction
 
-        if game.fixturespage > 0:
-            self.buttonPrevious.set_sensitive(True)
-        else:
-            self.buttonPrevious.set_sensitive(False)
+        sensitive = game.fixturespage > 0
+        self.buttonPrevious.set_sensitive(sensitive)
 
-        if game.fixturespage < len(game.fixtures) - 1:
-            self.buttonNext.set_sensitive(True)
-        else:
-            self.buttonNext.set_sensitive(False)
+        sensitive = game.fixturespage < len(game.fixtures) - 1
+        self.buttonNext.set_sensitive(sensitive)
 
         self.populate_data()
 
@@ -383,23 +366,14 @@ class Results(Gtk.Grid):
         treeselection.set_mode(Gtk.SelectionMode.NONE)
         self.overlay.add(self.treeviewResults)
 
-        cellrenderertext = Gtk.CellRendererText()
-        treeviewcolumn = Gtk.TreeViewColumn("Home",
-                                            cellrenderertext,
-                                            text=0)
+        treeviewcolumn = widgets.TreeViewColumn(title="Home", column=0)
         treeviewcolumn.set_expand(True)
         self.treeviewResults.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn(None,
-                                            cellrenderertext,
-                                            text=1)
+        treeviewcolumn = widgets.TreeViewColumn(title="", column=1)
         self.treeviewResults.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn(None,
-                                            cellrenderertext,
-                                            text=2)
+        treeviewcolumn = widgets.TreeViewColumn(title="", column=2)
         self.treeviewResults.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Away",
-                                            cellrenderertext,
-                                            text=3)
+        treeviewcolumn = widgets.TreeViewColumn(title="Away", column=3)
         treeviewcolumn.set_expand(True)
         self.treeviewResults.append_column(treeviewcolumn)
 
@@ -448,18 +422,18 @@ class Results(Gtk.Grid):
             self.liststoreResults.append([team1, result[1], result[2], team2])
 
         if mode == 0:
+            self.buttonNext.set_sensitive(True)
+
             if self.page > 0:
-                self.buttonNext.set_sensitive(True)
                 self.buttonPrevious.set_sensitive(True)
             else:
-                self.buttonNext.set_sensitive(True)
                 self.buttonPrevious.set_sensitive(False)
         elif mode == 1:
+            self.buttonPrevious.set_sensitive(True)
+
             if self.page < len(game.results) - 1:
-                self.buttonPrevious.set_sensitive(True)
                 self.buttonNext.set_sensitive(True)
             else:
-                self.buttonPrevious.set_sensitive(True)
                 self.buttonNext.set_sensitive(False)
 
 
@@ -472,7 +446,8 @@ class Standings(Gtk.Grid):
         scrolledwindow = Gtk.ScrolledWindow()
         self.attach(scrolledwindow, 0, 0, 1, 1)
 
-        self.liststoreStandings = Gtk.ListStore(str, int, int, int, int, int, int, int, int, str)
+        self.liststoreStandings = Gtk.ListStore(int, str, int, int, int, int,
+                                                int, int, int, int, str)
 
         treeviewStandings = Gtk.TreeView()
         treeviewStandings.set_model(self.liststoreStandings)
@@ -480,73 +455,64 @@ class Standings(Gtk.Grid):
         treeviewStandings.set_search_column(-1)
         treeviewStandings.set_vexpand(True)
         treeviewStandings.set_hexpand(True)
+        treeviewStandings.set_activate_on_single_click(True)
+        treeviewStandings.connect("row-activated", self.row_activated)
         treeselection = treeviewStandings.get_selection()
         treeselection.set_mode(Gtk.SelectionMode.NONE)
         scrolledwindow.add(treeviewStandings)
 
         cellrenderertext = Gtk.CellRendererText()
-        treeviewcolumn = Gtk.TreeViewColumn("Team",
-                                            cellrenderertext,
-                                            text=0)
+        treeviewcolumn = widgets.TreeViewColumn(title="Team", column=1)
         treeviewcolumn.set_expand(True)
         treeviewStandings.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Played",
-                                            cellrenderertext,
-                                            text=1)
+        treeviewcolumn = widgets.TreeViewColumn(title="Played", column=2)
         treeviewcolumn.set_fixed_width(48)
         treeviewStandings.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Won",
-                                            cellrenderertext,
-                                            text=2)
+        treeviewcolumn = widgets.TreeViewColumn(title="Won", column=3)
         treeviewcolumn.set_fixed_width(48)
         treeviewStandings.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Drawn",
-                                            cellrenderertext,
-                                            text=3)
+        treeviewcolumn = widgets.TreeViewColumn(title="Drawn", column=4)
         treeviewcolumn.set_fixed_width(48)
         treeviewStandings.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Lost",
-                                            cellrenderertext,
-                                            text=4)
+        treeviewcolumn = widgets.TreeViewColumn(title="Lost", column=5)
         treeviewcolumn.set_fixed_width(48)
         treeviewStandings.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn(None,
-                                            cellrenderertext,
-                                            text=5)
+        treeviewcolumn = Gtk.TreeViewColumn(None, cellrenderertext, text=6)
         label = Gtk.Label("GF")
         label.set_tooltip_text("Goals For")
         label.show()
         treeviewcolumn.set_widget(label)
         treeviewcolumn.set_fixed_width(48)
         treeviewStandings.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn(None,
-                                            cellrenderertext,
-                                            text=6)
+        treeviewcolumn = Gtk.TreeViewColumn(None, cellrenderertext, text=7)
         label = Gtk.Label("GA")
         label.set_tooltip_text("Goals Against")
         label.show()
         treeviewcolumn.set_widget(label)
         treeviewcolumn.set_fixed_width(48)
         treeviewStandings.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn(None,
-                                            cellrenderertext,
-                                            text=7)
+        treeviewcolumn = Gtk.TreeViewColumn(None, cellrenderertext, text=8)
         label = Gtk.Label("GD")
         label.set_tooltip_text("Goal Difference")
         label.show()
         treeviewcolumn.set_widget(label)
         treeviewcolumn.set_fixed_width(48)
         treeviewStandings.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Points",
-                                            cellrenderertext,
-                                            text=8)
+        treeviewcolumn = widgets.TreeViewColumn(title="Points", column=9)
         treeviewcolumn.set_fixed_width(48)
         treeviewStandings.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Form",
-                                            cellrenderertext,
-                                            text=9)
+        treeviewcolumn = widgets.TreeViewColumn(title="Form", column=10)
         treeviewcolumn.set_fixed_width(96)
         treeviewStandings.append_column(treeviewcolumn)
+
+    def row_activated(self, treeview, treepath, treeviewcolumn):
+        clubid = self.liststoreStandings[treepath][0]
+
+        if clubid != game.teamid:
+            clubid = str(clubid)
+
+            dialog = dialogs.Opposition()
+            dialog.display(show=clubid)
 
     def run(self):
         self.liststoreStandings.clear()
@@ -558,16 +524,10 @@ class Standings(Gtk.Grid):
 
             form = "".join(club.form[-6:])
 
-            self.liststoreStandings.append([item[1],
-                                            item[2],
-                                            item[3],
-                                            item[4],
-                                            item[5],
-                                            item[6],
-                                            item[7],
-                                            item[8],
-                                            item[9],
-                                            form])
+            item = list(item)
+            item.append(form)
+
+            self.liststoreStandings.append(item)
 
         self.show_all()
 

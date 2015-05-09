@@ -1137,8 +1137,6 @@ class Opposition(Gtk.Dialog):
         self.notebook.set_show_tabs(False)
         commonframe.insert(self.notebook)
 
-        cellrenderertext = Gtk.CellRendererText()
-
         # Squad Tab
         scrolledwindow = Gtk.ScrolledWindow()
         scrolledwindow.set_policy(Gtk.PolicyType.NEVER,
@@ -1159,9 +1157,7 @@ class Opposition(Gtk.Dialog):
         treeview.set_search_column(-1)
         treeselection = treeview.get_selection()
         treeselection.set_mode(Gtk.SelectionMode.NONE)
-        treeviewcolumn = Gtk.TreeViewColumn(None,
-                                            cellrenderertext,
-                                            text=0)
+        treeviewcolumn = widgets.TreeViewColumn(title="", column=0)
         treeview.append_column(treeviewcolumn)
         scrolledwindow.add(treeview)
 
@@ -1180,24 +1176,23 @@ class Opposition(Gtk.Dialog):
         treeview.set_model(self.liststoreTeam)
         treeview.set_enable_search(False)
         treeview.set_search_column(-1)
-        treeviewcolumn = Gtk.TreeViewColumn("Position",
-                                            cellrenderertext,
-                                            text=0)
+        treeviewcolumn = widgets.TreeViewColumn(title="Position", column=0)
         treeview.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Player",
-                                            cellrenderertext,
-                                            text=1)
+        treeviewcolumn = widgets.TreeViewColumn(title="Player", column=1)
         treeview.append_column(treeviewcolumn)
         scrolledwindow.add(treeview)
 
-    def display(self):
+    def display(self, show=None):
         self.liststoreClubs.clear()
 
         for clubid, club in game.clubs.items():
             if clubid != game.teamid:
                 self.liststoreClubs.append([str(clubid), club.name])
 
-        self.combobox.set_active(0)
+        if show:
+            self.combobox.set_active_id(show)
+        else:
+            self.combobox.set_active(0)
 
         self.show_all()
         self.run()
