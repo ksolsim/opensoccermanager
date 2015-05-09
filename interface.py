@@ -288,7 +288,9 @@ class InfoDialog(Gtk.Dialog):
 
         label = widgets.AlignedLabel("GTK+ version")
         grid.attach(label, 0, 1, 1, 1)
-        label = widgets.AlignedLabel("%i.%i.%i" % (Gtk.MAJOR_VERSION, Gtk.MINOR_VERSION, Gtk.MICRO_VERSION))
+        label = widgets.AlignedLabel("%i.%i.%i" % (Gtk.MAJOR_VERSION,
+                                                   Gtk.MINOR_VERSION,
+                                                   Gtk.MICRO_VERSION))
         grid.attach(label, 1, 1, 1, 1)
 
         label = widgets.AlignedLabel("GObject version")

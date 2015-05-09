@@ -83,6 +83,9 @@ class PrintOperation(Gtk.PrintOperation):
         elif self.info == "2":
             self.pagesetup.set_orientation(Gtk.PageOrientation.LANDSCAPE)
             self.set_job_name("OpenSoccerManager - Shortlist")
+        elif self.info == "3":
+            self.pagesetup.set_orientation(Gtk.PageOrientation.PORTRAIT)
+            self.set_job_name("OpenSoccerManager - Accounts")
 
         self.set_n_pages(1)
         self.set_default_page_setup(self.pagesetup)
