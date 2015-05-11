@@ -15,7 +15,8 @@
 #  You should have received a copy of the GNU General Public License along with
 #  OpenSoccerManager.  If not, see <http://www.gnu.org/licenses/>.
 
-
+import calculator
+import constants
 import game
 
 
@@ -91,6 +92,38 @@ class Player:
         nation = game.nations[self.nationality].name
 
         return nation
+
+    def get_value(self):
+        '''
+        Retrieve the player value formatted with currency.
+        '''
+        value = calculator.value_rounder(self.value)
+        currency, exchange = constants.currency[game.currency]
+
+        if value >= 1000000:
+            amount = (value / 1000000) * exchange
+            value = "%s%.1fM" % (currency, amount)
+        elif value >= 1000:
+            amount = (value / 1000) * exchange
+            value = "%s%iK" % (currency, amount)
+
+        return value
+
+    def get_wage(self):
+        '''
+        Fetch the player wage and return with appropriate currency.
+        '''
+        wage = calculator.wage_rounder(self.wage)
+        currency, exchange = constants.currency[game.currency]
+
+        if wage >= 1000:
+            amount = (wage / 1000) * exchange
+            wage = "%s%.1fK" % (currency, amount)
+        elif wage >= 100:
+            amount = wage * exchange
+            wage = "%s%i" % (currency, amount)
+
+        return wage
 
 
 class Club:

@@ -212,11 +212,11 @@ class SquadContext:
                 context.show_text("%i" % (skill))
 
             context.move_to(530, y)
-            value = display.value(player.value)
+            value = player.get_value()
             context.show_text("%s" % (value))
 
             context.move_to(580, y)
-            wage = display.wage(player.wage)
+            wage = player.get_wage()
             context.show_text("%s" % (wage))
 
             context.move_to(630, y)
@@ -288,11 +288,11 @@ class ShortlistContext:
             context.show_text("%s" % (nationality))
 
             context.move_to(420, y)
-            value = display.value(player.value)
+            value = player.get_value()
             context.show_text("%s" % (value))
 
             context.move_to(460, y)
-            wage = display.wage(player.wage)
+            wage = player.get_wage()
             context.show_text("%s" % (wage))
 
             context.move_to(500, y)

@@ -427,10 +427,8 @@ class Players(Gtk.Grid):
             nationid = player.nationality
             nation = player.get_nationality()
             position = player.position
-            value = player.value
-            display_value = display.value(value)
-            wage = player.wage
-            display_wage = display.wage(wage)
+            display_value = player.get_value()
+            display_wage = player.get_wage()
             contract = player.contract
             display_contract = display.contract(contract)
             transfer_list = player.transfer[0]
@@ -455,9 +453,9 @@ class Players(Gtk.Grid):
                                           player.stamina,
                                           player.ball_control,
                                           player.set_pieces,
-                                          value,
+                                          player.value,
                                           display_value,
-                                          wage,
+                                          player.wage,
                                           display_wage,
                                           contract,
                                           display_contract,
@@ -764,8 +762,8 @@ class Shortlist(Gtk.Grid):
             name = player.get_name()
             club = player.get_club()
             nation = player.get_nationality()
-            value = display.value(player.value)
-            wage = display.wage(player.wage)
+            value = player.get_value()
+            wage = player.get_wage()
 
             self.liststorePlayers.append([playerid,
                                           name,

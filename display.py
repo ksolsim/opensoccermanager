@@ -198,20 +198,6 @@ def value(value):
     return value
 
 
-def wage(wage):
-    wage = calculator.wage_rounder(wage)
-    currency, exchange = constants.currency[game.currency]
-
-    if wage >= 1000:
-        amount = (wage / 1000) * exchange
-        wage = "%s%.1fK" % (currency, amount)
-    elif wage >= 100:
-        amount = wage * exchange
-        wage = "%s%i" % (currency, amount)
-
-    return wage
-
-
 def currency(amount, mode=0):
     '''
     Format the amount into the selected currency and convert to appropriate
