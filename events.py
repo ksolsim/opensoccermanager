@@ -127,7 +127,7 @@ def injury():
 
             playerid = random.choice(selection)
             player = game.players[playerid]
-            name = display.name(player, mode=1)
+            name = player.get_name(mode=1)
 
             injuryid = random.choice(list(constants.injuries.keys()))
             injury = constants.injuries[injuryid]
@@ -186,7 +186,7 @@ def injury_period():
                 player.injury_period -= 1
 
                 if player.injury_period == 0:
-                    name = display.name(player, mode=1)
+                    name = player.get_name(mode=1)
                     injury = constants.injuries[player.injury_type]
 
                     if player.club == game.teamid:
@@ -202,7 +202,7 @@ def update_contracts():
     '''
     for key, player in game.players.items():
         if player.club != 0:
-            name = display.name(player, mode=1)
+            name = player.get_name(mode=1)
 
             if player.contract > 0:
                 player.contract -= 1

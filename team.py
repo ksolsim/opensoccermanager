@@ -225,7 +225,8 @@ class Tactics(Gtk.Grid):
 
         for playerid in game.clubs[game.teamid].team.values():
             if playerid != 0:
-                name = display.name(game.players[playerid])
+                player = game.players[playerid]
+                name = player.get_name()
                 playerid = str(playerid)
 
                 self.liststoreCaptain.append([playerid, name])

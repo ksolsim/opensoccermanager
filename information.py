@@ -948,7 +948,7 @@ class Statistics(Gtk.Grid):
 
         if top[0] != 0:
             player = game.players[top[0]]
-            name = display.name(player, mode=1)
+            name = player.get_name(mode=1)
             self.labelGoalscorer.set_label("%s (%i goals)" % (name, top[1]))
         else:
             self.labelGoalscorer.set_label("-")
@@ -965,7 +965,7 @@ class Statistics(Gtk.Grid):
 
         if top[0] != 0:
             player = game.players[top[0]]
-            name = display.name(player, mode=1)
+            name = player.get_name(mode=1)
             self.labelAssister.set_label("%s (%i assists)" % (name, top[1]))
         else:
             self.labelAssister.set_label("-")

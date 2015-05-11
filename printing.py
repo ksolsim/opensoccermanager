@@ -197,14 +197,14 @@ class SquadContext:
             player = game.players[playerid]
 
             context.move_to(x, y)
-            name = display.name(player)
+            name = player.get_name()
             context.show_text("%s" % (name))
 
             context.move_to(180, y)
             context.show_text("%s" % (player.position))
 
             context.move_to(230, y)
-            nationality = display.nation(player.nationality)
+            nationality = player.get_nationality()
             context.show_text("%s" % (nationality))
 
             for count, skill in enumerate(player.skills(), start=1):
@@ -273,18 +273,18 @@ class ShortlistContext:
             player = game.players[playerid]
 
             context.move_to(x, y)
-            name = display.name(player)
+            name = player.get_name()
             context.show_text("%s" % (name))
 
             context.move_to(165, y)
             context.show_text("%s" % (player.position))
 
             context.move_to(220, y)
-            club = game.clubs[player.club].name
+            club = player.get_club()
             context.show_text("%s" % (club))
 
             context.move_to(340, y)
-            nationality = game.nations[player.nationality].name
+            nationality = player.get_nationality()
             context.show_text("%s" % (nationality))
 
             context.move_to(420, y)

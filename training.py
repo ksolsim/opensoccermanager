@@ -105,12 +105,12 @@ class TeamTraining(Gtk.Grid):
         '''
         Clear existing session and randomly generate new schedule.
         '''
-        values = [count for count in range(2, 18)]
-        random.shuffle(values)
-
         # Reset comboboxes to zero
         for item in self.comboboxes:
             item.set_active(0)
+
+        values = [count for count in range(2, 18)]
+        random.shuffle(values)
 
         self.comboboxes[0].set_active(values[0])
         self.comboboxes[1].set_active(values[1])
@@ -273,16 +273,16 @@ class IndividualTraining(Gtk.Grid):
     def populate_data(self):
         self.liststore.clear()
 
-        training = game.clubs[game.teamid].individual_training
+        club = game.clubs[game.teamid]
 
-        for playerid, item in training.items():
+        for playerid, item in club.individual_training.items():
             player = game.players[playerid]
 
             skills = player.skills()
 
-            name = display.name(player)
+            name = player.get_name()
             coachid = int(item.coachid)
-            coach = game.clubs[game.teamid].coaches_hired[coachid].name
+            coach = club.coaches_hired[coachid].name
 
             if item.skill == 9:
                 skill = "Fitness"

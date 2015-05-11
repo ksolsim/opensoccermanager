@@ -57,8 +57,8 @@ class Negotiation:
         transfers.
         '''
         player = game.players[self.playerid]
-        name = display.name(player, mode=1)
-        club = display.club(player.club)
+        name = player.get_name(mode=1)
+        club = player.get_club()
 
         messagedialog = Gtk.MessageDialog(type=Gtk.MessageType.QUESTION)
         messagedialog.set_transient_for(game.window)
@@ -125,7 +125,7 @@ class Negotiation:
     def transfer_enquiry_accepted(self):
         player = game.players[self.playerid]
 
-        name = display.name(player, mode=1)
+        name = player.get_name(mode=1)
         club = game.clubs[player.club].name
 
         dialog = Gtk.Dialog()
@@ -169,7 +169,7 @@ class Negotiation:
     def transfer_offer_accepted(self):
         player = game.players[self.playerid]
 
-        name = display.name(player, mode=1)
+        name = player.get_name(mode=1)
         wage = calculator.wage(self.playerid)
         wage = calculator.wage_rounder(wage)
         leaguewin, leaguerunnerup, winbonus, goalbonus = calculator.bonus(wage)
@@ -253,7 +253,7 @@ class Negotiation:
     def transfer_contract_accepted(self):
         player = game.players[self.playerid]
 
-        name = display.name(player, mode=1)
+        name = player.get_name(mode=1)
 
         messagedialog = Gtk.MessageDialog(type=Gtk.MessageType.QUESTION)
         messagedialog.set_transient_for(game.window)
@@ -263,7 +263,7 @@ class Negotiation:
         messagedialog.set_default_response(Gtk.ResponseType.OK)
 
         if self.transfer_type == 0:
-            club = display.club(player.club)
+            club = player.get_club()
             amount = self.amount
             messagedialog.set_markup("Confirm signing of %s from %s for %s?" % (name, club, amount))
         elif self.transfer_type == 2:
@@ -287,7 +287,7 @@ class Negotiation:
             spinbuttonWeeks.set_sensitive(not checkbutton.get_active())
 
         player = game.players[self.playerid]
-        name = display.name(player, mode=1)
+        name = player.get_name(mode=1)
         club = game.clubs[player.club].name
 
         dialog = Gtk.Dialog()
@@ -340,7 +340,7 @@ class Negotiation:
     def loan_offer_accepted(self):
         player = game.players[self.playerid]
 
-        name = display.name(player, mode=1)
+        name = player.get_name(mode=1)
         club = game.clubs[player.club].name
 
         messagedialog = Gtk.MessageDialog(type=Gtk.MessageType.QUESTION)
@@ -366,7 +366,7 @@ class Negotiation:
         Display details about negotiation being rejected.
         '''
         player = game.players[self.playerid]
-        name = display.name(player, mode=1)
+        name = player.get_name(mode=1)
 
         message = (("Your enquiry into the availability of %s has been turned down, as the club does wish to transfer him at this moment in time." % (name),
                     "The transfer negotiations for %s have broken down, as the club believe he is worth more than has been offered." % (name),
@@ -450,7 +450,7 @@ class Negotiation:
             player.not_for_sale = True
 
         # Add player to list of transfers
-        name = display.name(player)
+        name = player.get_name()
 
         if negotiation.transfer_type != 2:
             new_club = game.clubs[new_club].name
@@ -502,7 +502,7 @@ class Loan:
 
             if self.period in (4, 8, 12):
                 player = game.players[self.playerid]
-                name = display.name(player, mode=1)
+                name = player.get_name(mode=1)
                 club = game.clubs[self.parent_club].name
 
                 news.publish("LA01", player=name, team=club, weeks=self.period)
@@ -521,7 +521,7 @@ class Loan:
         extend the loan period.
         '''
         player = game.players[self.playerid]
-        name = display.name(player, mode=1)
+        name = player.get_name(mode=1)
 
         if self.extend_loan_valid():
             dialog = Gtk.Dialog()
@@ -568,7 +568,7 @@ class Loan:
 
     def cancel_loan(self):
         player = game.players[self.playerid]
-        name = display.name(player, mode=1)
+        name = player.get_name(mode=1)
 
         messagedialog = Gtk.MessageDialog(type=Gtk.MessageType.QUESTION)
         messagedialog.set_transient_for(game.window)
@@ -604,7 +604,7 @@ class Loan:
         # Set club back to parent club
         player.club = self.parent_club
 
-        name = display.name(player, mode=1)
+        name = player.get_name(mode=1)
         club = game.clubs[player.club].name
         news.publish("LE01", player=name, team=club)
 
@@ -641,7 +641,7 @@ def enquiry_dialog(playerid, index):
     transfers.
     '''
     player = game.players[playerid]
-    name = display.name(player, mode=1)
+    name = player.get_name(mode=1)
     club = display.club(player.club)
 
     messagedialog = Gtk.MessageDialog(type=Gtk.MessageType.QUESTION)
@@ -701,7 +701,7 @@ def consider_enquiry(negotiationid):
     '''
     negotiation = game.negotiations[negotiationid]
     player = game.players[negotiation.playerid]
-    name = display.name(player, mode=1)
+    name = player.get_name(mode=1)
 
     if player.club != 0:
         club = game.clubs[player.club]
@@ -751,7 +751,7 @@ def consider_offer(negotiationid):
     negotiation = game.negotiations[negotiationid]
 
     player = game.players[negotiation.playerid]
-    name = display.name(player, mode=1)
+    name = player.get_name(mode=1)
     club = game.clubs[player.club]
 
     points = random.randint(0, 10)  ## Needs replacing for proper AI
@@ -781,7 +781,7 @@ def consider_contract(negotiationid):
     '''
     negotiation = game.negotiations[negotiationid]
     player = game.players[negotiation.playerid]
-    name = display.name(player, mode=1)
+    name = player.get_name(mode=1)
 
     points = random.randint(0, 10)  ## Needs replacing for proper AI
 

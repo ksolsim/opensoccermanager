@@ -93,7 +93,7 @@ class Match(Gtk.Grid):
 
             for count, playerid in enumerate(scorers):
                 player = game.players[playerid]
-                name = display.name(player, mode=1)
+                name = player.get_name(mode=1)
 
                 label = widgets.AlignedLabel("%s" % (name))
                 self.grid.attach(label, 0, count, 1, 1)
@@ -345,7 +345,7 @@ class Match(Gtk.Grid):
             for key, playerid in game.clubs[team].team.items():
                 if playerid != 0:
                     player = game.players[playerid]
-                    name = display.name(player, mode=1)
+                    name = player.get_name(mode=1)
 
                     if count < 11:
                         # First Team

@@ -420,12 +420,12 @@ class Players(Gtk.Grid):
         self.liststorePlayers.clear()
 
         for playerid, player in data.items():
-            name = display.name(player)
+            name = player.get_name()
             age = player.age
             clubid = player.club
-            club = display.club(clubid)
+            club = player.get_club()
             nationid = player.nationality
-            nation = display.nation(nationid)
+            nation = player.get_nationality()
             position = player.position
             value = player.value
             display_value = display.value(value)
@@ -607,7 +607,7 @@ class Negotiations(Gtk.Grid):
             playerid = negotiation.playerid
             player = game.players[playerid]
 
-            name = display.name(player, mode=1)
+            name = player.get_name(mode=1)
             transfer = ("Purchase", "Loan", "Free Transfer")[negotiation.transfer_type]
 
             if negotiation.club == game.teamid:
@@ -742,13 +742,12 @@ class Shortlist(Gtk.Grid):
         player = game.players[playerid]
 
         status = scout.individual(playerid)
-        name = display.name(player, mode=1)
+        name = player.get_name(mode=1)
 
         dialogs.scout_report(name, status)
 
     def make_transfer_offer(self, menuitem, transfer_type):
         model, treeiter = self.treeselection.get_selected()
-
         playerid = model[treeiter][0]
 
         # Set to free transfer if player has no club
@@ -762,9 +761,9 @@ class Shortlist(Gtk.Grid):
 
         for playerid in game.clubs[game.teamid].shortlist:
             player = game.players[playerid]
-            name = display.name(player)
-            club = display.club(player.club)
-            nation = game.nations[player.nationality].name
+            name = player.get_name()
+            club = player.get_club()
+            nation = player.get_nationality()
             value = display.value(player.value)
             wage = display.wage(player.wage)
 
@@ -863,7 +862,7 @@ class InjSus(Gtk.Grid):
             player = game.players[playerid]
 
             if player.injury_type != 0:
-                name = display.name(player, mode=1)
+                name = player.get_name(mode=1)
                 fitness = player.fitness
                 injury = constants.injuries[player.injury_type][0]
                 period = display.injury(player.injury_period)
@@ -871,7 +870,7 @@ class InjSus(Gtk.Grid):
                 self.liststoreInjuries.append([name, fitness, injury, period])
 
             if player.suspension_type != 0:
-                name = display.name(player, mode=1)
+                name = player.get_name(mode=1)
                 suspension = constants.suspensions[player.suspension_type][0]
                 period = display.suspension(player.suspension_period)
 

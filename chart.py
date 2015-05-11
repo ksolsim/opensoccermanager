@@ -59,7 +59,7 @@ class GoalScorers(Gtk.ScrolledWindow):
 
         for playerid in goalscorers[:25]:
             player = game.players[playerid]
-            name = display.name(player, mode=1)
+            name = player.get_name(mode=1)
             club = game.clubs[player.club].name
 
             self.liststore.append([name, club, game.goalscorers[playerid]])
@@ -104,7 +104,7 @@ class Assists(Gtk.ScrolledWindow):
 
         for playerid in assists[:25]:
             player = game.players[playerid]
-            name = display.name(player, mode=1)
+            name = player.get_name(mode=1)
             club = game.clubs[player.club].name
 
             self.liststore.append([name, club, game.assists[playerid]])
@@ -157,8 +157,8 @@ class Cards(Gtk.ScrolledWindow):
 
         for playerid in players[:25]:
             player = game.players[playerid]
-            name = display.name(player, mode=1)
-            club = game.clubs[player.club].name
+            name = player.get_name(mode=1)
+            club = player.get_club()
             cards = game.cards[playerid]
 
             self.liststore.append([name,

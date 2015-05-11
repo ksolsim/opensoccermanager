@@ -260,15 +260,6 @@ def club(clubid):
     return text
 
 
-def nation(nationid):
-    '''
-    Return the nation name for the specified id.
-    '''
-    text = game.nations[nationid].name
-
-    return text
-
-
 def injury(value):
     if value == 1:
         text = "%i Week" % (value)

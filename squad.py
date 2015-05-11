@@ -124,7 +124,7 @@ class PlayerSelect(Gtk.Dialog):
 
         for playerid in data:
             player = game.players[playerid]
-            name = display.name(player)
+            name = player.get_name()
 
             self.liststore.append([str(playerid), name])
 
@@ -385,7 +385,7 @@ class Squad(Gtk.Grid):
         for count, playerid in enumerate(game.clubs[game.teamid].team.values()):
             if playerid != 0:
                 player = game.players[playerid]
-                name = display.name(player)
+                name = player.get_name()
                 self.buttonTeam[count].set_label(name)
             else:
                 self.buttonTeam[count].set_label("")
@@ -427,7 +427,7 @@ class Squad(Gtk.Grid):
                 self.buttonTeam[key].set_label("")
 
         player = game.players[playerid]
-        name = display.name(player)
+        name = player.get_name()
         button = self.buttonTeam[count]
         button.set_label("%s" % (name))
         game.clubs[game.teamid].team[count] = playerid
@@ -540,7 +540,7 @@ class Squad(Gtk.Grid):
         playerid = model[treeiter][0]
         player = game.players[playerid]
 
-        name = display.name(player)
+        name = player.get_name()
 
         self.buttonTeam[index].set_label(name)
         game.clubs[game.teamid].team[index] = playerid
@@ -572,7 +572,7 @@ class Squad(Gtk.Grid):
         playerid = model[treeiter][0]
         player = game.players[playerid]
 
-        name = display.name(player, mode=1)
+        name = player.get_name(mode=1)
         cost = player.contract * player.wage
 
         if dialogs.release_player(name, cost):
@@ -596,7 +596,7 @@ class Squad(Gtk.Grid):
 
         playerid = model[treeiter][0]
         player = game.players[playerid]
-        name = display.name(player, mode=1)
+        name = player.get_name(mode=1)
 
         loan = game.loans[playerid]
 
@@ -642,8 +642,8 @@ class Squad(Gtk.Grid):
         for playerid in game.clubs[game.teamid].squad:
             player = game.players[playerid]
 
-            name = display.name(player)
-            nationality = game.nations[player.nationality].name
+            name = player.get_name()
+            nationality = player.get_nationality()
             value = display.value(player.value)
             wage = display.wage(player.wage)
             contract = display.contract(player.contract)

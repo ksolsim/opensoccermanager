@@ -56,6 +56,42 @@ class Player:
 
         return values
 
+    def get_name(self, mode=0):
+        '''
+        Return the player name in the requested format.
+        '''
+        if not self.common_name:
+            self.common_name = ""
+
+        if self.common_name is not "":
+            name = self.common_name
+        else:
+            if mode == 0:
+                name = "%s, %s" % (self.second_name, self.first_name)
+            elif mode == 1:
+                name = "%s %s" % (self.first_name, self.second_name)
+
+        return name
+
+    def get_club(self):
+        '''
+        Return the club name, or none if uncontracted.
+        '''
+        if self.club == 0:
+            club = ""
+        else:
+            club = game.clubs[self.club].name
+
+        return club
+
+    def get_nationality(self):
+        '''
+        Return the player nationality.
+        '''
+        nation = game.nations[self.nationality].name
+
+        return nation
+
 
 class Club:
     def __init__(self):

@@ -55,14 +55,14 @@ class SquadReport(Gtk.Dialog):
 
         if len(errors.injuries) > 0:
             for player in errors.injuries:
-                name = display.name(player, mode=1)
+                name = player.get_name(mode=1)
                 self.textbuffer.insert_at_cursor("%s is unavailable for selection due to injury.\n" % (name), -1)
 
             self.textbuffer.insert_at_cursor("\n")
 
         if len(errors.suspensions) > 0:
             for player in errors.suspensions:
-                name = display.name(player, mode=1)
+                name = player.get_name(mode=1)
                 self.textbuffer.insert_at_cursor("%s is unavailable for selection due to suspension.\n" % (name), -1)
 
         self.show_all()
@@ -99,7 +99,7 @@ def renew_player_contract(playerid):
     Customise details of player contract renewal.
     '''
     player = game.players[playerid]
-    name = display.name(player, mode=1)
+    name = player.get_name(mode=1)
 
     wage = calculator.wage(playerid)
     wage = wage * 1.1
@@ -450,7 +450,7 @@ def add_individual_training(playerid=None):
     for item in game.clubs[game.teamid].squad:
         if item not in game.clubs[game.teamid].individual_training.keys():
             player = game.players[item]
-            name = display.name(player)
+            name = player.get_name()
 
             liststorePlayer.append([item, name])
 
@@ -564,7 +564,7 @@ def add_individual_training(playerid=None):
 
 def remove_individual_training(playerid):
     player = game.players[playerid]
-    name = display.name(player, mode=1)
+    name = player.get_name(mode=1)
 
     messagedialog = Gtk.MessageDialog(type=Gtk.MessageType.QUESTION)
     messagedialog.set_title("Individual Training")
@@ -593,7 +593,7 @@ def withdraw_transfer(negotiationid):
     '''
     playerid = game.negotiations[negotiationid].playerid
     player = game.players[playerid]
-    name = display.name(player, mode=1)
+    name = player.get_name(mode=1)
 
     messagedialog = Gtk.MessageDialog(type=Gtk.MessageType.QUESTION)
     messagedialog.set_transient_for(game.window)
@@ -619,7 +619,7 @@ def cancel_transfer(negotiationid):
     '''
     playerid = game.negotiations[negotiationid].playerid
     player = game.players[playerid]
-    name = display.name(player, mode=1)
+    name = player.get_name(mode=1)
 
     messagedialog = Gtk.MessageDialog(type=Gtk.MessageType.QUESTION)
     messagedialog.set_transient_for(game.window)
@@ -641,7 +641,7 @@ def cancel_transfer(negotiationid):
 
 def remove_from_shortlist(playerid):
     player = game.players[playerid]
-    name = display.name(player, mode=1)
+    name = player.get_name(mode=1)
 
     messagedialog = Gtk.MessageDialog(type=Gtk.MessageType.QUESTION)
     messagedialog.set_title("Cancel Transfer")
@@ -942,10 +942,10 @@ def comparison():
         label.set_use_markup(True)
         grid.attach(label, count, 0, 1, 1)
 
-    name = display.name(player1)
+    name = player1.get_name()
     label = widgets.AlignedLabel("%s" % (name))
     grid.attach(label, 0, 1, 1, 1)
-    name = display.name(player2)
+    name = player2.get_name()
     label = widgets.AlignedLabel("%s" % (name))
     grid.attach(label, 0, 2, 1, 1)
 
@@ -1007,7 +1007,7 @@ def end_of_season():
 
     top = display.top_scorer()
     player = game.players[top[0]]
-    name = display.name(player, mode=1)
+    name = player.get_name(mode=1)
     goals = top[1]
 
     label = widgets.AlignedLabel("Top Goalscorer")
@@ -1018,7 +1018,7 @@ def end_of_season():
 
     top = display.top_assister()
     player = game.players[top[0]]
-    name = display.name(player, mode=1)
+    name = player.get_name(mode=1)
     assists = top[1]
 
     label = widgets.AlignedLabel("Top Assister")
@@ -1029,7 +1029,7 @@ def end_of_season():
 
     top = display.player_of_the_season()
     player = game.players[top[0]]
-    name = display.name(player, mode=1)
+    name = player.get_name(mode=1)
 
     label = widgets.AlignedLabel("Player of the Season")
     grid.attach(label, 0, 3, 1, 1)
@@ -1220,7 +1220,7 @@ class Opposition(Gtk.Dialog):
 
         for playerid in club.squad:
             player = game.players[playerid]
-            name = display.name(player)
+            name = player.get_name()
             self.liststoreSquad.append([name])
 
         if game.eventindex > 0:
@@ -1237,7 +1237,7 @@ class Opposition(Gtk.Dialog):
 
                 if playerid != 0:
                     player = game.players[playerid]
-                    name = display.name(player)
+                    name = player.get_name()
                     self.liststoreTeam.append([position, name])
 
     def response_handler(self, dialog, response):

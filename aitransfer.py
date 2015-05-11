@@ -100,7 +100,8 @@ class Negotiation:
         the player.
         '''
         club = game.clubs[self.club].name
-        player = display.name(game.players[self.playerid], mode=1)
+        player = game.players[self.playerid]
+        name = player.get_name(mode=1)
 
         messagedialog = Gtk.MessageDialog()
         messagedialog.set_transient_for(game.window)
@@ -108,7 +109,7 @@ class Negotiation:
         messagedialog.add_button("_Reject", Gtk.ResponseType.REJECT)
         messagedialog.add_button("_Accept", Gtk.ResponseType.ACCEPT)
         messagedialog.set_default_response(Gtk.ResponseType.ACCEPT)
-        messagedialog.set_markup("<span size='12000'><b>%s have enquired as to the transfer of %s.</b></span>" % (club, player))
+        messagedialog.set_markup("<span size='12000'><b>%s have enquired as to the transfer of %s.</b></span>" % (club, name))
         messagedialog.format_secondary_text("Do you want to negotiate the transfer?")
 
         response = messagedialog.run()
@@ -127,7 +128,8 @@ class Negotiation:
         '''
         club = game.clubs[self.club].name
         amount = display.currency(self.amount)
-        player = display.name(game.players[self.playerid], mode=1)
+        player = game.players[self.playerid]
+        name = player.get_name(mode=1)
 
         dialog = Gtk.Dialog()
         dialog.set_transient_for(game.window)
@@ -145,7 +147,7 @@ class Negotiation:
 
         label = Gtk.Label()
         label.set_alignment(0, 0.5)
-        label.set_markup("%s have offered <b>%s</b> for %s." % (club, amount, player))
+        label.set_markup("%s have offered <b>%s</b> for %s." % (club, amount, name))
         grid.attach(label, 0, 0, 3, 1)
 
         label = Gtk.Label("The offer can either be accepted, rejected or negotiations over the fee can continue.")
@@ -176,7 +178,8 @@ class Negotiation:
         '''
         Finialise the transfer move.
         '''
-        player = display.name(game.players[self.playerid], mode=1)
+        player = game.players[self.playerid]
+        name = player.get_name(mode=1)
         club = game.clubs[self.club].name
 
         messagedialog = Gtk.MessageDialog()
@@ -188,7 +191,7 @@ class Negotiation:
             messagedialog.add_button("_Delay Completion", 1)
 
         messagedialog.add_button("_Complete Transfer", Gtk.ResponseType.OK)
-        messagedialog.set_markup("<span size='12000'><b>Complete transfer of %s to %s?</b></span>" % (player, club))
+        messagedialog.set_markup("<span size='12000'><b>Complete transfer of %s to %s?</b></span>" % (name, club))
         messagedialog.format_secondary_text("The transfer can be delayed for a short time if necessary.")
 
         response = messagedialog.run()
@@ -232,7 +235,7 @@ class Negotiation:
         player.club = self.club
         new_club.squad.append(self.playerid)
 
-        name = display.name(player)
+        name = player.get_name()
 
         if self.transfer_type != 2:
             new_club = new_club.name

@@ -396,7 +396,7 @@ class Result:
                         players[1].remove(playerid)
 
                         if player.club == game.teamid:
-                            name = display.name(player, mode=1)
+                            name = player.get_name(mode=1)
                             news.publish("SU01", player=name, period="1")
                     else:
                         match_cards[0][playerid] = 1
@@ -408,7 +408,7 @@ class Result:
                         player.suspension_type = 9
 
                         if player.club == game.teamid:
-                            name = display.name(player, mode=1)
+                            name = player.get_name(mode=1)
                             news.publish("SU03", player=name, period="1", cards=player.yellow_cards)
 
                 count += 1
@@ -432,7 +432,7 @@ class Result:
                     players[1].remove(playerid)
 
                     if player.club == game.teamid:
-                        name = display.name(player, mode=1)
+                        name = player.get_name(mode=1)
                         news.publish("SU02", player=name, period=player.suspension_period, suspension=suspension[0])
 
                 count += 1
@@ -504,7 +504,7 @@ class Result:
             random.shuffle(selection)
 
             if random.randint(0, 100) < 25:
-                name = display.name(player, mode=1)
+                name = player.get_name(mode=1)
 
                 injuryid = random.choice(list(constants.injuries.keys()))
                 injury = constants.injuries[injuryid]
@@ -651,7 +651,7 @@ def renew_contract():
 
                     # Announce big name player contract renewals
                     if player.value > 5000000 and announce:
-                        name = display.name(player, mode=1)
+                        name = player.get_name(mode=1)
                         club = game.clubs[player.club].name
 
                         news.publish("RC01",
@@ -660,7 +660,7 @@ def renew_contract():
                                      period=contract)
 
                     if playerid in game.clubs[game.teamid].shortlist:
-                        name = display.name(player, mode=1)
+                        name = player.get_name(mode=1)
                         club = game.clubs[player.club].name
 
                         news.publish("RC02",
