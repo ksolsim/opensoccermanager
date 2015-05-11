@@ -482,7 +482,7 @@ class Staff(Gtk.Grid):
                 speciality = constants.speciality[coach.speciality]
                 wage = "%s" % (display.currency(coach.wage))
                 contract = "%i Weeks" % (coach.contract)
-                morale = display.staff_morale(coach.morale)
+                morale = coach.get_morale()
 
                 self.liststoreCurrent.append([coachid,
                                               coach.name,
@@ -619,7 +619,7 @@ class Staff(Gtk.Grid):
                 ability = constants.ability[scout.ability]
                 wage = "%s" % (display.currency(scout.wage))
                 contract = "%i Weeks" % (scout.contract)
-                morale = display.staff_morale(scout.morale)
+                morale = scout.get_morale()
 
                 self.liststoreCurrent.append([scoutid,
                                               scout.name,

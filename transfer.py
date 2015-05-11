@@ -642,7 +642,7 @@ def enquiry_dialog(playerid, index):
     '''
     player = game.players[playerid]
     name = player.get_name(mode=1)
-    club = display.club(player.club)
+    club = player.get_club()
 
     messagedialog = Gtk.MessageDialog(type=Gtk.MessageType.QUESTION)
     messagedialog.set_transient_for(game.window)

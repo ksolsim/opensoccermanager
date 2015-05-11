@@ -380,11 +380,11 @@ class ScreenDetails(Gtk.Grid):
         self.load_club_list()
 
     def load_year_list(self):
-        data = game.database.cursor.execute("SELECT * FROM year ORDER BY year ASC")
+        year_data = game.database.cursor.execute("SELECT * FROM year ORDER BY year ASC")
 
         self.liststoreYears.clear()
 
-        for year in data.fetchall():
+        for year in year_data.fetchall():
             year = year[0]
             self.liststoreYears.append([year])
 

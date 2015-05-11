@@ -184,12 +184,6 @@ def player_morale(value):
     return status
 
 
-def staff_morale(value):
-    status = constants.morale[value - 1]
-
-    return status
-
-
 def value(value):
     value = calculator.value_rounder(value)
     currency, exchange = constants.currency[game.currency]

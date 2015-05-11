@@ -164,6 +164,11 @@ class Staff:
 
         return state
 
+    def staff_morale(self):
+        status = constants.morale[self.morale]
+
+        return status
+
 
 def check_morale():
     '''
