@@ -24,6 +24,7 @@ import display
 import events
 import game
 import resources
+import staff
 import structures
 import widgets
 
@@ -386,7 +387,7 @@ def open_file(filename):
 
     # Staff
     for item in db.importer("coachavailable"):
-        coach = structures.Staff()
+        coach = staff.Staff()
         coach.name = item[1]
         coach.age = item[2]
         coach.ability = item[3]
@@ -398,7 +399,7 @@ def open_file(filename):
         club.coaches_available[coachid] = coach
 
     for item in db.importer("coachhired"):
-        coach = structures.Staff()
+        coach = staff.Staff()
         coach.name = item[1]
         coach.age = item[2]
         coach.ability = item[3]
@@ -412,7 +413,7 @@ def open_file(filename):
         club.coaches_hired[coachid] = coach
 
     for item in db.importer("scoutavailable"):
-        scout = structures.Staff()
+        scout = staff.Staff()
         scout.name = item[1]
         scout.age = item[2]
         scout.ability = item[3]
@@ -423,7 +424,7 @@ def open_file(filename):
         club.scouts_available[scoutid] = scout
 
     for item in db.importer("scouthired"):
-        scout = structures.Staff()
+        scout = staff.Staff()
         scout.name = item[1]
         scout.age = item[2]
         scout.ability = item[3]

@@ -164,7 +164,21 @@ class Staff:
 
         return state
 
+    def get_contract(self):
+        '''
+        Return the length of contract remaining for staff member.
+        '''
+        if self.contract == 1:
+            contract = "%i Week" % (self.contract)
+        else:
+            contract = "%i Weeks" % (self.contract)
+
+        return contract
+
     def get_morale(self):
+        '''
+        Get the appropriate morale status message.
+        '''
         status = constants.morale[self.morale]
 
         return status
