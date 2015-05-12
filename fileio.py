@@ -291,7 +291,7 @@ def open_file(filename):
         player.red_cards = item[43]
         player.rating = []
 
-        player.age = events.age(item[4])
+        player.age = player.get_age()
 
     # Squad
     for item in db.importer("squad"):
@@ -387,7 +387,7 @@ def open_file(filename):
 
     # Staff
     for item in db.importer("coachavailable"):
-        coach = staff.Staff()
+        coach = staff.Staff(staff_type=0)
         coach.name = item[1]
         coach.age = item[2]
         coach.ability = item[3]
@@ -399,7 +399,7 @@ def open_file(filename):
         club.coaches_available[coachid] = coach
 
     for item in db.importer("coachhired"):
-        coach = staff.Staff()
+        coach = staff.Staff(staff_type=0)
         coach.name = item[1]
         coach.age = item[2]
         coach.ability = item[3]
@@ -413,7 +413,7 @@ def open_file(filename):
         club.coaches_hired[coachid] = coach
 
     for item in db.importer("scoutavailable"):
-        scout = staff.Staff()
+        scout = staff.Staff(staff_type=1)
         scout.name = item[1]
         scout.age = item[2]
         scout.ability = item[3]
@@ -424,7 +424,7 @@ def open_file(filename):
         club.scouts_available[scoutid] = scout
 
     for item in db.importer("scouthired"):
-        scout = staff.Staff()
+        scout = staff.Staff(staff_type=1)
         scout.name = item[1]
         scout.age = item[2]
         scout.ability = item[3]

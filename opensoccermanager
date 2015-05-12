@@ -756,7 +756,7 @@ class ContinueGame:
 
         # Age players
         for playerid, player in game.players.items():
-            player.age = events.age(player.date_of_birth)
+            player.age = player.get_age()
 
         # Initiate first sponsorship offer
         if (game.date, game.month) == (4, 8):

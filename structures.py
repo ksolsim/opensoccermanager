@@ -24,7 +24,7 @@ class Player:
     def __init__(self):
         self.fitness = 100
         self.training_points = 0
-        self.morale = 10
+        self.morale = 20
         self.injury_type = 0
         self.injury_period = 0
         self.suspension_points = 0
@@ -73,6 +73,18 @@ class Player:
                 name = "%s %s" % (self.first_name, self.second_name)
 
         return name
+
+    def get_age(self):
+        '''
+        Determine the player age relative to current in-game date.
+        '''
+        year, month, day = self.date_of_birth.split("-")
+        age = game.year - int(year)
+
+        if (game.month, game.date) < (int(month), int(day)):
+            age -= 1
+
+        return age
 
     def get_club(self):
         '''

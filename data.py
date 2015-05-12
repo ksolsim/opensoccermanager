@@ -122,7 +122,7 @@ def datainit():
         player.training = item[20]
         player.contract = random.randint(24, 260)
 
-        player.age = events.age(item[4])
+        player.age = player.get_age()
         player.value = calculator.value(item[0])
         player.wage = calculator.wage(item[0])
         player.bonus = calculator.bonus(player.wage)

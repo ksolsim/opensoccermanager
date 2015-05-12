@@ -230,15 +230,10 @@ class Squad(Gtk.Grid):
         self.treeselection = treeviewSquad.get_selection()
         scrolledwindow.add(treeviewSquad)
 
-        cellrenderertext = Gtk.CellRendererText()
-        treeviewcolumn = Gtk.TreeViewColumn("Name",
-                                            cellrenderertext,
-                                            text=1)
+        treeviewcolumn = widgets.TreeViewColumn(title="Name", column=1)
         treeviewcolumn.set_expand(True)
         treeviewSquad.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Position",
-                                            cellrenderertext,
-                                            text=2)
+        treeviewcolumn = widgets.TreeViewColumn(title="Position", column=2)
         treeviewcolumn.set_expand(True)
         treeviewSquad.append_column(treeviewcolumn)
 
