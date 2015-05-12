@@ -429,8 +429,7 @@ class Players(Gtk.Grid):
             position = player.position
             display_value = player.get_value()
             display_wage = player.get_wage()
-            contract = player.contract
-            display_contract = display.contract(contract)
+            display_contract = player.get_contract()
             transfer_list = player.transfer[0]
             loan_list = player.transfer[1]
             appearances = "%i (%i)" % (player.appearances, player.substitute)
@@ -457,7 +456,7 @@ class Players(Gtk.Grid):
                                           display_value,
                                           player.wage,
                                           display_wage,
-                                          contract,
+                                          player.contract,
                                           display_contract,
                                           transfer_list,
                                           loan_list,

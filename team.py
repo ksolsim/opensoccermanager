@@ -410,7 +410,7 @@ class Staff(Gtk.Grid):
                 coach = club.coaches_available[coachid]
 
                 if dialogs.hire_staff(1, coach.name):
-                    coach.morale = 9
+                    coach.morale = 7
 
                     club.coaches_hired[coachid] = club.coaches_available[coachid]
                     del club.coaches_available[coachid]
@@ -546,7 +546,7 @@ class Staff(Gtk.Grid):
                 scout = club.scouts_available[scoutid]
 
                 if dialogs.hire_staff(1, scout.name):
-                    scout.morale = 9
+                    scout.morale = 7
 
                     club.scouts_hired[scoutid] = club.scouts_available[scoutid]
                     del club.scouts_available[scoutid]

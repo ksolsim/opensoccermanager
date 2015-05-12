@@ -125,6 +125,19 @@ class Player:
 
         return wage
 
+    def get_contract(self):
+        '''
+        Format the number of weeks on the contract remaining and return.
+        '''
+        if self.contract > 1:
+            contract = "%i Weeks" % (self.contract)
+        elif self.contract == 1:
+            contract = "%i Week" % (self.contract)
+        elif self.contract == 0:
+            contract = "Out of Contract"
+
+        return contract
+
 
 class Club:
     def __init__(self):

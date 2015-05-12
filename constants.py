@@ -148,7 +148,8 @@ team_training = ("No Training", "Individual", ("Attacking",
                                                "Throw-Ins",)
                 )
 
-morale = ("Miserable",
+morale = ("Annoyed",
+          "Miserable",
           "Very Unhappy",
           "Unhappy",
           "Displeased",

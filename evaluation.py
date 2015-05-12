@@ -80,7 +80,9 @@ def update():
     club.evaluation[3] = percentage
 
     # Staff
-    if len(club.coaches_hired) + len(club.scouts_hired) > 0:
+    staff_count = len(club.coaches_hired) + len(club.scouts_hired)
+
+    if staff_count > 0:
         points = 0
 
         for coach in club.coaches_hired.values():
@@ -89,8 +91,7 @@ def update():
         for scout in club.scouts_hired.values():
             points += scout.morale
 
-        maximum = (len(club.coaches_hired) + len(club.scouts_hired)) * 10
-        percentage = (points / maximum) * 100
+        percentage = points / (9 * staff_count) * 100
 
         club.evaluation[4] = percentage
 

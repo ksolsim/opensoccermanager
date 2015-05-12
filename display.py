@@ -214,20 +214,6 @@ def currency(amount, mode=0):
     return amount
 
 
-def contract(period):
-    '''
-    Format the number of weeks on the contract remaining.
-    '''
-    if period > 1:
-        text = "%i Weeks" % (period)
-    elif period == 1:
-        text = "%i Week" % (period)
-    elif period == 0:
-        text = "Out of Contract"
-
-    return text
-
-
 def club(clubid):
     '''
     Return club name for the specified id or nothing when player is unattached.

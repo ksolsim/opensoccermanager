@@ -296,7 +296,8 @@ class ShortlistContext:
             context.show_text("%s" % (wage))
 
             context.move_to(500, y)
-            context.show_text("%i Weeks" % (player.contract))
+            contract = player.get_contract()
+            context.show_text(contract)
 
             for count, skill in enumerate(player.skills(), start=1):
                 context.move_to(550 + (count * 20), y)

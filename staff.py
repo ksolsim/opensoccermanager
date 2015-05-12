@@ -45,7 +45,7 @@ class Staff:
         if staff_type == 0:
             self.speciality = self.speciality()
 
-        self.morale = 9
+        self.morale = 7
         self.retiring = False
 
     def name(self):
@@ -164,7 +164,7 @@ class Staff:
 
         return state
 
-    def staff_morale(self):
+    def get_morale(self):
         status = constants.morale[self.morale]
 
         return status
@@ -196,3 +196,4 @@ def check_morale():
             if count > 9:
                 coach = club.coaches_hired[coachid]
                 news.publish("IT01", coach=coach.name)
+                coach.morale -= 1
