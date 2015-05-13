@@ -24,25 +24,6 @@ import constants
 import calculator
 
 
-def name(player, mode=0):
-    '''
-    Return the player name in the requested format depending on whether
-    it should be displayed as first/second or second/first name.
-    '''
-    if not player.common_name:
-        player.common_name = ""
-
-    if player.common_name is not "":
-        name = player.common_name
-    else:
-        if mode == 0:
-            name = "%s, %s" % (player.second_name, player.first_name)
-        elif mode == 1:
-            name = "%s %s" % (player.first_name, player.second_name)
-
-    return name
-
-
 def format_position(value):
     '''
     Format position with ordinal for display to player.
@@ -222,24 +203,6 @@ def club(clubid):
         text = ""
     else:
         text = game.clubs[clubid].name
-
-    return text
-
-
-def injury(value):
-    if value == 1:
-        text = "%i Week" % (value)
-    else:
-        text = "%i Weeks" % (value)
-
-    return text
-
-
-def suspension(value):
-    if value == 1:
-        text = "%i Match" % (value)
-    else:
-        text = "%i Matches" % (value)
 
     return text
 

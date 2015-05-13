@@ -862,27 +862,23 @@ class InjSus(Gtk.Grid):
                 name = player.get_name(mode=1)
                 fitness = player.fitness
                 injury = constants.injuries[player.injury_type][0]
-                period = display.injury(player.injury_period)
+                period = player.get_injury()
 
                 self.liststoreInjuries.append([name, fitness, injury, period])
 
             if player.suspension_type != 0:
                 name = player.get_name(mode=1)
                 suspension = constants.suspensions[player.suspension_type][0]
-                period = display.suspension(player.suspension_period)
+                period = player.get_suspension()
 
                 self.liststoreSuspensions.append([name, suspension, period])
 
         self.show_all()
 
-        if len(self.liststoreInjuries) > 0:
-            self.treeviewInjuries.set_sensitive(True)
-            self.labelNoInjury.hide()
-        else:
-            self.treeviewInjuries.set_sensitive(False)
+        state = len(self.liststoreInjuries) > 0
+        self.treeviewInjuries.set_sensitive(state)
+        self.labelNoInjury.set_visible(not state)
 
-        if len(self.liststoreSuspensions) > 0:
-            self.treeviewSuspensions.set_sensitive(True)
-            self.labelNoSuspensions.hide()
-        else:
-            self.treeviewSuspensions.set_sensitive(False)
+        state = len(self.liststoreSuspensions) > 0
+        self.treeviewSuspensions.set_sensitive(state)
+        self.labelNoSuspensions.set_visible(not state)

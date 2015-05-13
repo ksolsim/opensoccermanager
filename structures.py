@@ -150,6 +150,37 @@ class Player:
 
         return contract
 
+    def set_morale(self, amount):
+        '''
+        Set the morale of the player between -100 and 100.
+        '''
+        if amount > 0:
+            if self.morale + amount <= 100:
+                self.morale += amount
+            elif self.morale + amount > 100:
+                self.morale = 100
+        elif amount < 0:
+            if self.morale + amount >= -100:
+                self.morale += amount
+            elif self.morale + amount < -100:
+                self.morale = -100
+
+    def get_injury(self):
+        if self.injury_period == 1:
+            injury = "%i Week" % (self.injury_period)
+        else:
+            injury = "%i Weeks" % (self.injury_period)
+
+        return injury
+
+    def get_suspension(self):
+        if self.suspension_period == 1:
+            suspension = "%i Match" % (self.suspension_period)
+        else:
+            suspension = "%i Matches" % (self.suspension_period)
+
+        return suspension
+
 
 class Club:
     def __init__(self):

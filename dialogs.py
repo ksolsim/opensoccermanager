@@ -240,16 +240,16 @@ def player_info(playerid):
     if playerid:
         bonus = game.players[playerid].bonus
 
-        amount = display.wage(bonus[2])
+        amount = display.currency(bonus[2])
         label = widgets.AlignedLabel(amount)
         grid.attach(label, 1, 0, 1, 1)
-        amount = display.wage(bonus[3])
+        amount = display.currency(bonus[3])
         label = widgets.AlignedLabel(amount)
         grid.attach(label, 1, 1, 1, 1)
-        amount = display.wage(bonus[0])
+        amount = display.currency(bonus[0])
         label = widgets.AlignedLabel(amount)
         grid.attach(label, 1, 2, 1, 1)
-        amount = display.wage(bonus[1])
+        amount = display.currency(bonus[1])
         label = widgets.AlignedLabel(amount)
         grid.attach(label, 1, 3, 1, 1)
 
@@ -280,14 +280,14 @@ def player_info(playerid):
             injury_period = "N/A"
         else:
             injury_type = constants.injuries[injuryid][0]
-            injury_period = "%i Weeks" % (player.injury_period)
+            injury_period = player.get_injury()
 
         if suspensionid == 0:
             suspension_type = "None"
             suspension_period = "N/A"
         else:
             suspension_type = constants.suspensions[suspensionid][0]
-            suspension_period = "%i Matches" % (player.suspension_period)
+            suspension_period = player.get_suspension()
 
         label = widgets.AlignedLabel("%s" % (injury_type))
         grid.attach(label, 1, 0, 1, 1)

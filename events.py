@@ -75,34 +75,6 @@ def increment_referee(refereeid, fouls=0, yellows=0, reds=0):
     referee.reds += reds
 
 
-def age(date_of_birth):
-    '''
-    Determine the age of player at the start of the game.
-    '''
-    year, month, day = date_of_birth.split("-")
-    age = game.year - int(year)
-
-    if (game.month, game.date) < (int(month), int(day)):
-        age -= 1
-
-    return age
-
-
-def morale(playerid, amount):
-    value = game.players[playerid].morale
-
-    if amount > 0:
-        if value + amount <= 100:
-            value += amount
-        elif value + amount > 100:
-            value = 100
-    elif amount < 0:
-        if value + amount >= -100:
-            value += amount
-        elif value + amount < -100:
-            value = -100
-
-
 def injury():
     '''
     Generate injuries outside of a match, typically through training.
