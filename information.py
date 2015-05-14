@@ -284,8 +284,8 @@ class Fixtures(Gtk.Grid):
     def run(self):
         self.populate_data()
 
-        if game.fixturespage > 0:
-            self.buttonPrevious.set_sensitive(True)
+        sensitive = game.fixturespage > 0
+        self.buttonPrevious.set_sensitive(sensitive)
 
         self.show_all()
 
@@ -312,13 +312,12 @@ class Fixtures(Gtk.Grid):
                     match = "%s - %s" % (game.clubs[match[0]].name, game.clubs[match[1]].name)
                     self.liststoreClubFixtures.append([match])
 
-        for match in game.fixtures[game.fixturespage]:
-            team1 = game.clubs[match[0]].name
-            team2 = game.clubs[match[1]].name
+        for teamid1, teamid2 in game.fixtures[game.fixturespage]:
+            team1 = game.clubs[teamid1].name
+            team2 = game.clubs[teamid2].name
 
-            clubid = match[0]
-            stadiumid = game.clubs[clubid].stadium
-            stadium = game.stadiums[stadiumid].name
+            club = game.clubs[teamid1]
+            stadium = club.get_stadium_name()
 
             self.liststoreFixtures.append([team1, team2, stadium])
 

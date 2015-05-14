@@ -139,8 +139,9 @@ class FixtureContext:
                     context.show_text("%s" % (match))
 
                     context.move_to(225, y)
-                    stadiumid = game.clubs[fixture[0]].stadium
-                    stadium = game.stadiums[stadiumid].name
+
+                    club = game.clubs[fixture[0]]
+                    stadium = club.get_stadium_name()
                     context.show_text("%s" % (stadium))
 
                     context.move_to(350, y)

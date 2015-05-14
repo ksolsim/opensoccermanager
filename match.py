@@ -32,23 +32,6 @@ import structures
 import widgets
 
 
-class Referee:
-    def __init__(self):
-        self.referees = []
-
-    def generate(self):
-        self.referees = [refereeid for refereeid in game.referees.keys()]
-        random.shuffle(self.referees)
-
-    def select(self, count):
-        selected = self.referees[count]
-
-        return selected
-
-    def increment(self, refereeid, yellows, reds):
-        events.increment_referee(refereeid, yellows, reds)
-
-
 class Match(Gtk.Grid):
     class Score(Gtk.Grid):
         def __init__(self):
@@ -364,13 +347,14 @@ class Match(Gtk.Grid):
         self.score.update_teams(self.team1.name, self.team2.name)
 
         # Determine venue and referee
-        stadiumid = game.clubs[self.team1.teamid].stadium
-        venue = game.stadiums[stadiumid].name
+        club = game.clubs[self.team1.teamid]
+        venue = game.stadiums[club.stadium].name
 
-        self.referee = Referee()
-        self.referee.generate()
-        self.refereeid = self.referee.select(0)
-        referee = game.referees[self.refereeid].name
+        self.referees = list(game.referees.keys())
+        random.shuffle(self.referees)
+        self.refereeid = self.referees[0]
+        self.referee = game.referees[self.referees[0]]
+        referee = self.referee.name
 
         self.information.update(venue, referee)
 
@@ -516,8 +500,11 @@ class Match(Gtk.Grid):
                 game.results[game.fixturesindex].append(score)
 
                 # Events
-                refereeid = self.referee.select(index + 1)
-                self.referee.increment(refereeid, airesult.yellows, airesult.reds)
+                self.refereeid = self.referees[index + 1]
+                self.referee = game.referees[self.refereeid]
+                referee = self.referee.name
+
+                self.referee.increment_appearance()
 
                 events.increment_goalscorers(airesult.scorers[0], airesult.scorers[1])
                 events.increment_assists(airesult.assists[0], airesult.assists[1])

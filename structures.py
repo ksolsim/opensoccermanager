@@ -214,6 +214,14 @@ class Club:
         self.form = []
         self.attendances = []
 
+    def get_stadium_name(self):
+        '''
+        Return the stadium name.
+        '''
+        stadium = game.stadiums[self.stadium].name
+
+        return stadium
+
 
 class Nation:
     pass
@@ -236,10 +244,6 @@ class BankLoan:
 
 
 class Grant:
-    pass
-
-
-class Staff:
     pass
 
 
@@ -274,6 +278,25 @@ class Stand:
 
 class Referee:
     def __init__(self):
+        self.name = ""
+        self.matches = 0
+        self.fouls = 0
+        self.yellows = 0
+        self.reds = 0
+
+    def increment_appearance(self, fouls=0, yellows=0, reds=0):
+        '''
+        Increment referee appearances and match statistics.
+        '''
+        self.matches += 1
+        self.fouls += fouls
+        self.yellows += yellows
+        self.reds += reds
+
+    def reset_statistics(self):
+        '''
+        Clear statistics for referee.
+        '''
         self.matches = 0
         self.fouls = 0
         self.yellows = 0
