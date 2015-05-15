@@ -19,58 +19,25 @@
 import math
 import random
 
+import accounts
 import calculator
 import dialogs
 import game
 import news
 
 
-def deposit(amount, category=None):
-    '''
-    Increases the amount of money in the bank account.
-    '''
-    club = game.clubs[game.teamid]
-
-    if category:
-        club.accounts[category][0] += amount
-        club.accounts[category][1] += amount
-
-        club.income = 0
-
-        for item in club.accounts[0:7]:
-            club.income += item[1]
-
-    club.balance += amount
-
-
-def withdraw(amount, category):
-    '''
-    Decreases the amount of money in the bank account.
-    '''
-    club = game.clubs[game.teamid]
-    club.accounts[category][0] += amount
-    club.accounts[category][1] += amount
-
-    club.expenditure = 0
-
-    for item in club.accounts[8:19]:
-        club.expenditure += item[1]
-
-    club.balance -= amount
-
-
 def pay_wages():
     '''
     Pay wages for both players and staff.
     '''
-    total = 0
-
     club = game.clubs[game.teamid]
+
+    total = 0
 
     for playerid in club.squad:
         total += game.players[playerid].wage
 
-    withdraw(total, 12)
+    club.accounts.withdraw(amount=total, category="playerwage")
 
     total = 0
 
@@ -80,7 +47,7 @@ def pay_wages():
     for staffid in club.scouts_hired:
         total += club.scouts_hired[staffid].wage
 
-    withdraw(total, 11)
+    club.accounts.withdraw(amount=total, category="staffwage")
 
 
 def pay_bonus():
@@ -108,19 +75,6 @@ def pay_win_bonus():
         if playerid != 0:
             amount = game.players[playerid].bonus[2]
             withdraw(amount, 12)
-
-
-def request(amount):
-    '''
-    Requests amount to withdraw and return whether transaction is valid.
-    '''
-    state = True
-
-    if amount > game.clubs[game.teamid].balance + game.overdraft.amount:
-        dialogs.error(4)
-        state = False
-
-    return state
 
 
 def prize_money(position):
@@ -167,7 +121,7 @@ def pay_loan():
 
 def calculate_overdraft():
     club = game.clubs[game.teamid]
-    amount = ((club.balance * 0.5) * 0.05) * club.reputation
+    amount = ((club.accounts.balance * 0.5) * 0.05) * club.reputation
     amount = calculator.value_rounder(amount)
     game.overdraft.maximum = amount
 
@@ -203,7 +157,6 @@ def calculate_grant():
     '''
     club = game.clubs[game.teamid]
     reputation = club.reputation
-    balance = club.balance
 
     state = False
     amount = 0
@@ -212,7 +165,7 @@ def calculate_grant():
         state = True
 
     if not state:
-        if balance <= (150000 * reputation):
+        if club.accounts.balance <= (150000 * reputation):
             state = True
         else:
             state = False

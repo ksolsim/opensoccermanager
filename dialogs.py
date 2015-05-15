@@ -862,7 +862,7 @@ def sponsorship():
     if response == Gtk.ResponseType.ACCEPT:
         company, period, cost = club.sponsor_offer
         club.sponsor_status = 2
-        money.deposit(cost, 1)
+        club.accounts.deposit(amount=cost, category="sponsorship")
     elif response == Gtk.ResponseType.REJECT:
         club.sponsor_status = 0
         game.sponsor_timeout = random.randint(4, 6)

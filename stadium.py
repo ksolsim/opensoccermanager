@@ -355,13 +355,11 @@ class Stadium(Gtk.Grid):
         stadiumid = game.clubs[game.teamid].stadium
         stadium = game.stadiums[stadiumid]
 
-        state = money.request(self.cost)
+        club = game.clubs[game.teamid]
 
-        if state:
-            state = dialogs.confirm_stadium(self.cost)
-
-            if state:
-                money.withdraw(self.cost, 10)
+        if club.accounts.request(amount=self.cost):
+            if dialogs.confirm_stadium(self.cost):
+                game.clubs[game.teamid].accounts.withdraw(amount=self.cost, category="stadium")
 
                 for count, widget in enumerate(self.main_stand_widget):
                     stadium.main[count].capacity = widget.get_value_as_int()
@@ -613,10 +611,8 @@ class Buildings(Gtk.Grid):
             self.buttonConfirm.set_sensitive(False)
 
     def confirm_building(self, button):
-        state = dialogs.confirm_building(self.total)
-
-        if state:
-            money.withdraw(self.total, 10)
+        if dialogs.confirm_building(self.total):
+            game.clubs[game.teamid].accounts.withdraw(amount=self.total, category="stadium")
 
             # Update stadium related values
             stadiumid = game.clubs[game.teamid].stadium

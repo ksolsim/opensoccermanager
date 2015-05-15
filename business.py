@@ -379,9 +379,11 @@ class Advertising(Gtk.Grid):
         model, treeiter = selection.get_selected()
         item = model[treeiter]
 
+        club = game.clubs[game.teamid]
+
         if index == 0:
-            if game.clubs[game.teamid].hoardings[2] - (self.hoardings_quantity + item[1]) >= 0:
-                game.clubs[game.teamid].hoardings[1].append(item[0:4])
+            if club.hoardings[2] - (self.hoardings_quantity + item[1]) >= 0:
+                club.hoardings[1].append(item[0:4])
                 self.liststoreHoardingsCurrent.append(item[0:4])
 
                 amount = item[3]
@@ -390,15 +392,12 @@ class Advertising(Gtk.Grid):
 
                 model.remove(treeiter)
 
-                game.clubs[game.teamid].hoardings[0] = []
+                club.hoardings[0] = [item[0:] for item in model]
 
-                for item in model:
-                    game.clubs[game.teamid].hoardings[0].append(item[0:])
-
-                money.deposit(amount, 2)
+                club.accounts.deposit(amount=amount, category="advertising")
         elif index == 1:
-            if game.clubs[game.teamid].programmes[2] - (self.programmes_quantity + item[1]) >= 0:
-                game.clubs[game.teamid].programmes[1].append(item[0:4])
+            if club.programmes[2] - (self.programmes_quantity + item[1]) >= 0:
+                club.programmes[1].append(item[0:4])
                 self.liststoreProgrammesCurrent.append(item[0:4])
 
                 amount = item[3]
@@ -407,12 +406,9 @@ class Advertising(Gtk.Grid):
 
                 model.remove(treeiter)
 
-                game.clubs[game.teamid].programmes[0] = []
+                club.programmes[0] = [item[0:] for item in model]
 
-                for item in model:
-                    game.clubs[game.teamid].programmes[0].append(item[0:])
-
-                money.deposit(amount, 2)
+                club.accounts.deposit(amount=amount, category="advertising")
 
         if game.advertising_timeout == 0:
             game.advertising_timeout = random.randint(8, 12)
@@ -432,7 +428,7 @@ class Advertising(Gtk.Grid):
                 club.hoardings[1].append(item[0:4])
 
                 amount = item[3]
-                money.deposit(amount, 2)
+                club.accounts.deposit(amount=amount, category="advertising")
 
                 self.model.remove(self.active)
 
@@ -451,7 +447,7 @@ class Advertising(Gtk.Grid):
                 club.programmes[1].append(item[0:4])
 
                 amount = item[3]
-                money.deposit(amount, 2)
+                club.accounts.deposit(amount=amount, category="advertising")
 
                 self.model.remove(self.active)
 

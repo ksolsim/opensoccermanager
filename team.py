@@ -559,11 +559,9 @@ class Staff(Gtk.Grid):
             if treeiter:
                 staffid = model[treeiter][0]
                 scout = game.clubs[game.teamid].scouts_hired[staffid]
-                payout = scout.wage * scout.contract
 
-                if dialogs.fire_staff(0, scout.name, payout):
+                if scout.fire():
                     del game.clubs[game.teamid].scouts_hired[staffid]
-                    money.withdraw(payout, 10)
 
                     self.populate_data()
 

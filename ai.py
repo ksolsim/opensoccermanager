@@ -601,9 +601,11 @@ class Result:
         '''
         Iterate through each goalscorer and pay their contracted bonus amount.
         '''
+        club = game.clubs[game.teamid]
+
         for playerid in scorers[index]:
             amount = game.players[playerid].bonus[3]
-            money.withdraw(amount, 12)
+            club.accounts.withdraw(amount, "playerwage")
 
 
 def team_training():
@@ -822,7 +824,7 @@ def advertising():
                 current_quantity += item[1]
                 del club.hoardings[0][position]
 
-                money.deposit(item[3], 2)
+                club.accounts.deposit(amount=item[3], category=advertising)
 
             position += 1
 
@@ -840,6 +842,6 @@ def advertising():
                 current_quantity += item[1]
                 del club.programmes[0][position]
 
-                money.deposit(item[3], 2)
+                club.accounts.deposit(amount=item[3], category=advertising)
 
             position += 1

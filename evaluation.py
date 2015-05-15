@@ -58,7 +58,7 @@ def update():
 
     # Finances
     total = (club.reputation ** 3 * 1000 * 3) * 2
-    percentage = (club.balance / total) * 100
+    percentage = (club.accounts.balance / total) * 100
 
     if percentage > 100:
         percentage = 100

@@ -457,7 +457,7 @@ class Match(Gtk.Grid):
         if game.televised[game.fixturesindex] == game.teamid:
             reputation = game.clubs[game.teamid].reputation
             amount = reputation * 3 * random.randint(950, 1050)
-            money.deposit(amount, 8)
+            game.clubs[game.teamid].accounts.deposit(amount=amount, category=television)
 
         # Matchday ticket sales
         if self.team1.teamid == game.teamid:

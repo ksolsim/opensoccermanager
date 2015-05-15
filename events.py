@@ -604,8 +604,8 @@ def reset_accounts():
     '''
     Reset weekly accounts for each category to zero.
     '''
-    for item in game.clubs[game.teamid].accounts:
-        item[0] = 0
+    club = game.clubs[game.teamid]
+    club.accounts.reset_weekly()
 
 
 def end_of_season():
@@ -706,7 +706,7 @@ def end_of_season():
     prize_money = money.prize_money(position)
     position = display.format_position(position)
 
-    money.deposit(prize_money, 0)
+    game.clubs[game.teamid].accounts.deposit(amount=prize_money, category="prize")
     amount = display.currency(prize_money)
     news.publish("PZ01", amount=amount, position=position)
 
@@ -837,7 +837,7 @@ def update_condition():
     # Issue FA fine
     if stadium.warnings == 3:
         fine = (stadium.capacity * 3) * (stadium.fines + 1)
-        money.withdraw(fine, 9)
+        club.accounts.withdraw(fine, "fines")
 
         news.publish("SM03", amount=fine)
 
@@ -851,4 +851,6 @@ def update_maintenance():
     '''
     cost = calculator.maintenance()
 
-    money.withdraw(cost, 10)
+    club = game.clubs[game.teamid]
+
+    club.accounts.withdraw(cost, "stadium")

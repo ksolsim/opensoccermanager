@@ -501,7 +501,7 @@ class TrainingCamp(Gtk.Grid):
 
         if dialogs.confirm_training(cost):
             if money.request(cost):
-                money.withdraw(cost, 18)
+                game.clubs[game.teamid].accounts.withdraw(cost, "training")
 
                 options = self.training_camp.retrieve_options()
                 events.training_camp(options)

@@ -276,7 +276,7 @@ class Negotiation:
                 self.move()
 
                 if self.transfer_type == 0:
-                    money.withdraw(self.amount, 13)
+                    game.clubs[game.teamid].accounts.withdraw(self.amount, "transfers")
         elif response == Gtk.ResponseType.CANCEL:
             del game.negotiations[self.negotiationid]
 

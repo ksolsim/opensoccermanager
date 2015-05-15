@@ -571,11 +571,13 @@ class Squad(Gtk.Grid):
         cost = player.contract * player.wage
 
         if dialogs.release_player(name, cost):
-            if money.request(cost):
-                money.withdraw(cost, 12)
+            club = game.clubs[game.teamid]
+
+            if club.accounts.request(cost, "playerwage"):
+                club.accounts.withdraw(cost, "playerwage")
 
                 player.club = 0
-                game.clubs[game.teamid].squad.remove(playerid)
+                club.squad.remove(playerid)
 
                 self.populate_data()
 
@@ -607,8 +609,8 @@ class Squad(Gtk.Grid):
 
     def transfer_status(self, menuitem, index):
         model, treeiter = self.treeselection.get_selected()
-        playerid = model[treeiter][0]
 
+        playerid = model[treeiter][0]
         player = game.players[playerid]
 
         transfer = player.transfer[0]

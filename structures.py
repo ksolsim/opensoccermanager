@@ -15,6 +15,7 @@
 #  You should have received a copy of the GNU General Public License along with
 #  OpenSoccerManager.  If not, see <http://www.gnu.org/licenses/>.
 
+import accounts
 import calculator
 import constants
 import game
@@ -196,10 +197,7 @@ class Club:
         self.tickets = [0] * 15
         self.season_tickets = 40
         self.school_tickets = 0
-        self.accounts = [[0, 0] for x in range(20)]
-        self.income = 0
-        self.expenditure = 0
-        self.balance = 0
+        self.accounts = accounts.Accounts()
         self.finances = [0, 0, 0, 0, 0, 0, 0, 0]
         self.sponsor_status = 0
         self.sponsor_offer = ()

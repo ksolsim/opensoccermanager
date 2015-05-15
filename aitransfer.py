@@ -205,7 +205,7 @@ class Negotiation:
             self.move()
 
             if self.transfer_type == 0:
-                money.deposit(self.amount, 6)
+                game.clubs[game.teamid].accounts.deposit(amount=self.amount, category="transfers")
 
         messagedialog.destroy()
 

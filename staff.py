@@ -119,9 +119,8 @@ class Staff:
         payout = self.wage * self.contract
 
         if dialogs.fire_staff(index=0, name=self.name, payout=payout):
-            money.withdraw(payout, 11)
-
-            del game.clubs[game.teamid].coaches_hired[self.staffid]
+            club = game.clubs[game.teamid]
+            club.accounts.withdraw(payout, "staffwage")
 
             state = True
 
