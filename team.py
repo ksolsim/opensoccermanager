@@ -409,9 +409,7 @@ class Staff(Gtk.Grid):
                 club = game.clubs[game.teamid]
                 coach = club.coaches_available[coachid]
 
-                if dialogs.hire_staff(1, coach.name):
-                    coach.morale = 7
-
+                if coach.hire():
                     club.coaches_hired[coachid] = club.coaches_available[coachid]
                     del club.coaches_available[coachid]
 
@@ -425,6 +423,8 @@ class Staff(Gtk.Grid):
                 coach = game.clubs[game.teamid].coaches_hired[staffid]
 
                 if coach.fire():
+                    del game.clubs[game.teamid].coaches_hired[staffid]
+
                     self.populate_data()
 
         def renew_contract(self, button):
@@ -434,17 +434,8 @@ class Staff(Gtk.Grid):
                 staffid = model[treeiter][0]
                 coach = game.clubs[game.teamid].coaches_hired[staffid]
 
-                if coach.retiring:
-                    dialogs.renew_staff_contract_error(coach)
-                else:
-                    year = random.randint(2, 4)
-                    amount = coach.wage * 1.055
-
-                    if dialogs.renew_staff_contract(coach.name, year, amount):
-                        coach.wage = amount
-                        coach.contract = year * 52
-
-                        self.populate_data()
+                if coach.renew_contract():
+                    self.populate_data()
 
         def improve_wage(self, button):
             model, treeiter = self.treeselectionCurrent.get_selected()
@@ -452,11 +443,8 @@ class Staff(Gtk.Grid):
             if treeiter:
                 staffid = model[treeiter][0]
                 coach = game.clubs[game.teamid].coaches_hired[staffid]
-                amount = coach.wage * 1.025
 
-                if dialogs.improve_wage(coach.name, amount):
-                    coach.wage = amount
-
+                if coach.improve_wage():
                     self.populate_data()
 
         def populate_data(self):
@@ -545,9 +533,7 @@ class Staff(Gtk.Grid):
                 club = game.clubs[game.teamid]
                 scout = club.scouts_available[scoutid]
 
-                if dialogs.hire_staff(1, scout.name):
-                    scout.morale = 7
-
+                if scout.hire():
                     club.scouts_hired[scoutid] = club.scouts_available[scoutid]
                     del club.scouts_available[scoutid]
 
@@ -572,17 +558,8 @@ class Staff(Gtk.Grid):
                 staffid = model[treeiter][0]
                 scout = game.clubs[game.teamid].scouts_hired[staffid]
 
-                if scout.retiring:
-                    dialogs.renew_staff_contract_error(scout)
-                else:
-                    year = random.randint(2, 4)
-                    amount = scout.wage * 1.055
-
-                    if dialogs.renew_staff_contract(scout.name, year, amount):
-                        scout.wage = amount
-                        scout.contract = year * 52
-
-                        self.populate_data()
+                if scout.renew_contract():
+                    self.populate_data()
 
         def improve_wage(self, button):
             model, treeiter = self.treeselectionCurrent.get_selected()
@@ -590,11 +567,8 @@ class Staff(Gtk.Grid):
             if treeiter:
                 staffid = model[treeiter][0]
                 scout = game.clubs[game.teamid].scouts_hired[staffid]
-                amount = scout.wage * 1.025
 
-                if dialogs.improve_wage(scout.name, amount):
-                    scout.wage = amount
-
+                if scout.improve_wage():
                     self.populate_data()
 
         def populate_data(self):

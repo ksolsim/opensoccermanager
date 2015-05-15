@@ -106,6 +106,8 @@ class Staff:
         state = False
 
         if dialogs.hire_staff(0, self.name):
+            self.morale = 7
+
             state = True
 
         return state
