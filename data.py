@@ -92,7 +92,7 @@ def datainit():
         club.base_attendance = (74000 / (40 - club.reputation)) * club.reputation
         club.base_attendance = int(club.base_attendance * 0.9)
 
-        game.standings[clubid] = structures.League()
+        game.standings[clubid] = structures.Standings()
 
     # Import players
     game.database.cursor.execute("SELECT * FROM player JOIN playerattr ON player.id = playerattr.player WHERE year = ?", (game.year,))

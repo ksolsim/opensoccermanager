@@ -637,8 +637,8 @@ def end_of_season():
     game.results = []
 
     # Result league standings
-    for clubid in game.standings:
-        game.standings[clubid] = [0, 0, 0, 0, 0, 0, 0, 0]
+    for club in game.standings.values():
+        club.reset_standings()
 
     # Reset player statistics
     for player in game.players.values():
@@ -653,14 +653,11 @@ def end_of_season():
     # Reset club details
     for clubid, club in game.clubs.items():
         club.form = []
-        club.accounts = [[0, 0] for x in range(20)]
+        club.accounts.reset_accounts()
 
     # Reset referee stats
-    for referee in game.referees:
-        game.referees[referee].matches = 0
-        game.referees[referee].fouls = 0
-        game.referees[referee].yellows = 0
-        game.referees[referee].reds = 0
+    for referee in game.referees.values():
+        referee.reset_statistics()
 
     # Age staff at end of season
     for scout in game.clubs[game.teamid].scouts_hired.values():

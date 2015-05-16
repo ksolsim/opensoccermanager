@@ -26,6 +26,7 @@ import game
 import resources
 import staff
 import structures
+import transfer
 import widgets
 
 
@@ -325,7 +326,7 @@ def open_file(filename):
     for item in db.importer("standings"):
         item = list(map(int, item))
         clubid = item[0]
-        game.standings[clubid] = structures.League()
+        game.standings[clubid] = structures.Standings()
         game.standings[clubid].played = item[1]
         game.standings[clubid].wins = item[2]
         game.standings[clubid].draws = item[3]
@@ -337,15 +338,15 @@ def open_file(filename):
 
     # Negotiations
     for item in db.importer("negotiations"):
-        negotiation = structures.Negotiation()
-        key = item[0]
+        negotiation = transfer.Negotiation()
+        negotiation.negotiationid = item[0]
         negotiation.playerid = item[1]
         negotiation.transfer_type = item[2]
         negotiation.timeout = item[3]
         negotiation.club = item[4]
         negotiation.status = item[5]
         negotiation.date = item[6]
-        game.negotiations[key] = negotiation
+        game.negotiations[item[0]] = negotiation
 
     # Loans
     for item in db.importer("loans"):

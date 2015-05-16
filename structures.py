@@ -225,10 +225,6 @@ class Nation:
     pass
 
 
-class Negotiation:
-    pass
-
-
 class Flotation:
     pass
 
@@ -245,8 +241,18 @@ class Grant:
     pass
 
 
-class League:
+class Standings:
     def __init__(self):
+        self.played = 0
+        self.wins = 0
+        self.draws = 0
+        self.losses = 0
+        self.goals_for = 0
+        self.goals_against = 0
+        self.goal_difference = 0
+        self.points = 0
+
+    def reset_standings(self):
         self.played = 0
         self.wins = 0
         self.draws = 0

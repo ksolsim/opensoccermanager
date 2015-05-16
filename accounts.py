@@ -79,6 +79,14 @@ class Accounts:
         '''
         Reset the weekly and season ledgers back to zero.
         '''
+        for item in self.incomes.values():
+            item.week = 0
+            item.season = 0
+
+        for item in self.expenditures.values():
+            item.week = 0
+            item.season = 0
+
         self.income = 0
         self.expenditure = 0
 

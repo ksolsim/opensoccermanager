@@ -57,6 +57,7 @@ class Negotiation:
         transfers.
         '''
         player = game.players[self.playerid]
+
         name = player.get_name(mode=1)
         club = player.get_club()
 
@@ -126,7 +127,7 @@ class Negotiation:
         player = game.players[self.playerid]
 
         name = player.get_name(mode=1)
-        club = game.clubs[player.club].name
+        club = player.get_club()
 
         dialog = Gtk.Dialog()
         dialog.set_transient_for(game.window)
@@ -264,8 +265,7 @@ class Negotiation:
 
         if self.transfer_type == 0:
             club = player.get_club()
-            amount = self.amount
-            messagedialog.set_markup("Confirm signing of %s from %s for %s?" % (name, club, amount))
+            messagedialog.set_markup("Confirm signing of %s from %s for %s?" % (name, club, self.amount))
         elif self.transfer_type == 2:
             messagedialog.set_markup("Confirm signing of %s on free transfer?" % (name))
 
@@ -287,8 +287,9 @@ class Negotiation:
             spinbuttonWeeks.set_sensitive(not checkbutton.get_active())
 
         player = game.players[self.playerid]
+
         name = player.get_name(mode=1)
-        club = game.clubs[player.club].name
+        club = player.get_club()
 
         dialog = Gtk.Dialog()
         dialog.set_transient_for(game.window)
@@ -341,7 +342,7 @@ class Negotiation:
         player = game.players[self.playerid]
 
         name = player.get_name(mode=1)
-        club = game.clubs[player.club].name
+        club = player.get_club()
 
         messagedialog = Gtk.MessageDialog(type=Gtk.MessageType.QUESTION)
         messagedialog.set_transient_for(game.window)
@@ -403,8 +404,7 @@ class Negotiation:
                         consider_enquiry(self.negotiationid)
                     elif self.status == 6:
                         consider_contract(self.negotiationid)
-
-        if self.timeout == 0:
+        elif self.timeout == 0:
             if self.status in (1, 4, 7, 10):
                 remove.append(self.negotiationid)
 
