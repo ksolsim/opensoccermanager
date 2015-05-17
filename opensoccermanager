@@ -754,10 +754,6 @@ class ContinueGame:
         aitransfer.identify()
         staff.check_morale()
 
-        # Age players
-        for playerid, player in game.players.items():
-            player.age = player.get_age()
-
         # Initiate first sponsorship offer
         if (game.date, game.month) == (4, 8):
             events.update_sponsorship()

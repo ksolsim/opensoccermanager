@@ -91,7 +91,7 @@ class Negotiation:
         self.status = 0
         self.timeout = 0
         self.transfer_type = 0
-        self.club = 0
+        self.club = None
         self.date = "%i/%i/%i" % (game.year, game.month, game.date)
 
     def enquiry_response(self):

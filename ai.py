@@ -642,7 +642,9 @@ def renew_contract():
                     wage = calculator.wage(playerid)
                     player.wage = calculator.wage_rounder(wage)
 
-                    if player.age < 33:
+                    age = player.get_age()
+
+                    if age < 33:
                         contract = random.randint(2, 4)
                     else:
                         contract = random.randint(1, 3)
@@ -712,8 +714,10 @@ def loan_list():
                 skills = player.skills()
                 score[playerid] = sum(skills) * random.randint(1, 3)
 
-                if player.age < 24:
-                    score[playerid] += 24 - player.age * player.age
+                age = player.get_age()
+
+                if age < 24:
+                    score[playerid] += 24 - age * age
 
                 average += score[playerid] / count
 

@@ -191,7 +191,7 @@ def update_contracts():
                 if player.contract == 0:
                     # Remove player from squad
                     game.clubs[player.club].squad.remove(key)
-                    player.club = 0
+                    player.club = None
 
                     # Cancel in progress negotiations for player
                     delete = False
@@ -612,10 +612,7 @@ def reset_accounts():
 
 def end_of_season():
     '''
-    Process end of season events, particularly clearing standings, regen
-    of fixtures, clear results, player information, etc.
-
-    Also pay out prize money for finish on previous season.
+    Process end of season events, and reset data for the following season.
     '''
     dialogs.end_of_season()
 

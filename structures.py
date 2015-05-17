@@ -94,10 +94,10 @@ class Player:
         '''
         Return the club name, or none if uncontracted.
         '''
-        if self.club == 0:
-            club = ""
-        else:
+        if self.club:
             club = game.clubs[self.club].name
+        else:
+            club = ""
 
         return club
 

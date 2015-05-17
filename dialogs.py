@@ -105,13 +105,15 @@ def renew_player_contract(playerid):
     wage = wage * 1.1
     leaguewin, leaguerunnerup, winbonus, goalbonus = calculator.bonus(wage)
 
-    if player.age < 25:
+    age = player.get_age()
+
+    if age < 25:
         contract = 5
-    elif player.age < 29:
+    elif age < 29:
         contract = 4
-    elif player.age < 33:
+    elif age < 33:
         contract = 3
-    elif player.age < 35:
+    elif age < 35:
         contract = 2
     else:
         contract = 1
@@ -308,9 +310,9 @@ def player_info(playerid):
     grid2.attach(scrolledwindow, 0, 0, 1, 1)
 
     player = game.players[playerid]
-    club = game.clubs[player.club].name
+    club = player.get_club()
     season = "%i/%i" % (game.year, game.year + 1)
-    games = "%i/%i" % (player.appearances, player.substitute)
+    games = "%i (%i)" % (player.appearances, player.substitute)
 
     liststore = Gtk.ListStore(str, str, str, int, int, int)
     liststore.append([season,

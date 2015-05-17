@@ -48,7 +48,7 @@ class Negotiation:
         self.status = 0
         self.timeout = random.randint(1, 4)
         self.transfer_type = 0
-        self.club = 0
+        self.club = None
         self.date = "%i/%i/%i" % (game.year, game.month, game.date)
 
     def enquiry_initiate(self):
@@ -489,7 +489,7 @@ class Negotiation:
 class Loan:
     def __init__(self):
         self.playerid = 0
-        self.parent_club = 0
+        self.parent_club = None
         self.period = 0
 
     def update(self):

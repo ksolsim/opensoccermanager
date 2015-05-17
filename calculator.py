@@ -27,7 +27,7 @@ def value(playerid):
     player = game.players[playerid]
 
     position = player.position
-    age = player.age
+    age = player.get_age()
     skills = (player.keeping,
               player.tackling,
               player.passing,

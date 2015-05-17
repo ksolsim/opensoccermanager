@@ -401,10 +401,9 @@ class Players(Gtk.Grid):
         return show
 
     def default_sort(self, treesortable, treeiter1, treeiter2, destroy):
-        if treesortable[treeiter1][16] < treesortable[treeiter2][16]:
-            return True
-        else:
-            return False
+        state = treesortable[treeiter1][16] < treesortable[treeiter2][16]
+
+        return state
 
     def view_changed(self, combobox):
         index = int(combobox.get_active_id())
@@ -421,7 +420,7 @@ class Players(Gtk.Grid):
 
         for playerid, player in data.items():
             name = player.get_name()
-            age = player.age
+            age = player.get_age()
             clubid = player.club
             club = player.get_club()
             nationid = player.nationality
@@ -607,7 +606,7 @@ class Negotiations(Gtk.Grid):
             transfer = ("Purchase", "Loan", "Free Transfer")[negotiation.transfer_type]
 
             if negotiation.club == game.teamid:
-                club = display.club(player.club)
+                club = player.get_club()
                 status = constants.transfer_inbound_status[negotiation.status]
 
                 self.liststoreInbound.append([negotiationid,
@@ -712,7 +711,7 @@ class Shortlist(Gtk.Grid):
                 self.buttonBuy.set_sensitive(True)
                 self.buttonLoan.set_sensitive(True)
 
-                if player.club == 0:
+                if not player.club:
                     self.buttonLoan.set_sensitive(False)
 
             self.buttonRemove.set_sensitive(True)
@@ -735,15 +734,15 @@ class Shortlist(Gtk.Grid):
         model, treeiter = self.treeselection.get_selected()
 
         playerid = model[treeiter][0]
-        player = game.players[playerid]
 
         status = scout.individual(playerid)
-        name = player.get_name(mode=1)
+        name = game.players[playerid].get_name(mode=1)
 
         dialogs.scout_report(name, status)
 
     def make_transfer_offer(self, menuitem, transfer_type):
         model, treeiter = self.treeselection.get_selected()
+
         playerid = model[treeiter][0]
 
         # Set to free transfer if player has no club
@@ -758,6 +757,7 @@ class Shortlist(Gtk.Grid):
         for playerid in game.clubs[game.teamid].shortlist:
             player = game.players[playerid]
             name = player.get_name()
+            age = player.get_age()
             club = player.get_club()
             nation = player.get_nationality()
             value = player.get_value()
@@ -765,7 +765,7 @@ class Shortlist(Gtk.Grid):
 
             self.liststorePlayers.append([playerid,
                                           name,
-                                          player.age,
+                                          age,
                                           club,
                                           nation,
                                           player.position,

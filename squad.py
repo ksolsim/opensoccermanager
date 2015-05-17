@@ -564,6 +564,7 @@ class Squad(Gtk.Grid):
         Initiate release of selected player from the club.
         '''
         model, treeiter = self.treeselection.get_selected()
+
         playerid = model[treeiter][0]
         player = game.players[playerid]
 
@@ -573,18 +574,18 @@ class Squad(Gtk.Grid):
         if dialogs.release_player(name, cost):
             club = game.clubs[game.teamid]
 
-            if club.accounts.request(cost, "playerwage"):
-                club.accounts.withdraw(cost, "playerwage")
+            if club.accounts.request(amount=cost):
+                club.accounts.withdraw(amount=cost, category="playerwage")
 
-                player.club = 0
+                player.club = None
                 club.squad.remove(playerid)
 
                 self.populate_data()
 
     def extend_loan(self, menuitem):
         model, treeiter = self.treeselection.get_selected()
+
         playerid = model[treeiter][0]
-        player = game.players[playerid]
 
         game.loans[playerid].extend_loan()
 
@@ -613,11 +614,8 @@ class Squad(Gtk.Grid):
         playerid = model[treeiter][0]
         player = game.players[playerid]
 
-        transfer = player.transfer[0]
-        loan = player.transfer[1]
-
         if index == 0:
-            player.transfer[0] = not transfer
+            player.transfer[0] = not player.transfer[0]
 
             # Decrease morale
             if player.transfer[0]:
@@ -625,7 +623,7 @@ class Squad(Gtk.Grid):
                 evaluation.morale(playerid, value)
                 player.not_for_sale = False
         elif index == 1:
-            player.transfer[1] = not loan
+            player.transfer[1] = not player.transfer[1]
 
     def not_for_sale(self, menuitem):
         model, treeiter = self.treeselection.get_selected()

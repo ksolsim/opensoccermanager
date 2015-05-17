@@ -292,8 +292,6 @@ def open_file(filename):
         player.red_cards = item[43]
         player.rating = []
 
-        player.age = player.get_age()
-
     # Squad
     for item in db.importer("squad"):
         clubid = item[0]

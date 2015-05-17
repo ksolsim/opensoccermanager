@@ -40,6 +40,9 @@ def format_position(value):
 
 
 def top_scorer():
+    '''
+    Return top scoring player and number of goals scored.
+    '''
     top = [0, 0]
 
     for playerid, player in game.players.items():
@@ -51,6 +54,9 @@ def top_scorer():
 
 
 def top_assister():
+    '''
+    Return top assisting player and number of assists provided.
+    '''
     top = [0, 0]
 
     for playerid, player in game.players.items():
@@ -139,12 +145,12 @@ def club(clubid):
     '''
     Return club name for the specified id or nothing when player is unattached.
     '''
-    if clubid == 0:
-        text = ""
+    if clubid:
+        club = game.clubs[clubid].name
     else:
-        text = game.clubs[clubid].name
+        club = ""
 
-    return text
+    return club
 
 
 def season():
