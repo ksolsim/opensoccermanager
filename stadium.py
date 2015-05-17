@@ -20,10 +20,9 @@ from gi.repository import Gtk
 
 import calculator
 import constants
-import game
-import money
 import dialogs
 import display
+import game
 import widgets
 
 

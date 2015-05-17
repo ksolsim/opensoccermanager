@@ -19,9 +19,7 @@
 import math
 import random
 
-import accounts
 import calculator
-import dialogs
 import game
 import news
 

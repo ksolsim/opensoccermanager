@@ -19,7 +19,6 @@
 from gi.repository import Gtk
 import random
 
-import accounts
 import dialogs
 import display
 import game

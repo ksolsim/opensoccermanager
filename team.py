@@ -17,13 +17,10 @@
 
 
 from gi.repository import Gtk
-import random
 
 import constants
-import dialogs
 import display
 import game
-import money
 import widgets
 
 

@@ -21,7 +21,6 @@ import os
 import constants
 import database
 import display
-import events
 import game
 import resources
 import staff

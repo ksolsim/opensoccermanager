@@ -30,9 +30,6 @@ import events
 import filters
 import game
 import menu
-import money
-import structures
-import transfer
 import widgets
 
 

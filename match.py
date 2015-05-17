@@ -21,7 +21,6 @@ import random
 
 import ai
 import constants
-import display
 import events
 import game
 import money

@@ -21,7 +21,6 @@ import random
 import calculator
 import constants
 import game
-import money
 
 
 def season_tickets():

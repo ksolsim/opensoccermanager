@@ -19,7 +19,6 @@
 from gi.repository import Gtk
 
 import game
-import display
 import widgets
 
 

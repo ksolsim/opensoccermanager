@@ -24,9 +24,7 @@ import constants
 import dialogs
 import display
 import game
-import money
 import news
-import structures
 import widgets
 
 

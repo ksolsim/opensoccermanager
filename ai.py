@@ -21,10 +21,8 @@ import random
 
 import calculator
 import constants
-import display
 import evaluation
 import game
-import money
 import news
 import structures
 

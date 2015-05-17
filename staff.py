@@ -22,9 +22,7 @@ import string
 import constants
 import dialogs
 import game
-import money
 import news
-import structures
 
 
 class Staff:

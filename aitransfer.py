@@ -22,8 +22,6 @@ import random
 import constants
 import display
 import game
-import money
-import transfer
 
 
 def identify():
