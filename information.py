@@ -516,16 +516,7 @@ class Standings(Gtk.Grid):
     def run(self):
         self.liststoreStandings.clear()
 
-        standings = display.sorted_standings()
-
-        for item in standings:
-            club = game.clubs[item[0]]
-
-            form = "".join(club.form[-6:])
-
-            item = list(item)
-            item.append(form)
-
+        for item in game.standings.get_data():
             self.liststoreStandings.append(item)
 
         self.show_all()
@@ -909,7 +900,9 @@ class Statistics(Gtk.Grid):
         self.show_all()
 
         self.liststoreRecordPrevious.clear()
-        [self.liststoreRecordPrevious.append(item) for item in game.record[1]]
+
+        for item in game.record[1]:
+            self.liststoreRecordPrevious.append(item)
 
         self.liststoreRecordCurrent.clear()
         self.liststoreRecordCurrent.insert(0, game.record[0])

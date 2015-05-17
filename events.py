@@ -196,7 +196,7 @@ def update_contracts():
                     # Cancel in progress negotiations for player
                     delete = False
 
-                    for negotiationid, negotiation in game.negotiations.items():
+                    for negotiation in game.negotiations.values():
                         if negotiation.playerid == key:
                             delete = True
 
@@ -242,20 +242,22 @@ def update_sponsorship():
     Each week, the timeout decreases again, and if at 0, the offer is
     withdrawn.
     '''
-    if game.clubs[game.teamid].sponsor_status == 0:
+    club = game.clubs[game.teamid]
+
+    if club.sponsor_status == 0:
         if game.sponsor_timeout == 0:
-            game.clubs[game.teamid].sponsor_status = 1
-            game.clubs[game.teamid].sponsor_offer = generate_sponsor(game.companies)
+            club.sponsor_status = 1
+            club.sponsor_offer = generate_sponsor(game.companies)
 
             news.publish("BS01")
             game.sponsor_timeout = random.randint(4, 6)
         elif game.sponsor_timeout > 0:
             game.sponsor_timeout -= 1
-    elif game.clubs[game.teamid].sponsor_status == 1:
+    elif club.sponsor_status == 1:
         if game.sponsor_timeout > 0:
             game.sponsor_timeout -= 1
         elif game.sponsor_timeout == 0:
-            game.clubs[game.teamid].sponsor_status = 0
+            club.sponsor_status = 0
 
             news.publish("BS03")
             game.sponsor_timeout = random.randint(4, 6)
@@ -701,7 +703,7 @@ def end_of_season():
 
     # Pay out on prize money for previous season
     prize_money = money.prize_money(position)
-    position = display.format_position(position)
+    position = game.standings.format_position(position)
 
     game.clubs[game.teamid].accounts.deposit(amount=prize_money, category="prize")
     amount = display.currency(prize_money)
@@ -733,10 +735,11 @@ def refresh_staff():
 
 
 def update_records():
-    position = display.find_position(game.teamid)
+    position = game.standings.find_position(game.teamid)
+    position = display.format_position(position)
     season = display.season()
 
-    details = game.standings[game.teamid]
+    details = game.standings.clubs[game.teamid]
 
     game.record[0] = ["%s" % (season),
                       details.played,

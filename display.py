@@ -16,20 +16,16 @@
 #  OpenSoccerManager.  If not, see <http://www.gnu.org/licenses/>.
 
 
-import operator
 import statistics
 
-import game
-import constants
 import calculator
+import constants
+import game
 
 
 def format_position(value):
     '''
     Format position with ordinal for display to player.
-
-    * Will clearly cause problems if league table is longer than 20
-    teams, e.g. 21th, 32th. Needs to be fixed.
     '''
     if value == 1:
         output = "%ist" % (value)
@@ -41,62 +37,6 @@ def format_position(value):
         output = "%ith" % (value)
 
     return output
-
-
-def sorted_standings():
-    standings = []
-
-    for clubid, details in game.standings.items():
-        details = (clubid,
-                   game.clubs[clubid].name,
-                   details.played,
-                   details.wins,
-                   details.draws,
-                   details.losses,
-                   details.goals_for,
-                   details.goals_against,
-                   details.goal_difference,
-                   details.points
-                  )
-        standings.append(details)
-
-    if game.eventindex > 0:
-        standings = sorted(standings,
-                           key=operator.itemgetter(9, 8, 6, 7),
-                           reverse=True)
-    else:
-        standings = sorted(standings,
-                           key=operator.itemgetter(1))
-
-    return standings
-
-
-def find_champion():
-    '''
-    Returns clubid of the team at the top of the league.
-    '''
-    standings = sorted_standings()
-    champion = standings[0][0]
-
-    return champion
-
-
-def find_position(teamid, ordinal=True):
-    '''
-    Returns the position in standings of specified club.
-    '''
-    standings = sorted_standings()
-
-    position = 0
-
-    for count, item in enumerate(standings, start=1):
-        if item[0] == teamid:
-            position = count
-
-    if ordinal:
-        position = format_position(position)
-
-    return position
 
 
 def top_scorer():
@@ -205,18 +145,6 @@ def club(clubid):
         text = game.clubs[clubid].name
 
     return text
-
-
-def rating(player):
-    '''
-    Display the average player rating.
-    '''
-    if player.rating != []:
-        rating = "%.1f" % (statistics.mean(player.rating))
-    else:
-        rating = "0.0"
-
-    return rating
 
 
 def season():

@@ -24,7 +24,6 @@ import constants
 import display
 import events
 import game
-import league
 import money
 import news
 import sales
@@ -382,7 +381,7 @@ class Match(Gtk.Grid):
                   self.team2.teamid)
 
         # Standings
-        league.update(result)
+        game.standings.update_item(result)
         game.results[game.fixturesindex].append(result)
 
         events.increment_referee(self.refereeid, airesult.yellows, airesult.reds)
@@ -457,7 +456,7 @@ class Match(Gtk.Grid):
         if game.televised[game.fixturesindex] == game.teamid:
             reputation = game.clubs[game.teamid].reputation
             amount = reputation * 3 * random.randint(950, 1050)
-            game.clubs[game.teamid].accounts.deposit(amount=amount, category=television)
+            game.clubs[game.teamid].accounts.deposit(amount=amount, category="television")
 
         # Matchday ticket sales
         if self.team1.teamid == game.teamid:
@@ -496,7 +495,7 @@ class Match(Gtk.Grid):
 
                 score = club1.teamid, airesult.final_score[0], airesult.final_score[1], club2.teamid
 
-                league.update(score)
+                game.standings.update_item(score)
                 game.results[game.fixturesindex].append(score)
 
                 # Events

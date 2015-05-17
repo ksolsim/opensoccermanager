@@ -996,7 +996,7 @@ def end_of_season():
     grid.set_column_spacing(5)
     dialog.vbox.add(grid)
 
-    clubid = display.find_champion()
+    clubid = game.standings.find_champion()
     champion = game.clubs[clubid].name
 
     label = widgets.AlignedLabel("League Champion")
@@ -1205,7 +1205,8 @@ class Opposition(Gtk.Dialog):
     def update_data(self, clubid):
         club = game.clubs[clubid]
 
-        position = display.find_position(clubid)
+        position = game.standings.find_position(clubid)
+        position = display.format_position(position)
 
         self.labelManager.set_label(club.manager)
         self.labelPosition.set_label(position)

@@ -71,7 +71,7 @@ def season_tickets():
 
     total = sales + box_sales
 
-    club.accounts.deposit(total, "tickets")
+    club.accounts.deposit(amount=total, category="tickets")
 
 
 def matchday_tickets(attendance):
@@ -119,7 +119,7 @@ def matchday_tickets(attendance):
     available = (percentage * 0.01) * capacity
     amount += club.tickets[12] * available
 
-    club.accounts.deposit(total, "tickets")
+    club.accounts.deposit(amount=amount, category="tickets")
 
 
 def merchandise(attendance):
@@ -144,8 +144,8 @@ def merchandise(attendance):
 
         club.sales[0].append([sales, income, profit])
 
-        club.accounts.deposit(total, "merchandise")
-        club.accounts.withdraw(cost, "merchandise")
+        club.accounts.deposit(amount=income, category="merchandise")
+        club.accounts.withdraw(amount=cost, category="merchandise")
 
 
 def catering(attendance):
@@ -170,5 +170,5 @@ def catering(attendance):
 
         club.sales[1].append([sales, income, profit])
 
-        club.accounts.deposit(total, "catering")
-        club.accounts.withdraw(cost, "catering")
+        club.accounts.deposit(amount=income, category="catering")
+        club.accounts.withdraw(amount=cost, category="catering")

@@ -426,7 +426,6 @@ class Players(Gtk.Grid):
             club = player.get_club()
             nationid = player.nationality
             nation = player.get_nationality()
-            position = player.position
             display_value = player.get_value()
             display_wage = player.get_wage()
             display_contract = player.get_contract()
@@ -434,7 +433,7 @@ class Players(Gtk.Grid):
             loan_list = player.transfer[1]
             appearances = "%i (%i)" % (player.appearances, player.substitute)
             cards = "%i/%i" % (player.yellow_cards, player.red_cards)
-            rating = display.rating(player)
+            rating = player.get_rating()
 
             self.liststorePlayers.append([playerid,
                                           name,
@@ -442,7 +441,7 @@ class Players(Gtk.Grid):
                                           clubid,
                                           club,
                                           nation,
-                                          position,
+                                          player.position,
                                           player.keeping,
                                           player.tackling,
                                           player.passing,

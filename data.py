@@ -57,7 +57,6 @@ def datainit():
     game.cards = {}
     game.transfers = []
 
-    game.standings = {}
     game.fixtures = []
     game.results = []
     game.record = [[], []]
@@ -68,6 +67,8 @@ def datainit():
     game.week = 1
 
     widgets.date.update()
+
+    game.standings = structures.Standings()
 
     # Import clubs and populate club data structure
     game.database.cursor.execute("SELECT * FROM club JOIN clubattr ON club.id = clubattr.club WHERE year = ?", (game.year,))
@@ -92,7 +93,7 @@ def datainit():
         club.base_attendance = (74000 / (40 - club.reputation)) * club.reputation
         club.base_attendance = int(club.base_attendance * 0.9)
 
-        game.standings[clubid] = structures.Standings()
+        game.standings.add_item(clubid)
 
     # Import players
     game.database.cursor.execute("SELECT * FROM player JOIN playerattr ON player.id = playerattr.player WHERE year = ?", (game.year,))

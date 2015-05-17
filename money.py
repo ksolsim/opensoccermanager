@@ -62,7 +62,7 @@ def pay_bonus():
                 total += game.players[playerid].wage
 
         bonus = total * (game.clubs[game.teamid].tactics[8] * 0.1)
-        withdraw(bonus, 12)
+        game.clubs[game.teamid].accounts.withdraw(bonus, "playerwage")
 
         game.clubs[game.teamid].tactics[8] = 0
 
@@ -74,7 +74,7 @@ def pay_win_bonus():
     for playerid in game.clubs[game.teamid].team.values():
         if playerid != 0:
             amount = game.players[playerid].bonus[2]
-            withdraw(amount, 12)
+            game.clubs[game.teamid].accounts.withdraw(amount, "playerwage")
 
 
 def prize_money(position):
@@ -116,7 +116,7 @@ def pay_loan():
 
         game.bankloan.amount -= game.bankloan.repayment
 
-        withdraw(game.bankloan.repayment, 16)
+        game.clubs[game.teamid].accounts.withdraw(game.bankloan.repayment, "loan")
 
 
 def calculate_overdraft():
@@ -137,7 +137,7 @@ def pay_overdraft():
         amount = charge + interest
 
         if amount > 0:
-            withdraw(amount, 17)
+            game.clubs[game.teamid].accounts.withdraw(amount, "overdraft")
 
     if game.overdraft.timeout > 0:
         game.overdraft.timeout -= 1
