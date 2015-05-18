@@ -22,8 +22,7 @@ proceed = True
 unreadnews = False          # Unread news notification
 
 # Audio
-music = False
-player = None
+music = None                # Music player object
 
 # Filters
 player_filter = (True, 0, (0, 20000000), (16, 50), 0, (0, 99), (0, 99), (0, 99), (0, 99), (0, 99), (0, 99), (0, 99), (0, 99), (0, 99))
@@ -62,7 +61,6 @@ loans = {}
 televised = []
 
 # Information
-standings = {}
 fixtures = []
 results = []
 record = [[], []]

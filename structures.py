@@ -24,6 +24,34 @@ import constants
 import game
 
 
+class Date:
+    def __init__(self):
+        self.year = 2014
+        self.month = 8
+        self.day = 1
+
+        self.week = 1
+
+    def get_string_date(self):
+        date = "%i/%i/%i" % (self.year, self.month, self.day)
+
+        return date
+
+    def get_date(self):
+        date = self.year, self.month, self.day
+
+        return date
+
+    def end_of_season(self):
+        self.month = 8
+        self.day = 1
+
+    def end_of_year(self):
+        self.year += 1
+        self.month = 1
+        self.day = 1
+
+
 class Player:
     def __init__(self):
         self.fitness = 100

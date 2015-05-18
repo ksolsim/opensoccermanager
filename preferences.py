@@ -62,7 +62,7 @@ class Preferences(ConfigParser):
         self.xposition = int(self["INTERFACE"]["XPosition"])
         self.yposition = int(self["INTERFACE"]["YPosition"])
 
-        game.music = self["AUDIO"].getboolean("PlayMusic")
+        game.music.playing = self["AUDIO"].getboolean("PlayMusic")
         game.data_location = self["SAVE"]["Data"]
         game.save_location = self["SAVE"]["Saves"]
         game.database_filename = self["DATABASE"]["Database"]

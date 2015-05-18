@@ -39,12 +39,14 @@ class Player(Gst.Pipeline):
         self.playbin.connect("about-to-finish", self.on_about_to_finish)
         self.add(self.playbin)
 
+        self.playing = False
+
     def play(self):
-        game.music = True
+        self.playing = True
         self.set_state(Gst.State.PLAYING)
 
     def stop(self):
-        game.music = False
+        self.playing = False
         self.set_state(Gst.State.NULL)
 
     def on_about_to_finish(self, playbin):

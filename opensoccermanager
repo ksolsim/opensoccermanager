@@ -164,8 +164,8 @@ class Window(Gtk.Window):
 
         self.show_all()
 
-        if game.music:
-            game.player.play()
+        if game.music.playing:
+            game.music.play()
 
 
 class ScreenMain(Gtk.Grid):
@@ -864,7 +864,7 @@ def exit_game(widget=None, event=None):
 game.database = database.DB()
 continuegame = ContinueGame()
 game.preferences = preferences.Preferences()
-game.player = music.Player()
+game.music = music.Player()
 
 widgets.date = widgets.Date()
 widgets.news = widgets.News()

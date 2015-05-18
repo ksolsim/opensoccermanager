@@ -383,7 +383,7 @@ class PreferencesDialog(Gtk.Dialog):
         self.vbox.add(grid)
 
         checkbuttonMusic = Gtk.CheckButton("Play (annoying) USM Music in Background")
-        checkbuttonMusic.set_active(game.music)
+        checkbuttonMusic.set_active(game.music.playing)
         checkbuttonMusic.connect("toggled", self.music_handler)
         grid.attach(checkbuttonMusic, 0, 0, 3, 1)
 
@@ -456,13 +456,13 @@ class PreferencesDialog(Gtk.Dialog):
         self.show_all()
 
     def music_handler(self, checkbutton):
-        if not game.music:
-            game.player.play()
-            game.music = True
+        if not game.music.playing:
+            game.music.play()
+            game.music.playing = True
             game.preferences["AUDIO"]["PlayMusic"] = "True"
-        elif game.music:
-            game.player.stop()
-            game.music = False
+        else:
+            game.music.stop()
+            game.music.playing = False
             game.preferences["AUDIO"]["PlayMusic"] = "False"
 
         game.preferences.writefile()
