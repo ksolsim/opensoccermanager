@@ -22,7 +22,7 @@ import os
 import game
 
 
-class DB:
+class Database:
     def __init__(self):
         self.connection = None
         self.cursor = None

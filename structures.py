@@ -507,7 +507,7 @@ class Referee:
 
 class Team:
     def __init__(self):
-        self.teamid = 0
+        self.teamid = None
         self.name = ""
         self.team = {}
         self.substitutes = {}

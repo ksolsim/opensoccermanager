@@ -18,10 +18,10 @@
 
 import random
 
-import game
-import widgets
 import constants
 import display
+import game
+import widgets
 
 
 def publish(newsid, **kwargs):

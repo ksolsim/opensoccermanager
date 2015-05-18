@@ -29,7 +29,7 @@ player_filter = (True, 0, (0, 20000000), (16, 50), 0, (0, 99), (0, 99), (0, 99),
 squad_filter = (0, False)
 comparison = [None, None]
 
-teamid = 0                  # Team that player has selected
+teamid = None               # Team that player has selected
 
 fixturespage = 0            # Page showing on fixtures page
 fixturesindex = 0           # Index number of which fixture the game is on

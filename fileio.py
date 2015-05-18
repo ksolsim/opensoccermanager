@@ -30,7 +30,7 @@ import transfer
 import widgets
 
 
-db = database.DB()
+db = database.Database()
 
 
 def open_file(filename):

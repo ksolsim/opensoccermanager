@@ -51,14 +51,14 @@ class OpenDialog(Gtk.FileChooserDialog):
         if self.run() == Gtk.ResponseType.OK:
             state = True
 
+        self.destroy()
+
         return state
 
     def response_handler(self, filechooserdialog, response):
         if response == Gtk.ResponseType.OK:
             filename = self.get_filename()
             fileio.open_file(filename)
-
-        self.hide()
 
 
 class SaveDialog(Gtk.FileChooserDialog):
@@ -184,8 +184,6 @@ class DeleteDialog(Gtk.Dialog):
         buttonbox.add(self.buttonDelete)
         self.vbox.add(buttonbox)
 
-        self.show_all()
-
     def load_directory(self, filechooser=None, location=None):
         self.liststore.clear()
 
@@ -212,6 +210,11 @@ class DeleteDialog(Gtk.Dialog):
 
         self.load_directory(location=game.save_location)
 
+    def display(self):
+        self.show_all()
+        self.run()
+        self.destroy()
+
 
 class AboutDialog(Gtk.AboutDialog):
     def __init__(self):
@@ -228,8 +231,12 @@ class AboutDialog(Gtk.AboutDialog):
         self.set_authors([version.AUTHORS])
         self.set_logo(icon)
 
+    def display(self):
+        self.run()
+        self.destroy()
 
-class HelpContent(Gtk.Dialog):
+
+class HelpDialog(Gtk.Dialog):
     def __init__(self):
         Gtk.Dialog.__init__(self)
         self.set_title("Help Contents")
@@ -266,6 +273,7 @@ class HelpContent(Gtk.Dialog):
 
         self.show_all()
         self.run()
+        self.destroy()
 
 
 class InfoDialog(Gtk.Dialog):
@@ -298,7 +306,10 @@ class InfoDialog(Gtk.Dialog):
         label = widgets.AlignedLabel("%i.%i.%i" % (gi.version_info))
         grid.attach(label, 1, 2, 1, 1)
 
+    def display(self):
         self.show_all()
+        self.run()
+        self.destroy()
 
 
 class NameChange(Gtk.Dialog):
@@ -453,8 +464,6 @@ class PreferencesDialog(Gtk.Dialog):
         buttonClear.connect("clicked", self.clear_names)
         buttonbox.add(buttonClear)
 
-        self.show_all()
-
     def music_handler(self, checkbutton):
         if not game.music.playing:
             game.music.play()
@@ -501,6 +510,11 @@ class PreferencesDialog(Gtk.Dialog):
     def clear_names(self, button):
         filepath = os.path.join(game.data_location, "users.txt")
         open(filepath, "w")
+
+    def display(self):
+        self.show_all()
+        self.run()
+        self.destroy()
 
 
 class ExitDialog(Gtk.MessageDialog):
