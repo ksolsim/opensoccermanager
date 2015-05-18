@@ -18,6 +18,7 @@
 
 import os
 
+import accounts
 import constants
 import database
 import display
@@ -195,7 +196,7 @@ def open_file(filename):
         club.coaches_hired = {}
         club.scouts_available = {}
         club.scouts_hired = {}
-        club.accounts = []
+        club.accounts = accounts.Accounts()
 
         if item[26]:
             merchandise = item[26].split(",")
@@ -216,16 +217,24 @@ def open_file(filename):
             club.sponsor_offer[1] = int(club.sponsor_offer[1])
             club.sponsor_offer[2] = int(club.sponsor_offer[2])
 
-        for value in item[32].split(","):
-            category = value.split("|")
-            category[0] = int(category[0])
-            category[1] = int(category[1])
-            club.accounts.append(category)
+        incomes = item[32].split(",")
 
-        club.form = item[33].split(",")
+        for count, (key, value) in enumerate(club.accounts.incomes.items()):
+            account = incomes[count].split("|")
+            value.week = int(account[0])
+            value.season = int(account[1])
 
-        if item[34] != "":
-            attendances = item[34].split(",")
+        expenditures = item[33].split(",")
+
+        for count, (key, value) in enumerate(club.accounts.expenditures.items()):
+            account = expenditures[count].split("|")
+            value.week = int(account[0])
+            value.season = int(account[1])
+
+        club.form = item[34].split(",")
+
+        if item[35] != "":
+            attendances = item[35].split(",")
             club.attendances = list(map(int, attendances))
         else:
             club.attendances = []
@@ -516,7 +525,7 @@ def save_file(filename):
     db.cursor.execute("CREATE TABLE main (teamid, year, month, date, week, eventindex, dateindex, dateprev, fixturesindex, fixturespage, televised)")
     db.cursor.execute("CREATE TABLE nation (id PRIMARY KEY, name, denonym)")
     db.cursor.execute("CREATE TABLE stadium (id PRIMARY KEY, name, capacity, condition, warnings, plots, northcapacity, northroof, northseating, westcapacity, westroof, westseating, southcapacity, southroof, southseating, eastcapacity, eastroof, eastseating, northwestcapacity, northeastcapacity, southwestcapacity, southeastcapacity, northwestroof, northeastroof, southwestroof, southeastroof, northwestseating, northeastseating, southwestseating, southeastseating, stall, programme, smallshop, largeshop, bar, burgerbar, cafe, restaurant)")
-    db.cursor.execute("CREATE TABLE club (id PRIMARY KEY, name, nickname, manager, chairman, stadium, reputation, tactics1, tactics2, tactics3, tactics4, tactics5, tactics6, tactics7, tactics8, tactics9, seasontickets, schooltickets, income, expenditure, balance, eval1, eval2, eval3, eval4, eval5, merchandise, catering, sponsorstatus, sponsoroffer, teamtraining, tickets, accounts, form, attendances)")
+    db.cursor.execute("CREATE TABLE club (id PRIMARY KEY, name, nickname, manager, chairman, stadium, reputation, tactics1, tactics2, tactics3, tactics4, tactics5, tactics6, tactics7, tactics8, tactics9, seasontickets, schooltickets, income, expenditure, balance, eval1, eval2, eval3, eval4, eval5, merchandise, catering, sponsorstatus, sponsoroffer, teamtraining, tickets, incomes, expenditures, form, attendances)")
     db.cursor.execute("CREATE TABLE player (id PRIMARY KEY, firstname, secondname, commonname, dateofbirth, club, nation, position, keeping, tackling, passing, shooting, heading, pace, stamina, ballcontrol, setpieces, fitness, training, trainingpoints, morale, injurytype, injuryperiod, suspensiontype, suspensionperiod, suspensionpoints, value, wage, bonus0, bonus1, bonus2, bonus3, contract, transfer1, transfer2, notforsale, appearances, substitute, missed, goals, assists, manofthematch, yellowcards, redcards, rating, FOREIGN KEY(club) REFERENCES club(id), FOREIGN KEY(nation) REFERENCES nation(id))")
     db.cursor.execute("CREATE TABLE squad (club, player, FOREIGN KEY(club) REFERENCES club(id), FOREIGN KEY(player) REFERENCES player(id))")
     db.cursor.execute("CREATE TABLE news (date, title, message, category, unread)")
@@ -613,12 +622,21 @@ def save_file(filename):
 
         new = ",".join(str(item) for item in accounts)
 
-        accounts = new
+        incomes = new
+
+        accounts = []
+
+        for item in club.accounts.expenditures.values():
+            accounts.append("%i|%i" % (item.week, item.season))
+
+        new = ",".join(str(item) for item in accounts)
+
+        expenditures = new
 
         form = ",".join(item for item in club.form)
         attendances = ",".join(str(item) for item in club.attendances)
 
-        db.cursor.execute("INSERT INTO club VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (clubid, club.name, club.nickname, club.manager, club.chairman, club.stadium, club.reputation, club.tactics[0], club.tactics[1], club.tactics[2], club.tactics[3], club.tactics[4], club.tactics[5], club.tactics[6], club.tactics[7], club.tactics[8], club.season_tickets, club.school_tickets, club.accounts.income, club.accounts.expenditure, club.accounts.balance, club.evaluation[0], club.evaluation[1], club.evaluation[2], club.evaluation[3], club.evaluation[4], merchandise, catering, club.sponsor_status, sponsor_offer, team_training, tickets, accounts, form, attendances))
+        db.cursor.execute("INSERT INTO club VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (clubid, club.name, club.nickname, club.manager, club.chairman, club.stadium, club.reputation, club.tactics[0], club.tactics[1], club.tactics[2], club.tactics[3], club.tactics[4], club.tactics[5], club.tactics[6], club.tactics[7], club.tactics[8], club.season_tickets, club.school_tickets, club.accounts.income, club.accounts.expenditure, club.accounts.balance, club.evaluation[0], club.evaluation[1], club.evaluation[2], club.evaluation[3], club.evaluation[4], merchandise, catering, club.sponsor_status, sponsor_offer, team_training, tickets, incomes, expenditures, form, attendances))
 
     for playerid, player in game.players.items():
         rating = ",".join(map(str, player.rating))
