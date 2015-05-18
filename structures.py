@@ -299,6 +299,8 @@ class Standings:
         '''
         self.clubs[clubid] = self.Item()
 
+        return self.clubs[clubid]
+
     def update_item(self, result):
         '''
         Update information for specified club.

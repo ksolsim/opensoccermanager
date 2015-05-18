@@ -96,3 +96,6 @@ class Accounts:
         '''
         for item in self.incomes.values():
             item.week = 0
+
+        for item in self.expenditures.values():
+            item.week = 0

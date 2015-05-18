@@ -51,7 +51,7 @@ def open_file(filename):
     game.results = []
     game.companies = []
     game.surnames = []
-    game.standings = {}
+    game.standings = structures.Standings()
     game.records = [[], []]
     constants.buildings = []
     constants.merchandise = []
@@ -322,16 +322,19 @@ def open_file(filename):
     # Standings
     for item in db.importer("standings"):
         item = list(map(int, item))
+
         clubid = item[0]
-        game.standings[clubid] = structures.Standings()
-        game.standings[clubid].played = item[1]
-        game.standings[clubid].wins = item[2]
-        game.standings[clubid].draws = item[3]
-        game.standings[clubid].losses = item[4]
-        game.standings[clubid].goals_for = item[5]
-        game.standings[clubid].goals_against = item[6]
-        game.standings[clubid].goal_difference = item[7]
-        game.standings[clubid].points = item[8]
+
+        standing = game.standings.add_item(clubid)
+
+        standing.played = item[1]
+        standing.wins = item[2]
+        standing.draws = item[3]
+        standing.losses = item[4]
+        standing.goals_for = item[5]
+        standing.goals_against = item[6]
+        standing.goal_difference = item[7]
+        standing.points = item[8]
 
     # Negotiations
     for item in db.importer("negotiations"):
@@ -463,8 +466,9 @@ def open_file(filename):
 
     # Records
     season = "%s/%s" % (game.year, game.year + 1)
-    position = display.find_position(game.teamid)
-    standings = game.standings[game.teamid]
+    position = game.standings.find_position(game.teamid)
+    position = display.format_position(position)
+    standings = game.standings.clubs[game.teamid]
     game.record[0] = [season,
                       standings.played,
                       standings.wins,
@@ -604,8 +608,8 @@ def save_file(filename):
 
         accounts = []
 
-        for item in club.accounts:
-            accounts.append("%i|%i" % (item[0], item[1]))
+        for item in club.accounts.incomes.values():
+            accounts.append("%i|%i" % (item.week, item.season))
 
         new = ",".join(str(item) for item in accounts)
 
@@ -614,7 +618,7 @@ def save_file(filename):
         form = ",".join(item for item in club.form)
         attendances = ",".join(str(item) for item in club.attendances)
 
-        db.cursor.execute("INSERT INTO club VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (clubid, club.name, club.nickname, club.manager, club.chairman, club.stadium, club.reputation, club.tactics[0], club.tactics[1], club.tactics[2], club.tactics[3], club.tactics[4], club.tactics[5], club.tactics[6], club.tactics[7], club.tactics[8], club.season_tickets, club.school_tickets, club.income, club.expenditure, club.balance, club.evaluation[0], club.evaluation[1], club.evaluation[2], club.evaluation[3], club.evaluation[4], merchandise, catering, club.sponsor_status, sponsor_offer, team_training, tickets, accounts, form, attendances))
+        db.cursor.execute("INSERT INTO club VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (clubid, club.name, club.nickname, club.manager, club.chairman, club.stadium, club.reputation, club.tactics[0], club.tactics[1], club.tactics[2], club.tactics[3], club.tactics[4], club.tactics[5], club.tactics[6], club.tactics[7], club.tactics[8], club.season_tickets, club.school_tickets, club.accounts.income, club.accounts.expenditure, club.accounts.balance, club.evaluation[0], club.evaluation[1], club.evaluation[2], club.evaluation[3], club.evaluation[4], merchandise, catering, club.sponsor_status, sponsor_offer, team_training, tickets, accounts, form, attendances))
 
     for playerid, player in game.players.items():
         rating = ",".join(map(str, player.rating))
@@ -641,8 +645,8 @@ def save_file(filename):
         for team in match:
             db.cursor.execute("INSERT INTO results VALUES (?, ?, ?, ?, ?)", (week, team[0], team[1], team[2], team[3]))
 
-    for clubid, item in game.standings.items():
-        db.cursor.execute("INSERT INTO standings VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", (clubid, item.played, item.wins, item.draws, item.losses, item.goals_for, item.goals_against, item.goal_difference, item.points))
+    for item in game.standings.get_data():
+        db.cursor.execute("INSERT INTO standings VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", (item[0], item[2], item[3], item[4], item[5], item[6], item[7], item[8], item[9]))
 
     for refereeid, referee in game.referees.items():
         db.cursor.execute("INSERT INTO referee VALUES (?, ?, ?, ?, ?, ?)", (refereeid, referee.name, referee.matches, referee.fouls, referee.yellows, referee.reds))
