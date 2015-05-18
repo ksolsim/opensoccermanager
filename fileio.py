@@ -64,11 +64,13 @@ def open_file(filename):
     db.cursor.execute("SELECT * FROM main")
     data = db.cursor.fetchone()
 
+    game.date = structures.Date()
+
     game.teamid = int(data[0])
-    game.year = int(data[1])
-    game.month = int(data[2])
-    game.date = int(data[3])
-    game.week = int(data[4])
+    game.date.year = int(data[1])
+    game.date.month = int(data[2])
+    game.date.day = int(data[3])
+    game.date.week = int(data[4])
     game.eventindex = int(data[5])
     game.dateindex = int(data[6])
     game.dateprev = data[7]
@@ -474,7 +476,7 @@ def open_file(filename):
         club.programmes[1].append(item)
 
     # Records
-    season = "%s/%s" % (game.year, game.year + 1)
+    season = game.date.get_season()
     position = game.standings.find_position(game.teamid)
     position = display.format_position(position)
     standings = game.standings.clubs[game.teamid]
@@ -574,7 +576,7 @@ def save_file(filename):
 
     televised = ",".join(str(item) for item in game.televised)
 
-    db.cursor.execute("INSERT INTO main VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (game.teamid, game.year, game.month, game.date, game.week, game.eventindex, game.dateindex, game.dateprev, game.fixturesindex, game.fixturespage, televised))
+    db.cursor.execute("INSERT INTO main VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (game.teamid, game.date.year, game.date.month, game.date.day, game.date.week, game.eventindex, game.dateindex, game.dateprev, game.fixturesindex, game.fixturespage, televised))
 
     for nationid, nation in game.nations.items():
         db.cursor.execute("INSERT INTO nation VALUES (?, ?, ?)", (nationid, nation.name, nation.denonym))

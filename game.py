@@ -31,11 +31,6 @@ comparison = [None, None]
 
 teamid = 0                  # Team that player has selected
 
-date = 1                    # Game day
-month = 8                   # Game month
-year = 2014                 # Game year
-week = 1                    # Week number
-
 fixturespage = 0            # Page showing on fixtures page
 fixturesindex = 0           # Index number of which fixture the game is on
 eventindex = 0              # Position in relation to events

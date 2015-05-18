@@ -151,12 +151,3 @@ def club(clubid):
         club = ""
 
     return club
-
-
-def season():
-    '''
-    Return the season in yyyy/yyyy format.
-    '''
-    season = "%i/%i" % (game.year, game.year + 1)
-
-    return season

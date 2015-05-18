@@ -617,10 +617,9 @@ def end_of_season():
     dialogs.end_of_season()
 
     # Reset and increment all values where appropriate
-    game.date = 1
-    game.month = 8
-    game.season = "%s/%s" % (game.year, game.year + 1)
-    game.week = 1
+    game.date.day = 1
+    game.date.month = 8
+    game.date.week = 1
 
     widgets.date.update()
 
@@ -734,11 +733,11 @@ def refresh_staff():
 def update_records():
     position = game.standings.find_position(game.teamid)
     position = display.format_position(position)
-    season = display.season()
+    season = game.date.get_season()
 
     details = game.standings.clubs[game.teamid]
 
-    game.record[0] = ["%s" % (season),
+    game.record[0] = [season,
                       details.played,
                       details.wins,
                       details.draws,

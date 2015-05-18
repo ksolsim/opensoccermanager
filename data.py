@@ -62,16 +62,16 @@ def datainit():
     game.record = [[], []]
     game.news = []
 
-    game.date = 1
-    game.month = 8
-    game.week = 1
+    game.date.day = 1
+    game.date.month = 8
+    game.date.week = 1
 
     widgets.date.update()
 
     game.standings = structures.Standings()
 
     # Import clubs and populate club data structure
-    game.database.cursor.execute("SELECT * FROM club JOIN clubattr ON club.id = clubattr.club WHERE year = ?", (game.year,))
+    game.database.cursor.execute("SELECT * FROM club JOIN clubattr ON club.id = clubattr.club WHERE year = ?", (game.date.year,))
     data = game.database.cursor.fetchall()
 
     for item in data:
@@ -96,7 +96,7 @@ def datainit():
         game.standings.add_item(clubid)
 
     # Import players
-    game.database.cursor.execute("SELECT * FROM player JOIN playerattr ON player.id = playerattr.player WHERE year = ?", (game.year,))
+    game.database.cursor.execute("SELECT * FROM player JOIN playerattr ON player.id = playerattr.player WHERE year = ?", (game.date.year,))
     data = game.database.cursor.fetchall()
 
     for item in data:
@@ -141,7 +141,7 @@ def datainit():
     adjacent = (0, 1), (2, 0), (3, 2), (1, 3), # DO NOT REORDER/CHANGE!
 
     # Import stadiums
-    game.database.cursor.execute("SELECT * FROM stadium JOIN stadiumattr, clubattr ON clubattr.stadium = stadium.id WHERE clubattr.year = ?", (game.year,))
+    game.database.cursor.execute("SELECT * FROM stadium JOIN stadiumattr, clubattr ON clubattr.stadium = stadium.id WHERE clubattr.year = ?", (game.date.year,))
     data = game.database.cursor.fetchall()
 
     for item in data:
@@ -236,7 +236,7 @@ def datainit():
     game.surnames = [name[0] for name in surnames]
 
     # Import referees
-    game.database.cursor.execute("SELECT id, name FROM referee WHERE year = ?", (game.year,))
+    game.database.cursor.execute("SELECT id, name FROM referee WHERE year = ?", (game.date.year,))
     data = game.database.cursor.fetchall()
 
     for item in data:

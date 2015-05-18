@@ -29,27 +29,54 @@ class Date:
         self.year = 2014
         self.month = 8
         self.day = 1
+        self.season = "2014/2015"
 
         self.week = 1
 
     def get_string_date(self):
+        '''
+        Return the current date as a YY/MM/DD string.
+        '''
         date = "%i/%i/%i" % (self.year, self.month, self.day)
 
         return date
 
     def get_date(self):
+        '''
+        Return the current date as a tuple.
+        '''
         date = self.year, self.month, self.day
 
         return date
 
     def end_of_season(self):
+        '''
+        Set the current date to the first day of a season.
+        '''
         self.month = 8
         self.day = 1
 
     def end_of_year(self):
+        '''
+        Update the date for the start of a new year.
+        '''
         self.year += 1
         self.month = 1
         self.day = 1
+
+    def get_season(self):
+        '''
+        Return the season as a string.
+        '''
+        season = "%i/%i" % (self.year, self.year + 1)
+
+        return season
+
+    def increment_season(self):
+        '''
+        Adjust the season attribute for new season.
+        '''
+        self.season = "%i/%i" % (self.year, self.year + 1)
 
 
 class Player:
@@ -111,9 +138,9 @@ class Player:
         Determine the player age relative to current in-game date.
         '''
         year, month, day = self.date_of_birth.split("-")
-        age = game.year - int(year)
+        age = game.date.year - int(year)
 
-        if (game.month, game.date) < (int(month), int(day)):
+        if (game.date.month, game.date.day) < (int(month), int(day)):
             age -= 1
 
         return age

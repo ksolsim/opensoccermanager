@@ -47,7 +47,7 @@ class Negotiation:
         self.timeout = random.randint(1, 4)
         self.transfer_type = 0
         self.club = None
-        self.date = "%i/%i/%i" % (game.year, game.month, game.date)
+        self.date = game.date.get_string_date()
 
     def enquiry_initiate(self):
         '''
@@ -470,7 +470,7 @@ class Negotiation:
             fee = "Free Transfer"
 
         club = old_club
-        season = "%i/%i" % (game.year, game.year + 1)
+        season = game.date.get_season()
         games = "%i/%i" % (player.appearances, player.substitute)
 
         game.transfers.append([name, old_club, new_club, fee])

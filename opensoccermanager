@@ -50,6 +50,7 @@ import sales
 import squad
 import stadium
 import staff
+import structures
 import team
 import training
 import transfer
@@ -439,7 +440,7 @@ class ScreenDetails(Gtk.Grid):
 
     def continue_button_clicked(self, button):
         active = self.comboboxYear.get_active()
-        game.year = int(self.liststoreYears[active][0])
+        game.date.year = int(self.liststoreYears[active][0])
 
         # Get club ID number from combobox
         treeiter = self.comboboxClub.get_active_iter()
@@ -646,10 +647,10 @@ class ContinueGame:
     def continue_game(self, widget):
         update_valid = True
 
-        current_date = "%i/%i" % (game.date, game.month)
+        current_date = "%i/%i" % (game.date.day, game.date.month)
 
-        if game.week == len(constants.dates):
-            if game.dateindex == len(constants.dates[game.week - 1]) - 1:
+        if game.date.week == len(constants.dates):
+            if game.dateindex == len(constants.dates[game.date.week - 1]) - 1:
                 # End of season events
                 events.end_of_season()
 
@@ -710,23 +711,22 @@ class ContinueGame:
             game.labelNextMatch.set_label("")
 
     def update_date(self):
-        game.date = constants.dates[game.week - 1][game.dateindex]
+        game.date.day = constants.dates[game.date.week - 1][game.dateindex]
 
-        if game.dateprev > game.date:
+        if game.dateprev > game.date.day:
             game.dateprev = 0
 
-            if game.month == 12:
-                game.month = 1
-                game.year += 1
+            if game.date.month == 12:
+                game.date.end_of_year()
             else:
-                game.month += 1
+                game.date.month += 1
 
-        if len(constants.dates[game.week - 1]) - 1 > game.dateindex:
+        if len(constants.dates[game.date.week - 1]) - 1 > game.dateindex:
             game.dateindex += 1
         else:
-            game.dateprev = constants.dates[game.week - 1][game.dateindex]
+            game.dateprev = constants.dates[game.date.week - 1][game.dateindex]
             game.dateindex = 0
-            game.week += 1
+            game.date.week += 1
 
             # Process end of week events
             events.reset_accounts()
@@ -755,11 +755,11 @@ class ContinueGame:
         staff.check_morale()
 
         # Initiate first sponsorship offer
-        if (game.date, game.month) == (4, 8):
+        if (game.date.day, game.date.month) == (4, 8):
             events.update_sponsorship()
 
         # Stop sale of season tickets and deposit earnings
-        if (game.date, game.month) == (16, 8):
+        if (game.date.day, game.date.month) == (16, 8):
             if game.season_tickets_status == 0:
                 game.season_tickets_status = 1
 
@@ -861,6 +861,7 @@ def exit_game(widget=None, event=None):
         return state
 
 
+game.date = structures.Date()
 game.database = database.DB()
 continuegame = ContinueGame()
 game.preferences = preferences.Preferences()

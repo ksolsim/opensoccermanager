@@ -76,7 +76,7 @@ class Date(Gtk.Label):
             infotip.nickname = "%s" % (club.nickname)
             infotip.chairman = "%s" % (club.chairman)
 
-            balance = display.currency(club.balance)
+            balance = display.currency(club.accounts.balance)
             infotip.balance = "%s" % (balance)
 
             infotip.show()
@@ -95,7 +95,7 @@ class Date(Gtk.Label):
         '''
         Update when called the current date shown in the date label.
         '''
-        self.set_label("%i/%i/%i" % (game.year, game.month, game.date))
+        self.set_label(game.date.get_string_date())
 
 
 class News(Gtk.Button):

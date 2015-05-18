@@ -28,7 +28,7 @@ def publish(newsid, **kwargs):
     keys = {"_CLUB_": game.clubs[game.teamid].name,
             "_USER_": game.clubs[game.teamid].manager,
             "_CHAIRMAN_": game.clubs[game.teamid].chairman,
-            "_SEASON_": display.season(),
+            "_SEASON_": game.date.get_season(),
             "_FIXTURE1_": kwargs.get("fixture1"),
             "_FIXTURE2_": kwargs.get("fixture2"),
             "_FIXTURE3_": kwargs.get("fixture3"),
@@ -48,7 +48,7 @@ def publish(newsid, **kwargs):
 
     item = random.choice(constants.news[newsid])
 
-    date = "%i/%i/%i" % (game.year, game.month, game.date)
+    date = game.date.get_string_date()
     title = item[0]
     message = item[1]
     category = int(item[2])
