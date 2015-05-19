@@ -25,6 +25,7 @@ import display
 import evaluation
 import game
 import money
+import transfer
 import widgets
 
 
@@ -205,12 +206,45 @@ def scout_report(player, status):
 
 
 def player_info(playerid):
+    def action_menu_popped(menubutton):
+        menu.show_all()
+
+    def recall_from_loan(menuitem):
+        loan = game.loans[playerid]
+
+        if loan.cancel_loan():
+            loan.end_loan()
+
     dialog = Gtk.Dialog()
     dialog.set_transient_for(game.window)
     dialog.set_border_width(5)
     dialog.set_resizable(False)
     dialog.set_title("Player Information")
     dialog.add_button("_Close", Gtk.ResponseType.CLOSE)
+    dialog.vbox.set_spacing(5)
+
+    grid = Gtk.Grid()
+    dialog.vbox.add(grid)
+
+    player = game.players[playerid]
+    name = player.get_name(mode=1)
+
+    label = widgets.AlignedLabel()
+    label.set_label(name)
+    label.set_hexpand(True)
+    grid.attach(label, 0, 0, 1, 1)
+
+    if player.club == game.teamid:
+        menu = Gtk.Menu()
+        menuitem = widgets.MenuItem("_Recall From Loan")
+        menuitem.set_sensitive(playerid in game.loans.keys())
+        menuitem.connect("activate", recall_from_loan)
+        menu.append(menuitem)
+
+        menubutton = Gtk.MenuButton("Actions")
+        menubutton.set_popup(menu)
+        menubutton.connect("clicked", action_menu_popped)
+        grid.attach(menubutton, 1, 0, 1, 1)
 
     notebook = Gtk.Notebook()
     dialog.vbox.add(notebook)
