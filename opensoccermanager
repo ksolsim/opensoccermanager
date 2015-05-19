@@ -235,12 +235,9 @@ class ScreenMain(Gtk.Grid):
             game.window.screen_loader(game.active_screen_id)
             game.window.screenGame.run()
 
-        dialog.destroy()
-
     def delete_game_clicked(self, button):
         dialog = interface.DeleteDialog()
-        dialog.run()
-        dialog.destroy()
+        dialog.display()
 
     def editor_clicked(self, button):
         try:
@@ -252,12 +249,10 @@ class ScreenMain(Gtk.Grid):
     def preferences_dialog_clicked(self, button):
         dialog = interface.PreferencesDialog()
         dialog.display()
-        dialog.destroy()
 
     def information_button_clicked(self, button):
         dialog = interface.AboutDialog()
-        dialog.run()
-        dialog.destroy()
+        dialog.display()
 
 
 class ScreenDetails(Gtk.Grid):
