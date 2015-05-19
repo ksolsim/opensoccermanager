@@ -783,26 +783,34 @@ class InjSus(Gtk.Grid):
 
     def __init__(self):
         Gtk.Grid.__init__(self)
-        self.set_row_spacing(5)
         self.set_column_spacing(5)
+        self.set_column_homogeneous(True)
+
+        # Injuries
+        grid = Gtk.Grid()
+        grid.set_row_spacing(5)
+        self.attach(grid, 0, 0, 1, 1)
 
         label = widgets.AlignedLabel("<b>Injuries</b>")
         label.set_use_markup(True)
-        self.attach(label, 0, 0, 1, 1)
+        grid.attach(label, 0, 0, 1, 1)
 
         scrolledwindow = Gtk.ScrolledWindow()
         scrolledwindow.set_vexpand(True)
         scrolledwindow.set_hexpand(True)
-        self.attach(scrolledwindow, 0, 1, 1, 1)
+        grid.attach(scrolledwindow, 0, 1, 1, 1)
 
         overlay = Gtk.Overlay()
-        self.labelNoInjury = Gtk.Label("No players are currently injured.")
-        overlay.add_overlay(self.labelNoInjury)
+        self.labelNoInjuries = Gtk.Label("No players are currently injured.")
+        overlay.add_overlay(self.labelNoInjuries)
         scrolledwindow.add(overlay)
 
         self.liststoreInjuries = Gtk.ListStore(str, int, str, str)
+        treemodelsort = Gtk.TreeModelSort(self.liststoreInjuries)
+        treemodelsort.set_sort_column_id(0, Gtk.SortType.ASCENDING)
+
         self.treeviewInjuries = Gtk.TreeView()
-        self.treeviewInjuries.set_model(self.liststoreInjuries)
+        self.treeviewInjuries.set_model(treemodelsort)
         self.treeviewInjuries.set_sensitive(False)
         self.treeviewInjuries.set_enable_search(False)
         self.treeviewInjuries.set_search_column(-1)
@@ -819,14 +827,35 @@ class InjSus(Gtk.Grid):
         treeviewcolumn = widgets.TreeViewColumn(title="Duration", column=3)
         self.treeviewInjuries.append_column(treeviewcolumn)
 
+        gridButton = Gtk.Grid()
+        grid.set_column_spacing(5)
+        grid.attach(gridButton, 0, 2, 1, 1)
+
+        label = Gtk.Label("Display")
+        gridButton.attach(label, 0, 0, 1, 1)
+        self.radiobuttonTeamInjured = Gtk.RadioButton()
+        self.radiobuttonTeamInjured.display = 0
+        self.radiobuttonTeamInjured.connect("toggled", self.injured_player_display)
+        gridButton.attach(self.radiobuttonTeamInjured, 1, 0, 1, 1)
+        radiobuttonAll = Gtk.RadioButton("Show All Players")
+        radiobuttonAll.join_group(self.radiobuttonTeamInjured)
+        radiobuttonAll.display = 1
+        radiobuttonAll.connect("toggled", self.injured_player_display)
+        gridButton.attach(radiobuttonAll, 2, 0, 1, 1)
+
+        # Suspensions
+        grid = Gtk.Grid()
+        grid.set_row_spacing(5)
+        self.attach(grid, 1, 0, 1, 1)
+
         label = widgets.AlignedLabel("<b>Suspensions</b>")
         label.set_use_markup(True)
-        self.attach(label, 1, 0, 1, 1)
+        grid.attach(label, 0, 0, 1, 1)
 
         scrolledwindow = Gtk.ScrolledWindow()
         scrolledwindow.set_vexpand(True)
         scrolledwindow.set_hexpand(True)
-        self.attach(scrolledwindow, 1, 1, 1, 1)
+        grid.attach(scrolledwindow, 0, 1, 1, 1)
 
         overlay = Gtk.Overlay()
         self.labelNoSuspensions = Gtk.Label("No players are currently suspended.")
@@ -834,8 +863,11 @@ class InjSus(Gtk.Grid):
         scrolledwindow.add(overlay)
 
         self.liststoreSuspensions = Gtk.ListStore(str, str, str)
+        treemodelsort = Gtk.TreeModelSort(self.liststoreSuspensions)
+        treemodelsort.set_sort_column_id(0, Gtk.SortType.ASCENDING)
+
         self.treeviewSuspensions = Gtk.TreeView()
-        self.treeviewSuspensions.set_model(self.liststoreSuspensions)
+        self.treeviewSuspensions.set_model(treemodelsort)
         self.treeviewSuspensions.set_sensitive(False)
         self.treeviewSuspensions.set_enable_search(False)
         self.treeviewSuspensions.set_search_column(-1)
@@ -850,9 +882,50 @@ class InjSus(Gtk.Grid):
         treeviewcolumn = widgets.TreeViewColumn(title="Duration", column=2)
         self.treeviewSuspensions.append_column(treeviewcolumn)
 
-    def run(self):
+        gridButton = Gtk.Grid()
+        grid.set_column_spacing(5)
+        grid.attach(gridButton, 0, 2, 1, 1)
+
+        label = Gtk.Label("Display")
+        gridButton.attach(label, 0, 0, 1, 1)
+        self.radiobuttonTeamSuspended = Gtk.RadioButton()
+        self.radiobuttonTeamSuspended.display = 0
+        self.radiobuttonTeamSuspended.connect("toggled", self.suspended_player_display)
+        gridButton.attach(self.radiobuttonTeamSuspended, 1, 0, 1, 1)
+        radiobuttonAll = Gtk.RadioButton("Show All Players")
+        radiobuttonAll.join_group(self.radiobuttonTeamSuspended)
+        radiobuttonAll.display = 1
+        radiobuttonAll.connect("toggled", self.suspended_player_display)
+        gridButton.attach(radiobuttonAll, 2, 0, 1, 1)
+
+    def injured_player_display(self, radiobutton):
         self.liststoreInjuries.clear()
+
+        if radiobutton.get_active():
+            if radiobutton.display == 0:
+                self.populate_team_injured_data()
+            else:
+                self.populate_all_injured_data()
+
+        state = len(self.liststoreInjuries) > 0
+        self.treeviewInjuries.set_sensitive(state)
+        self.labelNoInjuries.set_visible(not state)
+
+    def suspended_player_display(self, radiobutton):
         self.liststoreSuspensions.clear()
+
+        if radiobutton.get_active():
+            if radiobutton.display == 0:
+                self.populate_team_suspended_data()
+            else:
+                self.populate_all_suspended_data()
+
+        state = len(self.liststoreSuspensions) > 0
+        self.treeviewSuspensions.set_sensitive(state)
+        self.labelNoSuspensions.set_visible(not state)
+
+    def populate_team_injured_data(self):
+        self.liststoreInjuries.clear()
 
         for playerid in game.clubs[game.teamid].squad:
             player = game.players[playerid]
@@ -865,6 +938,32 @@ class InjSus(Gtk.Grid):
 
                 self.liststoreInjuries.append([name, fitness, injury, period])
 
+        state = len(self.liststoreInjuries) > 0
+        self.treeviewInjuries.set_sensitive(state)
+        self.labelNoInjuries.set_visible(not state)
+
+    def populate_all_injured_data(self):
+        self.liststoreInjuries.clear()
+
+        for player in game.players.values():
+            if player.injury_type != 0:
+                name = player.get_name(mode=1)
+                fitness = player.fitness
+                injury = constants.injuries[player.injury_type][0]
+                period = player.get_injury()
+
+                self.liststoreInjuries.append([name, fitness, injury, period])
+
+        state = len(self.liststoreInjuries) > 0
+        self.treeviewInjuries.set_sensitive(state)
+        self.labelNoInjuries.set_visible(not state)
+
+    def populate_team_suspended_data(self):
+        self.liststoreSuspensions.clear()
+
+        for playerid in game.clubs[game.teamid].squad:
+            player = game.players[playerid]
+
             if player.suspension_type != 0:
                 name = player.get_name(mode=1)
                 suspension = constants.suspensions[player.suspension_type][0]
@@ -872,12 +971,39 @@ class InjSus(Gtk.Grid):
 
                 self.liststoreSuspensions.append([name, suspension, period])
 
-        self.show_all()
+        state = len(self.liststoreSuspensions) > 0
+        self.treeviewSuspensions.set_sensitive(state)
+        self.labelNoSuspensions.set_visible(not state)
 
-        state = len(self.liststoreInjuries) > 0
-        self.treeviewInjuries.set_sensitive(state)
-        self.labelNoInjury.set_visible(not state)
+    def populate_all_suspended_data(self):
+        self.liststoreSuspensions.clear()
+
+        for player in game.players.values():
+            if player.suspension_type != 0:
+                name = player.get_name(mode=1)
+                suspension = constants.suspensions[player.suspension_type][0]
+                period = player.get_suspension()
+
+                self.liststoreSuspensions.append([name, suspension, period])
 
         state = len(self.liststoreSuspensions) > 0
         self.treeviewSuspensions.set_sensitive(state)
         self.labelNoSuspensions.set_visible(not state)
+
+    def run(self):
+        club = game.clubs[game.teamid].name
+
+        self.radiobuttonTeamInjured.set_label("Show Only %s Players" % (club))
+        self.radiobuttonTeamSuspended.set_label("Show Only %s Players" % (club))
+
+        self.show_all()
+
+        if self.radiobuttonTeamInjured.get_active():
+            self.populate_team_injured_data()
+        else:
+            self.populate_all_injured_data()
+
+        if self.radiobuttonTeamSuspended.get_active():
+            self.populate_team_suspended_data()
+        else:
+            self.populate_all_suspended_data()

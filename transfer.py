@@ -59,26 +59,38 @@ class Negotiation:
         name = player.get_name(mode=1)
         club = player.get_club()
 
-        messagedialog = Gtk.MessageDialog(type=Gtk.MessageType.QUESTION)
-        messagedialog.set_transient_for(game.window)
-        messagedialog.set_title("Transfer Offer")
-        messagedialog.add_button("_Cancel", Gtk.ResponseType.CANCEL)
-        messagedialog.add_button("_Approach", Gtk.ResponseType.OK)
-        messagedialog.set_default_response(Gtk.ResponseType.OK)
+        dialog = Gtk.MessageDialog()
+        dialog.set_transient_for(game.window)
+        dialog.set_title("Transfer Enquiry")
+        dialog.add_button("_Cancel", Gtk.ResponseType.CANCEL)
+        dialog.add_button("_Approach", Gtk.ResponseType.OK)
+        dialog.set_default_response(Gtk.ResponseType.OK)
 
-        if index == 0:
-            messagedialog.set_markup("Approach %s for the purchase of %s?" % (club, name))
-        elif index == 1:
-            messagedialog.set_markup("Approach %s for the loan of %s?" % (club, name))
-        elif index == 2:
-            messagedialog.set_markup("Approach %s for free transfer?" % (name))
+        infobar = Gtk.InfoBar()
+        infobar.set_message_type(Gtk.MessageType.WARNING)
+        dialog.get_message_area().add(infobar)
+
+        label = Gtk.Label("%s is currently injured. He is expected to be out for %i weeks." % (name, player.injury_period))
+        infobar.get_content_area().add(label)
+
+        if self.transfer_type == 0:
+            text = "Approach %s for the purchase of %s?" % (club, name)
+        elif self.transfer_type == 1:
+            text = "Approach %s for the loan of %s?" % (club, name)
+        elif self.transfer_type == 2:
+            text = "Approach %s for free transfer?" % (name)
+
+        dialog.set_markup(text)
+
+        visible = player.injury_period > 0
+        infobar.set_visible(visible)
 
         state = False
 
-        if messagedialog.run() == Gtk.ResponseType.OK:
+        if dialog.run() == Gtk.ResponseType.OK:
             state = True
 
-        messagedialog.destroy()
+        dialog.destroy()
 
         return state
 
@@ -617,53 +629,22 @@ def make_enquiry(playerid, transfer_type):
     '''
     for negotiation in game.negotiations.values():
         if playerid == negotiation.playerid:
-            dialogs.error(9)
+            if game.teamid == negotiation.club:
+                dialogs.error(9)
 
-            return
+                return
 
-    if enquiry_dialog(playerid, transfer_type):
-        negotiation = Negotiation()
-        negotiation.negotiationid = game.negotiationid
-        negotiation.playerid = playerid
-        negotiation.club = game.teamid
-        negotiation.transfer_type = transfer_type
+    negotiation = Negotiation()
+    negotiation.negotiationid = game.negotiationid
+    negotiation.playerid = playerid
+    negotiation.club = game.teamid
+    negotiation.transfer_type = transfer_type
+
+    if negotiation.enquiry_initiate():
         game.negotiations[game.negotiationid] = negotiation
 
         game.negotiationid += 1
         game.clubs[game.teamid].shortlist.add(playerid)
-
-
-def enquiry_dialog(playerid, index):
-    '''
-    Initiate transfer enquiry dialog for transfers, loans and free
-    transfers.
-    '''
-    player = game.players[playerid]
-    name = player.get_name(mode=1)
-    club = player.get_club()
-
-    messagedialog = Gtk.MessageDialog(type=Gtk.MessageType.QUESTION)
-    messagedialog.set_transient_for(game.window)
-    messagedialog.set_title("Transfer Offer")
-    messagedialog.add_button("_Cancel", Gtk.ResponseType.CANCEL)
-    messagedialog.add_button("_Approach", Gtk.ResponseType.OK)
-    messagedialog.set_default_response(Gtk.ResponseType.OK)
-
-    if index == 0:
-        messagedialog.set_markup("Approach %s for the purchase of %s?" % (club, name))
-    elif index == 1:
-        messagedialog.set_markup("Approach %s for the loan of %s?" % (club, name))
-    elif index == 2:
-        messagedialog.set_markup("Approach %s for free transfer?" % (name))
-
-    state = False
-
-    if messagedialog.run() == Gtk.ResponseType.OK:
-        state = True
-
-    messagedialog.destroy()
-
-    return state
 
 
 def check(negotiationid):

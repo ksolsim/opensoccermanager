@@ -251,7 +251,7 @@ class ScreenMain(Gtk.Grid):
 
     def preferences_dialog_clicked(self, button):
         dialog = interface.PreferencesDialog()
-        dialog.run()
+        dialog.display()
         dialog.destroy()
 
     def information_button_clicked(self, button):
