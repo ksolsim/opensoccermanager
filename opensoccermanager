@@ -561,15 +561,7 @@ class ScreenGame(Gtk.Grid):
         name_change = interface.NameChange()
 
         if name_change.display():
-            news = []
-
-            for item in game.news:
-                item[1] = item[1].replace(previous, club.manager)
-                item[2] = item[2].replace(previous, club.manager)
-
-                news.append(item)
-
-            game.news = news
+            game.news.set_manager_name(previous)
 
             game.window.screen_loader(game.active_screen_id)
 
@@ -687,7 +679,7 @@ class ContinueGame:
             game.proceed = True
 
         # Unread news status
-        if game.unreadnews:
+        if game.news.get_unread_count() > 0:
             widgets.news.show()
 
         # Display next match

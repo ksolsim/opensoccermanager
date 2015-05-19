@@ -24,47 +24,73 @@ import game
 import widgets
 
 
-def publish(newsid, **kwargs):
-    keys = {"_CLUB_": game.clubs[game.teamid].name,
-            "_USER_": game.clubs[game.teamid].manager,
-            "_CHAIRMAN_": game.clubs[game.teamid].chairman,
-            "_SEASON_": game.date.get_season(),
-            "_FIXTURE1_": kwargs.get("fixture1"),
-            "_FIXTURE2_": kwargs.get("fixture2"),
-            "_FIXTURE3_": kwargs.get("fixture3"),
-            "_WEEKS_": kwargs.get("weeks"),
-            "_PLAYER_": kwargs.get("player"),
-            "_TEAM_": kwargs.get("team"),
-            "_INJURY_": kwargs.get("injury"),
-            "_COACH_": kwargs.get("coach"),
-            "_SCOUT_": kwargs.get("scout"),
-            "_PERIOD_": kwargs.get("period"),
-            "_RESULT_": kwargs.get("result"),
-            "_AMOUNT_": kwargs.get("amount"),
-            "_POSITION_": kwargs.get("position"),
-            "_SUSPENSION_": kwargs.get("suspension"),
-            "_CARDS_": kwargs.get("cards"),
-           }
+class News:
+    class Article:
+        def __init__(self, newsid, kwargs):
+            item = random.choice(constants.news[newsid])
 
-    item = random.choice(constants.news[newsid])
+            self.date = game.date.get_string_date()
+            self.title = item[0]
+            self.message = item[1]
+            self.category = int(item[2])
+            self.unread = True
 
-    date = game.date.get_string_date()
-    title = item[0]
-    message = item[1]
-    category = int(item[2])
+            keys = {"_CLUB_": game.clubs[game.teamid].name,
+                    "_USER_": game.clubs[game.teamid].manager,
+                    "_CHAIRMAN_": game.clubs[game.teamid].chairman,
+                    "_SEASON_": game.date.get_season(),
+                    "_FIXTURE1_": kwargs.get("fixture1"),
+                    "_FIXTURE2_": kwargs.get("fixture2"),
+                    "_FIXTURE3_": kwargs.get("fixture3"),
+                    "_WEEKS_": kwargs.get("weeks"),
+                    "_PLAYER_": kwargs.get("player"),
+                    "_TEAM_": kwargs.get("team"),
+                    "_INJURY_": kwargs.get("injury"),
+                    "_COACH_": kwargs.get("coach"),
+                    "_SCOUT_": kwargs.get("scout"),
+                    "_PERIOD_": kwargs.get("period"),
+                    "_RESULT_": kwargs.get("result"),
+                    "_AMOUNT_": kwargs.get("amount"),
+                    "_POSITION_": kwargs.get("position"),
+                    "_SUSPENSION_": kwargs.get("suspension"),
+                    "_CARDS_": kwargs.get("cards"),
+                   }
 
-    for key, value in keys.items():
-        if value:
-            value = str(value)
-            title = title.replace(key, value)
-            message = message.replace(key, value)
+            for key, value in keys.items():
+                if value:
+                    value = str(value)
+                    self.title = self.title.replace(key, value)
+                    self.message = self.message.replace(key, value)
 
-    article = [date, title, message, category, True]
+    def __init__(self):
+        self.articles = {}
+        self.newsid = 1
 
-    # Add news item to club message list
-    game.news.insert(0, article)
+    def publish(self, newsid, **kwargs):
+        article = self.Article(newsid, kwargs)
+        article.newsid = self.newsid
 
-    # Set unread news flag to display notification
-    game.unreadnews = True
+        self.articles[self.newsid] = article
 
-    widgets.news.show()
+        widgets.news.show()
+
+        self.newsid += 1
+
+    def set_manager_name(self, previous):
+        new = game.clubs[game.teamid].manager
+
+        for article in self.articles.values():
+            article.title = article.title.replace(previous, new)
+            article.message = article.message.replace(previous, new)
+
+    def get_unread_count(self):
+        '''
+        Return the number of items which are set to an unread status.
+        '''
+        count = 0
+
+        for article in self.articles.values():
+            if article.unread:
+                count += 1
+
+        return count

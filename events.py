@@ -124,7 +124,7 @@ def injury():
             player.fitness -= random.randint(10, 30)
 
             if clubid == game.teamid:
-                news.publish("IN01", player=name, weeks=period, injury=injury[0])
+                game.news.publish("IN01", player=name, weeks=period, injury=injury[0])
 
     adjust_fitness()
 
@@ -162,7 +162,7 @@ def injury_period():
                     injury = constants.injuries[player.injury_type]
 
                     if player.club == game.teamid:
-                        news.publish("IN03", player=name, injury=injury[0])
+                        game.news.publish("IN03", player=name, injury=injury[0])
 
                     player.injury_type = 0
 
@@ -182,11 +182,11 @@ def update_contracts():
                 # Notify user about player contract ending
                 if player.club == game.teamid:
                     if player.contract == 12:
-                        news.publish("PC02", player=name, weeks=12)
+                        game.news.publish("PC02", player=name, weeks=12)
                     elif player.contract == 8:
-                        news.publish("PC02", player=name, weeks=8)
+                        game.news.publish("PC02", player=name, weeks=8)
                     elif player.contract == 4:
-                        news.publish("PC02", player=name, weeks=4)
+                        game.news.publish("PC02", player=name, weeks=4)
 
                 if player.contract == 0:
                     # Remove player from squad
@@ -205,12 +205,12 @@ def update_contracts():
 
                     # Notify user contract has ended
                     if player.club == game.teamid:
-                        news.publish("PC01", player=name)
+                        game.news.publish("PC01", player=name)
 
                 # Notify if shortlisted player contract ends
                 if key in game.clubs[game.teamid].shortlist:
                     if player.contract == 0:
-                        news.publish("SH01", player=name)
+                        game.news.publish("SH01", player=name)
 
     for club in game.clubs.values():
         for coachid, coach in club.coaches_hired.items():
@@ -218,20 +218,20 @@ def update_contracts():
                 coach.contract -= 1
 
                 if coach.contract == 0:
-                    news.publish("CC01", coach=coach.name)
+                    game.news.publish("CC01", coach=coach.name)
                     del game.clubs[game.teamid].coaches_hired[coachid]
                 elif coach.contract == 1:
-                    news.publish("CC02", coach=coach.name)
+                    game.news.publish("CC02", coach=coach.name)
 
         for scoutid, scout in club.scouts_hired.items():
             if scout.contract > 0:
                 scout.contract -= 1
 
                 if scout.contract == 0:
-                    news.publish("SC01", scout=scout.name)
+                    game.news.publish("SC01", scout=scout.name)
                     del game.clubs[game.teamid].scouts_hired[scoutid]
                 elif scout.contract == 1:
-                    news.publish("SC02", scout=scout.name)
+                    game.news.publish("SC02", scout=scout.name)
 
 
 def update_sponsorship():
@@ -249,7 +249,7 @@ def update_sponsorship():
             club.sponsor_status = 1
             club.sponsor_offer = generate_sponsor(game.companies)
 
-            news.publish("BS01")
+            game.news.publish("BS01")
             game.sponsor_timeout = random.randint(4, 6)
         elif game.sponsor_timeout > 0:
             game.sponsor_timeout -= 1
@@ -259,7 +259,7 @@ def update_sponsorship():
         elif game.sponsor_timeout == 0:
             club.sponsor_status = 0
 
-            news.publish("BS03")
+            game.news.publish("BS03")
             game.sponsor_timeout = random.randint(4, 6)
 
 
@@ -287,7 +287,7 @@ def update_advertising():
         club = game.clubs[game.teamid]
 
         if len(club.hoardings[1]) + len(club.programmes[1]) < 12:
-            news.publish("BS04")
+            game.news.publish("BS04")
 
         game.advertising_alert = random.randint(10, 16)
 
@@ -354,7 +354,7 @@ def team_training():
     if game.team_training_timeout > 0:
         game.team_training_timeout -= 1
     elif game.team_training_timeout == 0:
-        news.publish("TT02")
+        game.news.publish("TT02")
 
         game.team_training_timeout = 4
 
@@ -377,7 +377,7 @@ def team_training():
             for playerid in game.players.keys():
                 evaluation.morale(playerid, -5)
 
-            news.publish("TT04")
+            game.news.publish("TT04")
 
         if sunday > 0:
             game.team_training_alert = random.randint(12, 18)
@@ -385,7 +385,7 @@ def team_training():
             for playerid in game.players.keys():
                 evaluation.morale(playerid, -3)
 
-            news.publish("TT03")
+            game.news.publish("TT03")
     else:
         game.team_training_alert -= 1
 
@@ -597,7 +597,7 @@ def expectation():
     for idlist in positions:
         for clubid in idlist:
             if clubid == game.teamid:
-                news.publish(publish[category], chairman=game.clubs[game.teamid].chairman)
+                game.news.publish(publish[category], chairman=game.clubs[game.teamid].chairman)
 
         category += 1
 
@@ -703,7 +703,7 @@ def end_of_season():
 
     game.clubs[game.teamid].accounts.deposit(amount=prize_money, category="prize")
     amount = display.currency(prize_money)
-    news.publish("PZ01", amount=amount, position=position)
+    game.news.publish("PZ01", amount=amount, position=position)
 
 
 def refresh_staff():
@@ -822,11 +822,11 @@ def update_condition():
 
     # Publish news article
     if stadium.condition <= 25:
-        news.publish("SM01")
+        game.news.publish("SM01")
 
         stadium.warnings += 1
     elif stadium.condition <= 50:
-        news.publish("SM02")
+        game.news.publish("SM02")
 
         stadium.warnings += 1
 
@@ -835,7 +835,7 @@ def update_condition():
         fine = (stadium.capacity * 3) * (stadium.fines + 1)
         club.accounts.withdraw(fine, "fines")
 
-        news.publish("SM03", amount=fine)
+        game.news.publish("SM03", amount=fine)
 
         stadium.fines += 1
         stadium.warnings = 0

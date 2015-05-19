@@ -60,7 +60,7 @@ def datainit():
     game.fixtures = []
     game.results = []
     game.record = [[], []]
-    game.news = []
+    game.news = news.News()
 
     game.date.day = 1
     game.date.month = 8
@@ -335,7 +335,6 @@ def dataloader(finances):
     money.calculate_grant()
     money.flotation()
     events.update_records()
-    events.expectation()
     ai.transfer_list()
     ai.loan_list()
     ai.team_training()
@@ -351,8 +350,11 @@ def dataloader(finances):
                 initial_fixtures.append(match)
 
     # Publish initial news articles
-    news.publish("MA01")
-    news.publish("FX01",
-                 fixture1=initial_fixtures[0],
-                 fixture2=initial_fixtures[1],
-                 fixture3=initial_fixtures[2],)
+    game.news.publish("MA01")
+    game.news.publish("FX01",
+                      fixture1=initial_fixtures[0],
+                      fixture2=initial_fixtures[1],
+                      fixture3=initial_fixtures[2],)
+
+    events.expectation()
+

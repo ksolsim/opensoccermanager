@@ -515,7 +515,7 @@ class Loan:
                 name = player.get_name(mode=1)
                 club = game.clubs[self.parent_club].name
 
-                news.publish("LA01", player=name, team=club, weeks=self.period)
+                game.news.publish("LA01", player=name, team=club, weeks=self.period)
         else:
             self.end_loan()
 
@@ -616,7 +616,7 @@ class Loan:
 
         name = player.get_name(mode=1)
         club = game.clubs[player.club].name
-        news.publish("LE01", player=name, team=club)
+        game.news.publish("LE01", player=name, team=club)
 
         # Delete loan information
         del game.loans[self.playerid]
@@ -691,35 +691,35 @@ def consider_enquiry(negotiationid):
 
         # Prevent club from selling/loaning if they do not meet minimum
         if check(negotiationid) != 0:
-            news.publish("TE01", player=name, team=club.name)
+            game.news.publish("TE01", player=name, team=club.name)
         else:
             if negotiation.transfer_type == 0:
                 if points <= 0:
                     negotiation.status = 1
                     negotiation.timeout = random.randint(1, 4)
-                    news.publish("TO01", player=name, team=club.name)
+                    game.news.publish("TO01", player=name, team=club.name)
                 else:
                     negotiation.status = 2
-                    news.publish("TO02", player=name, team=club.name)
+                    game.news.publish("TO02", player=name, team=club.name)
             elif negotiation.transfer_type == 1:
                 if points <= 0:
                     negotiation.status = 1
                     negotiation.timeout = random.randint(1, 4)
-                    news.publish("LO01", player=name, team=club.name)
+                    game.news.publish("LO01", player=name, team=club.name)
                 else:
                     negotiation.status = 2
-                    news.publish("LO02", player=name, team=club.name)
+                    game.news.publish("LO02", player=name, team=club.name)
     else:
         # Free transfer
         points = random.randint(1, 3)  ## Needs proper AI
 
         if points <= 0:
             negotiation.status = 9
-            news.publish("TO09", player=name)
+            game.news.publish("TO09", player=name)
         else:
             negotiation.status = 10
             negotiation.timeout = random.randint(1, 4)
-            news.publish("TO10", player=name)
+            game.news.publish("TO10", player=name)
 
 
 def consider_offer(negotiationid):
@@ -738,19 +738,19 @@ def consider_offer(negotiationid):
     if negotiation.transfer_type == 0:
         if negotiation.amount >= player.value * 1.1:
             negotiation.status = 5
-            news.publish("TO05", player=name, team=club.name)
+            game.news.publish("TO05", player=name, team=club.name)
         else:
             negotiation.status = 4
             negotiation.timeout = random.randint(1, 4)
-            news.publish("TO06", player=name, team=club.name)
+            game.news.publish("TO06", player=name, team=club.name)
     elif negotiation.transfer_type == 1:
         if points >= 0:
             negotiation.status = 5
-            news.publish("LO04", player=name, team=club.name)
+            game.news.publish("LO04", player=name, team=club.name)
         else:
             negotiation.status = 4
             negotiation.timeout = random.randint(1, 4)
-            news.publish("LO03", player=name, team=club.name)
+            game.news.publish("LO03", player=name, team=club.name)
 
 
 def consider_contract(negotiationid):
@@ -769,19 +769,19 @@ def consider_contract(negotiationid):
 
         if points >= 0:
             negotiation.status = 8
-            news.publish("TO08", player=name)
+            game.news.publish("TO08", player=name)
         else:
             negotiation.status = 7
             negotiation.timeout = random.randint(1, 4)
-            news.publish("TO07", player=name, team=club.name)
+            game.news.publish("TO07", player=name, team=club.name)
     elif negotiation.transfer_type == 2:
         if points >= 0:
             negotiation.status = 8
-            news.publish("TO08", player=name)
+            game.news.publish("TO08", player=name)
         else:
             negotiation.status = 7
             negotiation.timeout = random.randint(1, 4)
-            news.publish("TO10", player=name)
+            game.news.publish("TO10", player=name)
 
 
 def consider_extension(playerid):

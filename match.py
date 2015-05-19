@@ -408,20 +408,20 @@ class Match(Gtk.Grid):
             if result[1] - result[2] > 3:
                 club = game.clubs[result[3]].name
                 score = "%i - %i" % (result[1], result[2])
-                news.publish("RE01", result=score, team=club)
+                game.news.publish("RE01", result=score, team=club)
             elif result[1] - result[2] < -3:
                 club = game.clubs[result[3]].name
                 score = "%i - %i" % (result[1], result[2])
-                news.publish("RE02", result=score, team=club)
+                game.news.publish("RE02", result=score, team=club)
         elif result[3] == game.teamid:
             if result[2] - result[1] > 3:
                 club = game.clubs[result[0]].name
                 score = "%i - %i" % (result[1], result[2])
-                news.publish("RE01", result=score, team=club)
+                game.news.publish("RE01", result=score, team=club)
             elif result[2] - result[1] < -3:
                 club = game.clubs[result[0]].name
                 score = "%i - %i" % (result[1], result[2])
-                news.publish("RE02", result=score, team=club)
+                game.news.publish("RE02", result=score, team=club)
 
         # Pay player win bonus
         if result[0] == game.teamid:

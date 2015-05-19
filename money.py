@@ -195,7 +195,7 @@ def process_grant():
 
         if game.grant.timeout == 0:
             deposit(game.grant.amount, 0)  ## Change category
-            news.publish("SG01", amount=game.grant.amount)
+            game.news.publish("SG01", amount=game.grant.amount)
 
 
 def flotation():
@@ -236,4 +236,4 @@ def float_club():
 
         if game.flotation.timeout == 0:
             deposit(game.flotation.amount)
-            news.publish("FL01")
+            game.news.publish("FL01")

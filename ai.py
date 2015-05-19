@@ -395,7 +395,7 @@ class Result:
 
                         if player.club == game.teamid:
                             name = player.get_name(mode=1)
-                            news.publish("SU01", player=name, period="1")
+                            game.news.publish("SU01", player=name, period="1")
                     else:
                         match_cards[0][playerid] = 1
                         player.yellow_cards += 1
@@ -407,7 +407,7 @@ class Result:
 
                         if player.club == game.teamid:
                             name = player.get_name(mode=1)
-                            news.publish("SU03", player=name, period="1", cards=player.yellow_cards)
+                            game.news.publish("SU03", player=name, period="1", cards=player.yellow_cards)
 
                 count += 1
 
@@ -431,7 +431,7 @@ class Result:
 
                     if player.club == game.teamid:
                         name = player.get_name(mode=1)
-                        news.publish("SU02", player=name, period=player.suspension_period, suspension=suspension[0])
+                        game.news.publish("SU02", player=name, period=player.suspension_period, suspension=suspension[0])
 
                 count += 1
 
@@ -527,7 +527,7 @@ class Result:
                 player.fitness -= random.randint(10, 30)
 
                 if teamid == game.teamid:
-                    news.publish("IN02", player=name, weeks=period, injury=injury[0])
+                    game.news.publish("IN02", player=name, weeks=period, injury=injury[0])
 
     def ratings(self):
         ratings = [{}, {}]
@@ -656,7 +656,7 @@ def renew_contract():
                         name = player.get_name(mode=1)
                         club = game.clubs[player.club].name
 
-                        news.publish("RC01",
+                        game.news.publish("RC01",
                                      player=name,
                                      team=club,
                                      period=contract)
@@ -665,10 +665,10 @@ def renew_contract():
                         name = player.get_name(mode=1)
                         club = game.clubs[player.club].name
 
-                        news.publish("RC02",
-                                     player=name,
-                                     team=club,
-                                     period=contract)
+                        game.news.publish("RC02",
+                                          player=name,
+                                          team=club,
+                                          period=contract)
 
 
 def transfer_list():

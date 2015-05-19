@@ -19,7 +19,6 @@
 active_screen = None        # Track screen currently in view
 database = None
 proceed = True
-unreadnews = False          # Unread news notification
 
 # Audio
 music = None                # Music player object

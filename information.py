@@ -38,9 +38,13 @@ class News(Gtk.Grid):
         Gtk.Grid.__init__(self)
         self.set_row_spacing(5)
 
-        self.liststoreNews = Gtk.ListStore(str, str, str, int, str, bool, int)
+        self.liststoreNews = Gtk.ListStore(int, str, str, int, str, bool, int)
+
         self.treefilter = self.liststoreNews.filter_new()
         self.treefilter.set_visible_func(self.filter_visible, game.clubs)
+
+        treemodelsort = Gtk.TreeModelSort(self.treefilter)
+        treemodelsort.set_sort_column_id(0, Gtk.SortType.DESCENDING)
 
         grid = Gtk.Grid()
         grid.set_column_spacing(5)
@@ -85,14 +89,14 @@ class News(Gtk.Grid):
         paned.add1(scrolledwindow)
 
         treeviewNews = Gtk.TreeView()
-        treeviewNews.set_model(self.treefilter)
+        treeviewNews.set_model(treemodelsort)
         treeviewNews.set_activate_on_single_click(True)
         treeviewNews.set_enable_search(False)
         treeviewNews.set_search_column(-1)
         treeviewNews.connect("row-activated", self.item_selected)
         scrolledwindow.add(treeviewNews)
 
-        treeviewcolumn = widgets.TreeViewColumn(title="Date", column=0)
+        treeviewcolumn = widgets.TreeViewColumn(title="Date", column=1)
         treeviewNews.append_column(treeviewcolumn)
 
         treeviewcolumn = Gtk.TreeViewColumn("Title")
@@ -100,7 +104,7 @@ class News(Gtk.Grid):
         treeviewNews.append_column(treeviewcolumn)
         cellrendererTitle = Gtk.CellRendererText()
         treeviewcolumn.pack_start(cellrendererTitle, True)
-        treeviewcolumn.add_attribute(cellrendererTitle, "text", 1)
+        treeviewcolumn.add_attribute(cellrendererTitle, "text", 2)
         treeviewcolumn.add_attribute(cellrendererTitle, "weight-set", 5)
         treeviewcolumn.add_attribute(cellrendererTitle, "weight", 6)
 
@@ -122,21 +126,18 @@ class News(Gtk.Grid):
 
     def search_changed(self, entry):
         if entry.get_text_length() == 0:
-            self.populate_data(game.news)
+            self.populate_data(game.news.articles)
 
     def search_activated(self, entry):
         criteria = entry.get_text()
 
         if len(criteria) > 0:
-            data = []
+            data = {}
 
-            for item in game.news:
-                title = item[1]
-                message = item[2]
-
-                for search in (title, message):
+            for newsid, article in game.news.articles.items():
+                for search in (article.title, article.message):
                     if re.findall(criteria, search, re.IGNORECASE):
-                        data.append(item[0:])
+                        data[newsid] = article
 
                         break
 
@@ -144,36 +145,26 @@ class News(Gtk.Grid):
 
     def icon_press(self, entry, position, event):
         if position == Gtk.EntryIconPosition.SECONDARY:
-            self.populate_data(game.news)
+            self.populate_data(game.news.articles)
 
-    def item_selected(self, treeview, path, column):
+    def item_selected(self, treeview, treepath, treeviewcolumn):
         model = treeview.get_model()
 
-        text = model[path][2]
+        newsid = model[treepath][0]
+        article = game.news.articles[newsid]
 
         textbuffer = self.textviewNews.get_buffer()
-        textbuffer.set_text(text)
+        textbuffer.set_text(article.message)
 
-        model[path][5] = False
+        article.unread = False
 
-        # Update news list with read/unread status
-        game.news = []
+        # Convert TreeModelSort path to access underlying ListStore model
+        child_treepath = model.convert_path_to_child_path(treepath)
+        child_model = model.get_model()
+        child_model[child_treepath][6] = 400
 
-        for item in model:
-            news = item[0:4]
-            news.append(item[5])
-            game.news.append(news)
-
-        unread_count = 0
-
-        for item in model:
-            if item[5]:
-                unread_count += 1
-
-        # Check how many unread items there are
-        if unread_count == 0:
+        if game.news.get_unread_count() == 0:
             widgets.news.hide()
-            game.unreadnews = False
 
     def filter_changed(self, combobox):
         self.treefilter.refilter()
@@ -191,25 +182,24 @@ class News(Gtk.Grid):
     def populate_data(self, data):
         self.liststoreNews.clear()
 
-        for item in data:
-            category = constants.category[item[3]]
+        for newsid, article in data.items():
+            category = constants.category[article.category]
 
-            # Weight of 700 required to make font bold when item unread
-            if item[4]:
+            if article.unread:
                 weight = 700
             else:
                 weight = 400
 
-            self.liststoreNews.append([item[0],
-                                       item[1],
-                                       item[2],
-                                       item[3],
+            self.liststoreNews.append([newsid,
+                                       article.date,
+                                       article.title,
+                                       article.category,
                                        category,
-                                       item[4],
+                                       article.unread,
                                        weight])
 
     def run(self):
-        self.populate_data(game.news)
+        self.populate_data(game.news.articles)
 
         self.show_all()
 
@@ -222,7 +212,7 @@ class Fixtures(Gtk.Grid):
         self.set_row_spacing(5)
         self.set_column_spacing(5)
 
-        self.liststoreClubFixtures = Gtk.ListStore(str)        # Club fixtures
+        self.liststoreClubFixtures = Gtk.ListStore(str)         # Club fixtures
         self.liststoreFixtures = Gtk.ListStore(str, str, str)  # All fixtures
 
         scrolledwindow = Gtk.ScrolledWindow()
