@@ -247,20 +247,15 @@ class Negotiation:
             old_club = old_club.name
             fee = "Loan"
         elif self.transfer_type == 2:
-            if player.club == 0:
-                old_club = old_club.name
-            else:
-                old_club = ""
-
+            old_club = ""
             fee = "Free Transfer"
 
-        club = old_club
         season = game.date.get_season()
         games = "%i/%i" % (player.appearances, player.substitute)
 
         game.transfers.append([name, old_club, new_club, fee])
         player.history.append([season,
-                               club,
+                               old_club,
                                games,
                                player.goals,
                                player.assists,

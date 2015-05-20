@@ -272,7 +272,7 @@ class Players(Gtk.Grid):
         playerid = model[treeiter][0]
         player = game.players[playerid]
 
-        if player.club == 0:
+        if not player.club:
             transfer_type = 2
 
         transfer.make_enquiry(playerid, transfer_type)
@@ -305,7 +305,7 @@ class Players(Gtk.Grid):
                         self.contextmenu.menuitemAddShortlist.set_sensitive(True)
                         self.contextmenu.menuitemRemoveShortlist.set_sensitive(False)
 
-                    if player.club == 0:
+                    if player.club:
                         self.contextmenu.menuitemLoan.set_sensitive(False)
                     else:
                         self.contextmenu.menuitemLoan.set_sensitive(True)

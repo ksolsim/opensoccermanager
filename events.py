@@ -173,7 +173,7 @@ def update_contracts():
     are due to reach the end of their contract.
     '''
     for key, player in game.players.items():
-        if player.club != 0:
+        if player.club:
             name = player.get_name(mode=1)
 
             if player.contract > 0:

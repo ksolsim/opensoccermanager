@@ -430,7 +430,7 @@ class Negotiation:
         new_club = negotiation.club
 
         # Remove from squad
-        if negotiation.transfer_type in (0, 2):
+        if negotiation.transfer_type == 0:
             game.clubs[old_club].squad.remove(self.playerid)
         elif negotiation.transfer_type == 1:
             loan = Loan()
@@ -448,7 +448,7 @@ class Negotiation:
 
         player.club = new_club
 
-        if player.club != 0:
+        if player.club:
             game.clubs[player.club].squad.append(self.playerid)
 
         # Reset transfer status
@@ -474,20 +474,15 @@ class Negotiation:
             old_club = game.clubs[old_club].name
             fee = "Loan"
         elif negotiation.transfer_type == 2:
-            if player.club == 0:
-                old_club = game.clubs[old_club].name
-            else:
-                old_club = ""
-
+            old_club = ""
             fee = "Free Transfer"
 
-        club = old_club
         season = game.date.get_season()
         games = "%i/%i" % (player.appearances, player.substitute)
 
         game.transfers.append([name, old_club, new_club, fee])
         player.history.append([season,
-                               club,
+                               old_club,
                                games,
                                player.goals,
                                player.assists,
@@ -682,7 +677,7 @@ def consider_enquiry(negotiationid):
     player = game.players[negotiation.playerid]
     name = player.get_name(mode=1)
 
-    if player.club != 0:
+    if player.club:
         club = game.clubs[player.club]
 
         # Requires logic for transfer status
