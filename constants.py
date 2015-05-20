@@ -19,10 +19,6 @@
 from gi.repository import Gtk
 
 
-# Used when the player requests resetting of the filtering options
-player_filter = (True, 0, (0, 20000000), (16, 50), 0, (0, 99), (0, 99), (0, 99), (0, 99), (0, 99), (0, 99), (0, 99), (0, 99), (0, 99))
-squad_filter = (0, False)
-
 # Populated by content of appropriate XML files and database tables
 news = {}
 evaluation = []

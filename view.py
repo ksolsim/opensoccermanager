@@ -259,8 +259,9 @@ class Players(Gtk.Grid):
         self.buttonReset.set_sensitive(False)
         self.entrySearch.set_text("")
 
+        self.searchfilter.reset_defaults()
+
         self.populate_data(game.players)
-        game.player_filter = constants.player_filter
         self.treemodelfilter.refilter()
 
     def make_transfer_offer(self, menuitem, transfer_type):
@@ -316,86 +317,83 @@ class Players(Gtk.Grid):
 
     def filter_dialog(self, button):
         self.searchfilter.display()
-        self.searchfilter.hide()
 
-        if game.player_filter == constants.player_filter:
-            self.buttonReset.set_sensitive(False)
-        else:
-            self.buttonReset.set_sensitive(True)
+        sensitive = self.searchfilter.options != self.searchfilter.defaults
+        self.buttonReset.set_sensitive(sensitive)
 
         self.treemodelfilter.refilter()
 
     def filter_visible(self, model, treeiter, data):
-        criteria = game.player_filter
+        criteria = self.searchfilter.options
         show = True
 
         # Filter own players
-        if criteria[0] is False:
+        if criteria["own_players"] is False:
             if model[treeiter][3] == game.teamid:
                 show = False
 
         # Filter position
-        if criteria[1] == 1:
+        if criteria["position"] == 1:
             if model[treeiter][6] != "GK":
                 show = False
-        elif criteria[1] == 2:
+        elif criteria["position"] == 2:
             if model[treeiter][6] not in ("DL", "DR", "DC", "D"):
                 show = False
-        elif criteria[1] == 3:
+        elif criteria["position"] == 3:
             if model[treeiter][6] not in ("ML", "MR", "MC", "M"):
                 show = False
-        elif criteria[1] == 4:
+        elif criteria["position"] == 4:
             if model[treeiter][6] not in ("AS", "AF"):
                 show = False
 
         # Filter player values
         if show:
-            show = criteria[2][1] >= model[treeiter][16] >= criteria[2][0]
+            show = criteria["value"][1] >= model[treeiter][16] >= criteria["value"][0]
 
         # Filter player ages
         if show:
-            show = criteria[3][1] >= model[treeiter][2] >= criteria[3][0]
+            show = criteria["age"][1] >= model[treeiter][2] >= criteria["age"][0]
 
         # Filter transfer list, loan list and contract statuses
-        if criteria[4] == 1:
+        if criteria["status"] == 1:
             if model[treeiter][22] is False:
                 show = False
-        elif criteria[4] == 2:
+        elif criteria["status"] == 2:
             if model[treeiter][23] is False:
                 show = False
-        elif criteria[4] == 3:
+        elif criteria["status"] == 3:
             if model[treeiter][20] != 0:
                 show = False
-        elif criteria[4] == 4:
+        elif criteria["status"] == 4:
             if model[treeiter][20] > 52:
                 show = False
 
         # Filter skills
-        if model[treeiter][7] < criteria[5][0] or model[treeiter][7] > criteria[5][1]:
+        if model[treeiter][7] < criteria["keeping"][0] or model[treeiter][7] > criteria["keeping"][1]:
             show = False
 
-        if model[treeiter][8] < criteria[6][0] or model[treeiter][8] > criteria[6][1]:
+        if model[treeiter][8] < criteria["tackling"][0] or model[treeiter][8] > criteria["tackling"][1]:
             show = False
 
-        if model[treeiter][9] < criteria[7][0] or model[treeiter][9] > criteria[7][1]:
+        if model[treeiter][9] < criteria["passing"][0] or model[treeiter][9] > criteria["passing"][1]:
             show = False
 
-        if model[treeiter][10] < criteria[8][0] or model[treeiter][10] > criteria[8][1]:
+        if model[treeiter][10] < criteria["shooting"][0] or model[treeiter][10] > criteria["shooting"][1]:
             show = False
 
-        if model[treeiter][11] < criteria[9][0] or model[treeiter][11] > criteria[9][1]:
+        if model[treeiter][11] < criteria["heading"][0] or model[treeiter][11] > criteria["heading"][1]:
             show = False
 
-        if model[treeiter][12] < criteria[10][0] or model[treeiter][12] > criteria[10][1]:
+        if model[treeiter][12] < criteria["pace"][0] or model[treeiter][12] > criteria["pace"][1]:
             show = False
 
-        if model[treeiter][13] < criteria[11][0] or model[treeiter][13] > criteria[11][1]:
+        if model[treeiter][13] < criteria["stamina"][0] or model[treeiter][13] > criteria["stamina"][1]:
             show = False
 
-        if model[treeiter][14] < criteria[12][0] or model[treeiter][14] > criteria[12][1]:
+        if model[treeiter][14] < criteria["ball_control"][0] or model[treeiter][14] > criteria["ball_control"][1]:
             show = False
 
-        if model[treeiter][15] < criteria[13][0] or model[treeiter][15] > criteria[13][1]:
+        if model[treeiter][15] < criteria["set_pieces"][0] or model[treeiter][15] > criteria["set_pieces"][1]:
             show = False
 
         return show

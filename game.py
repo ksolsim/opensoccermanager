@@ -17,15 +17,12 @@
 
 
 active_screen = None        # Track screen currently in view
-database = None
 proceed = True
 
 # Audio
 music = None                # Music player object
 
 # Filters
-player_filter = (True, 0, (0, 20000000), (16, 50), 0, (0, 99), (0, 99), (0, 99), (0, 99), (0, 99), (0, 99), (0, 99), (0, 99), (0, 99))
-squad_filter = (0, False)
 comparison = [None, None]
 
 teamid = None               # Team that player has selected
@@ -40,6 +37,12 @@ staff_timeout = 1
 coachid = 1
 scoutid = 1
 negotiationid = 1
+team_training_alert = 0
+team_training_timeout = 12
+sponsor_timeout = 0
+advertising_alert = 4
+advertising_timeout = 0
+advertising_assistant = False  # Toggle assistant handling advertising
 
 # Data
 clubs = {}
@@ -58,7 +61,6 @@ televised = []
 fixtures = []
 results = []
 record = [[], []]
-news = []
 
 # Charts
 goalscorers = {}
@@ -66,10 +68,3 @@ assists = {}
 cleansheets = {}
 cards = {}
 transfers = []
-
-team_training_alert = 0
-team_training_timeout = 12
-sponsor_timeout = 0
-advertising_alert = 4
-advertising_timeout = 0
-advertising_assistant = False  # Toggle assistant handling advertising

@@ -488,14 +488,14 @@ class Squad(Gtk.Grid):
 
     def filter_squad(self, button):
         self.squadfilter.display()
-        self.squadfilter.hide()
 
-        sensitive = not game.squad_filter == constants.squad_filter
+        sensitive = self.squadfilter.options != self.squadfilter.defaults
         self.buttonReset.set_sensitive(sensitive)
+
         self.treemodelfilter.refilter()
 
     def filter_reset(self, button):
-        game.squad_filter = constants.squad_filter
+        self.squadfilter.reset_defaults()
 
         self.buttonReset.set_sensitive(False)
         self.treemodelfilter.refilter()
@@ -504,21 +504,21 @@ class Squad(Gtk.Grid):
         display = True
 
         # Filter by selected position
-        if game.squad_filter[0] == 1:
+        if self.squadfilter.options["position"] == 1:
             if model[treeiter][2] not in ("GK"):
                 display = False
-        elif game.squad_filter[0] == 2:
+        elif self.squadfilter.options["position"] == 2:
             if model[treeiter][2] not in ("DL", "DR", "DC", "D"):
                 display = False
-        elif game.squad_filter[0] == 3:
+        elif self.squadfilter.options["position"] == 3:
             if model[treeiter][2] not in ("ML", "MR", "MC", "M"):
                 display = False
-        elif game.squad_filter[0] == 4:
+        elif self.squadfilter.options["position"] == 4:
             if model[treeiter][2] not in ("AF", "AS"):
                 display = False
 
         # Filter injured and suspended players
-        if game.squad_filter[1]:
+        if self.squadfilter.options["availableonly"]:
             if model[treeiter][24] != 0:
                 display = False
 
@@ -528,6 +528,9 @@ class Squad(Gtk.Grid):
         return display
 
     def add_to_position(self, menuitem, event, index):
+        '''
+        Add selected player to specified position.
+        '''
         model, treeiter = self.treeselection.get_selected()
         playerid = model[treeiter][0]
         player = game.players[playerid]
@@ -538,6 +541,9 @@ class Squad(Gtk.Grid):
         game.clubs[game.teamid].team[index] = playerid
 
     def remove_from_position(self, menuitem):
+        '''
+        Find player in squad list and remove from set position.
+        '''
         model, treeiter = self.treeselection.get_selected()
         playerid = model[treeiter][0]
 
@@ -547,6 +553,9 @@ class Squad(Gtk.Grid):
                 self.buttonTeam[key].set_label("")
 
     def renew_contract(self, menuitem):
+        '''
+        Initiate contract negotiations for selected player.
+        '''
         model, treeiter = self.treeselection.get_selected()
         playerid = model[treeiter][0]
 
@@ -580,6 +589,9 @@ class Squad(Gtk.Grid):
                 self.populate_data()
 
     def extend_loan(self, menuitem):
+        '''
+        Request loan extension from parent club of selected player.
+        '''
         model, treeiter = self.treeselection.get_selected()
 
         playerid = model[treeiter][0]
@@ -587,6 +599,9 @@ class Squad(Gtk.Grid):
         game.loans[playerid].extend_loan()
 
     def cancel_loan(self, menuitem):
+        '''
+        Cancel loan deal for selected player and return to parent club.
+        '''
         model, treeiter = self.treeselection.get_selected()
 
         playerid = model[treeiter][0]
@@ -623,6 +638,9 @@ class Squad(Gtk.Grid):
             player.transfer[1] = not player.transfer[1]
 
     def not_for_sale(self, menuitem):
+        '''
+        Set the selected player as not for sale.
+        '''
         model, treeiter = self.treeselection.get_selected()
         playerid = model[treeiter][0]
 

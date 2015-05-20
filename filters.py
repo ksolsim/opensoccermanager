@@ -17,6 +17,7 @@
 
 
 from gi.repository import Gtk
+import collections
 
 import game
 import widgets
@@ -47,7 +48,7 @@ class SearchFilter(Gtk.Dialog):
             minimum = self.minimum.get_value_as_int()
             self.maximum.set_range(minimum, 99)
 
-        def display(self, minimum, maximum):
+        def set_values(self, minimum, maximum):
             self.minimum.set_value(minimum)
             self.maximum.set_value(maximum)
 
@@ -58,6 +59,38 @@ class SearchFilter(Gtk.Dialog):
             return minimum, maximum
 
     def __init__(self):
+        defaults = (("own_players", True),
+                    ("position", 0),
+                    ("value", (0, 20000000)),
+                    ("age", (16, 50)),
+                    ("status", 0),
+                    ("keeping", (0, 99)),
+                    ("tackling", (0, 99)),
+                    ("passing", (0, 99)),
+                    ("shooting", (0, 99)),
+                    ("heading", (0, 99)),
+                    ("pace", (0, 99)),
+                    ("stamina", (0, 99)),
+                    ("ball_control", (0, 99)),
+                    ("set_pieces", (0, 99)))
+        self.defaults = collections.OrderedDict(defaults)
+
+        options = (("own_players", True),
+                   ("position", 0),
+                   ("value", (0, 20000000)),
+                   ("age", (16, 50)),
+                   ("status", 0),
+                   ("keeping", (0, 99)),
+                   ("tackling", (0, 99)),
+                   ("passing", (0, 99)),
+                   ("shooting", (0, 99)),
+                   ("heading", (0, 99)),
+                   ("pace", (0, 99)),
+                   ("stamina", (0, 99)),
+                   ("ball_control", (0, 99)),
+                   ("set_pieces", (0, 99)))
+        self.options = collections.OrderedDict(options)
+
         Gtk.Dialog.__init__(self)
         self.set_transient_for(game.window)
         self.set_title("Filter Players")
@@ -179,24 +212,26 @@ class SearchFilter(Gtk.Dialog):
 
     def display(self):
         self.checkbuttonShowOwnPlayers.set_label("_Display %s Players In Player Search" % (game.clubs[game.teamid].name))
-        self.checkbuttonShowOwnPlayers.set_active(game.player_filter[0])
+        self.checkbuttonShowOwnPlayers.set_active(self.options["own_players"])
 
-        self.comboboxPosition.set_active(game.player_filter[1])
-        self.spinbuttonMinValue.set_value(game.player_filter[2][0])
-        self.spinbuttonMaxValue.set_value(game.player_filter[2][1])
-        self.spinbuttonMinAge.set_value(game.player_filter[3][0])
-        self.spinbuttonMaxAge.set_value(game.player_filter[3][1])
-        self.comboboxStatus.set_active(game.player_filter[4])
+        self.comboboxPosition.set_active(self.options["position"])
 
-        self.keeping.display(game.player_filter[5][0], game.player_filter[5][1])
-        self.tackling.display(game.player_filter[6][0], game.player_filter[6][1])
-        self.passing.display(game.player_filter[7][0], game.player_filter[7][1])
-        self.shooting.display(game.player_filter[8][0], game.player_filter[8][1])
-        self.pace.display(game.player_filter[9][0], game.player_filter[9][1])
-        self.heading.display(game.player_filter[10][0], game.player_filter[10][1])
-        self.stamina.display(game.player_filter[11][0], game.player_filter[11][1])
-        self.ball_control.display(game.player_filter[12][0], game.player_filter[12][1])
-        self.set_pieces.display(game.player_filter[13][0], game.player_filter[13][1])
+        self.spinbuttonMinValue.set_value(self.options["value"][0])
+        self.spinbuttonMaxValue.set_value(self.options["value"][1])
+
+        self.spinbuttonMinAge.set_value(self.options["age"][0])
+        self.spinbuttonMaxAge.set_value(self.options["age"][1])
+        self.comboboxStatus.set_active(self.options["status"])
+
+        self.keeping.set_values(self.options["keeping"][0], self.options["keeping"][1])
+        self.tackling.set_values(self.options["tackling"][0], self.options["tackling"][1])
+        self.passing.set_values(self.options["passing"][0], self.options["passing"][1])
+        self.shooting.set_values(self.options["shooting"][0], self.options["shooting"][1])
+        self.pace.set_values(self.options["heading"][0], self.options["heading"][1])
+        self.heading.set_values(self.options["pace"][0], self.options["pace"][1])
+        self.stamina.set_values(self.options["stamina"][0], self.options["stamina"][1])
+        self.ball_control.set_values(self.options["ball_control"][0], self.options["ball_control"][1])
+        self.set_pieces.set_values(self.options["set_pieces"][0], self.options["set_pieces"][1])
 
         self.show_all()
 
@@ -219,21 +254,22 @@ class SearchFilter(Gtk.Dialog):
             ball_control = self.ball_control.retrieve()
             set_pieces = self.set_pieces.retrieve()
 
-            game.player_filter = (own_players,
-                                  position,
-                                  value,
-                                  age,
-                                  status,
-                                  keeping,
-                                  tackling,
-                                  passing,
-                                  shooting,
-                                  heading,
-                                  pace,
-                                  stamina,
-                                  ball_control,
-                                  set_pieces,
-                                 )
+            self.options["own_players"] = own_players
+            self.options["position"] = position
+            self.options["value"] = value
+            self.options["age"] = age
+            self.options["status"] = status
+            self.options["keeping"] = keeping
+            self.options["tackling"] = tackling
+            self.options["passing"] = passing
+            self.options["shooting"] = shooting
+            self.options["heading"] = heading
+            self.options["pace"] = pace
+            self.options["stamina"] = stamina
+            self.options["ball_control"] = ball_control
+            self.options["set_pieces"] = set_pieces
+
+        self.hide()
 
     def value_changed(self, spinbutton):
         minimum = self.spinbuttonMinValue.get_value_as_int()
@@ -245,12 +281,37 @@ class SearchFilter(Gtk.Dialog):
         maximum = self.spinbuttonMinAge.get_range()[1]
         self.spinbuttonMaxAge.set_range(minimum, maximum)
 
+    def reset_defaults(self):
+        '''
+        Reset selected options back to defaults.
+        '''
+        self.options["own_players"] = self.defaults["own_players"]
+        self.options["position"] = self.defaults["position"]
+        self.options["value"] = self.defaults["value"]
+        self.options["age"] = self.defaults["age"]
+        self.options["status"] = self.defaults["status"]
+        self.options["keeping"] = self.defaults["keeping"]
+        self.options["tackling"] = self.defaults["tackling"]
+        self.options["passing"] = self.defaults["passing"]
+        self.options["shooting"] = self.defaults["shooting"]
+        self.options["heading"] = self.defaults["heading"]
+        self.options["pace"] = self.defaults["pace"]
+        self.options["stamina"] = self.defaults["stamina"]
+        self.options["ball_control"] = self.defaults["ball_control"]
+        self.options["set_pieces"] = self.defaults["set_pieces"]
+
 
 class SquadFilter(Gtk.Dialog):
     '''
     Dialog for filtering players in the squad view.
     '''
     def __init__(self):
+        defaults = ("position", 0), ("availableonly", False)
+        self.defaults = collections.OrderedDict(defaults)
+
+        options = ("position", 0), ("availableonly", False)
+        self.options = collections.OrderedDict(options)
+
         Gtk.Dialog.__init__(self)
         self.set_transient_for(game.window)
         self.set_title("Filter Squad")
@@ -282,13 +343,20 @@ class SquadFilter(Gtk.Dialog):
         grid.attach(self.checkbuttonAvailable, 0, 1, 3, 1)
 
     def display(self):
-        self.comboboxPosition.set_active(game.squad_filter[0])
-        self.checkbuttonAvailable.set_active(game.squad_filter[1])
+        self.comboboxPosition.set_active(self.options["position"])
+        self.checkbuttonAvailable.set_active(self.options["availableonly"])
 
         self.show_all()
 
         if self.run() == Gtk.ResponseType.OK:
-            position = int(self.comboboxPosition.get_active())
-            available = self.checkbuttonAvailable.get_active()
+            self.options["position"] = int(self.comboboxPosition.get_active())
+            self.options["availableonly"] = self.checkbuttonAvailable.get_active()
 
-            game.squad_filter = (position, available)
+        self.hide()
+
+    def reset_defaults(self):
+        '''
+        Reset selected options back to defaults.
+        '''
+        self.options["position"] = self.defaults["position"]
+        self.options["availableonly"] = self.defaults["availableonly"]
