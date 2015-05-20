@@ -243,7 +243,7 @@ class IndividualTraining(Gtk.Grid):
             if training[2] != 9:
                 skill = training[2]
 
-                skills = player.skills()
+                skills = player.get_skills()
                 start_value = skills[skill]
             else:
                 skill = 9
@@ -278,7 +278,7 @@ class IndividualTraining(Gtk.Grid):
         for playerid, item in club.individual_training.items():
             player = game.players[playerid]
 
-            skills = player.skills()
+            skills = player.get_skills()
 
             name = player.get_name()
             coachid = int(item.coachid)

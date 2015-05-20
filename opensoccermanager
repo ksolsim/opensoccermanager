@@ -564,12 +564,12 @@ class ScreenGame(Gtk.Grid):
         game.window.screen_loader(3)
 
     def player_comparison(self, menuitem):
-        if game.comparison == [None, None]:
+        if dialogs.comparison.comparison == [None, None]:
             dialogs.error(3)
-        elif not game.comparison[0] or not game.comparison[1]:
+        elif not dialogs.comparison.comparison[0] or not dialogs.comparison.comparison[1]:
             dialogs.error(5)
         else:
-            dialogs.comparison()
+            dialogs.comparison.display()
 
     def view_opposition(self, menuitem):
         opposition_dialog = dialogs.Opposition()
@@ -851,6 +851,8 @@ widgets.news = widgets.News()
 
 game.window = Window()
 game.window.run()
+
+dialogs.comparison = dialogs.Comparison()
 
 
 if __name__ == "__main__":

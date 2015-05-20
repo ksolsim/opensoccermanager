@@ -16,16 +16,12 @@
 #  OpenSoccerManager.  If not, see <http://www.gnu.org/licenses/>.
 
 
+teamid = None               # Team that player has selected
 active_screen = None        # Track screen currently in view
 proceed = True
 
 # Audio
 music = None                # Music player object
-
-# Filters
-comparison = [None, None]
-
-teamid = None               # Team that player has selected
 
 fixturespage = 0            # Page showing on fixtures page
 fixturesindex = 0           # Index number of which fixture the game is on

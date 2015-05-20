@@ -49,7 +49,7 @@ class Result:
                 if playerid != 0:
                     player = game.players[playerid]
 
-                    skills = player.skills()
+                    skills = player.get_skills()
                     self.weights[count] = sum(skills)
 
 
@@ -181,7 +181,7 @@ class Result:
         self.increment_appearances(self.selection1, self.clubid1)
         self.increment_appearances(self.selection2, self.clubid2)
 
-        self.calculate_skills()
+        self.calculate_get_skills()
 
     def increment_appearances(self, selection, clubid):
         players = []
@@ -683,7 +683,7 @@ def transfer_list():
             for count, playerid in enumerate(club.squad, start=1):
                 player = game.players[playerid]
 
-                skills = player.skills()
+                skills = player.get_skills()
                 score[playerid] = sum(skills) * random.randint(1, 3)
 
                 average += score[playerid] / count
@@ -709,7 +709,7 @@ def loan_list():
             for count, playerid in enumerate(club.squad, start=1):
                 player = game.players[playerid]
 
-                skills = player.skills()
+                skills = player.get_skills()
                 score[playerid] = sum(skills) * random.randint(1, 3)
 
                 age = player.get_age()
@@ -749,7 +749,7 @@ def generate_team(clubid):
             if playerid not in selection:
                 player = game.players[playerid]
 
-                skills = player.skills()
+                skills = player.get_skills()
                 score = sum(skills)
 
                 if position == player.position:
@@ -776,7 +776,7 @@ def generate_team(clubid):
         for playerid in squad:
             if playerid not in (selection, substitutes):
                 player = game.players[playerid]
-                skills = player.skills()
+                skills = player.get_skills()
                 score = sum(skills)
 
                 if position == player.position:

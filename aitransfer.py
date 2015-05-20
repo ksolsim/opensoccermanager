@@ -42,7 +42,7 @@ def identify():
                 player = game.players[playerid]
 
                 if position == player.position:
-                    skills = player.skills()
+                    skills = player.get_skills()
                     squad_average += sum(skills) / count
 
                     if position == "GK":
@@ -56,7 +56,7 @@ def identify():
 
             for playerid, player in game.players.items():
                 if position == player.position:
-                    skills = player.skills()
+                    skills = player.get_skills()
                     other_average += sum(skills) / count
 
                     if position == "GK":

@@ -207,7 +207,7 @@ class Players(Gtk.Grid):
     def add_to_comparison(self, menuitem, index):
         model, treeiter = self.treeselection.get_selected()
 
-        game.comparison[index] = model[treeiter][0]
+        dialogs.comparison.comparison[index] = model[treeiter][0]
 
     def row_activated(self, treeview, treepath, treeviewcolumn):
         model = treeview.get_model()

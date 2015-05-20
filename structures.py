@@ -102,7 +102,10 @@ class Player:
         self.rating = []
         self.history = []
 
-    def skills(self):
+    def get_skills(self):
+        '''
+        Return tuple of skill attributes for the player.
+        '''
         values = (self.keeping,
                   self.tackling,
                   self.passing,

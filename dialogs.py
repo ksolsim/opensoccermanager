@@ -928,97 +928,6 @@ def float_club(amount):
     return state
 
 
-def comparison():
-    dialog = Gtk.Dialog()
-    dialog.set_transient_for(game.window)
-    dialog.set_border_width(5)
-    dialog.set_title("Player Comparison")
-    dialog.add_button("_Close", Gtk.ResponseType.CLOSE)
-    dialog.set_default_response(Gtk.ResponseType.CLOSE)
-
-    grid = Gtk.Grid()
-    grid.set_row_spacing(5)
-    grid.set_column_spacing(10)
-    dialog.vbox.add(grid)
-
-    player1 = game.players[game.comparison[0]]
-    skills1 = (player1.keeping,
-               player1.tackling,
-               player1.passing,
-               player1.shooting,
-               player1.heading,
-               player1.pace,
-               player1.stamina,
-               player1.ball_control,
-               player1.set_pieces)
-    player2 = game.players[game.comparison[1]]
-    skills2 = (player2.keeping,
-               player2.tackling,
-               player2.passing,
-               player2.shooting,
-               player2.heading,
-               player2.pace,
-               player2.stamina,
-               player2.ball_control,
-               player2.set_pieces)
-
-    for count, title in enumerate(("Name",
-                                   "Age",
-                                   "Position",
-                                   "Keeping",
-                                   "Tackling",
-                                   "Passing",
-                                   "Shooting",
-                                   "Heading",
-                                   "Pace",
-                                   "Stamina",
-                                   "Ball Control",
-                                   "Set Pieces")):
-        label = Gtk.Label("<b>%s</b>" % (title))
-        label.set_use_markup(True)
-        grid.attach(label, count, 0, 1, 1)
-
-    name = player1.get_name()
-    label = widgets.AlignedLabel("%s" % (name))
-    grid.attach(label, 0, 1, 1, 1)
-    name = player2.get_name()
-    label = widgets.AlignedLabel("%s" % (name))
-    grid.attach(label, 0, 2, 1, 1)
-
-    label = Gtk.Label("%i" % (player1.age))
-    grid.attach(label, 1, 1, 1, 1)
-    label = Gtk.Label("%i" % (player2.age))
-    grid.attach(label, 1, 2, 1, 1)
-
-    label = Gtk.Label("%s" % (player1.position))
-    grid.attach(label, 2, 1, 1, 1)
-    label = Gtk.Label("%s" % (player2.position))
-    grid.attach(label, 2, 2, 1, 1)
-
-    for count in range(0, 9):
-        label1 = Gtk.Label()
-        label1.set_use_markup(True)
-        label2 = Gtk.Label()
-        label2.set_use_markup(True)
-
-        if skills1[count] > skills2[count]:
-            label1.set_markup("<b>%i</b>" % skills1[count])
-            label2.set_markup("%i" % skills2[count])
-        elif skills1[count] < skills2[count]:
-            label1.set_markup("%i" % skills1[count])
-            label2.set_markup("<b>%i</b>" % skills2[count])
-        else:
-            label1.set_markup("%i" % skills1[count])
-            label2.set_markup("%i" % skills2[count])
-
-        grid.attach(label1, count + 3, 1, 1, 1)
-        grid.attach(label2, count + 3, 2, 1, 1)
-
-    dialog.show_all()
-    dialog.run()
-    dialog.destroy()
-
-
 def end_of_season():
     dialog = Gtk.Dialog()
     dialog.set_transient_for(game.window)
@@ -1279,3 +1188,95 @@ class Opposition(Gtk.Dialog):
 
     def response_handler(self, dialog, response):
         self.destroy()
+
+
+class Comparison(Gtk.Dialog):
+    def __init__(self):
+        self.comparison = [None, None]
+
+        Gtk.Dialog.__init__(self)
+        self.set_transient_for(game.window)
+        self.set_resizable(False)
+        self.set_title("Player Comparison")
+        self.set_border_width(5)
+        self.add_button("_Close", Gtk.ResponseType.CLOSE)
+
+        grid = Gtk.Grid()
+        grid.set_row_spacing(5)
+        grid.set_column_spacing(10)
+        self.vbox.add(grid)
+
+        for count, title in enumerate(("Name",
+                                         "Age",
+                                         "Position",
+                                         "Keeping",
+                                         "Tackling",
+                                         "Passing",
+                                         "Shooting",
+                                         "Heading",
+                                         "Pace",
+                                         "Stamina",
+                                         "Ball Control",
+                                         "Set Pieces")):
+            label = Gtk.Label("<b>%s</b>" % (title))
+            label.set_use_markup(True)
+            grid.attach(label, count, 0, 1, 1)
+
+        self.labelName1 = widgets.AlignedLabel()
+        grid.attach(self.labelName1, 0, 1, 1, 1)
+        self.labelName2 = widgets.AlignedLabel()
+        grid.attach(self.labelName2, 0, 2, 1, 1)
+
+        self.labelAge1 = widgets.AlignedLabel()
+        grid.attach(self.labelAge1, 1, 1, 1, 1)
+        self.labelAge2 = widgets.AlignedLabel()
+        grid.attach(self.labelAge2, 1, 2, 1, 1)
+
+        self.labelPosition1 = widgets.AlignedLabel()
+        grid.attach(self.labelPosition1, 2, 1, 1, 1)
+        self.labelPosition2 = widgets.AlignedLabel()
+        grid.attach(self.labelPosition2, 2, 2, 1, 1)
+
+        self.labels = []
+
+        for count, item in enumerate(constants.skill):
+            label1 = Gtk.Label()
+            label1.set_use_markup(True)
+            grid.attach(label1, count + 3, 1, 1, 1)
+
+            label2 = Gtk.Label()
+            label2.set_use_markup(True)
+            grid.attach(label2, count + 3, 2, 1, 1)
+
+            self.labels.append([label1, label2])
+
+    def display(self):
+        player1 = game.players[self.comparison[0]]
+        player2 = game.players[self.comparison[1]]
+
+        self.labelName1.set_label(player1.get_name(mode=1))
+        self.labelName2.set_label(player2.get_name(mode=1))
+
+        self.labelAge1.set_label("%i" % (player1.get_age()))
+        self.labelAge2.set_label("%i" % (player2.get_age()))
+
+        self.labelPosition1.set_label(player1.position)
+        self.labelPosition2.set_label(player2.position)
+
+        skills1 = player1.get_skills()
+        skills2 = player2.get_skills()
+
+        for count in range(0, 9):
+            if skills1[count] > skills2[count]:
+                self.labels[count][0].set_markup("<b>%i</b>" % skills1[count])
+                self.labels[count][1].set_markup("%i" % skills2[count])
+            elif skills1[count] < skills2[count]:
+                self.labels[count][0].set_markup("%i" % skills1[count])
+                self.labels[count][1].set_markup("<b>%i</b>" % skills2[count])
+            else:
+                self.labels[count][0].set_markup("%i" % skills1[count])
+                self.labels[count][1].set_markup("%i" % skills2[count])
+
+        self.show_all()
+        self.run()
+        self.hide()
