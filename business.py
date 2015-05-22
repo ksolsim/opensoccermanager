@@ -231,10 +231,10 @@ class Advertising(Gtk.Grid):
         self.set_border_width(5)
         self.set_row_spacing(5)
 
-        self.liststoreHoardingsAvailable = Gtk.ListStore(str, int, int, int, str)
-        self.liststoreProgrammesAvailable = Gtk.ListStore(str, int, int, int, str)
-        self.liststoreHoardingsCurrent = Gtk.ListStore(str, int, int, int)
-        self.liststoreProgrammesCurrent = Gtk.ListStore(str, int, int, int)
+        self.liststoreHoardingsAvailable = Gtk.ListStore(int, str, int, int, int, str)
+        self.liststoreProgrammesAvailable = Gtk.ListStore(int, str, int, int, int, str)
+        self.liststoreHoardingsCurrent = Gtk.ListStore(int, str, int, int, int, str)
+        self.liststoreProgrammesCurrent = Gtk.ListStore(int, str, int, int, int, str)
 
         grid = Gtk.Grid()
         grid.set_row_spacing(5)
@@ -268,14 +268,14 @@ class Advertising(Gtk.Grid):
         treeviewHoardings1.connect("row-activated", self.advertising_add, 0)
         treeviewHoardings1.connect("drag-data-get", self.on_drag_data_get, 0)
         scrolledwindow.add(treeviewHoardings1)
-        treeviewcolumn = Gtk.TreeViewColumn("Name", cellrenderertext, text=0)
+        treeviewcolumn = Gtk.TreeViewColumn("Name", cellrenderertext, text=1)
         treeviewcolumn.set_expand(True)
         treeviewHoardings1.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Quantity", cellrenderertext, text=1)
+        treeviewcolumn = Gtk.TreeViewColumn("Quantity", cellrenderertext, text=2)
         treeviewHoardings1.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Period", cellrenderertext, text=2)
+        treeviewcolumn = Gtk.TreeViewColumn("Period", cellrenderertext, text=3)
         treeviewHoardings1.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Cost", cellrenderertext, text=4)
+        treeviewcolumn = Gtk.TreeViewColumn("Cost", cellrenderertext, text=5)
         treeviewHoardings1.append_column(treeviewcolumn)
 
         scrolledwindow = Gtk.ScrolledWindow()
@@ -292,12 +292,12 @@ class Advertising(Gtk.Grid):
         scrolledwindow.add(treeviewHoardings2)
         treeselection = treeviewHoardings2.get_selection()
         treeselection.set_mode(Gtk.SelectionMode.NONE)
-        treeviewcolumn = Gtk.TreeViewColumn("Name", cellrenderertext, text=0)
+        treeviewcolumn = Gtk.TreeViewColumn("Name", cellrenderertext, text=1)
         treeviewcolumn.set_expand(True)
         treeviewHoardings2.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Quantity", cellrenderertext, text=1)
+        treeviewcolumn = Gtk.TreeViewColumn("Quantity", cellrenderertext, text=2)
         treeviewHoardings2.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Period", cellrenderertext, text=2)
+        treeviewcolumn = Gtk.TreeViewColumn("Period", cellrenderertext, text=3)
         treeviewHoardings2.append_column(treeviewcolumn)
 
         grid = Gtk.Grid()
@@ -328,14 +328,14 @@ class Advertising(Gtk.Grid):
         treeviewProgrammes1.connect("row-activated", self.advertising_add, 1)
         treeviewProgrammes1.connect("drag-data-get", self.on_drag_data_get, 1)
         scrolledwindow.add(treeviewProgrammes1)
-        treeviewcolumn = Gtk.TreeViewColumn("Name", cellrenderertext, text=0)
+        treeviewcolumn = Gtk.TreeViewColumn("Name", cellrenderertext, text=1)
         treeviewcolumn.set_expand(True)
         treeviewProgrammes1.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Quantity", cellrenderertext, text=1)
+        treeviewcolumn = Gtk.TreeViewColumn("Quantity", cellrenderertext, text=2)
         treeviewProgrammes1.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Period", cellrenderertext, text=2)
+        treeviewcolumn = Gtk.TreeViewColumn("Period", cellrenderertext, text=3)
         treeviewProgrammes1.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Cost", cellrenderertext, text=4)
+        treeviewcolumn = Gtk.TreeViewColumn("Cost", cellrenderertext, text=5)
         treeviewProgrammes1.append_column(treeviewcolumn)
 
         scrolledwindow = Gtk.ScrolledWindow()
@@ -352,12 +352,12 @@ class Advertising(Gtk.Grid):
         scrolledwindow.add(treeviewProgrammes2)
         treeselection = treeviewProgrammes2.get_selection()
         treeselection.set_mode(Gtk.SelectionMode.NONE)
-        treeviewcolumn = Gtk.TreeViewColumn("Name", cellrenderertext, text=0)
+        treeviewcolumn = Gtk.TreeViewColumn("Name", cellrenderertext, text=1)
         treeviewcolumn.set_expand(True)
         treeviewProgrammes2.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Quantity", cellrenderertext, text=1)
+        treeviewcolumn = Gtk.TreeViewColumn("Quantity", cellrenderertext, text=2)
         treeviewProgrammes2.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn("Period", cellrenderertext, text=2)
+        treeviewcolumn = Gtk.TreeViewColumn("Period", cellrenderertext, text=3)
         treeviewProgrammes2.append_column(treeviewcolumn)
 
         buttonbox = Gtk.ButtonBox()
@@ -373,44 +373,17 @@ class Advertising(Gtk.Grid):
     def assistant_handler(self, togglebutton):
         game.advertising_assistant = togglebutton.get_active()
 
-    def advertising_add(self, treeview, path, treeviewcolumn, index):
-        selection = treeview.get_selection()
-        model, treeiter = selection.get_selected()
-        item = model[treeiter]
+    def advertising_add(self, treeview, treepath, treeviewcolumn, index):
+        model = treeview.get_model()
 
-        club = game.clubs[game.teamid]
+        advertid = model[treepath][0]
 
         if index == 0:
-            if club.hoardings[2] - (self.hoardings_quantity + item[1]) >= 0:
-                club.hoardings[1].append(item[0:4])
-                self.liststoreHoardingsCurrent.append(item[0:4])
-
-                amount = item[3]
-                self.hoardings_quantity += item[1]
-                self.update_totals()
-
-                model.remove(treeiter)
-
-                club.hoardings[0] = [item[0:] for item in model]
-
-                club.accounts.deposit(amount=amount, category="advertising")
+            game.clubs[game.teamid].hoardings.move(advertid)
         elif index == 1:
-            if club.programmes[2] - (self.programmes_quantity + item[1]) >= 0:
-                club.programmes[1].append(item[0:4])
-                self.liststoreProgrammesCurrent.append(item[0:4])
+            game.clubs[game.teamid].programmes.move(advertid)
 
-                amount = item[3]
-                self.programmes_quantity += item[1]
-                self.update_totals()
-
-                model.remove(treeiter)
-
-                club.programmes[0] = [item[0:] for item in model]
-
-                club.accounts.deposit(amount=amount, category="advertising")
-
-        if game.advertising_timeout == 0:
-            game.advertising_timeout = random.randint(8, 12)
+        self.populate_data()
 
     def advertising_add_dnd(self, model, treepath, index):
         treeiter = model.get_iter(treepath)
@@ -469,8 +442,11 @@ class Advertising(Gtk.Grid):
     def update_totals(self):
         club = game.clubs[game.teamid]
 
-        self.labelHoardingsCount.set_label("Used %i of %i hoarding spaces" % (self.hoardings_quantity, club.hoardings[2]))
-        self.labelProgrammesCount.set_label("Used %i of %i programme spaces" % (self.programmes_quantity, club.programmes[2]))
+        quantity = club.hoardings.get_count()
+        self.labelHoardingsCount.set_label("Used %i of %i hoarding spaces" % (quantity, club.hoardings.maximum))
+
+        quantity = club.programmes.get_count()
+        self.labelProgrammesCount.set_label("Used %i of %i programme spaces" % (quantity, club.programmes.maximum))
 
     def populate_data(self):
         self.liststoreHoardingsAvailable.clear()
@@ -480,29 +456,28 @@ class Advertising(Gtk.Grid):
 
         club = game.clubs[game.teamid]
 
-        for item in club.hoardings[0]:
-            amount = display.currency(item[3])
-            self.liststoreHoardingsAvailable.append([item[0], item[1], item[2], item[3], amount])
+        for advertid, advert in club.hoardings.available.items():
+            item = advert.get_details()
+            item.insert(0, advertid)
+            self.liststoreHoardingsAvailable.append(item)
 
-        for item in club.programmes[0]:
-            amount = display.currency(item[3])
-            self.liststoreProgrammesAvailable.append([item[0], item[1], item[2], item[3], amount])
+        for advertid, advert in club.programmes.available.items():
+            item = advert.get_details()
+            item.insert(0, advertid)
+            self.liststoreProgrammesAvailable.append(item)
 
-        for item in club.hoardings[1]:
+        for advert in club.hoardings.current.values():
+            item = advert.get_details()
+            item.insert(0, advertid)
             self.liststoreHoardingsCurrent.append(item)
 
-        for item in club.programmes[1]:
+        for advert in club.programmes.current.values():
+            item = advert.get_details()
+            item.insert(0, advertid)
             self.liststoreProgrammesCurrent.append(item)
 
-        self.hoardings_quantity = 0
-        self.programmes_quantity = 0
-
-        for item in club.hoardings[1]:
-            self.hoardings_quantity += item[1]
-
-        for item in club.programmes[1]:
-            self.programmes_quantity += item[1]
-
+        self.hoardings_quantity = club.hoardings.get_count()
+        self.programmes_quantity = club.programmes.get_count()
         self.update_totals()
 
     def on_drag_data_get(self, treeview, context, selection, info, time, index):

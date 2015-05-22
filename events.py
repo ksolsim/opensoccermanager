@@ -264,41 +264,10 @@ def update_sponsorship():
 
 
 def update_advertising():
-    '''
-    Decrease number of weeks on purchased advertisements, and remove
-    any that have expired. Also periodically refresh the advertisements
-    that are available.
-    '''
-    for club in game.clubs.values():
-        for advert in club.hoardings[1]:
-            advert[2] -= 1
+    club = game.clubs[game.teamid]
 
-            if advert[2] == 0:
-                club.hoardings[1].remove(advert)
-
-        for advert in club.programmes[1]:
-            advert[2] -= 1
-
-            if advert[2] == 0:
-                club.programmes[1].remove(advert)
-
-    # Generate news alert if advertising needs looking at by user
-    if game.advertising_alert == 0:
-        club = game.clubs[game.teamid]
-
-        if len(club.hoardings[1]) + len(club.programmes[1]) < 12:
-            game.news.publish("BS04")
-
-        game.advertising_alert = random.randint(10, 16)
-
-    game.advertising_alert -= 1
-
-    if game.advertising_timeout > 0:
-        game.advertising_timeout -= 1
-
-        if game.advertising_timeout == 0:
-            generate_advertisement()
-            game.advertising_timeout = random.randint(8, 12)
+    club.hoardings.update()
+    club.programmes.update()
 
 
 def generate_sponsor(companies):
@@ -310,33 +279,6 @@ def generate_sponsor(companies):
     cost = (reputation * random.randrange(950, 1100, 10)) * reputation ** 2
 
     return company, period, cost
-
-
-def generate_advertisement():
-    club = game.clubs[game.teamid]
-
-    club.hoardings[0] = []
-    club.programmes[0] = []
-
-    random.shuffle(game.companies)
-
-    for item in game.companies[0:30]:
-        name = item[0]
-        amount = random.randint(1, 6)
-        period = random.randint(4, 12)
-        cost = (club.reputation + random.randint(-5, 5)) * 100
-
-        club.hoardings[0].append([name, amount, period, cost])
-
-    random.shuffle(game.companies)
-
-    for item in game.companies[0:20]:
-        name = item[0]
-        amount = random.randint(1, 6)
-        period = random.randint(4, 12)
-        cost = (club.reputation + random.randint(-5, 5)) * 50
-
-        club.programmes[0].append([name, amount, period, cost])
 
 
 def season_tickets():

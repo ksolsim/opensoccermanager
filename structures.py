@@ -19,6 +19,7 @@ import operator
 import statistics
 
 import accounts
+import advertising
 import calculator
 import constants
 import game
@@ -273,8 +274,8 @@ class Club:
         self.finances = [0, 0, 0, 0, 0, 0, 0, 0]
         self.sponsor_status = 0
         self.sponsor_offer = ()
-        self.hoardings = [[], [], 0]
-        self.programmes = [[], [], 0]
+        self.hoardings = advertising.Advertising()
+        self.programmes = advertising.Advertising()
         self.shortlist = set()
         self.merchandise = []
         self.catering = []

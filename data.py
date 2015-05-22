@@ -18,6 +18,7 @@
 
 import random
 
+import advertising
 import ai
 import calculator
 import constants
@@ -272,15 +273,15 @@ def dataloader(finances):
     club.sponsor_offer = events.generate_sponsor(game.companies)
 
     # Generate advertising offers for hoardings/programmes
-    club.hoardings[2] = 48
+    club.hoardings.initialise()
+    club.programmes.initialise()
+
+    club.hoardings.maximum = 48
 
     if club.reputation > 10:
-        club.programmes[2] = 36
+        club.programmes.maximum = 36
     else:
-        club.programmes[2] = 24
-
-    events.generate_advertisement()
-    game.advertising_timeout = random.randint(8, 12)
+        club.programmes.maximum = 24
 
     # Produce initial interest rates
     game.bankloan = structures.BankLoan()
@@ -357,4 +358,3 @@ def dataloader(finances):
                       fixture3=initial_fixtures[2],)
 
     events.expectation()
-
