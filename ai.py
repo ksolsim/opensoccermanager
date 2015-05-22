@@ -181,7 +181,7 @@ class Result:
         self.increment_appearances(self.selection1, self.clubid1)
         self.increment_appearances(self.selection2, self.clubid2)
 
-        self.calculate_get_skills()
+        self.calculate_skills()
 
     def increment_appearances(self, selection, clubid):
         players = []

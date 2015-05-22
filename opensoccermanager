@@ -627,6 +627,8 @@ class ScreenGame(Gtk.Grid):
 
 
 class ContinueGame:
+    proceed = True
+
     def continue_game(self, widget):
         update_valid = True
 
@@ -666,15 +668,15 @@ class ContinueGame:
             if not error:
                 game.eventindex += 1
                 game.window.screen_loader(99)
-                game.proceed = False
-        elif game.proceed and update_valid:
+                self.proceed = False
+        elif self.proceed and update_valid:
             self.update_date()
-        elif not game.proceed:
+        elif not self.proceed:
             game.window.screen_loader(1)
 
             game.menu.set_sensitive(True)
             widgets.news.set_sensitive(True)
-            game.proceed = True
+            self.proceed = True
 
         # Unread news status
         if game.news.get_unread_count() > 0:
