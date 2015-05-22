@@ -61,19 +61,21 @@ import widgets
 
 class Window(Gtk.Window):
     def __init__(self):
-        game.preferences.readfile()
+        preferences.preferences.readfile()
 
         iconpath = os.path.join("resources", "logo.svg")
 
         Gtk.Window.__init__(self)
         self.set_title(version.NAME)
         self.set_icon_from_file(iconpath)
-        self.set_default_size(game.preferences.width, game.preferences.height)
+        self.set_default_size(preferences.preferences.width,
+                              preferences.preferences.height)
 
-        if game.preferences.maximized:
+        if preferences.preferences.maximized:
             self.maximize()
         else:
-            self.move(game.preferences.xposition, game.preferences.yposition)
+            self.move(preferences.preferences.xposition,
+                      preferences.preferences.yposition)
 
         self.connect("window-state-event", self.window_state_event)
         self.connect("delete-event", exit_game)
@@ -83,7 +85,8 @@ class Window(Gtk.Window):
 
     def window_state_event(self, widget, event):
         if self.is_maximized():
-            self.move(game.preferences.xposition, game.preferences.yposition)
+            self.move(preferences.preferences.xposition,
+                      preferences.preferences.yposition)
 
     def screen_loader(self, index):
         screens = {1: self.screenSquad,
@@ -165,8 +168,8 @@ class Window(Gtk.Window):
 
         self.show_all()
 
-        if game.music.playing:
-            game.music.play()
+        if music.music.playing:
+            music.music.play()
 
 
 class ScreenMain(Gtk.Grid):
@@ -412,8 +415,8 @@ class ScreenDetails(Gtk.Grid):
         game.database_filename = filechooserbutton.get_filename()
         game.database.connect(game.database_filename)
 
-        game.preferences["DATABASE"]["Database"] = game.database_filename
-        game.preferences.writefile()
+        preferences.preferences["DATABASE"]["Database"] = game.database_filename
+        preferences.preferences.writefile()
 
         self.load_year_list()
 
@@ -812,19 +815,19 @@ def exit_game(widget=None, event=None):
         Save the window size and state to preferences when quitting.
         '''
         if game.window.is_maximized():
-            game.preferences["INTERFACE"]["Maximized"] = "True"
+            preferences.preferences["INTERFACE"]["Maximized"] = "True"
         else:
-            game.preferences["INTERFACE"]["Maximized"] = "False"
+            preferences.preferences["INTERFACE"]["Maximized"] = "False"
 
             width, height = game.window.get_size()
-            game.preferences["INTERFACE"]["Width"] = str(width)
-            game.preferences["INTERFACE"]["Height"] = str(height)
+            preferences.preferences["INTERFACE"]["Width"] = str(width)
+            preferences.preferences["INTERFACE"]["Height"] = str(height)
 
             xposition, yposition = game.window.get_position()
-            game.preferences["INTERFACE"]["XPosition"] = str(xposition)
-            game.preferences["INTERFACE"]["YPosition"] = str(yposition)
+            preferences.preferences["INTERFACE"]["XPosition"] = str(xposition)
+            preferences.preferences["INTERFACE"]["YPosition"] = str(yposition)
 
-        game.preferences.writefile()
+        preferences.preferences.writefile()
 
     if game.teamid is None:
         update_window_config()
@@ -843,8 +846,8 @@ def exit_game(widget=None, event=None):
 game.date = structures.Date()
 game.database = database.Database()
 continuegame = ContinueGame()
-game.preferences = preferences.Preferences()
-game.music = music.Player()
+preferences.preferences = preferences.Preferences()
+music.music = music.Player()
 
 widgets.date = widgets.Date()
 widgets.news = widgets.News()

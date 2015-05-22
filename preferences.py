@@ -20,6 +20,7 @@ from configparser import ConfigParser
 import os
 
 import game
+import music
 
 
 class Preferences(ConfigParser):
@@ -62,7 +63,7 @@ class Preferences(ConfigParser):
         self.xposition = int(self["INTERFACE"]["XPosition"])
         self.yposition = int(self["INTERFACE"]["YPosition"])
 
-        game.music.playing = self["AUDIO"].getboolean("PlayMusic")
+        music.music.playing = self["AUDIO"].getboolean("PlayMusic")
         game.data_location = self["SAVE"]["Data"]
         game.save_location = self["SAVE"]["Saves"]
         game.database_filename = self["DATABASE"]["Database"]

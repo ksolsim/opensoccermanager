@@ -25,6 +25,8 @@ import platform
 
 import fileio
 import game
+import music
+import preferences
 import version
 import widgets
 
@@ -394,7 +396,7 @@ class PreferencesDialog(Gtk.Dialog):
         self.vbox.add(grid)
 
         checkbuttonMusic = Gtk.CheckButton("Play (annoying) USM Music in Background")
-        checkbuttonMusic.set_active(game.music.playing)
+        checkbuttonMusic.set_active(music.music.playing)
         checkbuttonMusic.connect("toggled", self.music_handler)
         grid.attach(checkbuttonMusic, 0, 0, 3, 1)
 
@@ -465,30 +467,30 @@ class PreferencesDialog(Gtk.Dialog):
         buttonbox.add(buttonClear)
 
     def music_handler(self, checkbutton):
-        if not game.music.playing:
-            game.music.play()
-            game.music.playing = True
-            game.preferences["AUDIO"]["PlayMusic"] = "True"
+        if not music.music.playing:
+            music.music.play()
+            music.music.playing = True
+            preferences.preferences["AUDIO"]["PlayMusic"] = "True"
         else:
-            game.music.stop()
-            game.music.playing = False
-            game.preferences["AUDIO"]["PlayMusic"] = "False"
+            music.music.stop()
+            music.music.playing = False
+            preferences.preferences["AUDIO"]["PlayMusic"] = "False"
 
-        game.preferences.writefile()
+        preferences.preferences.writefile()
 
     def change_currency(self, combobox):
         game.currency = combobox.get_active_id()
 
-        game.preferences["INTERFACE"]["Currency"] = game.currency
-        game.preferences.writefile()
+        preferences.preferences["INTERFACE"]["Currency"] = game.currency
+        preferences.preferences.writefile()
 
         game.currency = int(game.currency)
 
     def change_screen(self, combobox):
         game.start_screen = combobox.get_active_id()
 
-        game.preferences["INTERFACE"]["StartScreen"] = game.start_screen
-        game.preferences.writefile()
+        preferences.preferences["INTERFACE"]["StartScreen"] = game.start_screen
+        preferences.preferences.writefile()
 
         game.start_screen = int(game.start_screen)
 
@@ -496,16 +498,16 @@ class PreferencesDialog(Gtk.Dialog):
         directory = filechooser.get_uri()
         game.database_filename = directory[7:]
 
-        game.preferences["DATABASE"]["Database"] = game.database_filename
-        game.preferences.writefile()
+        preferences.preferences["DATABASE"]["Database"] = game.database_filename
+        preferences.preferences.writefile()
 
     def change_data_location(self, filechooser):
         directory = filechooser.get_uri()
         game.data_location = directory[7:]
 
-        game.preferences["SAVE"]["Data"] = game.data_location
-        game.preferences["SAVE"]["Saves"] = os.path.join(game.data_location, "saves")
-        game.preferences.writefile()
+        preferences.preferences["SAVE"]["Data"] = game.data_location
+        preferences.preferences["SAVE"]["Saves"] = os.path.join(game.data_location, "saves")
+        preferences.preferences.writefile()
 
     def clear_names(self, button):
         filepath = os.path.join(game.data_location, "users.txt")

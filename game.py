@@ -20,9 +20,6 @@ teamid = None               # Team that player has selected
 active_screen = None        # Track screen currently in view
 proceed = True
 
-# Audio
-music = None                # Music player object
-
 fixturespage = 0            # Page showing on fixtures page
 fixturesindex = 0           # Index number of which fixture the game is on
 eventindex = 0              # Position in relation to events

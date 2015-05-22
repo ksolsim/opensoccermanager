@@ -20,6 +20,7 @@ import sqlite3
 import os
 
 import game
+import preferences
 
 
 class Database:
@@ -29,7 +30,7 @@ class Database:
 
     def connect(self, filename=None):
         if not filename:
-            game.preferences.readfile()
+            preferences.preferences.readfile()
             filepath = os.path.join("databases", game.database_filename)
 
             if not os.path.isfile(filepath):
