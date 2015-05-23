@@ -428,8 +428,8 @@ class Players(Gtk.Grid):
             display_contract = player.get_contract()
             transfer_list = player.transfer[0]
             loan_list = player.transfer[1]
-            appearances = "%i (%i)" % (player.appearances, player.substitute)
-            cards = "%i/%i" % (player.yellow_cards, player.red_cards)
+            appearances = player.get_appearances()
+            cards = player.get_cards()
             rating = player.get_rating()
 
             self.liststorePlayers.append([playerid,

@@ -346,7 +346,7 @@ def player_info(playerid):
     player = game.players[playerid]
     club = player.get_club()
     season = game.date.get_season()
-    games = "%i (%i)" % (player.appearances, player.substitute)
+    games = player.get_appearances()
 
     liststore = Gtk.ListStore(str, str, str, int, int, int)
     liststore.append([season,

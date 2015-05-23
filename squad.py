@@ -658,8 +658,8 @@ class Squad(Gtk.Grid):
             wage = player.get_wage()
             contract = player.get_contract()
             morale = display.player_morale(player.morale)
-            appearances = "%i (%i)" % (player.appearances, player.substitute)
-            cards = "%i/%i" % (player.yellow_cards, player.red_cards)
+            appearances = player.get_appearances()
+            cards = player.get_cards()
             rating = player.get_rating()
 
             self.liststoreSquad.append([playerid,

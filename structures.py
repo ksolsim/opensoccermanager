@@ -228,7 +228,26 @@ class Player:
             elif self.morale + amount < -100:
                 self.morale = -100
 
+    def get_appearances(self):
+        '''
+        Get number of appearances and substitute appearances.
+        '''
+        appearances = "%i (%i)" % (self.appearances, self.substitute)
+
+        return appearances
+
+    def get_cards(self):
+        '''
+        Get number of yellow and red cards.
+        '''
+        cards = "%i/%i" % (self.yellow_cards, self.red_cards)
+
+        return cards
+
     def get_injury(self):
+        '''
+        Return number of weeks out injured.
+        '''
         if self.injury_period == 1:
             injury = "%i Week" % (self.injury_period)
         else:
@@ -237,6 +256,9 @@ class Player:
         return injury
 
     def get_suspension(self):
+        '''
+        Return number of matches out suspended.
+        '''
         if self.suspension_period == 1:
             suspension = "%i Match" % (self.suspension_period)
         else:
