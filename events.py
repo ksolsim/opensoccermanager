@@ -594,10 +594,7 @@ def end_of_season():
     game.transfers = []
 
     # Update statistics
-    game.record[1].insert(0, game.record[0])
-    game.record[0] = []
-
-    update_records()
+    game.statistics.reset_statistics()
 
     # Pay out on prize money for previous season
     prize_money = money.prize_money(position)
@@ -630,26 +627,6 @@ def refresh_staff():
                 club.scouts_available[scout.staffid] = scout
 
             game.staff_timeout = random.randint(8, 12)
-
-
-def update_records():
-    position = game.standings.find_position(game.teamid)
-    position = display.format_position(position)
-    season = game.date.get_season()
-
-    details = game.standings.clubs[game.teamid]
-
-    game.record[0] = [season,
-                      details.played,
-                      details.wins,
-                      details.draws,
-                      details.losses,
-                      details.goals_for,
-                      details.goals_against,
-                      details.goal_difference,
-                      details.points,
-                      position
-                     ]
 
 
 def update_statistics(result):

@@ -563,6 +563,38 @@ class Statistics:
         self.win = (0, ())
         self.loss = (0, ())
 
+        self.record = []
+
+    def reset_statistics(self):
+        '''
+        Save current statistics and reset to default for new season.
+        '''
+        position = game.standings.find_position(game.teamid)
+        position = display.format_position(position)
+        season = game.date.get_season()
+
+        details = game.standings.clubs[game.teamid]
+
+        record = (season,
+                  details.played,
+                  details.wins,
+                  details.draws,
+                  details.losses,
+                  details.goals_for,
+                  details.goals_against,
+                  details.goal_difference,
+                  details.points,
+                  position
+                 )
+
+        self.record.insert(0, record)
+
+        self.yellows = 0
+        self.reds = 0
+
+        self.win = (0, ())
+        self.loss = (0, ())
+
 
 class IndividualTraining:
     def __init__(self):

@@ -60,7 +60,6 @@ def datainit():
 
     game.fixtures = []
     game.results = []
-    game.record = [[], []]
     game.news = news.News()
 
     game.date.day = 1
@@ -331,7 +330,6 @@ def dataloader(finances):
     money.calculate_overdraft()
     money.calculate_grant()
     money.flotation()
-    events.update_records()
     ai.transfer_list()
     ai.loan_list()
     ai.team_training()
