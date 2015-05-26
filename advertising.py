@@ -22,6 +22,80 @@ import display
 import game
 
 
+class Sponsorship:
+    def __init__(self):
+        self.company = None
+        self.period = 0
+        self.amount = 0
+
+        self.timeout = 0
+        self.status = 0
+
+    def generate(self):
+        '''
+        Generate a new sponsorship offer.
+        '''
+        companies = random.choice(game.companies)
+        self.company = companies[0]
+
+        self.period = random.randint(1, 5)
+
+        reputation = game.clubs[game.teamid].reputation
+        self.amount = (reputation * random.randrange(950, 1100, 10)) * reputation ** 2
+
+        self.status = 1
+        self.timeout = random.randint(4, 6)
+
+        game.news.publish("BS01")
+
+    def update(self):
+        '''
+        Decrement the remaining sponsorship period.
+        '''
+        if self.status == 0:
+            if self.timeout > 0:
+                self.timeout -= 1
+            else:
+                self.generate()
+        elif self.status == 1:
+            if self.timeout > 0:
+                self.timeout -= 1
+            else:
+                self.status = 0
+                self.timeout = random.randint(4, 6)
+                game.news.publish("BS03")
+        elif self.status == 2:
+            if self.period > 0:
+                self.period -= 1
+            else:
+                self.status = 0
+                game.news.publish("BS02")
+
+    def accept(self):
+        '''
+        Accept the specified sponsorship offer.
+        '''
+        self.status = 2
+
+        game.clubs[game.teamid].accounts.deposit(amount=self.amount, category="sponsorship")
+
+    def reject(self):
+        '''
+        Reject the tabled sponsorship offer.
+        '''
+        self.company = None
+        self.timeout = random.randint(4, 6)
+        self.amount = 0
+
+        self.status = 0
+
+    def get_details(self):
+        '''
+        Return tuple of sponsorship deal details.
+        '''
+        return self.company, self.period, self.amount
+
+
 class Advertising:
     class Advert:
         def __init__(self, name):

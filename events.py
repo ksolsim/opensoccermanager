@@ -234,51 +234,11 @@ def update_contracts():
                     game.news.publish("SC02", scout=scout.name)
 
 
-def update_sponsorship():
-    '''
-    When the sponsorship status is set to 0, the club has not received
-    an offer and the timeout is decremented each week. Once the timeout
-    hits 0, an offer is made and the club is free to accept or reject.
-    Each week, the timeout decreases again, and if at 0, the offer is
-    withdrawn.
-    '''
-    club = game.clubs[game.teamid]
-
-    if club.sponsor_status == 0:
-        if game.sponsor_timeout == 0:
-            club.sponsor_status = 1
-            club.sponsor_offer = generate_sponsor(game.companies)
-
-            game.news.publish("BS01")
-            game.sponsor_timeout = random.randint(4, 6)
-        elif game.sponsor_timeout > 0:
-            game.sponsor_timeout -= 1
-    elif club.sponsor_status == 1:
-        if game.sponsor_timeout > 0:
-            game.sponsor_timeout -= 1
-        elif game.sponsor_timeout == 0:
-            club.sponsor_status = 0
-
-            game.news.publish("BS03")
-            game.sponsor_timeout = random.randint(4, 6)
-
-
 def update_advertising():
     club = game.clubs[game.teamid]
 
     club.hoardings.update()
     club.programmes.update()
-
-
-def generate_sponsor(companies):
-    companies = random.choice(companies)
-    company = companies[0]
-
-    period = random.randint(1, 5)
-    reputation = game.clubs[game.teamid].reputation
-    cost = (reputation * random.randrange(950, 1100, 10)) * reputation ** 2
-
-    return company, period, cost
 
 
 def season_tickets():

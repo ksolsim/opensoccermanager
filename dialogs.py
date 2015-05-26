@@ -869,39 +869,39 @@ def improve_wage(name, amount):
 def sponsorship():
     club = game.clubs[game.teamid]
 
-    status = club.sponsor_status
-    company, period, cost = club.sponsor_offer
-
-    display_cost = display.currency(cost)
-
-    message = ("There are currently no club sponsorship offers.",
-               "%s have made a %s year offer worth %s." % (company, period, display_cost),
-               "The deal with %s runs for another %s years." % (company, period))
-
-    text = message[status]
-
     messagedialog = Gtk.MessageDialog()
     messagedialog.set_title("Sponsorship")
     messagedialog.set_transient_for(game.window)
-    messagedialog.set_markup(message[status])
 
-    if status == 1:
+    if club.sponsorship.status == 0:
+        messagedialog.set_markup("There are currently no club sponsorship offers.")
+
+        messagedialog.add_button("_Close", Gtk.ResponseType.CLOSE)
+        messagedialog.set_default_response(Gtk.ResponseType.CLOSE)
+    elif club.sponsorship.status == 1:
+        details = club.sponsorship.get_details()
+
+        messagedialog.set_markup("%s have made a %s year offer worth %s." % details)
         messagedialog.add_button("_Reject", Gtk.ResponseType.REJECT)
         messagedialog.add_button("_Accept", Gtk.ResponseType.ACCEPT)
         messagedialog.set_default_response(Gtk.ResponseType.ACCEPT)
     else:
+        details = club.sponsorship.get_details()
+
+        if details[1] == 1:
+            messagedialog.set_markup("The deal with %s runs for another year." % (details[0]))
+        else:
+            messagedialog.set_markup("The deal with %s runs for another %s years." % (details[0], details[1]))
+
         messagedialog.add_button("_Close", Gtk.ResponseType.CLOSE)
         messagedialog.set_default_response(Gtk.ResponseType.CLOSE)
 
     response = messagedialog.run()
 
     if response == Gtk.ResponseType.ACCEPT:
-        company, period, cost = club.sponsor_offer
-        club.sponsor_status = 2
-        club.accounts.deposit(amount=cost, category="sponsorship")
+        club.sponsorship.accept()
     elif response == Gtk.ResponseType.REJECT:
-        club.sponsor_status = 0
-        game.sponsor_timeout = random.randint(4, 6)
+        club.sponsorship.reject()
 
     messagedialog.destroy()
 

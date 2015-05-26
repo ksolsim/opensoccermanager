@@ -268,10 +268,6 @@ def dataloader(finances):
         scout = staff.Staff(staff_type=1)
         club.scouts_available[scout.staffid] = scout
 
-    # Generate sponsorship offer
-    club.sponsor_status = 0
-    club.sponsor_offer = events.generate_sponsor(game.companies)
-
     # Generate advertising offers for hoardings/programmes
     club.hoardings.initialise()
     club.programmes.initialise()

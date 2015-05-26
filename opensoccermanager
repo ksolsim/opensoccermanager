@@ -695,6 +695,8 @@ class ContinueGame:
             game.labelNextMatch.set_label("")
 
     def update_date(self):
+        club = game.clubs[game.teamid]
+
         game.date.day = constants.dates[game.date.week - 1][game.dateindex]
 
         if game.dateprev > game.date.day:
@@ -717,7 +719,7 @@ class ContinueGame:
             money.pay_wages()
             events.update_contracts()
             events.update_advertising()
-            events.update_sponsorship()
+            club.sponsorship.update()
             events.refresh_staff()
             events.team_training()
             events.individual_training()
@@ -738,9 +740,10 @@ class ContinueGame:
         aitransfer.identify()
         staff.check_morale()
 
-        # Initiate first sponsorship offer
+        # Initiate sponsorship generation if needed
         if (game.date.day, game.date.month) == (4, 8):
-            events.update_sponsorship()
+            if club.sponsorship.status == 0:
+                club.sponsorship.generate()
 
         # Stop sale of season tickets and deposit earnings
         if (game.date.day, game.date.month) == (16, 8):

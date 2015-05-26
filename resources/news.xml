@@ -43,17 +43,27 @@
     <article id="BS01">
         <title>New sponsorship offer received</title>
         <message>We have received a new sponsorship offer that you need to take a look at. We need to decide on whether to proceed with the deal or not as soon as possible. If we do reject the deal, it will be another few weeks before another is offered to us.</message>
-        <category>8</category>
+        <category>2</category>
     </article>
     <article id="BS01">
         <title>Offer of sponsorship received</title>
         <message>The club has received a new sponsorship offer that needs to be looked over. The deal needs to be decided on as soon as possible, however if the deal doesn't meet our expectations, it will probably be another few weeks before a new offer arrives.</message>
-        <category>8</category>
+        <category>2</category>
     </article>
     <article id="BS01">
         <title>Sponsorship offer made to club</title>
         <message>A sponsorship offer has been received which needs to be looked at by you. We need to decide on whether the deal is suitable or not as soon as possible. If we reject, it may be another few weeks before the club receives another offer.</message>
-        <category>8</category>
+        <category>2</category>
+    </article>
+    <article id="BS02">
+        <title>Club sponsorship deal has ended</title>
+        <message>Our current sponsorship deal has now expired. A new offer will be made in the next few weeks.</message>
+        <category>2</category>
+    </article>
+    <article id="BS03">
+        <title>Sponsorship offer withdrawn</title>
+        <message>You missed our meeting with the sponsor and they have now withdrawn a very good offer. Don't let that happen again or you'll be looking for a new job!</message>
+        <category>2</category>
     </article>
     <article id="EX01">
         <title>Expectations for this season revealed</title>
@@ -103,11 +113,6 @@
     <article id="TT04">
         <title>Players being overworked on team training</title>
         <message>The squad are looking a little jaded from the amount of work they have been doing in team training. We really could do with reducing the workload for a couple of months.</message>
-        <category>2</category>
-    </article>
-    <article id="BS03">
-        <title>Sponsorship offer withdrawn</title>
-        <message>You missed our meeting with the sponsor and they have now withdrawn a very good offer. Don't let that happen again or you'll be looking for a new job!</message>
         <category>2</category>
     </article>
     <article id="TT01">

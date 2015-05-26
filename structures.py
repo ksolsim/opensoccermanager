@@ -294,8 +294,7 @@ class Club:
         self.school_tickets = 0
         self.accounts = accounts.Accounts()
         self.finances = [0, 0, 0, 0, 0, 0, 0, 0]
-        self.sponsor_status = 0
-        self.sponsor_offer = ()
+        self.sponsorship = advertising.Sponsorship()
         self.hoardings = advertising.Advertising()
         self.programmes = advertising.Advertising()
         self.shortlist = set()
