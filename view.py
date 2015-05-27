@@ -205,34 +205,30 @@ class Players(Gtk.Grid):
             dialogs.error(10)
 
     def add_to_comparison(self, menuitem, index):
+        '''
+        Add selected player to comparison dialog.
+        '''
         model, treeiter = self.treeselection.get_selected()
 
         dialogs.comparison.comparison[index] = model[treeiter][0]
 
     def row_activated(self, treeview, treepath, treeviewcolumn):
+        '''
+        Display extended player information dialog.
+        '''
         model = treeview.get_model()
         playerid = model[treepath][0]
 
         dialogs.player_info(playerid)
 
     def search_activated(self, entry):
+        '''
+        Trigger filter of model based on search criteria.
+        '''
         criteria = entry.get_text()
 
         if criteria is not "":
-            data = {}
-
-            for playerid, player in game.players.items():
-                both = "%s %s" % (player.first_name, player.second_name)
-
-                for search in (player.second_name, player.common_name, player.first_name, both):
-                    search = "".join((c for c in unicodedata.normalize("NFD", search) if unicodedata.category(c) != "Mn"))
-
-                    if re.findall(criteria, search, re.IGNORECASE):
-                        data[playerid] = player
-
-                        break
-
-            self.populate_data(data)
+            self.treemodelfilter.refilter()
             self.buttonReset.set_sensitive(True)
 
             entrycompletion = entry.get_completion()
@@ -279,11 +275,17 @@ class Players(Gtk.Grid):
         transfer.make_enquiry(playerid, transfer_type)
 
     def add_to_shortlist(self, menuitem):
+        '''
+        Add selected player to shortlist.
+        '''
         model, treeiter = self.treeselection.get_selected()
 
         game.clubs[game.teamid].shortlist.add(model[treeiter][0])
 
     def remove_from_shortlist(self, menuitem):
+        '''
+        Remove selected player from shortlist.
+        '''
         model, treeiter = self.treeselection.get_selected()
 
         game.clubs[game.teamid].shortlist.remove(model[treeiter][0])
@@ -316,6 +318,9 @@ class Players(Gtk.Grid):
                 self.contextmenu.popup(None, None, None, None, event.button, event.time)
 
     def filter_dialog(self, button):
+        '''
+        Show filter dialog and refilter treeview with specified options.
+        '''
         self.searchfilter.display()
 
         sensitive = self.searchfilter.options != self.searchfilter.defaults
@@ -324,8 +329,18 @@ class Players(Gtk.Grid):
         self.treemodelfilter.refilter()
 
     def filter_visible(self, model, treeiter, data):
-        criteria = self.searchfilter.options
         show = True
+
+        # Filter by player name
+        criteria = self.entrySearch.get_text()
+
+        for search in (model[treeiter][1],):
+            search = "".join((c for c in unicodedata.normalize("NFD", search) if unicodedata.category(c) != "Mn"))
+
+            if not re.findall(criteria, search, re.IGNORECASE):
+                show = False
+
+        criteria = self.searchfilter.options
 
         # Filter own players
         if criteria["own_players"] is False:
@@ -348,11 +363,11 @@ class Players(Gtk.Grid):
 
         # Filter player values
         if show:
-            show = criteria["value"][1] >= model[treeiter][16] >= criteria["value"][0]
+            show = criteria["value"][0] <= model[treeiter][16] <= criteria["value"][1]
 
         # Filter player ages
         if show:
-            show = criteria["age"][1] >= model[treeiter][2] >= criteria["age"][0]
+            show = criteria["age"][0] <= model[treeiter][2] <= criteria["age"][1]
 
         # Filter transfer list, loan list and contract statuses
         if criteria["status"] == 1:
@@ -369,32 +384,32 @@ class Players(Gtk.Grid):
                 show = False
 
         # Filter skills
-        if model[treeiter][7] < criteria["keeping"][0] or model[treeiter][7] > criteria["keeping"][1]:
-            show = False
+        if show:
+            show = criteria["keeping"][0] <= model[treeiter][7] <= criteria["keeping"][1]
 
-        if model[treeiter][8] < criteria["tackling"][0] or model[treeiter][8] > criteria["tackling"][1]:
-            show = False
+        if show:
+            show = criteria["tackling"][0] <= model[treeiter][8] <= criteria["tackling"][1]
 
-        if model[treeiter][9] < criteria["passing"][0] or model[treeiter][9] > criteria["passing"][1]:
-            show = False
+        if show:
+            show = criteria["passing"][0] <= model[treeiter][9] <= criteria["passing"][1]
 
-        if model[treeiter][10] < criteria["shooting"][0] or model[treeiter][10] > criteria["shooting"][1]:
-            show = False
+        if show:
+            show = criteria["shooting"][0] <= model[treeiter][10] <= criteria["shooting"][1]
 
-        if model[treeiter][11] < criteria["heading"][0] or model[treeiter][11] > criteria["heading"][1]:
-            show = False
+        if show:
+            show = criteria["heading"][0] <= model[treeiter][11] <= criteria["heading"][1]
 
-        if model[treeiter][12] < criteria["pace"][0] or model[treeiter][12] > criteria["pace"][1]:
-            show = False
+        if show:
+            show = criteria["pace"][0] <= model[treeiter][12] <= criteria["pace"][1]
 
-        if model[treeiter][13] < criteria["stamina"][0] or model[treeiter][13] > criteria["stamina"][1]:
-            show = False
+        if show:
+            show = criteria["stamina"][0] <= model[treeiter][13] <= criteria["stamina"][1]
 
-        if model[treeiter][14] < criteria["ball_control"][0] or model[treeiter][14] > criteria["ball_control"][1]:
-            show = False
+        if show:
+            show = criteria["ball_control"][0] <= model[treeiter][14] <= criteria["ball_control"][1]
 
-        if model[treeiter][15] < criteria["set_pieces"][0] or model[treeiter][15] > criteria["set_pieces"][1]:
-            show = False
+        if show:
+            show = criteria["set_pieces"][0] <= model[treeiter][15] <= criteria["set_pieces"][1]
 
         return show
 
