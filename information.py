@@ -38,29 +38,29 @@ class News(Gtk.Grid):
         Gtk.Grid.__init__(self)
         self.set_row_spacing(5)
 
-        self.liststoreNews = Gtk.ListStore(int, str, str, int, str, bool, int)
+        self.liststoreNews = Gtk.ListStore(int, str, str, str, int, str, bool, int)
 
-        self.treefilter = self.liststoreNews.filter_new()
-        self.treefilter.set_visible_func(self.filter_visible, game.clubs)
+        self.treemodelfilter = self.liststoreNews.filter_new()
+        self.treemodelfilter.set_visible_func(self.filter_visible, game.clubs)
 
-        treemodelsort = Gtk.TreeModelSort(self.treefilter)
+        treemodelsort = Gtk.TreeModelSort(self.treemodelfilter)
         treemodelsort.set_sort_column_id(0, Gtk.SortType.DESCENDING)
 
         grid = Gtk.Grid()
         grid.set_column_spacing(5)
         self.attach(grid, 0, 0, 1, 1)
 
-        entrySearch = Gtk.SearchEntry()
-        entrySearch.set_placeholder_text("Search")
-        entrySearch.connect("activate", self.search_activated)
-        entrySearch.connect("icon-press", self.icon_press)
-        entrySearch.connect("changed", self.search_changed)
-        entrySearch.add_accelerator("grab-focus",
-                                    game.accelgroup,
-                                    102,
-                                    Gdk.ModifierType.CONTROL_MASK,
-                                    Gtk.AccelFlags.VISIBLE)
-        grid.attach(entrySearch, 0, 0, 1, 1)
+        self.entrySearch = Gtk.SearchEntry()
+        self.entrySearch.set_placeholder_text("Search")
+        self.entrySearch.connect("activate", self.search_activated)
+        self.entrySearch.connect("icon-press", self.icon_press)
+        self.entrySearch.connect("changed", self.search_changed)
+        self.entrySearch.add_accelerator("grab-focus",
+                                         game.accelgroup,
+                                         102,
+                                         Gdk.ModifierType.CONTROL_MASK,
+                                         Gtk.AccelFlags.VISIBLE)
+        grid.attach(self.entrySearch, 0, 0, 1, 1)
 
         label = Gtk.Label("_Filter")
         label.set_hexpand(True)
@@ -105,10 +105,10 @@ class News(Gtk.Grid):
         cellrendererTitle = Gtk.CellRendererText()
         treeviewcolumn.pack_start(cellrendererTitle, True)
         treeviewcolumn.add_attribute(cellrendererTitle, "text", 2)
-        treeviewcolumn.add_attribute(cellrendererTitle, "weight-set", 5)
-        treeviewcolumn.add_attribute(cellrendererTitle, "weight", 6)
+        treeviewcolumn.add_attribute(cellrendererTitle, "weight-set", 6)
+        treeviewcolumn.add_attribute(cellrendererTitle, "weight", 7)
 
-        treeviewcolumn = widgets.TreeViewColumn(title="Category", column=4)
+        treeviewcolumn = widgets.TreeViewColumn(title="Category", column=5)
         treeviewNews.append_column(treeviewcolumn)
 
         scrolledwindow = Gtk.ScrolledWindow()
@@ -126,26 +126,17 @@ class News(Gtk.Grid):
 
     def search_changed(self, entry):
         if entry.get_text_length() == 0:
-            self.populate_data(game.news.articles)
+            self.treemodelfilter.refilter()
 
     def search_activated(self, entry):
-        criteria = entry.get_text()
+        criteria = self.entrySearch.get_text()
 
-        if len(criteria) > 0:
-            data = {}
-
-            for newsid, article in game.news.articles.items():
-                for search in (article.title, article.message):
-                    if re.findall(criteria, search, re.IGNORECASE):
-                        data[newsid] = article
-
-                        break
-
-            self.populate_data(data)
+        if criteria is not "":
+            self.treemodelfilter.refilter()
 
     def icon_press(self, entry, position, event):
         if position == Gtk.EntryIconPosition.SECONDARY:
-            self.populate_data(game.news.articles)
+            self.treemodelfilter.refilter()
 
     def item_selected(self, treeview, treepath, treeviewcolumn):
         model = treeview.get_model()
@@ -161,21 +152,31 @@ class News(Gtk.Grid):
         # Convert TreeModelSort path to access underlying ListStore model
         child_treepath = model.convert_path_to_child_path(treepath)
         child_model = model.get_model()
-        child_model[child_treepath][6] = 400
+        child_model[child_treepath][7] = 400
 
         if game.news.get_unread_count() == 0:
             widgets.news.hide()
 
     def filter_changed(self, combobox):
-        self.treefilter.refilter()
+        self.treemodelfilter.refilter()
 
     def filter_visible(self, model, treeiter, data):
-        filterid = int(self.comboboxFilter.get_active_id())
         show = True
 
-        if filterid != 0:
-            if model[treeiter][3] != filterid:
+        criteria = self.entrySearch.get_text()
+
+        for search in (model[treeiter][2], model[treeiter][3],):
+            if not re.findall(criteria, search, re.IGNORECASE):
                 show = False
+            else:
+                show = True
+
+        if show:
+            filterid = int(self.comboboxFilter.get_active_id())
+
+            if filterid != 0:
+                if model[treeiter][4] != filterid:
+                    show = False
 
         return show
 
@@ -193,6 +194,7 @@ class News(Gtk.Grid):
             self.liststoreNews.append([newsid,
                                        article.date,
                                        article.title,
+                                       article.message,
                                        article.category,
                                        category,
                                        article.unread,
