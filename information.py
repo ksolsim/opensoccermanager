@@ -433,9 +433,14 @@ class Standings(Gtk.Grid):
 
     def __init__(self):
         Gtk.Grid.__init__(self)
+        self.set_row_spacing(5)
+
+        self.comboboxLeagues = Gtk.ComboBoxText()
+        self.comboboxLeagues.connect("changed", self.league_changed)
+        self.attach(self.comboboxLeagues, 0, 0, 1, 1)
 
         scrolledwindow = Gtk.ScrolledWindow()
-        self.attach(scrolledwindow, 0, 0, 1, 1)
+        self.attach(scrolledwindow, 0, 1, 1, 1)
 
         self.liststoreStandings = Gtk.ListStore(int, str, int, int, int, int,
                                                 int, int, int, int, str)
@@ -505,11 +510,27 @@ class Standings(Gtk.Grid):
             dialog = dialogs.Opposition()
             dialog.display(show=clubid)
 
-    def run(self):
+    def league_changed(self, combobox):
+        self.populate_data()
+
+    def populate_data(self):
         self.liststoreStandings.clear()
 
-        for item in game.standings.get_data():
-            self.liststoreStandings.append(item)
+        if self.comboboxLeagues.get_active_id():
+            club = int(self.comboboxLeagues.get_active_id())
+
+            standings = game.leagues[club].standings
+
+            for item in standings.get_data():
+                self.liststoreStandings.append(item)
+
+    def run(self):
+        self.comboboxLeagues.remove_all()
+
+        for leagueid, league in game.leagues.items():
+            self.comboboxLeagues.append(str(leagueid), league.name)
+
+        self.comboboxLeagues.set_active(0)
 
         self.show_all()
 

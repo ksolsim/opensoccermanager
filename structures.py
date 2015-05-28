@@ -315,6 +315,23 @@ class Club:
         return stadium
 
 
+class League:
+    def __init__(self):
+        self.name = ""
+        self.teams = []
+
+        self.fixtures = Fixtures()
+        self.standings = Standings()
+
+    def add_club(self, clubid):
+        '''
+        Add club to league and standings.
+        '''
+        self.teams.append(clubid)
+
+        self.standings.add_item(clubid)
+
+
 class Nation:
     pass
 
@@ -333,6 +350,17 @@ class BankLoan:
 
 class Grant:
     pass
+
+
+class Fixtures:
+    def __init__(self):
+        pass
+
+    def generate(self):
+        '''
+        Generate list of fixtures for listed teams.
+        '''
+        pass
 
 
 class Standings:
