@@ -270,6 +270,7 @@ class ScreenDetails(Gtk.Grid):
 
         self.liststoreName = Gtk.ListStore(str)
         self.liststoreYears = Gtk.ListStore(int)
+        self.liststoreLeagues = Gtk.ListStore(int, str)
         self.liststoreClubs = Gtk.ListStore(int, str)
 
         treemodelsort = Gtk.TreeModelSort(self.liststoreClubs)
@@ -309,34 +310,44 @@ class ScreenDetails(Gtk.Grid):
         label.set_mnemonic_widget(self.comboboxYear)
         self.attach(self.comboboxYear, 1, 2, 1, 1)
 
-        label = widgets.AlignedLabel("_Club")
+        label = widgets.AlignedLabel("_League")
         self.attach(label, 0, 3, 1, 1)
+        self.comboboxLeague = Gtk.ComboBox()
+        self.comboboxLeague.set_model(self.liststoreLeagues)
+        self.comboboxLeague.pack_start(cellrenderertext, True)
+        self.comboboxLeague.add_attribute(cellrenderertext, "text", 1)
+        self.comboboxLeague.connect("changed", self.league_changed)
+        label.set_mnemonic_widget(self.comboboxLeague)
+        self.attach(self.comboboxLeague, 1, 3, 1, 1)
+
+        label = widgets.AlignedLabel("_Club")
+        self.attach(label, 0, 4, 1, 1)
         self.comboboxClub = Gtk.ComboBox()
         self.comboboxClub.set_model(treemodelsort)
         self.comboboxClub.pack_start(cellrenderertext, True)
         self.comboboxClub.add_attribute(cellrenderertext, "text", 1)
         self.comboboxClub.connect("changed", self.continue_status)
         label.set_mnemonic_widget(self.comboboxClub)
-        self.attach(self.comboboxClub, 1, 3, 1, 1)
+        self.attach(self.comboboxClub, 1, 4, 1, 1)
 
         label = widgets.AlignedLabel("_Finances")
-        self.attach(label, 0, 4, 1, 1)
+        self.attach(label, 0, 5, 1, 1)
         self.radiobuttonFinancesRep = Gtk.RadioButton("Reputation-Based Finances")
         self.radiobuttonFinancesRep.connect("toggled", self.finances_changed)
         label.set_mnemonic_widget(self.radiobuttonFinancesRep)
-        self.attach(self.radiobuttonFinancesRep, 1, 4, 1, 1)
+        self.attach(self.radiobuttonFinancesRep, 1, 5, 1, 1)
         self.radiobuttonFinancesUSM = Gtk.RadioButton("USM-Based Finances")
         self.radiobuttonFinancesUSM.join_group(self.radiobuttonFinancesRep)
         self.radiobuttonFinancesUSM.connect("toggled", self.finances_changed)
-        self.attach(self.radiobuttonFinancesUSM, 2, 4, 1, 1)
+        self.attach(self.radiobuttonFinancesUSM, 2, 5, 1, 1)
         self.comboboxFinances = Gtk.ComboBoxText()
         self.comboboxFinances.set_sensitive(False)
-        self.attach(self.comboboxFinances, 1, 5, 2, 1)
+        self.attach(self.comboboxFinances, 1, 6, 2, 1)
 
         buttonbox = Gtk.ButtonBox()
         buttonbox.set_spacing(5)
         buttonbox.set_layout(Gtk.ButtonBoxStyle.END)
-        self.attach(buttonbox, 0, 6, 3, 1)
+        self.attach(buttonbox, 0, 7, 3, 1)
         buttonBack = widgets.Button("_Back")
         buttonBack.connect("clicked", self.back_button_clicked)
         buttonbox.add(buttonBack)
@@ -376,6 +387,9 @@ class ScreenDetails(Gtk.Grid):
         self.entryName.grab_focus()
 
     def year_changed(self, combobox=None):
+        self.load_league_list()
+
+    def league_changed(self, combobox=None):
         self.load_club_list()
 
     def load_year_list(self):
@@ -384,22 +398,38 @@ class ScreenDetails(Gtk.Grid):
         self.liststoreYears.clear()
 
         for year in year_data.fetchall():
-            year = year[0]
-            self.liststoreYears.append([year])
-
-        sensitive = len(self.liststoreClubs) > 0
-        self.comboboxClub.set_sensitive(sensitive)
+            self.liststoreYears.append([year[0]])
 
         self.comboboxYear.set_active(0)
 
-        self.load_club_list()
+    def load_league_list(self):
+        model = self.comboboxYear.get_model()
+        treeiter = self.comboboxYear.get_active()
+
+        if treeiter != -1:
+            year = model[treeiter][0]
+
+            league_data = game.database.cursor.execute("SELECT league.id, league.name FROM league JOIN leagueattr ON leagueattr.league = league.id WHERE year = ?", (year,))
+
+            self.liststoreLeagues.clear()
+
+            for league in league_data.fetchall():
+                self.liststoreLeagues.append([league[0], league[1]])
+
+            sensitive = len(self.liststoreLeagues) > 0
+            self.comboboxLeague.set_sensitive(sensitive)
+            self.comboboxLeague.set_active(0)
 
     def load_club_list(self):
         active = self.comboboxYear.get_active()
+        year = self.liststoreYears[active][0]
+
+        active = self.comboboxLeague.get_active()
 
         if active != -1:
-            year = self.liststoreYears[active][0]
-            club_data = game.database.cursor.execute("SELECT club.id, club.name FROM club, clubattr WHERE club.id = clubattr.club AND year = ?", (year,))
+            league = self.liststoreLeagues[active][0]
+
+            club_data = game.database.cursor.execute("SELECT club.id, club.name FROM club JOIN clubattr ON clubattr.club = club.id WHERE year = ? AND league = ?", (year, league))
 
             self.liststoreClubs.clear()
 
@@ -408,8 +438,11 @@ class ScreenDetails(Gtk.Grid):
 
             sensitive = len(self.liststoreClubs) > 0
             self.comboboxClub.set_sensitive(sensitive)
-
-        self.comboboxClub.set_active(0)
+            self.comboboxClub.set_active(0)
+        else:
+            sensitive = len(self.liststoreClubs) > 0
+            self.comboboxClub.set_sensitive(sensitive)
+            self.liststoreClubs.clear()
 
     def file_chooser_set(self, filechooserbutton):
         game.database_filename = filechooserbutton.get_filename()

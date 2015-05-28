@@ -41,6 +41,7 @@ def datainit():
     information.
     '''
     # Clear data structures and reset date
+    game.leagues = {}
     game.clubs = {}
     game.players = {}
     game.nations = {}
@@ -68,7 +69,16 @@ def datainit():
 
     widgets.date.update()
 
-    game.standings = structures.Standings()
+    # Import leagues
+    game.database.cursor.execute("SELECT * FROM league JOIN leagueattr ON league.id = leagueattr.league WHERE year = ?", (game.date.year,))
+    data = game.database.cursor.fetchall()
+
+    for item in data:
+        league = structures.League()
+        leagueid = item[0]
+        game.leagues[leagueid] = league
+
+        league.name = item[1]
 
     # Import clubs and populate club data structure
     game.database.cursor.execute("SELECT * FROM club JOIN clubattr ON club.id = clubattr.club WHERE year = ?", (game.date.year,))
@@ -81,10 +91,11 @@ def datainit():
 
         club.name = item[1]
         club.nickname = item[2]
-        club.manager = item[6]
-        club.chairman = item[7]
-        club.stadium = item[8]
-        club.reputation = item[9]
+        club.league = item[6]
+        club.manager = item[7]
+        club.chairman = item[8]
+        club.stadium = item[9]
+        club.reputation = item[10]
 
         # Initialise playerid in team to 0
         for count in range(0, 16):
@@ -93,7 +104,7 @@ def datainit():
         club.base_attendance = (74000 / (40 - club.reputation)) * club.reputation
         club.base_attendance = int(club.base_attendance * 0.9)
 
-        game.standings.add_item(clubid)
+        game.leagues[club.league].add_club(clubid)
 
     # Import players
     game.database.cursor.execute("SELECT * FROM player JOIN playerattr ON player.id = playerattr.player WHERE year = ?", (game.date.year,))
