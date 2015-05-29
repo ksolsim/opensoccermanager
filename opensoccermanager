@@ -679,8 +679,11 @@ class ContinueGame:
 
         if current_date == event:
             # Team names to be passed to proceed dialog
-            for item in game.fixtures[game.fixturesindex]:
-                if game.teamid in (item[0], item[1]):
+            leagueid = game.clubs[game.teamid].league
+            fixtures = game.leagues[leagueid].fixtures
+
+            for item in fixtures.fixtures[game.fixturesindex]:
+                if game.teamid in item:
                     match = item
 
             if game.teamid == match[0]:
@@ -719,7 +722,10 @@ class ContinueGame:
         current_date = "%i/%i" % (game.date.day, game.date.month)
 
         if current_date == constants.events[game.fixturesindex]:
-            for match in game.fixtures[game.fixturesindex]:
+            leagueid = game.clubs[game.teamid].league
+            fixtures = game.leagues[leagueid].fixtures
+
+            for match in fixtures.fixtures[game.fixturesindex]:
                 if game.teamid in match:
                     team1 = game.clubs[match[0]].name
                     team2 = game.clubs[match[1]].name
@@ -832,7 +838,7 @@ class ContinueGame:
 
         errors.team_count = team_count
 
-        if team_count < 11:
+        if team_count < 1:
             errors.errored = True
         elif sub_count < 5:
             if not dialogs.not_enough_subs(sub_count):

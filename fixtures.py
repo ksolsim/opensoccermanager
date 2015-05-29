@@ -19,50 +19,62 @@
 import random
 
 
-def generate(clubs):
-    club_list = [item for item in clubs]
-    random.shuffle(club_list)
+class Fixtures:
+    def __init__(self):
+        self.clubs = []
+        self.fixtures = []
 
-    clubs = club_list
+    def generate(self, teams):
+        '''
+        Generate the fixtures for the given teams.
+        '''
+        self.clubs = [team for team in teams]
+        random.shuffle(self.clubs)
 
-    total_rounds = len(clubs) - 1
-    matches_per_round = len(clubs) / 2
+        rounds = len(self.clubs) - 1
+        matches = len(self.clubs) * 0.5
 
-    round_count = 0
-    match_count = 0
-    fixtures = []
-
-    while round_count < total_rounds:
-        fixtures.append([])
-
-        while match_count < matches_per_round:
-            home = (round_count + match_count) % (len(clubs) - 1)
-            away = (len(clubs) - 1 - match_count + round_count) % (len(clubs) - 1)
-
-            if match_count == 0:
-                away = len(clubs) - 1
-
-            if round_count % 2 == 1:
-                fixtures[round_count].append([clubs[home], clubs[away]])
-            else:
-                fixtures[round_count].append([clubs[away], clubs[home]])
-
-            match_count += 1
-
-        round_count += 1
+        round_count = 0
         match_count = 0
 
-    count = 0
-    round_count = total_rounds
+        fixtures = []
 
-    while count < total_rounds:
-        fixtures.append([])
+        while round_count < rounds:
+            fixtures.append([])
 
-        for match in fixtures[count]:
-            teams = [match[1], match[0]]
-            fixtures[round_count].append(teams)
+            while match_count < matches:
+                home = (round_count + match_count) % rounds
+                away = (len(self.clubs) - 1 - match_count + round_count) % rounds
 
-        round_count += 1
-        count += 1
+                if match_count == 0:
+                    away = rounds
 
-    return fixtures
+                if round_count % 2 == 1:
+                    fixtures[round_count].append([self.clubs[home], self.clubs[away]])
+                else:
+                    fixtures[round_count].append([self.clubs[away], self.clubs[home]])
+
+                match_count += 1
+
+            round_count += 1
+            match_count = 0
+
+        count = 0
+        round_count = rounds
+
+        while count < rounds:
+            fixtures.append([])
+
+            for match in fixtures[count]:
+                teams = [match[1], match[0]]
+                fixtures[round_count].append(teams)
+
+            round_count += 1
+            count += 1
+
+        self.fixtures = fixtures
+
+    def get_number_of_rounds(self):
+        total = len(self.clubs) * 2 - 2
+
+        return total

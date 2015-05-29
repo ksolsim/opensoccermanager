@@ -214,7 +214,7 @@ class Fixtures(Gtk.Grid):
         self.set_row_spacing(5)
         self.set_column_spacing(5)
 
-        self.liststoreClubFixtures = Gtk.ListStore(str)         # Club fixtures
+        self.liststoreClubFixtures = Gtk.ListStore(str)        # Club fixtures
         self.liststoreFixtures = Gtk.ListStore(str, str, str)  # All fixtures
 
         scrolledwindow = Gtk.ScrolledWindow()
@@ -253,6 +253,11 @@ class Fixtures(Gtk.Grid):
         buttonbox.add(self.buttonNext)
         self.attach(buttonbox, 2, 0, 1, 1)
 
+        self.comboboxLeagues = Gtk.ComboBoxText()
+        self.comboboxLeagues.set_hexpand(False)
+        self.comboboxLeagues.connect("changed", self.combobox_changed)
+        self.attach(self.comboboxLeagues, 3, 0, 1, 1)
+
         treeviewFixtures = Gtk.TreeView()
         treeviewFixtures.set_model(self.liststoreFixtures)
         treeviewFixtures.set_enable_search(False)
@@ -261,7 +266,7 @@ class Fixtures(Gtk.Grid):
         treeviewFixtures.set_hexpand(True)
         treeselection = treeviewFixtures.get_selection()
         treeselection.set_mode(Gtk.SelectionMode.NONE)
-        self.attach(treeviewFixtures, 1, 1, 2, 1)
+        self.attach(treeviewFixtures, 1, 1, 3, 1)
 
         treeviewcolumn = widgets.TreeViewColumn(title="Home", column=0)
         treeviewcolumn.set_expand(True)
@@ -273,47 +278,66 @@ class Fixtures(Gtk.Grid):
         treeviewcolumn.set_expand(True)
         treeviewFixtures.append_column(treeviewcolumn)
 
-    def run(self):
-        self.populate_data()
-
-        sensitive = game.fixturespage > 0
-        self.buttonPrevious.set_sensitive(sensitive)
-
-        self.show_all()
-
     def change_fixtures(self, button, direction):
+        leagueid = int(self.comboboxLeagues.get_active_id())
+
+        fixtures = game.leagues[leagueid].fixtures
+
         game.fixturespage += direction
 
         sensitive = game.fixturespage > 0
         self.buttonPrevious.set_sensitive(sensitive)
 
-        sensitive = game.fixturespage < len(game.fixtures) - 1
+        sensitive = game.fixturespage < fixtures.get_number_of_rounds() - 1
         self.buttonNext.set_sensitive(sensitive)
 
         self.populate_data()
 
+    def combobox_changed(self, combobox):
+        self.populate_data()
+
     def populate_data(self):
         self.liststoreClubFixtures.clear()
+
+        leagueid = game.clubs[game.teamid].league
+        fixtures = game.leagues[leagueid].fixtures
+
+        for week in fixtures.fixtures:
+            for match in week:
+                if game.teamid in match:
+                    match = "%s - %s" % (game.clubs[match[0]].name,
+                                         game.clubs[match[1]].name)
+                    self.liststoreClubFixtures.append([match])
+
         self.liststoreFixtures.clear()
 
         self.labelFixturesView.set_label("Round %i" % (game.fixturespage + 1))
 
-        for week in game.fixtures:
-            for match in week:
-                if game.teamid in (match[0], match[1]):
-                    match = "%s - %s" % (game.clubs[match[0]].name, game.clubs[match[1]].name)
-                    self.liststoreClubFixtures.append([match])
+        if self.comboboxLeagues.get_active_id() != -1:
+            leagueid = int(self.comboboxLeagues.get_active_id())
 
-        for teamid1, teamid2 in game.fixtures[game.fixturespage]:
-            team1 = game.clubs[teamid1].name
-            team2 = game.clubs[teamid2].name
+            fixtures = game.leagues[leagueid].fixtures
 
-            club = game.clubs[teamid1]
-            stadium = club.get_stadium_name()
+            for teamid1, teamid2 in fixtures.fixtures[game.fixturespage]:
+                team1 = game.clubs[teamid1].name
+                team2 = game.clubs[teamid2].name
 
-            self.liststoreFixtures.append([team1, team2, stadium])
+                stadium = game.clubs[teamid1].get_stadium_name()
 
-        self.treeviewClubFixtures.set_cursor(game.fixturespage)
+                self.liststoreFixtures.append([team1, team2, stadium])
+
+    def run(self):
+        sensitive = game.fixturespage > 0
+        self.buttonPrevious.set_sensitive(sensitive)
+
+        for leagueid, league in game.leagues.items():
+            self.comboboxLeagues.append(str(leagueid), league.name)
+
+        self.comboboxLeagues.set_active(0)
+
+        self.populate_data()
+
+        self.show_all()
 
 
 class Results(Gtk.Grid):

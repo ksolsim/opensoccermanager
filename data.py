@@ -222,7 +222,9 @@ def datainit():
         constants.suspensions[item[0]] = item[1:]
 
     # Setup fixture list
-    game.fixtures = fixtures.generate(game.clubs)
+    for leagueid, league in game.leagues.items():
+        league.fixtures.generate(league.teams)
+    #game.fixtures = fixtures.generate(game.clubs)
 
     # Televised matches
     home = []
@@ -345,6 +347,10 @@ def dataloader(finances):
     ai.loan_list()
     ai.team_training()
 
+    # Publish initial news articles
+    game.news.publish("MA01")
+
+    '''
     # Retrieve first three fixtures for news
     initial_fixtures = []
 
@@ -355,11 +361,10 @@ def dataloader(finances):
                                      game.clubs[match[1]].name)
                 initial_fixtures.append(match)
 
-    # Publish initial news articles
-    game.news.publish("MA01")
     game.news.publish("FX01",
                       fixture1=initial_fixtures[0],
                       fixture2=initial_fixtures[1],
                       fixture3=initial_fixtures[2],)
+    '''
 
     events.expectation()

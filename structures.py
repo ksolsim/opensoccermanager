@@ -15,6 +15,7 @@
 #  You should have received a copy of the GNU General Public License along with
 #  OpenSoccerManager.  If not, see <http://www.gnu.org/licenses/>.
 
+
 import operator
 import statistics
 
@@ -22,6 +23,7 @@ import accounts
 import advertising
 import calculator
 import constants
+import fixtures
 import game
 
 
@@ -320,7 +322,7 @@ class League:
         self.name = ""
         self.teams = []
 
-        self.fixtures = Fixtures()
+        self.fixtures = fixtures.Fixtures()
         self.standings = Standings()
 
     def add_club(self, clubid):
@@ -350,17 +352,6 @@ class BankLoan:
 
 class Grant:
     pass
-
-
-class Fixtures:
-    def __init__(self):
-        pass
-
-    def generate(self):
-        '''
-        Generate list of fixtures for listed teams.
-        '''
-        pass
 
 
 class Standings:

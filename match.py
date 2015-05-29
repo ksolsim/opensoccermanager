@@ -289,18 +289,18 @@ class Match(Gtk.Grid):
         label = widgets.Label("_Statistics")
         self.notebook.append_page(self.stats, label)
 
-        self.player_match = 0
-
     def run(self):
         self.buttonStart.set_sensitive(True)
         self.notebook.set_show_tabs(False)
         self.notebook.set_show_border(False)
         self.notebook.set_current_page(0)
 
-        for count, item in enumerate(game.fixtures[game.fixturesindex]):
-            if game.teamid in (item[0], item[1]):
-                match = item
-                self.player_match = count
+        leagueid = game.clubs[game.teamid].league
+        fixtures = game.leagues[leagueid].fixtures
+
+        for count, fixture in enumerate(fixtures.fixtures[game.fixturesindex]):
+            if game.teamid in fixture:
+                match = fixture
 
         self.team1 = structures.Team()
         self.team1.teamid = match[0]
@@ -348,13 +348,14 @@ class Match(Gtk.Grid):
         club = game.clubs[self.team1.teamid]
         venue = game.stadiums[club.stadium].name
 
+        '''
         self.referees = list(game.referees.keys())
         random.shuffle(self.referees)
         self.refereeid = self.referees[0]
         self.referee = game.referees[self.referees[0]]
         referee = self.referee.name
 
-        self.information.update(venue, referee)
+        self.information.update(venue, referee)'''
 
         game.menu.set_sensitive(False)
         widgets.continuegame.set_sensitive(False)
@@ -380,10 +381,13 @@ class Match(Gtk.Grid):
                   self.team2.teamid)
 
         # Standings
-        game.standings.update_item(result)
+        leagueid = game.clubs[game.teamid].league
+        standings = game.leagues[leagueid].standings
+
+        standings.update_item(result)
         game.results[game.fixturesindex].append(result)
 
-        events.increment_referee(self.refereeid, airesult.yellows, airesult.reds)
+        #events.increment_referee(self.refereeid, airesult.yellows, airesult.reds)
 
         # Man of the match selection
         game.players[airesult.man_of_the_match_id].man_of_the_match += 1
@@ -452,10 +456,12 @@ class Match(Gtk.Grid):
                     player.suspension_type = 0
 
         # Televised games
+        '''
         if game.televised[game.fixturesindex] == game.teamid:
             reputation = game.clubs[game.teamid].reputation
             amount = reputation * 3 * random.randint(950, 1050)
             game.clubs[game.teamid].accounts.deposit(amount=amount, category="television")
+        '''
 
         # Matchday ticket sales
         if self.team1.teamid == game.teamid:
@@ -467,7 +473,7 @@ class Match(Gtk.Grid):
         self.process_remaining()
 
         events.update_statistics(airesult)
-        events.update_records()
+        #events.update_records()
 
         widgets.continuegame.set_sensitive(True)
         self.buttonStart.set_sensitive(False)
@@ -480,7 +486,33 @@ class Match(Gtk.Grid):
 
     def process_remaining(self):
         # Update league table for all other matches
-        for index, item in enumerate(game.fixtures[game.fixturesindex]):
+        for league in game.leagues.values():
+            for fixture in league.fixtures.fixtures[game.fixturesindex]:
+                team1 = structures.Team()
+                team2 = structures.Team()
+
+                team1.teamid = fixture[0]
+                team2.teamid = fixture[1]
+
+                club1 = game.clubs[team1.teamid]
+                club2 = game.clubs[team2.teamid]
+
+                if game.teamid not in fixture:
+                    ai.generate_team(team1.teamid)
+                    ai.generate_team(team2.teamid)
+
+                    airesult = ai.Result(team1.teamid, team2.teamid)
+
+                    score = (team1.teamid,
+                             airesult.final_score[0],
+                             airesult.final_score[1],
+                             team2.teamid)
+
+                    game.leagues[leagueid].standings.update_item(score)
+                    game.results[game.fixturesindex].append(score)
+
+        '''
+        for index, item in enumerate(fixtures.fixtures[game.fixturesindex]):
             if index != self.player_match:
                 club1 = structures.Team()
                 club1.teamid = item[0]
@@ -506,3 +538,4 @@ class Match(Gtk.Grid):
 
                 events.increment_goalscorers(airesult.scorers[0], airesult.scorers[1])
                 events.increment_assists(airesult.assists[0], airesult.assists[1])
+                '''
