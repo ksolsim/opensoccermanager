@@ -486,7 +486,7 @@ class Match(Gtk.Grid):
 
     def process_remaining(self):
         # Update league table for all other matches
-        for league in game.leagues.values():
+        for leagueid, league in game.leagues.items():
             for fixture in league.fixtures.fixtures[game.fixturesindex]:
                 team1 = structures.Team()
                 team2 = structures.Team()
