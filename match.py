@@ -107,13 +107,9 @@ class Match(Gtk.Grid):
             treeselection = self.treeviewHome.get_selection()
             treeselection.set_mode(Gtk.SelectionMode.NONE)
 
-            treeviewcolumn = Gtk.TreeViewColumn("Position",
-                                                cellrenderertext,
-                                                text=0)
+            treeviewcolumn = widgets.TreeViewColumn(title="Position", column=0)
             self.treeviewHome.append_column(treeviewcolumn)
-            treeviewcolumn = Gtk.TreeViewColumn("Player",
-                                                cellrenderertext,
-                                                text=1)
+            treeviewcolumn = widgets.TreeViewColumn(title="Player", column=1)
             self.treeviewHome.append_column(treeviewcolumn)
 
             scrolledwindow = Gtk.ScrolledWindow()
@@ -128,13 +124,9 @@ class Match(Gtk.Grid):
             treeselection = self.treeviewAway.get_selection()
             treeselection.set_mode(Gtk.SelectionMode.NONE)
 
-            treeviewcolumn = Gtk.TreeViewColumn("Position",
-                                                cellrenderertext,
-                                                text=0)
+            treeviewcolumn = widgets.TreeViewColumn(title="Position", column=0)
             self.treeviewAway.append_column(treeviewcolumn)
-            treeviewcolumn = Gtk.TreeViewColumn("Player",
-                                                cellrenderertext,
-                                                text=1)
+            treeviewcolumn = widgets.TreeViewColumn(title="Player", column=1)
             self.treeviewAway.append_column(treeviewcolumn)
 
             self.show_all()
