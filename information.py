@@ -348,9 +348,10 @@ class Results(Gtk.Grid):
 
         Gtk.Grid.__init__(self)
         self.set_row_spacing(5)
+        self.set_column_spacing(5)
 
         scrolledwindow = Gtk.ScrolledWindow()
-        self.attach(scrolledwindow, 0, 1, 1, 1)
+        self.attach(scrolledwindow, 0, 1, 2, 1)
 
         self.overlay = Gtk.Overlay()
         scrolledwindow.add(self.overlay)
@@ -370,6 +371,10 @@ class Results(Gtk.Grid):
         self.buttonNext.set_sensitive(False)
         self.buttonNext.connect("clicked", self.change_page, 1)
         buttonbox.add(self.buttonNext)
+
+        self.comboboxLeagues = Gtk.ComboBoxText()
+        self.comboboxLeagues.connect("changed", self.combobox_changed)
+        self.attach(self.comboboxLeagues, 1, 0, 1, 1)
 
         self.liststoreResults = Gtk.ListStore(str, int, int, str)
 
@@ -392,14 +397,19 @@ class Results(Gtk.Grid):
         treeviewcolumn.set_expand(True)
         self.treeviewResults.append_column(treeviewcolumn)
 
-    def run(self):
-        self.show_all()
+    def combobox_changed(self, combobox):
+        if self.comboboxLeagues.get_active_id():
+            self.leagueid = int(self.comboboxLeagues.get_active_id())
+
+            self.populate_data()
+
+    def populate_data(self):
         self.liststoreResults.clear()
 
         self.treeviewResults.set_sensitive(False)
 
-        if len(game.results) > 0:
-            for result in game.results[self.page]:
+        if len(game.leagues[self.leagueid].results) > 0:
+            for result in game.leagues[self.leagueid].results[self.page]:
                 team1 = game.clubs[result[0]].name
                 team2 = game.clubs[result[3]].name
 
@@ -408,48 +418,44 @@ class Results(Gtk.Grid):
             self.labelNoResults.hide()
             self.treeviewResults.set_sensitive(True)
 
-        if len(game.results) > 1:
+        if len(game.leagues[self.leagueid].results) > 1:
             self.buttonNext.set_sensitive(True)
             self.buttonPrevious.set_sensitive(True)
 
             if self.page == 0:
                 self.buttonPrevious.set_sensitive(False)
-            elif self.page == len(game.results) - 1:
+            elif self.page == len(game.leagues[self.leagueid].results) - 1:
                 self.buttonNext.set_sensitive(False)
         else:
             self.buttonNext.set_sensitive(False)
             self.buttonPrevious.set_sensitive(False)
+
+    def populate_leagues(self):
+        self.comboboxLeagues.remove_all()
+
+        for leagueid, league in game.leagues.items():
+            self.comboboxLeagues.append(str(leagueid), league.name)
+
+        self.comboboxLeagues.set_active(0)
+
+        self.leagueid = 1
 
     def change_page(self, button, mode):
         if mode == 0:
             if self.page > 0:
                 self.page -= 1
         elif mode == 1:
-            if self.page < len(game.results) - 1:
+            leagueid = int(self.comboboxLeagues.get_active_id())
+
+            if self.page < len(game.leagues[leagueid].results) - 1:
                 self.page += 1
 
-        self.liststoreResults.clear()
+        self.populate_data()
 
-        for result in game.results[self.page]:
-            team1 = game.clubs[result[0]].name
-            team2 = game.clubs[result[3]].name
+    def run(self):
+        self.show_all()
 
-            self.liststoreResults.append([team1, result[1], result[2], team2])
-
-        if mode == 0:
-            self.buttonNext.set_sensitive(True)
-
-            if self.page > 0:
-                self.buttonPrevious.set_sensitive(True)
-            else:
-                self.buttonPrevious.set_sensitive(False)
-        elif mode == 1:
-            self.buttonPrevious.set_sensitive(True)
-
-            if self.page < len(game.results) - 1:
-                self.buttonNext.set_sensitive(True)
-            else:
-                self.buttonNext.set_sensitive(False)
+        self.populate_leagues()
 
 
 class Standings(Gtk.Grid):

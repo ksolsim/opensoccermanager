@@ -49,11 +49,6 @@ negotiations = {}
 loans = {}
 televised = []
 
-# Information
-fixtures = []
-results = []
-record = [[], []]
-
 # Charts
 goalscorers = {}
 assists = {}

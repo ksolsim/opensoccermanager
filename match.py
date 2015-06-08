@@ -93,8 +93,6 @@ class Match(Gtk.Grid):
             self.set_border_width(5)
             self.set_column_homogeneous(True)
 
-            cellrenderertext = Gtk.CellRendererText()
-
             scrolledwindow = Gtk.ScrolledWindow()
             self.attach(scrolledwindow, 0, 0, 1, 1)
 
@@ -345,9 +343,9 @@ class Match(Gtk.Grid):
         random.shuffle(self.referees)
         self.refereeid = self.referees[0]
         self.referee = game.referees[self.referees[0]]
-        referee = self.referee.name
 
-        self.information.update(venue, referee)'''
+        self.information.update(venue, self.referee.name)
+        '''
 
         game.menu.set_sensitive(False)
         widgets.continuegame.set_sensitive(False)
@@ -357,7 +355,9 @@ class Match(Gtk.Grid):
         self.team1events.clear()
         self.team2events.clear()
 
-        game.results.append([])
+        # Append empty list to all leagues
+        for league in game.leagues.values():
+            league.results.append([])
 
         self.show_all()
 
@@ -377,7 +377,8 @@ class Match(Gtk.Grid):
         standings = game.leagues[leagueid].standings
 
         standings.update_item(result)
-        game.results[game.fixturesindex].append(result)
+
+        game.leagues[leagueid].add_result(result)
 
         #events.increment_referee(self.refereeid, airesult.yellows, airesult.reds)
 
@@ -501,33 +502,15 @@ class Match(Gtk.Grid):
                              team2.teamid)
 
                     game.leagues[leagueid].standings.update_item(score)
-                    game.results[game.fixturesindex].append(score)
 
-        '''
-        for index, item in enumerate(fixtures.fixtures[game.fixturesindex]):
-            if index != self.player_match:
-                club1 = structures.Team()
-                club1.teamid = item[0]
-                club2 = structures.Team()
-                club2.teamid = item[1]
+                    league.add_result(score)
 
-                ai.generate_team(club1.teamid)
-                ai.generate_team(club2.teamid)
+                    '''
+                    # Events
+                    self.refereeid = self.referees[index + 1]
+                    self.referee = game.referees[self.refereeid]
 
-                airesult = ai.Result(club1.teamid, club2.teamid)
+                    self.referee.increment_appearance()'''
 
-                score = club1.teamid, airesult.final_score[0], airesult.final_score[1], club2.teamid
-
-                game.standings.update_item(score)
-                game.results[game.fixturesindex].append(score)
-
-                # Events
-                self.refereeid = self.referees[index + 1]
-                self.referee = game.referees[self.refereeid]
-                referee = self.referee.name
-
-                self.referee.increment_appearance()
-
-                events.increment_goalscorers(airesult.scorers[0], airesult.scorers[1])
-                events.increment_assists(airesult.assists[0], airesult.assists[1])
-                '''
+                    events.increment_goalscorers(airesult.scorers[0], airesult.scorers[1])
+                    events.increment_assists(airesult.assists[0], airesult.assists[1])

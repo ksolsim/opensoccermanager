@@ -323,6 +323,7 @@ class League:
         self.teams = []
 
         self.fixtures = fixtures.Fixtures()
+        self.results = []
         self.standings = Standings()
 
     def add_club(self, clubid):
@@ -332,6 +333,12 @@ class League:
         self.teams.append(clubid)
 
         self.standings.add_item(clubid)
+
+    def add_result(self, result):
+        '''
+        Update results with latest for given teams.
+        '''
+        self.results[game.fixturesindex].append(result)
 
 
 class Nation:
