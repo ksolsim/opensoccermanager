@@ -1150,7 +1150,7 @@ class Opposition(Gtk.Dialog):
     def update_data(self, clubid):
         club = game.clubs[clubid]
 
-        position = game.standings.find_position(clubid)
+        position = game.leagues[club.league].standings.find_position(clubid)
         position = display.format_position(position)
 
         self.labelManager.set_label(club.manager)

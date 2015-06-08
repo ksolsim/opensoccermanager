@@ -16,6 +16,7 @@
 #  OpenSoccerManager.  If not, see <http://www.gnu.org/licenses/>.
 
 
+import random
 import operator
 import statistics
 
@@ -346,19 +347,31 @@ class Nation:
 
 
 class Flotation:
-    pass
+    def __init__(self):
+        self.amount = 0
+        self.timeout = 0
+        self.status = 0
 
 
 class Overdraft:
-    pass
+    def __init__(self):
+        self.amount = 0
+        self.rate = random.randint(4, 15)
+        self.timeout = random.randint(4, 16)
 
 
 class BankLoan:
-    pass
+    def __init__(self):
+        self.amount = 0
+        self.rate = random.randint(4, 15)
+        self.timeout = random.randint(4, 16)
 
 
 class Grant:
-    pass
+    def __init__(self):
+        self.maximum = 0
+        self.timeout = 0
+        self.status = 0
 
 
 class Standings:

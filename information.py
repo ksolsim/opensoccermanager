@@ -923,11 +923,14 @@ class Statistics(Gtk.Grid):
         # Display current season record
         self.liststoreRecordCurrent.clear()
 
-        position = game.standings.find_position(game.teamid)
+        club = game.clubs[game.teamid]
+        league = game.leagues[club.league]
+
+        position = league.standings.find_position(game.teamid)
         position = display.format_position(position)
         season = game.date.get_season()
 
-        details = game.standings.clubs[game.teamid]
+        details = league.standings.clubs[game.teamid]
 
         record = (season,
                   details.played,

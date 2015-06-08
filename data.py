@@ -59,9 +59,8 @@ def datainit():
     game.cards = {}
     game.transfers = []
 
-    game.fixtures = []
-    game.results = []
     game.news = news.News()
+    game.statistics = structures.Statistics()
 
     game.date.day = 1
     game.date.month = 8
@@ -224,25 +223,30 @@ def datainit():
     # Setup fixture list
     for leagueid, league in game.leagues.items():
         league.fixtures.generate(league.teams)
-    #game.fixtures = fixtures.generate(game.clubs)
 
-    # Televised matches
-    home = []
+        '''
+        # Televised matches
+        home = []
 
-    for count, week in enumerate(game.fixtures):
-        home.append([])
+        for count, week in enumerate(league.fixtures.fixtures):
+            home.append([])
+            home[count] = [match[0] for match in week]
 
-        for match in week:
-            home[count].append(match[0])
-
-    for week in home:
-        team = random.choice(week)
-        game.televised.append(team)
+        for week in home:
+            team = random.choice(week)
+            game.televised.append(team)
+        '''
 
     constants.buildings = game.database.importer("buildings")
     constants.merchandise = game.database.importer("merchandise")
     constants.catering = game.database.importer("catering")
     game.companies = game.database.importer("company")
+
+    # Create financial objects
+    game.bankloan = structures.BankLoan()
+    game.overdraft = structures.Overdraft()
+    game.grant = structures.Grant()
+    game.flotation = structures.Flotation()
 
     # Import surnames for staff
     surnames = game.database.importer("staff")
@@ -290,33 +294,6 @@ def dataloader(finances):
         club.programmes.maximum = 36
     else:
         club.programmes.maximum = 24
-
-    # Produce initial interest rates
-    game.bankloan = structures.BankLoan()
-    game.bankloan.amount = 0
-    game.bankloan.rate = random.randint(4, 15)
-    game.bankloan.timeout = random.randint(4, 16)
-
-    # Overdraft
-    game.overdraft = structures.Overdraft()
-    game.overdraft.amount = 0
-    game.overdraft.rate = random.randint(4, 15)
-    game.overdraft.timeout = random.randint(4, 16)
-
-    # Grant
-    game.grant = structures.Grant()
-    game.grant.maximum = 0
-    game.grant.status = False
-    game.grant.timeout = 0
-
-    # Flotation
-    game.flotation = structures.Flotation()
-    game.flotation.amount = 0
-    game.flotation.timeout = 0
-    game.flotation.status = 0
-
-    # Statistics
-    game.statistics = structures.Statistics()
 
     # Initiate season ticket sales based on percentage of capacity
     club.season_tickets = events.season_tickets()
