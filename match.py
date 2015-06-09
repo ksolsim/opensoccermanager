@@ -143,9 +143,17 @@ class Match(Gtk.Grid):
             self.labelReferee.set_hexpand(True)
             self.attach(self.labelReferee, 0, 1, 1, 1)
 
-        def update(self, venue, referee):
-            self.labelVenue.set_label("Venue: %s" % (venue))
+        def set_referee(self, referee):
+            '''
+            Display the selected referee on the match screen.
+            '''
             self.labelReferee.set_label("Referee: %s" % (referee))
+
+        def set_venue(self, venue):
+            '''
+            Display the venue on the match screen.
+            '''
+            self.labelVenue.set_label("Venue: %s" % (venue))
 
     class Statistics(Gtk.Grid):
         def __init__(self):
@@ -337,15 +345,12 @@ class Match(Gtk.Grid):
         # Determine venue and referee
         club = game.clubs[self.team1.teamid]
         venue = game.stadiums[club.stadium].name
+        self.information.set_venue(venue)
 
-        '''
-        self.referees = list(game.referees.keys())
+        self.referees = list(game.leagues[leagueid].referees.values())
         random.shuffle(self.referees)
-        self.refereeid = self.referees[0]
-        self.referee = game.referees[self.referees[0]]
-
-        self.information.update(venue, self.referee.name)
-        '''
+        self.referee = self.referees[0]
+        self.information.set_referee(self.referee.name)
 
         game.menu.set_sensitive(False)
         widgets.continuegame.set_sensitive(False)
@@ -374,13 +379,14 @@ class Match(Gtk.Grid):
 
         # Standings
         leagueid = game.clubs[game.teamid].league
+        self.leagueid = leagueid
         standings = game.leagues[leagueid].standings
 
         standings.update_item(result)
 
         game.leagues[leagueid].add_result(result)
 
-        #events.increment_referee(self.refereeid, airesult.yellows, airesult.reds)
+        self.referee.increment_appearance(airesult.yellows, airesult.reds)
 
         # Man of the match selection
         game.players[airesult.man_of_the_match_id].man_of_the_match += 1
@@ -463,10 +469,10 @@ class Match(Gtk.Grid):
             sales.catering(attendance)
 
         # Process remaining matches
+        self.process_remaining_league()
         self.process_remaining()
 
         events.update_statistics(airesult)
-        #events.update_records()
 
         widgets.continuegame.set_sensitive(True)
         self.buttonStart.set_sensitive(False)
@@ -477,20 +483,60 @@ class Match(Gtk.Grid):
         game.fixturesindex += 1
         game.fixturespage = game.fixturesindex
 
+    def process_remaining_league(self):
+        for count, fixture in enumerate(game.leagues[self.leagueid].fixtures.fixtures[game.fixturesindex], start=1):
+            team1 = structures.Team()
+            team2 = structures.Team()
+
+            team1.teamid = fixture[0]
+            team2.teamid = fixture[1]
+
+            club1 = game.clubs[team1.teamid]
+            club2 = game.clubs[team2.teamid]
+
+            league = game.leagues[self.leagueid]
+
+            if game.teamid not in fixture:
+                ai.generate_team(team1.teamid)
+                ai.generate_team(team2.teamid)
+
+                airesult = ai.Result(team1.teamid, team2.teamid)
+
+                score = (team1.teamid,
+                         airesult.final_score[0],
+                         airesult.final_score[1],
+                         team2.teamid)
+
+                game.leagues[self.leagueid].standings.update_item(score)
+
+                league.add_result(score)
+
+                # Events
+                self.referee = self.referees[count]
+                self.referee.increment_appearance(airesult.yellows, airesult.reds)
+
+                events.increment_goalscorers(airesult.scorers[0], airesult.scorers[1])
+                events.increment_assists(airesult.assists[0], airesult.assists[1])
+
     def process_remaining(self):
-        # Update league table for all other matches
+        '''
+        Produce results for all remaining fixtures.
+        '''
         for leagueid, league in game.leagues.items():
-            for fixture in league.fixtures.fixtures[game.fixturesindex]:
-                team1 = structures.Team()
-                team2 = structures.Team()
+            if leagueid != self.leagueid:
+                self.referees = list(game.leagues[leagueid].referees.values())
+                random.shuffle(self.referees)
 
-                team1.teamid = fixture[0]
-                team2.teamid = fixture[1]
+                for count, fixture in enumerate(league.fixtures.fixtures[game.fixturesindex], start=0):
+                    team1 = structures.Team()
+                    team2 = structures.Team()
 
-                club1 = game.clubs[team1.teamid]
-                club2 = game.clubs[team2.teamid]
+                    team1.teamid = fixture[0]
+                    team2.teamid = fixture[1]
 
-                if game.teamid not in fixture:
+                    club1 = game.clubs[team1.teamid]
+                    club2 = game.clubs[team2.teamid]
+
                     ai.generate_team(team1.teamid)
                     ai.generate_team(team2.teamid)
 
@@ -505,12 +551,9 @@ class Match(Gtk.Grid):
 
                     league.add_result(score)
 
-                    '''
                     # Events
-                    self.refereeid = self.referees[index + 1]
-                    self.referee = game.referees[self.refereeid]
-
-                    self.referee.increment_appearance()'''
+                    self.referee = self.referees[count]
+                    self.referee.increment_appearance(airesult.yellows, airesult.reds)
 
                     events.increment_goalscorers(airesult.scorers[0], airesult.scorers[1])
                     events.increment_assists(airesult.assists[0], airesult.assists[1])

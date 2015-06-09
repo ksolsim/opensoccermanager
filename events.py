@@ -67,14 +67,6 @@ def increment_assists(assists1, assists2):
             game.assists[playerid] = 1
 
 
-def increment_referee(refereeid, fouls=0, yellows=0, reds=0):
-    referee = game.referees[refereeid]
-    referee.matches += 1
-    referee.fouls += fouls
-    referee.yellows += yellows
-    referee.reds += reds
-
-
 def injury():
     '''
     Generate injuries outside of a match, typically through training.

@@ -148,6 +148,20 @@ def datainit():
         nation.name = item[1]
         nation.denonym = item[2]
 
+    # Import referees
+    game.database.cursor.execute("SELECT * FROM referee WHERE year = ?", (game.date.year,))
+    data = game.database.cursor.fetchall()
+
+    for item in data:
+        referee = structures.Referee()
+        refereeid = item[0]
+        game.referees[refereeid] = referee
+
+        referee.name = item[1]
+        referee.league = item[2]
+
+        game.leagues[referee.league].referees[refereeid] = referee
+
     adjacent = (0, 1), (2, 0), (3, 2), (1, 3), # DO NOT REORDER/CHANGE!
 
     # Import stadiums
@@ -251,16 +265,6 @@ def datainit():
     # Import surnames for staff
     surnames = game.database.importer("staff")
     game.surnames = [name[0] for name in surnames]
-
-    # Import referees
-    game.database.cursor.execute("SELECT id, name FROM referee WHERE year = ?", (game.date.year,))
-    data = game.database.cursor.fetchall()
-
-    for item in data:
-        referee = structures.Referee()
-        refereeid = item[0]
-        referee.name = item[1]
-        game.referees[refereeid] = referee
 
 
 def dataloader(finances):

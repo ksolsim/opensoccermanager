@@ -322,6 +322,7 @@ class League:
     def __init__(self):
         self.name = ""
         self.teams = []
+        self.referees = {}
 
         self.fixtures = fixtures.Fixtures()
         self.results = []
@@ -497,11 +498,11 @@ class Standings:
 
         if game.eventindex > 0:
             standings = sorted(standings,
-                               key=operator.itemgetter(9, 8, 6, 7),
-                               reverse=True)
+                                key=operator.itemgetter(9, 8, 6, 7),
+                                reverse=True)
         else:
             standings = sorted(standings,
-                               key=operator.itemgetter(1))
+                                key=operator.itemgetter(1))
 
         return standings
 
@@ -509,6 +510,10 @@ class Standings:
         '''
         Return club which is top of the league.
         '''
+        standings = self.get_data()
+        champion = standings[0]
+
+        return champion
 
     def find_position(self, teamid):
         '''
