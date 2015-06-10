@@ -331,21 +331,18 @@ def dataloader(finances):
     # Publish initial news articles
     game.news.publish("MA01")
 
-    '''
-    # Retrieve first three fixtures for news
-    initial_fixtures = []
+    initial = []
 
-    for count, week in enumerate(game.fixtures):
+    for count, week in enumerate(game.leagues[club.league].fixtures.fixtures):
         for match in week:
-            if game.teamid in (match[0], match[1]) and count < 3:
+            if game.teamid in match and count < 3:
                 match = "%s - %s" % (game.clubs[match[0]].name,
                                      game.clubs[match[1]].name)
-                initial_fixtures.append(match)
+                initial.append(match)
 
     game.news.publish("FX01",
-                      fixture1=initial_fixtures[0],
-                      fixture2=initial_fixtures[1],
-                      fixture3=initial_fixtures[2],)
-    '''
+                      fixture1=initial[0],
+                      fixture2=initial[1],
+                      fixture3=initial[2],)
 
     events.expectation()
