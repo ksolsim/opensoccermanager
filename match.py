@@ -481,7 +481,6 @@ class Match(Gtk.Grid):
         self.notebook.set_current_page(1)
 
         game.fixturesindex += 1
-        game.fixturespage = game.fixturesindex
 
     def process_remaining_league(self):
         for count, fixture in enumerate(game.leagues[self.leagueid].fixtures.fixtures[game.fixturesindex], start=1):

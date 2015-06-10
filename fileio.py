@@ -75,8 +75,7 @@ def open_file(filename):
     game.dateindex = int(data[6])
     game.dateprev = data[7]
     game.fixturesindex = int(data[8])
-    game.fixturespage = int(data[9])
-    game.televised = list(map(int, data[10].split(",")))
+    game.televised = list(map(int, data[9].split(",")))
     game.active_screen_id = game.start_screen
 
     '''
@@ -84,25 +83,9 @@ def open_file(filename):
     restoring from the save game file.
     '''
     game.flotation = structures.Flotation()
-    game.flotation.timeout = 0
-    game.flotation.status = 0
-    game.flotation.amount = 0
-
     game.overdraft = structures.Overdraft()
-    game.overdraft.amount = 0
-    game.overdraft.timeout = 0
-    game.overdraft.maximum = 0
-    game.overdraft.rate = 0
-
     game.bankloan = structures.BankLoan()
-    game.bankloan.amount = 0
-    game.bankloan.maximum = 0
-    game.bankloan.rate = 0
-
     game.grant = structures.Grant()
-    game.grant.timeout = 0
-    game.grant.status = False
-    game.grant.maximum = 0
 
     game.season_tickets_status = 0
 
@@ -524,7 +507,7 @@ def save_file(filename):
 
     db.connect(filename)
 
-    db.cursor.execute("CREATE TABLE main (teamid, year, month, date, week, eventindex, dateindex, dateprev, fixturesindex, fixturespage, televised)")
+    db.cursor.execute("CREATE TABLE main (teamid, year, month, date, week, eventindex, dateindex, dateprev, fixturesindex, televised)")
     db.cursor.execute("CREATE TABLE nation (id PRIMARY KEY, name, denonym)")
     db.cursor.execute("CREATE TABLE stadium (id PRIMARY KEY, name, capacity, condition, warnings, plots, northcapacity, northroof, northseating, westcapacity, westroof, westseating, southcapacity, southroof, southseating, eastcapacity, eastroof, eastseating, northwestcapacity, northeastcapacity, southwestcapacity, southeastcapacity, northwestroof, northeastroof, southwestroof, southeastroof, northwestseating, northeastseating, southwestseating, southeastseating, stall, programme, smallshop, largeshop, bar, burgerbar, cafe, restaurant)")
     db.cursor.execute("CREATE TABLE club (id PRIMARY KEY, name, nickname, manager, chairman, stadium, reputation, tactics1, tactics2, tactics3, tactics4, tactics5, tactics6, tactics7, tactics8, tactics9, seasontickets, schooltickets, income, expenditure, balance, eval1, eval2, eval3, eval4, eval5, merchandise, catering, sponsorstatus, sponsoroffer, teamtraining, tickets, incomes, expenditures, form, attendances)")
@@ -576,7 +559,7 @@ def save_file(filename):
 
     televised = ",".join(str(item) for item in game.televised)
 
-    db.cursor.execute("INSERT INTO main VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (game.teamid, game.date.year, game.date.month, game.date.day, game.date.week, game.eventindex, game.dateindex, game.dateprev, game.fixturesindex, game.fixturespage, televised))
+    db.cursor.execute("INSERT INTO main VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (game.teamid, game.date.year, game.date.month, game.date.day, game.date.week, game.eventindex, game.dateindex, game.dateprev, game.fixturesindex, televised))
 
     for nationid, nation in game.nations.items():
         db.cursor.execute("INSERT INTO nation VALUES (?, ?, ?)", (nationid, nation.name, nation.denonym))

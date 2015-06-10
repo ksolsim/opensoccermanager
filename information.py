@@ -209,6 +209,8 @@ class News(Gtk.Grid):
 class Fixtures(Gtk.Grid):
     __name__ = "fixtures"
 
+    page = 0
+
     def __init__(self):
         Gtk.Grid.__init__(self)
         self.set_row_spacing(5)
@@ -283,12 +285,12 @@ class Fixtures(Gtk.Grid):
 
         fixtures = game.leagues[leagueid].fixtures
 
-        game.fixturespage += direction
+        self.page += direction
 
-        sensitive = game.fixturespage > 0
+        sensitive = self.page > 0
         self.buttonPrevious.set_sensitive(sensitive)
 
-        sensitive = game.fixturespage < fixtures.get_number_of_rounds() - 1
+        sensitive = self.page < fixtures.get_number_of_rounds() - 1
         self.buttonNext.set_sensitive(sensitive)
 
         self.populate_data()
@@ -311,14 +313,14 @@ class Fixtures(Gtk.Grid):
 
         self.liststoreFixtures.clear()
 
-        self.labelFixturesView.set_label("Round %i" % (game.fixturespage + 1))
+        self.labelFixturesView.set_label("Round %i" % (self.page + 1))
 
         if self.comboboxLeagues.get_active_id() != -1:
             leagueid = int(self.comboboxLeagues.get_active_id())
 
             fixtures = game.leagues[leagueid].fixtures
 
-            for teamid1, teamid2 in fixtures.fixtures[game.fixturespage]:
+            for teamid1, teamid2 in fixtures.fixtures[self.page]:
                 team1 = game.clubs[teamid1].name
                 team2 = game.clubs[teamid2].name
 
@@ -327,7 +329,9 @@ class Fixtures(Gtk.Grid):
                 self.liststoreFixtures.append([team1, team2, stadium])
 
     def run(self):
-        sensitive = game.fixturespage > 0
+        self.page = game.fixturesindex
+
+        sensitive = self.page > 0
         self.buttonPrevious.set_sensitive(sensitive)
 
         for leagueid, league in game.leagues.items():
