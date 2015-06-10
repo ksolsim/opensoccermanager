@@ -24,6 +24,7 @@ import accounts
 import advertising
 import calculator
 import constants
+import evaluation
 import fixtures
 import game
 
@@ -279,6 +280,19 @@ class Player:
             rating = "0.0"
 
         return rating
+
+    def renew_contract(self):
+        '''
+        Determine whether player will agree on a contract renewal.
+        '''
+        points = self.morale
+
+        overall = evaluation.calculate_overall()
+        points += overall - 25
+
+        state = points >= 0
+
+        return state
 
 
 class Club:

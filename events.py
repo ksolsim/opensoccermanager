@@ -496,14 +496,6 @@ def expectation():
         category += 1
 
 
-def reset_accounts():
-    '''
-    Reset weekly accounts for each category to zero.
-    '''
-    club = game.clubs[game.teamid]
-    club.accounts.reset_weekly()
-
-
 def end_of_season():
     '''
     Process end of season events, and reset data for the following season.
@@ -641,27 +633,6 @@ def update_statistics(result):
 
     game.statistics.yellows += result.yellows
     game.statistics.reds += result.reds
-
-
-def renew_contract(playerid):
-    '''
-    Logic for whether player is willing to agree to a new contract.
-    '''
-    points = 0
-
-    player = game.players[playerid]
-
-    points += player.morale
-
-    overall = evaluation.calculate_overall()
-    points += overall - 25
-
-    if points >= 0:
-        state = True
-    else:
-        state = False
-
-    return state
 
 
 def update_morale(clubid, amount):

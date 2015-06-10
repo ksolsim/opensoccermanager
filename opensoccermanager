@@ -754,7 +754,7 @@ class ContinueGame:
             game.date.week += 1
 
             # Process end of week events
-            events.reset_accounts()
+            club.accounts.reset_weekly()
             money.pay_wages()
             events.update_contracts()
             events.update_advertising()

@@ -559,7 +559,7 @@ class Squad(Gtk.Grid):
         model, treeiter = self.treeselection.get_selected()
         playerid = model[treeiter][0]
 
-        if events.renew_contract(playerid):
+        if game.players[playerid].renew_contract:
             if dialogs.renew_player_contract(playerid):
                 self.populate_data()
         else:
