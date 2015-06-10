@@ -331,6 +331,14 @@ class Club:
 
         return stadium
 
+    def perform_maintenance(self):
+        '''
+        Calculate the cost of stadium and building maintenance.
+        '''
+        cost = calculator.maintenance()
+
+        self.accounts.withdraw(cost, "stadium")
+
 
 class League:
     def __init__(self):

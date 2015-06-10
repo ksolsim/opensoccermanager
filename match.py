@@ -322,7 +322,7 @@ class Match(Gtk.Grid):
             count = 0
 
             for key, playerid in game.clubs[team].team.items():
-                if playerid != 0:
+                if playerid:
                     player = game.players[playerid]
                     name = player.get_name(mode=1)
 
@@ -368,7 +368,7 @@ class Match(Gtk.Grid):
             clubid = league.fixtures.fixtures[game.fixturesindex][televised][0]
 
             if clubid == game.teamid:
-                amount = reputation * 3 * random.randint(950, 1050)
+                amount = game.clubs[game.teamid].reputation * 3 * random.randint(950, 1050)
                 game.clubs[game.teamid].accounts.deposit(amount=amount,
                                                          category="television")
 

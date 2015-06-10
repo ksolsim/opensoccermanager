@@ -765,7 +765,7 @@ class ContinueGame:
             ai.renew_contract()
             events.injury_period()
             events.update_condition()
-            events.update_maintenance()
+            club.perform_maintenance()
             money.float_club()
             money.pay_overdraft()
             money.pay_loan()

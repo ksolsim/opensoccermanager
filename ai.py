@@ -150,10 +150,10 @@ class Result:
         subs = []
 
         for key, playerid in game.clubs[self.clubid1].team.items():
-            if playerid != 0 and key < 11:
+            if playerid and key < 11:
                 self.selection1[0].append(playerid)
 
-            if playerid != 0 and key >= 11:
+            if playerid and key >= 11:
                 subs.append(playerid)
 
         for count in range(1, 4):
@@ -767,14 +767,13 @@ def generate_team(clubid):
                 scores[playerid] = score
 
         sorted_scores = sorted(scores, key=lambda x: scores[x], reverse=True)
-
         selection.append(sorted_scores[0])
 
     for count in range(0, 5):
         scores = {}
 
         for playerid in squad:
-            if playerid not in (selection, substitutes):
+            if playerid not in selection and playerid not in substitutes:
                 player = game.players[playerid]
                 skills = player.get_skills()
                 score = sum(skills)
@@ -794,7 +793,11 @@ def generate_team(clubid):
                 scores[playerid] = score
 
         sorted_scores = sorted(scores, key=lambda x: scores[x], reverse=True)
-        substitutes.append(sorted_scores[0])
+
+        try:
+            substitutes.append(sorted_scores[0])
+        except:
+            pass
 
     for count, player in enumerate(selection):
         team[count] = player

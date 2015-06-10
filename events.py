@@ -681,14 +681,3 @@ def update_condition():
 
         stadium.fines += 1
         stadium.warnings = 0
-
-
-def update_maintenance():
-    '''
-    Calculate the cost of stadium and building maintenance.
-    '''
-    cost = calculator.maintenance()
-
-    club = game.clubs[game.teamid]
-
-    club.accounts.withdraw(cost, "stadium")
