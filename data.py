@@ -50,7 +50,6 @@ def datainit():
     game.referees = {}
     game.injuries = {}
     game.suspensions = {}
-    game.televised = []
     game.surnames = []
 
     game.goalscorers = {}
@@ -238,18 +237,10 @@ def datainit():
     for leagueid, league in game.leagues.items():
         league.fixtures.generate(league.teams)
 
-        '''
-        # Televised matches
-        home = []
+        league.televised = []
 
         for count, week in enumerate(league.fixtures.fixtures):
-            home.append([])
-            home[count] = [match[0] for match in week]
-
-        for week in home:
-            team = random.choice(week)
-            game.televised.append(team)
-        '''
+            league.televised.append(random.randint(0, len(week) - 1))
 
     constants.buildings = game.database.importer("buildings")
     constants.merchandise = game.database.importer("merchandise")

@@ -360,9 +360,17 @@ class Match(Gtk.Grid):
         self.team1events.clear()
         self.team2events.clear()
 
-        # Append empty list to all leagues
+        # Append empty list to all leagues and payout television money
         for league in game.leagues.values():
             league.results.append([])
+
+            televised = league.televised[game.fixturesindex]
+            clubid = league.fixtures.fixtures[game.fixturesindex][televised][0]
+
+            if clubid == game.teamid:
+                amount = reputation * 3 * random.randint(950, 1050)
+                game.clubs[game.teamid].accounts.deposit(amount=amount,
+                                                         category="television")
 
         self.show_all()
 
@@ -447,20 +455,12 @@ class Match(Gtk.Grid):
         events.increment_assists(airesult.assists[0], airesult.assists[1])
 
         # Decrement matches player is suspended for
-        for playerid, player in game.players.items():
+        for player in game.players.values():
             if player.suspension_period > 0:
                 player.suspension_period -= 1
 
                 if player.suspension_period == 0:
                     player.suspension_type = 0
-
-        # Televised games
-        '''
-        if game.televised[game.fixturesindex] == game.teamid:
-            reputation = game.clubs[game.teamid].reputation
-            amount = reputation * 3 * random.randint(950, 1050)
-            game.clubs[game.teamid].accounts.deposit(amount=amount, category="television")
-        '''
 
         # Matchday ticket sales
         if self.team1.teamid == game.teamid:

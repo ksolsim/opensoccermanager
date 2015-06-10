@@ -47,7 +47,6 @@ suspensions = {}
 surnames = []
 negotiations = {}
 loans = {}
-televised = []
 
 # Charts
 goalscorers = {}

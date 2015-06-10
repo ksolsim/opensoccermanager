@@ -328,6 +328,8 @@ class League:
         self.results = []
         self.standings = Standings()
 
+        self.televised = []
+
     def add_club(self, clubid):
         '''
         Add club to league and standings.
