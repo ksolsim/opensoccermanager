@@ -320,21 +320,21 @@ class Stadium(Gtk.Grid):
 
         for count, widget in enumerate(self.standing_widget):
             if count < 4:
-                if stadium.main[count].seating is False:
+                if not stadium.main[count].seating:
                     if widget[1].get_active():
                         self.cost += 525000
             else:
-                if stadium.corner[count - 4].seating is False:
+                if not stadium.corner[count - 4].seating:
                     if widget[1].get_active():
                         self.cost += 350000
 
         for count, widget in enumerate(self.roof_widget):
             if count < 4:
-                if stadium.main[count].roof is False:
+                if not stadium.main[count].roof:
                     if widget.get_active():
                         self.cost += 1200000
             else:
-                if stadium.corner[count - 4].roof is False:
+                if not stadium.corner[count - 4].roof:
                     if widget.get_active():
                         self.cost += 800000
 
@@ -480,7 +480,7 @@ class Stadium(Gtk.Grid):
                 stand_capacity = stadium.main[count].capacity
                 roof_status = stadium.main[count].roof
 
-                if stand_capacity >= 5000 and roof_status is True:
+                if stand_capacity >= 5000 and roof_status:
                     widget.set_value(capacity)
                     widget.set_range(capacity, 500)
 

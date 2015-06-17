@@ -343,7 +343,7 @@ class Players(Gtk.Grid):
         criteria = self.searchfilter.options
 
         # Filter own players
-        if criteria["own_players"] is False:
+        if not criteria["own_players"]:
             if model[treeiter][3] == game.teamid:
                 show = False
 
@@ -371,10 +371,10 @@ class Players(Gtk.Grid):
 
         # Filter transfer list, loan list and contract statuses
         if criteria["status"] == 1:
-            if model[treeiter][22] is False:
+            if not model[treeiter][22]:
                 show = False
         elif criteria["status"] == 2:
-            if model[treeiter][23] is False:
+            if not model[treeiter][23]:
                 show = False
         elif criteria["status"] == 3:
             if model[treeiter][20] != 0:
