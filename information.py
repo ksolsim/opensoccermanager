@@ -315,7 +315,7 @@ class Fixtures(Gtk.Grid):
 
         self.labelFixturesView.set_label("Round %i" % (self.page + 1))
 
-        if self.comboboxLeagues.get_active_id() != -1:
+        if self.comboboxLeagues.get_active_id() is not None:
             leagueid = int(self.comboboxLeagues.get_active_id())
 
             fixtures = game.leagues[leagueid].fixtures
@@ -333,6 +333,8 @@ class Fixtures(Gtk.Grid):
 
         sensitive = self.page > 0
         self.buttonPrevious.set_sensitive(sensitive)
+
+        self.comboboxLeagues.remove_all()
 
         for leagueid, league in game.leagues.items():
             self.comboboxLeagues.append(str(leagueid), league.name)

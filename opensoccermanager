@@ -893,9 +893,6 @@ continuegame = ContinueGame()
 preferences.preferences = preferences.Preferences()
 music.music = music.Player()
 
-widgets.date = widgets.Date()
-widgets.news = widgets.News()
-
 game.window = Window()
 game.window.run()
 
