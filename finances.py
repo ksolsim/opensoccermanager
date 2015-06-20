@@ -344,9 +344,7 @@ class Finances(Gtk.Grid):
             buttonbox.add(buttonFloat)
 
         def apply_float(self, button):
-            state = dialogs.float_club(game.flotation.amount)
-
-            if state:
+            if dialogs.float_club(game.flotation.amount):
                 game.flotation.status = 1
                 game.flotation.timeout = random.randint(12, 16)
 

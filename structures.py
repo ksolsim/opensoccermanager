@@ -86,6 +86,7 @@ class Date:
 
 class Player:
     def __init__(self):
+        self.common_name = None
         self.fitness = 100
         self.training_points = 0
         self.morale = 20
@@ -128,10 +129,7 @@ class Player:
         '''
         Return the player name in the requested format.
         '''
-        if not self.common_name:
-            self.common_name = ""
-
-        if self.common_name is not "":
+        if self.common_name:
             name = self.common_name
         else:
             if mode == 0:

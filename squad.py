@@ -432,7 +432,9 @@ class Squad(Gtk.Grid):
         model, treeiter = self.treeselection.get_selected()
         playerid = model[treeiter][0]
 
-        dialogs.player_info(playerid)
+        dialog = dialogs.PlayerInfo(playerid)
+        dialog.run()
+        dialog.destroy()
 
     def context_menu(self, widget, event):
         model, treeiter = self.treeselection.get_selected()

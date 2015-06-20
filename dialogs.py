@@ -17,6 +17,7 @@
 
 
 from gi.repository import Gtk
+from gi.repository import Gdk
 import random
 
 import calculator
@@ -29,11 +30,195 @@ import transfer
 import widgets
 
 
+class PlayerInfo(Gtk.Dialog):
+    def __init__(self, playerid):
+        self.playerid = playerid
+
+        Gtk.Dialog.__init__(self)
+        self.set_title("Player Information")
+        self.set_transient_for(game.window)
+        self.set_border_width(5)
+        self.set_resizable(False)
+        self.add_button("_Close", Gtk.ResponseType.CLOSE)
+        self.vbox.set_spacing(5)
+
+        grid = Gtk.Grid()
+        self.vbox.add(grid)
+
+        player = game.players[self.playerid]
+        name = player.get_name(mode=1)
+
+        label = widgets.AlignedLabel()
+        label.set_label(name)
+        label.set_hexpand(True)
+        grid.attach(label, 0, 0, 1, 1)
+
+        if player.club == game.teamid:
+            self.menu = Gtk.Menu()
+            menuitem = widgets.MenuItem("_Recall From Loan")
+            menuitem.set_sensitive(self.playerid in game.loans.keys())
+            menuitem.connect("activate", self.recall_from_loan)
+            self.menu.append(menuitem)
+
+            menubutton = Gtk.MenuButton("Actions")
+            menubutton.set_popup(self.menu)
+            menubutton.connect("clicked", self.action_menu_popup)
+            grid.attach(menubutton, 1, 0, 1, 1)
+
+        notebook = Gtk.Notebook()
+        self.vbox.add(notebook)
+
+        grid1 = Gtk.Grid()
+        grid1.set_border_width(5)
+        grid1.set_row_spacing(5)
+        grid1.set_column_spacing(5)
+        label = widgets.Label("_Personal")
+        notebook.append_page(grid1, label)
+
+        commonframe = widgets.CommonFrame("Contract")
+        grid1.attach(commonframe, 0, 0, 1, 1)
+
+        grid = Gtk.Grid()
+        grid.set_row_spacing(5)
+        grid.set_column_spacing(5)
+        commonframe.insert(grid)
+
+        label = widgets.AlignedLabel("Win Bonus")
+        grid.attach(label, 0, 0, 1, 1)
+        label = widgets.AlignedLabel("Goal Bonus")
+        grid.attach(label, 0, 1, 1, 1)
+        label = widgets.AlignedLabel("League Champions Bonus")
+        grid.attach(label, 0, 2, 1, 1)
+        label = widgets.AlignedLabel("League Runners Up Bonus")
+        grid.attach(label, 0, 3, 1, 1)
+
+        if self.playerid:
+            bonus = game.players[self.playerid].bonus
+
+            amount = display.currency(bonus[2])
+            label = widgets.AlignedLabel(amount)
+            grid.attach(label, 1, 0, 1, 1)
+            amount = display.currency(bonus[3])
+            label = widgets.AlignedLabel(amount)
+            grid.attach(label, 1, 1, 1, 1)
+            amount = display.currency(bonus[0])
+            label = widgets.AlignedLabel(amount)
+            grid.attach(label, 1, 2, 1, 1)
+            amount = display.currency(bonus[1])
+            label = widgets.AlignedLabel(amount)
+            grid.attach(label, 1, 3, 1, 1)
+
+        commonframe = widgets.CommonFrame("Injuries / Suspensions")
+        grid1.attach(commonframe, 0, 1, 1, 1)
+
+        grid = Gtk.Grid()
+        grid.set_row_spacing(5)
+        grid.set_column_spacing(5)
+        commonframe.insert(grid)
+
+        label = widgets.AlignedLabel("Injury")
+        grid.attach(label, 0, 0, 1, 1)
+        label = widgets.AlignedLabel("Injury Period")
+        grid.attach(label, 0, 1, 1, 1)
+        label = widgets.AlignedLabel("Suspension")
+        grid.attach(label, 0, 2, 1, 1)
+        label = widgets.AlignedLabel("Suspension Period")
+        grid.attach(label, 0, 3, 1, 1)
+
+        if self.playerid:
+            player = game.players[self.playerid]
+
+            if player.injury_type == 0:
+                injury_type = "None"
+                injury_period = "N/A"
+            else:
+                injury_type = constants.injuries[injuryid][0]
+                injury_period = player.get_injury()
+
+            if player.suspension_type == 0:
+                suspension_type = "None"
+                suspension_period = "N/A"
+            else:
+                suspension_type = constants.suspensions[suspensionid][0]
+                suspension_period = player.get_suspension()
+
+            label = widgets.AlignedLabel("%s" % (injury_type))
+            grid.attach(label, 1, 0, 1, 1)
+            label = widgets.AlignedLabel("%s" % (injury_period))
+            grid.attach(label, 1, 1, 1, 1)
+            label = widgets.AlignedLabel("%s" % (suspension_type))
+            grid.attach(label, 1, 2, 1, 1)
+            label = widgets.AlignedLabel("%s" % (suspension_period))
+            grid.attach(label, 1, 3, 1, 1)
+
+        grid2 = Gtk.Grid()
+        grid2.set_border_width(5)
+        label = widgets.Label("_History")
+        notebook.append_page(grid2, label)
+
+        scrolledwindow = Gtk.ScrolledWindow()
+        scrolledwindow.set_policy(Gtk.PolicyType.NEVER,
+                                  Gtk.PolicyType.AUTOMATIC)
+        grid2.attach(scrolledwindow, 0, 0, 1, 1)
+
+        player = game.players[self.playerid]
+        club = player.get_club()
+        season = game.date.get_season()
+        games = player.get_appearances()
+
+        liststore = Gtk.ListStore(str, str, str, int, int, int)
+        liststore.append([season,
+                          club,
+                          games,
+                          player.goals,
+                          player.assists,
+                          player.man_of_the_match])
+
+        for item in player.history:
+            liststore.append(item)
+
+        treeview = Gtk.TreeView()
+        treeview.set_vexpand(True)
+        treeview.set_hexpand(True)
+        treeview.set_model(liststore)
+        treeview.set_enable_search(False)
+        treeview.set_search_column(-1)
+        scrolledwindow.add(treeview)
+
+        treeselection = treeview.get_selection()
+        treeselection.set_mode(Gtk.SelectionMode.NONE)
+
+        treeviewcolumn = widgets.TreeViewColumn(title="Season", column=0)
+        treeview.append_column(treeviewcolumn)
+        treeviewcolumn = widgets.TreeViewColumn(title="Club", column=1)
+        treeview.append_column(treeviewcolumn)
+        treeviewcolumn = widgets.TreeViewColumn(title="Games", column=2)
+        treeview.append_column(treeviewcolumn)
+        treeviewcolumn = widgets.TreeViewColumn(title="Goals", column=3)
+        treeview.append_column(treeviewcolumn)
+        treeviewcolumn = widgets.TreeViewColumn(title="Assists", column=4)
+        treeview.append_column(treeviewcolumn)
+        treeviewcolumn = widgets.TreeViewColumn(title="MOTM", column=5)
+        treeview.append_column(treeviewcolumn)
+
+        self.show_all()
+
+    def recall_from_loan(self, menuitem):
+        loan = game.loans[self.playerid]
+
+        if loan.cancel_loan():
+            loan.end_loan()
+
+    def action_menu_popup(self, menubutton):
+        self.menu.show_all()
+
+
 class SquadReport(Gtk.Dialog):
     def __init__(self):
         Gtk.Dialog.__init__(self)
         self.set_title("Squad Report")
         self.set_border_width(5)
+        self.set_resizable(False)
         self.set_default_size(240, 240)
         self.set_transient_for(game.window)
         self.add_button("_Close", Gtk.ResponseType.CLOSE)
@@ -203,189 +388,6 @@ def scout_report(player, status):
     messagedialog.set_markup(message)
     messagedialog.run()
     messagedialog.destroy()
-
-
-def player_info(playerid):
-    def action_menu_popped(menubutton):
-        menu.show_all()
-
-    def recall_from_loan(menuitem):
-        loan = game.loans[playerid]
-
-        if loan.cancel_loan():
-            loan.end_loan()
-
-    dialog = Gtk.Dialog()
-    dialog.set_transient_for(game.window)
-    dialog.set_border_width(5)
-    dialog.set_resizable(False)
-    dialog.set_title("Player Information")
-    dialog.add_button("_Close", Gtk.ResponseType.CLOSE)
-    dialog.vbox.set_spacing(5)
-
-    grid = Gtk.Grid()
-    dialog.vbox.add(grid)
-
-    player = game.players[playerid]
-    name = player.get_name(mode=1)
-
-    label = widgets.AlignedLabel()
-    label.set_label(name)
-    label.set_hexpand(True)
-    grid.attach(label, 0, 0, 1, 1)
-
-    if player.club == game.teamid:
-        menu = Gtk.Menu()
-        menuitem = widgets.MenuItem("_Recall From Loan")
-        menuitem.set_sensitive(playerid in game.loans.keys())
-        menuitem.connect("activate", recall_from_loan)
-        menu.append(menuitem)
-
-        menubutton = Gtk.MenuButton("Actions")
-        menubutton.set_popup(menu)
-        menubutton.connect("clicked", action_menu_popped)
-        grid.attach(menubutton, 1, 0, 1, 1)
-
-    notebook = Gtk.Notebook()
-    dialog.vbox.add(notebook)
-
-    grid1 = Gtk.Grid()
-    grid1.set_border_width(5)
-    grid1.set_row_spacing(5)
-    grid1.set_column_spacing(5)
-    label = widgets.Label("_Personal")
-    notebook.append_page(grid1, label)
-
-    commonframe = widgets.CommonFrame("Contract")
-    grid1.attach(commonframe, 0, 0, 1, 1)
-
-    grid = Gtk.Grid()
-    grid.set_row_spacing(5)
-    grid.set_column_spacing(5)
-    commonframe.insert(grid)
-
-    label = widgets.AlignedLabel("Win Bonus")
-    grid.attach(label, 0, 0, 1, 1)
-    label = widgets.AlignedLabel("Goal Bonus")
-    grid.attach(label, 0, 1, 1, 1)
-    label = widgets.AlignedLabel("League Champions Bonus")
-    grid.attach(label, 0, 2, 1, 1)
-    label = widgets.AlignedLabel("League Runners Up Bonus")
-    grid.attach(label, 0, 3, 1, 1)
-
-    if playerid:
-        bonus = game.players[playerid].bonus
-
-        amount = display.currency(bonus[2])
-        label = widgets.AlignedLabel(amount)
-        grid.attach(label, 1, 0, 1, 1)
-        amount = display.currency(bonus[3])
-        label = widgets.AlignedLabel(amount)
-        grid.attach(label, 1, 1, 1, 1)
-        amount = display.currency(bonus[0])
-        label = widgets.AlignedLabel(amount)
-        grid.attach(label, 1, 2, 1, 1)
-        amount = display.currency(bonus[1])
-        label = widgets.AlignedLabel(amount)
-        grid.attach(label, 1, 3, 1, 1)
-
-    commonframe = widgets.CommonFrame("Injuries / Suspensions")
-    grid1.attach(commonframe, 0, 1, 1, 1)
-
-    grid = Gtk.Grid()
-    grid.set_row_spacing(5)
-    grid.set_column_spacing(5)
-    commonframe.insert(grid)
-
-    label = widgets.AlignedLabel("Injury")
-    grid.attach(label, 0, 0, 1, 1)
-    label = widgets.AlignedLabel("Injury Period")
-    grid.attach(label, 0, 1, 1, 1)
-    label = widgets.AlignedLabel("Suspension")
-    grid.attach(label, 0, 2, 1, 1)
-    label = widgets.AlignedLabel("Suspension Period")
-    grid.attach(label, 0, 3, 1, 1)
-
-    if playerid:
-        player = game.players[playerid]
-        injuryid = player.injury_type
-        suspensionid = player.suspension_type
-
-        if injuryid == 0:
-            injury_type = "None"
-            injury_period = "N/A"
-        else:
-            injury_type = constants.injuries[injuryid][0]
-            injury_period = player.get_injury()
-
-        if suspensionid == 0:
-            suspension_type = "None"
-            suspension_period = "N/A"
-        else:
-            suspension_type = constants.suspensions[suspensionid][0]
-            suspension_period = player.get_suspension()
-
-        label = widgets.AlignedLabel("%s" % (injury_type))
-        grid.attach(label, 1, 0, 1, 1)
-        label = widgets.AlignedLabel("%s" % (injury_period))
-        grid.attach(label, 1, 1, 1, 1)
-        label = widgets.AlignedLabel("%s" % (suspension_type))
-        grid.attach(label, 1, 2, 1, 1)
-        label = widgets.AlignedLabel("%s" % (suspension_period))
-        grid.attach(label, 1, 3, 1, 1)
-
-    grid2 = Gtk.Grid()
-    grid2.set_border_width(5)
-    label = widgets.Label("_History")
-    notebook.append_page(grid2, label)
-
-    scrolledwindow = Gtk.ScrolledWindow()
-    scrolledwindow.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
-    grid2.attach(scrolledwindow, 0, 0, 1, 1)
-
-    player = game.players[playerid]
-    club = player.get_club()
-    season = game.date.get_season()
-    games = player.get_appearances()
-
-    liststore = Gtk.ListStore(str, str, str, int, int, int)
-    liststore.append([season,
-                      club,
-                      games,
-                      player.goals,
-                      player.assists,
-                      player.man_of_the_match])
-
-    for item in player.history:
-        liststore.append(item)
-
-    treeview = Gtk.TreeView()
-    treeview.set_vexpand(True)
-    treeview.set_hexpand(True)
-    treeview.set_model(liststore)
-    treeview.set_enable_search(False)
-    treeview.set_search_column(-1)
-    scrolledwindow.add(treeview)
-
-    treeselection = treeview.get_selection()
-    treeselection.set_mode(Gtk.SelectionMode.NONE)
-
-    treeviewcolumn = widgets.TreeViewColumn(title="Season", column=0)
-    treeview.append_column(treeviewcolumn)
-    treeviewcolumn = widgets.TreeViewColumn(title="Club", column=1)
-    treeview.append_column(treeviewcolumn)
-    treeviewcolumn = widgets.TreeViewColumn(title="Games", column=2)
-    treeview.append_column(treeviewcolumn)
-    treeviewcolumn = widgets.TreeViewColumn(title="Goals", column=3)
-    treeview.append_column(treeviewcolumn)
-    treeviewcolumn = widgets.TreeViewColumn(title="Assists", column=4)
-    treeview.append_column(treeviewcolumn)
-    treeviewcolumn = widgets.TreeViewColumn(title="MOTM", column=5)
-    treeview.append_column(treeviewcolumn)
-
-    dialog.show_all()
-    dialog.run()
-    dialog.destroy()
 
 
 def not_enough_subs(number):

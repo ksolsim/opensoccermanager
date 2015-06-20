@@ -219,7 +219,9 @@ class Players(Gtk.Grid):
         model = treeview.get_model()
         playerid = model[treepath][0]
 
-        dialogs.player_info(playerid)
+        dialog = dialogs.PlayerInfo(playerid)
+        dialog.show_all()
+        dialog.destroy()
 
     def search_activated(self, entry):
         '''
@@ -309,9 +311,9 @@ class Players(Gtk.Grid):
                         self.contextmenu.menuitemRemoveShortlist.set_sensitive(False)
 
                     if player.club:
-                        self.contextmenu.menuitemLoan.set_sensitive(False)
-                    else:
                         self.contextmenu.menuitemLoan.set_sensitive(True)
+                    else:
+                        self.contextmenu.menuitemLoan.set_sensitive(False)
                 else:
                     self.contextmenu.display(mode=1)
 
@@ -436,7 +438,6 @@ class Players(Gtk.Grid):
             age = player.get_age()
             clubid = player.club
             club = player.get_club()
-            nationid = player.nationality
             nation = player.get_nationality()
             display_value = player.get_value()
             display_wage = player.get_wage()

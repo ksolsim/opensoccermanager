@@ -515,10 +515,9 @@ class Loan:
             self.end_loan()
 
     def extend_loan_valid(self):
-        if self.period != -1:
-            return True
-        else:
-            return False
+        state = self.period != -1
+
+        return state
 
     def extend_loan(self):
         '''
