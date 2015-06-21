@@ -59,24 +59,19 @@ def individual(shortlist_playerid):
     average = sum(skills[0:6]) + (skills[8] * 1.5) + (skills[5] * 0.2) + (skills[6] * 0.2) + (skills[7] * 1.5)
     average = average / 9
 
-    if average < position_average:
-        status = 0
-    else:
-        status = 1
+    status = average < position_average:
 
     return status
 
 
 def recommends():
     '''
-    Iterates through all players and displays those which are suitable
+    Iterates through all players and displays those which are suitable.
     '''
-    recommended = []
+    recommended = {}
 
-    for playerid in game.players.keys():
-        status = individual(playerid)
-
-        if status == 1:
-            recommended.append(playerid)
+    for playerid, player in game.players.items():
+        if individual(playerid):
+            recommended[playerid] = player
 
     return recommended
