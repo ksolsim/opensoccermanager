@@ -282,7 +282,7 @@ class Players(Gtk.Grid):
         '''
         model, treeiter = self.treeselection.get_selected()
 
-        game.clubs[game.teamid].shortlist.add(model[treeiter][0])
+        game.clubs[game.teamid].shortlist.add_player(model[treeiter][0])
 
     def remove_from_shortlist(self, menuitem):
         '''
@@ -290,7 +290,7 @@ class Players(Gtk.Grid):
         '''
         model, treeiter = self.treeselection.get_selected()
 
-        game.clubs[game.teamid].shortlist.remove(model[treeiter][0])
+        game.clubs[game.teamid].shortlist.remove_player(model[treeiter][0])
 
     def context_menu(self, treeview, event):
         if event.button == 3:
@@ -299,11 +299,12 @@ class Players(Gtk.Grid):
             if treeiter:
                 playerid = model[treeiter][0]
                 player = game.players[playerid]
+                club = game.clubs[game.teamid]
 
-                if playerid not in game.clubs[game.teamid].squad:
+                if playerid not in club.squad:
                     self.contextmenu.display()
 
-                    if playerid in game.clubs[game.teamid].shortlist:
+                    if club.shortlist.get_player_in_shortlist(playerid):
                         self.contextmenu.menuitemAddShortlist.set_sensitive(False)
                         self.contextmenu.menuitemRemoveShortlist.set_sensitive(True)
                     else:
@@ -653,7 +654,8 @@ class Shortlist(Gtk.Grid):
         Gtk.Grid.__init__(self)
         self.set_row_spacing(5)
 
-        self.liststorePlayers = Gtk.ListStore(int, str, int, str, str, str, str, str)
+        self.liststorePlayers = Gtk.ListStore(int, str, int, str,
+                                              str, str, str, str)
 
         scrolledwindow = Gtk.ScrolledWindow()
         scrolledwindow.set_policy(Gtk.PolicyType.NEVER,
@@ -740,13 +742,12 @@ class Shortlist(Gtk.Grid):
         playerid = model[treeiter][0]
 
         if dialogs.remove_from_shortlist(playerid):
-            game.clubs[game.teamid].shortlist.remove(playerid)
+            game.clubs[game.teamid].shortlist.remove_player(playerid)
 
             self.populate_data()
 
     def scout_report(self, button):
         model, treeiter = self.treeselection.get_selected()
-
         playerid = model[treeiter][0]
 
         status = scout.individual(playerid)
@@ -756,7 +757,6 @@ class Shortlist(Gtk.Grid):
 
     def make_transfer_offer(self, menuitem, transfer_type):
         model, treeiter = self.treeselection.get_selected()
-
         playerid = model[treeiter][0]
 
         # Set to free transfer if player has no club
@@ -768,7 +768,7 @@ class Shortlist(Gtk.Grid):
     def populate_data(self):
         self.liststorePlayers.clear()
 
-        for playerid in game.clubs[game.teamid].shortlist:
+        for playerid in game.clubs[game.teamid].shortlist.players:
             player = game.players[playerid]
             name = player.get_name()
             age = player.get_age()

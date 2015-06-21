@@ -638,7 +638,7 @@ def make_enquiry(playerid, transfer_type):
         game.negotiations[game.negotiationid] = negotiation
 
         game.negotiationid += 1
-        game.clubs[game.teamid].shortlist.add(playerid)
+        game.clubs[game.teamid].shortlist.add_player(playerid)
 
 
 def check(negotiationid):

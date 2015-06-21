@@ -372,10 +372,10 @@ class Advertising(Gtk.Grid):
     def update_totals(self):
         club = game.clubs[game.teamid]
 
-        quantity = club.hoardings.get_count()
+        quantity = club.hoardings.get_advert_count()
         self.hoardings.labelCount.set_label("Used %i of %i hoarding spaces" % (quantity, club.hoardings.maximum))
 
-        quantity = club.programmes.get_count()
+        quantity = club.programmes.get_advert_count()
         self.programmes.labelCount.set_label("Used %i of %i programme spaces" % (quantity, club.programmes.maximum))
 
     def populate_data(self):

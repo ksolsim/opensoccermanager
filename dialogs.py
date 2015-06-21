@@ -682,12 +682,13 @@ def remove_from_shortlist(playerid):
     name = player.get_name(mode=1)
 
     messagedialog = Gtk.MessageDialog(type=Gtk.MessageType.QUESTION)
-    messagedialog.set_title("Cancel Transfer")
+    messagedialog.set_title("Remove From Shortlist")
     messagedialog.set_transient_for(game.window)
     messagedialog.add_button("_Cancel", Gtk.ResponseType.CANCEL)
     messagedialog.add_button("_Remove", Gtk.ResponseType.OK)
     messagedialog.set_default_response(Gtk.ResponseType.CANCEL)
-    messagedialog.set_markup("Remove %s from shortlist?" % (name))
+    messagedialog.set_markup("<span size='12000'><b>Remove %s from shortlist?</b></span>" % (name))
+    messagedialog.format_secondary_text("Removal will not cancel any ongoing transfer negotiations.")
 
     state = False
 

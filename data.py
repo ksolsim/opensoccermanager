@@ -67,6 +67,12 @@ def datainit():
 
     widgets.date.update()
 
+    # Import extra data
+    constants.buildings = game.database.importer("buildings")
+    constants.merchandise = game.database.importer("merchandise")
+    constants.catering = game.database.importer("catering")
+    game.companies = game.database.importer("company")
+
     # Import leagues
     game.database.cursor.execute("SELECT * FROM league JOIN leagueattr ON league.id = leagueattr.league WHERE year = ?", (game.date.year,))
     data = game.database.cursor.fetchall()
@@ -244,11 +250,6 @@ def datainit():
         for count, week in enumerate(league.fixtures.fixtures):
             league.televised.append(random.randint(0, len(week) - 1))
 
-    constants.buildings = game.database.importer("buildings")
-    constants.merchandise = game.database.importer("merchandise")
-    constants.catering = game.database.importer("catering")
-    game.companies = game.database.importer("company")
-
     # Create financial objects
     game.bankloan = structures.BankLoan()
     game.overdraft = structures.Overdraft()
@@ -295,10 +296,6 @@ def dataloader(finances):
     # Calculate free school tickets
     tickets = int((20 - club.reputation) * 0.5) + 1  # Leave int to round
     club.school_tickets = tickets * 100
-
-    # Initiate values for merchandise / catering
-    club.merchandise = [100] * len(constants.merchandise)
-    club.catering = [100] * len(constants.catering)
 
     # Import resources
     resources.import_news()
