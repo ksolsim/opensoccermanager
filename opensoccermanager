@@ -887,8 +887,10 @@ def exit_game(widget=None, event=None):
         return state
 
 
-game.date = structures.Date()
 game.database = database.Database()
+game.database = game.database.get_database_object()
+
+game.date = structures.Date()
 continuegame = ContinueGame()
 preferences.preferences = preferences.Preferences()
 music.music = music.Player()
