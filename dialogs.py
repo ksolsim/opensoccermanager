@@ -270,10 +270,7 @@ def release_player(name, cost):
     messagedialog.set_markup("<span size='12000'><b>Release %s from his contract?</b></span>" % (name))
     messagedialog.format_secondary_text("This will cost %s to pay off his contract." % (cost))
 
-    state = False
-
-    if messagedialog.run() == Gtk.ResponseType.OK:
-        state = True
+    state = messagedialog.run() == Gtk.ResponseType.OK
 
     messagedialog.destroy()
 
@@ -400,10 +397,7 @@ def not_enough_subs(number):
     messagedialog.set_markup("<span size='12000'><b>You have only selected %i out of a possible 5 subs.</b></span>" % (number))
     messagedialog.format_secondary_text("Do you wish to continue to the game?")
 
-    answer = False
-
-    if messagedialog.run() == Gtk.ResponseType.YES:
-        answer = True
+    answer = messagedialog.run() == Gtk.ResponseType.YES
 
     messagedialog.destroy()
 
@@ -420,10 +414,7 @@ def proceed_to_game(team):
     messagedialog.set_markup("<span size='12000'><b>Proceed to next match?</b></span>")
     messagedialog.format_secondary_text("Your next match is against %s." % (team))
 
-    proceed = False
-
-    if messagedialog.run() == Gtk.ResponseType.YES:
-        proceed = True
+    proceed = messagedialog.run() == Gtk.ResponseType.YES
 
     messagedialog.destroy()
 
@@ -641,10 +632,7 @@ def withdraw_transfer(negotiationid):
     messagedialog.set_default_response(Gtk.ResponseType.CANCEL)
     messagedialog.set_markup("Withdraw transfer offer for %s?" % (name))
 
-    state = False
-
-    if messagedialog.run() == Gtk.ResponseType.OK:
-        state = True
+    state = messagedialog.run() == Gtk.ResponseType.OK
 
     messagedialog.destroy()
 
@@ -667,10 +655,7 @@ def cancel_transfer(negotiationid):
     messagedialog.set_default_response(Gtk.ResponseType.CANCEL)
     messagedialog.set_markup("End transfer negotiations for %s?" % (name))
 
-    state = False
-
-    if messagedialog.run() == Gtk.ResponseType.OK:
-        state = True
+    state = messagedialog.run() == Gtk.ResponseType.OK
 
     messagedialog.destroy()
 
@@ -690,10 +675,7 @@ def remove_from_shortlist(playerid):
     messagedialog.set_markup("<span size='12000'><b>Remove %s from shortlist?</b></span>" % (name))
     messagedialog.format_secondary_text("Removal will not cancel any ongoing transfer negotiations.")
 
-    state = False
-
-    if messagedialog.run() == Gtk.ResponseType.OK:
-        state = True
+    state = messagedialog.run() == Gtk.ResponseType.OK
 
     messagedialog.destroy()
 
@@ -711,10 +693,7 @@ def confirm_stadium(cost):
     messagedialog.set_default_response(Gtk.ResponseType.CANCEL)
     messagedialog.set_markup("Begin the construction of upgrades to the stadium at cost of %s?" % (cost))
 
-    state = False
-
-    if messagedialog.run() == Gtk.ResponseType.OK:
-        state = True
+    state = messagedialog.run() == Gtk.ResponseType.OK
 
     messagedialog.destroy()
 
@@ -732,10 +711,7 @@ def confirm_building(cost):
     messagedialog.set_default_response(Gtk.ResponseType.CANCEL)
     messagedialog.set_markup("Begin the construction of new buildings at a cost of %s?" % (cost))
 
-    state = False
-
-    if messagedialog.run() == Gtk.ResponseType.OK:
-        state = True
+    state = messagedialog.run() == Gtk.ResponseType.OK
 
     messagedialog.destroy()
 
@@ -753,10 +729,7 @@ def confirm_training(cost):
     messagedialog.set_default_response(Gtk.ResponseType.CANCEL)
     messagedialog.set_markup("Arrange for trip to training camp at a cost of %s?" % (display_cost))
 
-    state = False
-
-    if messagedialog.run() == Gtk.ResponseType.OK:
-        state = True
+    state = messagedialog.run() == Gtk.ResponseType.OK
 
     messagedialog.destroy()
 
@@ -774,10 +747,7 @@ def hire_staff(index, name):
     messagedialog.set_default_response(Gtk.ResponseType.CANCEL)
     messagedialog.set_markup("Hire %s %s?" % (staff_type[index], name))
 
-    state = False
-
-    if messagedialog.run() == Gtk.ResponseType.YES:
-        state = True
+    state = messagedialog.run() == Gtk.ResponseType.YES
 
     messagedialog.destroy()
 
@@ -793,14 +763,11 @@ def fire_staff(index, name, payout):
     messagedialog.set_transient_for(game.window)
     messagedialog.set_title("Fire %s" % staff_type[index])
     messagedialog.add_button("_Cancel", Gtk.ResponseType.CANCEL)
-    messagedialog.add_button("_Fire", Gtk.ResponseType.YES)
+    messagedialog.add_button("_Fire", Gtk.ResponseType.OK)
     messagedialog.set_default_response(Gtk.ResponseType.CANCEL)
     messagedialog.set_markup("Fire %s %s at a cost of %s?" % (staff_type[index], name, payout))
 
-    state = False
-
-    if messagedialog.run() == Gtk.ResponseType.YES:
-        state = True
+    state = messagedialog.run() == Gtk.ResponseType.OK
 
     messagedialog.destroy()
 
@@ -828,10 +795,7 @@ def renew_staff_contract(name, year, amount):
     messagedialog.set_default_response(Gtk.ResponseType.REJECT)
     messagedialog.set_markup("%s is requesting a %i year contract and %s per week." % (name, year, amount))
 
-    state = False
-
-    if messagedialog.run() == Gtk.ResponseType.ACCEPT:
-        state = True
+    state = messagedialog.run() == Gtk.ResponseType.ACCEPT
 
     messagedialog.destroy()
 
@@ -859,10 +823,7 @@ def improve_wage(name, amount):
     messagedialog.set_default_response(Gtk.ResponseType.REJECT)
     messagedialog.set_markup("Increase wages for %s to %s per week?" % (name, amount))
 
-    state = False
-
-    if messagedialog.run() == Gtk.ResponseType.ACCEPT:
-        state = True
+    state = messagedialog.run() == Gtk.ResponseType.ACCEPT
 
     messagedialog.destroy()
 
@@ -921,10 +882,7 @@ def float_club(amount):
     messagedialog.set_markup("<span size='12000'><b>Are you sure you want to float the club publically?</b></span>")
     messagedialog.format_secondary_text("The amount raised will be in the region of %s." % (amount))
 
-    state = False
-
-    if messagedialog.run() == Gtk.ResponseType.YES:
-        state = True
+    state = messagedialog.run() == Gtk.ResponseType.YES
 
     messagedialog.destroy()
 

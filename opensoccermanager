@@ -715,8 +715,8 @@ class ContinueGame:
             self.proceed = True
 
         # Unread news status
-        if game.news.get_unread_count() > 0:
-            widgets.news.show()
+        visible = game.news.get_unread_count() > 0
+        widgets.news.set_visible(visible)
 
         # Display next match
         current_date = "%i/%i" % (game.date.day, game.date.month)

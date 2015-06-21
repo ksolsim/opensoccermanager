@@ -270,7 +270,7 @@ class ShortlistContext:
 
         x, y = 10, 25
 
-        for playerid in game.clubs[game.teamid].shortlist:
+        for playerid in game.clubs[game.teamid].shortlist.players:
             player = game.players[playerid]
 
             context.move_to(x, y)
