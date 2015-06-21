@@ -59,7 +59,7 @@ def individual(shortlist_playerid):
     average = sum(skills[0:6]) + (skills[8] * 1.5) + (skills[5] * 0.2) + (skills[6] * 0.2) + (skills[7] * 1.5)
     average = average / 9
 
-    status = average < position_average:
+    status = average < position_average
 
     return status
 

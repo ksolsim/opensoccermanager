@@ -133,8 +133,6 @@ class Advertising:
         '''
         Regenerate the advertising on offer.
         '''
-        club = game.clubs[game.teamid]
-
         random.shuffle(self.companies)
 
         self.available = {}
@@ -172,7 +170,7 @@ class Advertising:
         if self.alert > 0:
             self.alert -= 1
         else:
-            if self.get_count() < 12:
+            if self.get_advert_count() < 12:
                 game.news.publish("BS04")
 
             self.alert = random.randint(10, 16)
@@ -183,7 +181,7 @@ class Advertising:
             self.generate()
             self.timeout = random.randint(8, 12)
 
-    def get_count(self):
+    def get_advert_count(self):
         '''
         Return number of adverts currently set.
         '''

@@ -295,6 +295,7 @@ class Player:
 
 class Club:
     def __init__(self):
+        self.reputation = 0
         self.squad = []
         self.team = {}
         self.tactics = [0, 0, 0, 0, 0, 1, 1, 0, 0]
@@ -336,6 +337,17 @@ class Club:
         cost = calculator.maintenance()
 
         self.accounts.withdraw(cost, "stadium")
+
+    def set_advertising_spaces(self):
+        '''
+        Set the maximum allowed advertising spaces.
+        '''
+        self.hoardings.maximum = 48
+
+        if self.reputation > 10:
+            self.programmes.maximum = 36
+        else:
+            self.programmes.maximum = 24
 
 
 class League:

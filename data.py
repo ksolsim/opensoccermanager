@@ -104,6 +104,8 @@ def datainit():
 
         game.leagues[club.league].add_club(clubid)
 
+        club.set_advertising_spaces()
+
     # Import players
     game.database.cursor.execute("SELECT * FROM player JOIN playerattr ON player.id = playerattr.player WHERE year = ?", (game.date.year,))
     data = game.database.cursor.fetchall()
@@ -282,13 +284,6 @@ def dataloader(finances):
     # Generate advertising offers for hoardings/programmes
     club.hoardings.initialise()
     club.programmes.initialise()
-
-    club.hoardings.maximum = 48
-
-    if club.reputation > 10:
-        club.programmes.maximum = 36
-    else:
-        club.programmes.maximum = 24
 
     # Initiate season ticket sales based on percentage of capacity
     club.season_tickets = events.season_tickets()
