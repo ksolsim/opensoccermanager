@@ -30,8 +30,6 @@ scoutid = 1
 negotiationid = 1
 team_training_alert = 0
 team_training_timeout = 12
-advertising_alert = 4
-advertising_timeout = 0
 advertising_assistant = False  # Toggle assistant handling advertising
 
 # Data

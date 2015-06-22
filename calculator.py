@@ -28,15 +28,7 @@ def value(playerid):
 
     position = player.position
     age = player.get_age()
-    skills = (player.keeping,
-              player.tackling,
-              player.passing,
-              player.shooting,
-              player.heading,
-              player.pace,
-              player.stamina,
-              player.ball_control,
-              player.set_pieces)
+    skills = player.get_skills()
 
     if position in ("GK"):
         primary = skills[0]
@@ -108,15 +100,7 @@ def wage(playerid):
     player = game.players[playerid]
 
     position = player.position
-    skills = (player.keeping,
-              player.tackling,
-              player.passing,
-              player.shooting,
-              player.heading,
-              player.pace,
-              player.stamina,
-              player.ball_control,
-              player.set_pieces)
+    skills = player.get_skills()
     value = player.value
 
     if position in ("GK"):
@@ -174,40 +158,36 @@ def bonus(wage):
     '''
     Calculate player bonus from existing wage.
     '''
-    leaguewin = wage * 2
-    leaguerunnerup = wage * 0.25
-    winbonus = wage * 0.1
-    goalbonus = wage * 0.1
+    leaguewin = wage_rounder(wage * 2)
+    leaguerunnerup = wage_rounder(wage * 0.25)
+    winbonus = wage_rounder(wage * 0.1)
+    goalbonus = wage_rounder(wage * 0.1)
 
-    return leaguewin, leaguerunnerup, winbonus, goalbonus
+    bonuses = list(map(int, (leaguewin, leaguerunnerup, winbonus, goalbonus)))
+
+    return bonuses
 
 
 def value_rounder(value):
     if value >= 1000000:
         divisor = 100000
-    elif value >= 100000:
-        divisor = 10000
     elif value >= 10000:
-        divisor = 10000
-    elif value >= 1000:
         divisor = 1000
-    elif value >= 100:
-        divisor = 100
-    else:
-        divisor = 10
 
     value = value - (value % divisor)
+    value = int(value)
 
     return value
 
 
 def wage_rounder(value):
-    if value >= 1000:
+    if value >= 10000:
         divisor = 100
     else:
         divisor = 10
 
     value = value - (value % divisor)
+    value = int(value)
 
     return value
 
