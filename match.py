@@ -296,7 +296,7 @@ class Match(Gtk.Grid):
         leagueid = game.clubs[game.teamid].league
         fixtures = game.leagues[leagueid].fixtures
 
-        for count, fixture in enumerate(fixtures.fixtures[game.fixturesindex]):
+        for count, fixture in enumerate(fixtures.fixtures[game.date.fixturesindex]):
             if game.teamid in fixture:
                 match = fixture
 
@@ -364,8 +364,8 @@ class Match(Gtk.Grid):
         for league in game.leagues.values():
             league.results.append([])
 
-            televised = league.televised[game.fixturesindex]
-            clubid = league.fixtures.fixtures[game.fixturesindex][televised][0]
+            televised = league.televised[game.date.fixturesindex]
+            clubid = league.fixtures.fixtures[game.date.fixturesindex][televised][0]
 
             if clubid == game.teamid:
                 amount = game.clubs[game.teamid].reputation * 3 * random.randint(950, 1050)
@@ -480,10 +480,10 @@ class Match(Gtk.Grid):
         self.notebook.set_show_border(True)
         self.notebook.set_current_page(1)
 
-        game.fixturesindex += 1
+        game.date.fixturesindex += 1
 
     def process_remaining_league(self):
-        for count, fixture in enumerate(game.leagues[self.leagueid].fixtures.fixtures[game.fixturesindex], start=1):
+        for count, fixture in enumerate(game.leagues[self.leagueid].fixtures.fixtures[game.date.fixturesindex], start=1):
             team1 = structures.Team()
             team2 = structures.Team()
 
@@ -526,7 +526,7 @@ class Match(Gtk.Grid):
                 self.referees = list(game.leagues[leagueid].referees.values())
                 random.shuffle(self.referees)
 
-                for count, fixture in enumerate(league.fixtures.fixtures[game.fixturesindex], start=0):
+                for count, fixture in enumerate(league.fixtures.fixtures[game.date.fixturesindex], start=0):
                     team1 = structures.Team()
                     team2 = structures.Team()
 

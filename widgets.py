@@ -18,6 +18,7 @@
 
 from gi.repository import Gtk
 
+import constants
 import display
 import game
 
@@ -96,6 +97,38 @@ class Date(Gtk.Label):
         Update when called the current date shown in the date label.
         '''
         self.set_label(game.date.get_string_date())
+
+
+class NextMatch(Gtk.Button):
+    def __init__(self):
+        Gtk.Button.__init__(self)
+        self.set_relief(Gtk.ReliefStyle.NONE)
+
+    def update(self):
+        '''
+        Update the next fixture to be played.
+        '''
+        current_date = "%i/%i" % (game.date.day, game.date.month)
+
+        if current_date == constants.events[game.date.fixturesindex]:
+            leagueid = game.clubs[game.teamid].league
+            fixtures = game.leagues[leagueid].fixtures
+
+            for match in fixtures.fixtures[game.date.fixturesindex]:
+                if game.teamid in match:
+                    team1 = game.clubs[match[0]].name
+                    team2 = game.clubs[match[1]].name
+                    self.set_label("Today's Match: %s - %s" % (team1, team2))
+                    self.show()
+        else:
+            self.clear()
+
+    def clear(self):
+        '''
+        Clear the currently set next fixture.
+        '''
+        self.set_label("")
+        self.hide()
 
 
 class News(Gtk.Button):

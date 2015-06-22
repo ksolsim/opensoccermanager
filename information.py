@@ -329,7 +329,7 @@ class Fixtures(Gtk.Grid):
                 self.liststoreFixtures.append([team1, team2, stadium])
 
     def run(self):
-        self.page = game.fixturesindex
+        self.page = game.date.fixturesindex
 
         sensitive = self.page > 0
         self.buttonPrevious.set_sensitive(sensitive)

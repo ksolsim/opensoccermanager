@@ -218,7 +218,7 @@ class Referees(Gtk.ScrolledWindow):
     def run(self):
         self.liststore.clear()
 
-        if game.eventindex == 0:
+        if game.date.eventindex == 0:
             self.treemodelsort.set_sort_column_id(0, Gtk.SortType.ASCENDING)
         else:
             self.treemodelsort.set_sort_column_id(1, Gtk.SortType.DESCENDING)

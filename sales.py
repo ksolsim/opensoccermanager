@@ -28,6 +28,8 @@ def season_tickets():
     Determine number of season tickets to be sold prior to first game of
     the season, and calculate the amount of income from those sales.
     '''
+    game.season_tickets_status = 1
+
     club = game.clubs[game.teamid]
     stadium = game.stadiums[club.stadium]
 

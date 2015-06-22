@@ -22,11 +22,40 @@ import statistics
 
 import accounts
 import advertising
+import ai
+import aitransfer
+import business
 import calculator
 import constants
+import data
+import database
+import dialogs
+import display
 import evaluation
+import events
+import fileio
+import finances
 import fixtures
 import game
+import information
+import interface
+import match
+import menu
+import money
+import music
+import preferences
+import printing
+import sales
+import squad
+import stadium
+import staff
+import structures
+import team
+import training
+import transfer
+import version
+import view
+import widgets
 
 
 class Date:
@@ -37,6 +66,11 @@ class Date:
         self.season = "2014/2015"
 
         self.week = 1
+
+        self.fixturesindex = 0           # Index number of which fixture the game is on
+        self.eventindex = 0              # Position in relation to events
+        self.dateindex = 1               # Position in relation to dates
+        self.dateprev = 0
 
     def get_string_date(self):
         '''
@@ -82,6 +116,78 @@ class Date:
         Adjust the season attribute for new season.
         '''
         self.season = "%i/%i" % (self.year, self.year + 1)
+
+    def increment_date(self):
+        '''
+        Move to the next date.
+        '''
+        self.day = constants.dates[game.date.week - 1][self.dateindex]
+
+        if game.date.dateprev > self.day:
+            self.dateprev = 0
+
+            if self.month == 12:
+                self.end_of_year()
+            else:
+                self.month += 1
+
+        if len(constants.dates[self.week - 1]) - 1 > self.dateindex:
+            self.dateindex += 1
+        else:
+            self.weekly_events()
+            self.dateprev = self.day
+            self.dateindex = 0
+            self.week += 1
+
+        self.daily_events()
+
+        widgets.date.update()
+        widgets.nextmatch.update()
+
+    def daily_events(self):
+        # Process everyday events
+        transfer.transfer()
+        events.injury()
+        ai.advertising()
+        evaluation.update()
+        aitransfer.identify()
+        staff.check_morale()
+
+        # Initiate sponsorship generation if needed
+        if (game.date.day, game.date.month) == (4, 8):
+            club = game.clubs[game.teamid]
+
+            if club.sponsorship.status == 0:
+                club.sponsorship.generate()
+
+        # Stop sale of season tickets and deposit earnings
+        if (game.date.day, game.date.month) == (16, 8):
+            if game.season_tickets_status == 0:
+                sales.season_tickets()
+
+        # Player value adjustments
+        for playerid, player in game.players.items():
+            player.value = calculator.value(playerid)
+
+    def weekly_events(self):
+        club = game.clubs[game.teamid]
+
+        club.accounts.reset_weekly()
+        money.pay_wages()
+        events.update_contracts()
+        events.update_advertising()
+        club.sponsorship.update()
+        events.refresh_staff()
+        events.team_training()
+        events.individual_training()
+        ai.renew_contract()
+        events.injury_period()
+        events.update_condition()
+        club.perform_maintenance()
+        money.float_club()
+        money.pay_overdraft()
+        money.pay_loan()
+        money.process_grant()
 
 
 class Player:
@@ -374,7 +480,7 @@ class League:
         '''
         Update results with latest for given teams.
         '''
-        self.results[game.fixturesindex].append(result)
+        self.results[game.date.fixturesindex].append(result)
 
 
 class Nation:
@@ -530,7 +636,7 @@ class Standings:
 
             standings.append(item)
 
-        if game.eventindex > 0:
+        if game.date.eventindex > 0:
             standings = sorted(standings,
                                 key=operator.itemgetter(9, 8, 6, 7),
                                 reverse=True)

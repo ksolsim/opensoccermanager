@@ -19,7 +19,6 @@
 import operator
 import random
 
-import calculator
 import constants
 import dialogs
 import display
@@ -27,7 +26,6 @@ import evaluation
 import fixtures
 import game
 import money
-import news
 import staff
 import widgets
 
@@ -200,7 +198,7 @@ def update_contracts():
                         game.news.publish("PC01", player=name)
 
                 # Notify if shortlisted player contract ends
-                if key in game.clubs[game.teamid].shortlist:
+                if key in game.clubs[game.teamid].shortlist.players:
                     if player.contract == 0:
                         game.news.publish("SH01", player=name)
 
@@ -509,10 +507,10 @@ def end_of_season():
 
     widgets.date.update()
 
-    game.eventindex = 0
-    game.dateindex = 1
-    game.dateprev = 0
-    game.fixturesindex = 0
+    game.date.eventindex = 0
+    game.date.dateindex = 1
+    game.date.dateprev = 0
+    game.date.fixturesindex = 0
 
     # Generate new fixture list
     game.fixtures = fixtures.generate(game.clubs)

@@ -219,7 +219,7 @@ class SquadReport(Gtk.Dialog):
         self.set_title("Squad Report")
         self.set_border_width(5)
         self.set_resizable(False)
-        self.set_default_size(240, 240)
+        self.set_size_request(240, 240)
         self.set_transient_for(game.window)
         self.add_button("_Close", Gtk.ResponseType.CLOSE)
 
@@ -1130,7 +1130,7 @@ class Opposition(Gtk.Dialog):
             name = player.get_name()
             self.liststoreSquad.append([name])
 
-        if game.eventindex > 0:
+        if game.date.eventindex > 0:
             self.notebook.set_show_tabs(True)
             self.liststoreTeam.clear()
 

@@ -24,17 +24,12 @@ from gi.repository import Gtk
 import os
 import subprocess
 
-import ai
-import aitransfer
 import business
-import calculator
 import constants
 import data
 import database
 import dialogs
 import display
-import evaluation
-import events
 import fileio
 import finances
 import game
@@ -42,18 +37,14 @@ import information
 import interface
 import match
 import menu
-import money
 import music
 import preferences
 import printing
-import sales
 import squad
 import stadium
-import staff
 import structures
 import team
 import training
-import transfer
 import version
 import view
 import widgets
@@ -575,11 +566,11 @@ class ScreenGame(Gtk.Grid):
         label.set_hexpand(True)
         grid.attach(label, 2, 0, 1, 1)
 
-        game.labelNextMatch = Gtk.Label()
-        grid.attach(game.labelNextMatch, 3, 0, 1, 1)
+        widgets.nextmatch = widgets.NextMatch()
+        grid.attach(widgets.nextmatch, 3, 0, 1, 1)
 
         widgets.continuegame = widgets.Button("_Continue Game")
-        widgets.continuegame.connect("clicked", continuegame.continue_game)
+        widgets.continuegame.connect("clicked", self.on_continue_game_clicked)
         grid.attach(widgets.continuegame, 4, 0, 1, 1)
 
     def run(self):
@@ -658,199 +649,10 @@ class ScreenGame(Gtk.Grid):
         infodialog = interface.InfoDialog()
         infodialog.display()
 
+    def on_continue_game_clicked(self, button):
+        game.continuegame.continue_game()
 
-class ContinueGame:
-    proceed = True
-
-    def continue_game(self, widget):
-        update_valid = True
-
-        current_date = "%i/%i" % (game.date.day, game.date.month)
-
-        if game.date.week == len(constants.dates):
-            if game.dateindex == len(constants.dates[game.date.week - 1]) - 1:
-                # End of season events
-                events.end_of_season()
-
-        if game.eventindex <= len(constants.events) - 1:
-            event = constants.events[game.eventindex]
-        else:
-            event = None
-
-        if current_date == event:
-            # Team names to be passed to proceed dialog
-            leagueid = game.clubs[game.teamid].league
-            fixtures = game.leagues[leagueid].fixtures
-
-            for item in fixtures.fixtures[game.fixturesindex]:
-                if game.teamid in item:
-                    match = item
-
-            if game.teamid == match[0]:
-                opposition = game.clubs[match[1]].name
-            else:
-                opposition = game.clubs[match[0]].name
-
-            error = True
-
-            if dialogs.proceed_to_game(opposition):
-                error = self.check_squad()
-
-                if error:
-                    update_valid = False
-            else:
-                update_valid = False
-
-            if not error:
-                game.eventindex += 1
-                game.window.screen_loader(99)
-                self.proceed = False
-        elif self.proceed and update_valid:
-            self.update_date()
-        elif not self.proceed:
-            game.window.screen_loader(1)
-
-            game.menu.set_sensitive(True)
-            widgets.news.set_sensitive(True)
-            self.proceed = True
-
-        # Unread news status
-        visible = game.news.get_unread_count() > 0
-        widgets.news.set_visible(visible)
-
-        # Display next match
-        current_date = "%i/%i" % (game.date.day, game.date.month)
-
-        if current_date == constants.events[game.fixturesindex]:
-            leagueid = game.clubs[game.teamid].league
-            fixtures = game.leagues[leagueid].fixtures
-
-            for match in fixtures.fixtures[game.fixturesindex]:
-                if game.teamid in match:
-                    team1 = game.clubs[match[0]].name
-                    team2 = game.clubs[match[1]].name
-                    game.labelNextMatch.set_label("Today's Match: %s - %s" % (team1, team2))
-        else:
-            game.labelNextMatch.set_label("")
-
-    def update_date(self):
-        club = game.clubs[game.teamid]
-
-        game.date.day = constants.dates[game.date.week - 1][game.dateindex]
-
-        if game.dateprev > game.date.day:
-            game.dateprev = 0
-
-            if game.date.month == 12:
-                game.date.end_of_year()
-            else:
-                game.date.month += 1
-
-        if len(constants.dates[game.date.week - 1]) - 1 > game.dateindex:
-            game.dateindex += 1
-        else:
-            game.dateprev = constants.dates[game.date.week - 1][game.dateindex]
-            game.dateindex = 0
-            game.date.week += 1
-
-            # Process end of week events
-            club.accounts.reset_weekly()
-            money.pay_wages()
-            events.update_contracts()
-            events.update_advertising()
-            club.sponsorship.update()
-            events.refresh_staff()
-            events.team_training()
-            events.individual_training()
-            ai.renew_contract()
-            events.injury_period()
-            events.update_condition()
-            club.perform_maintenance()
-            money.float_club()
-            money.pay_overdraft()
-            money.pay_loan()
-            money.process_grant()
-
-        # Process everyday events
-        transfer.transfer()
-        events.injury()
-        ai.advertising()
-        evaluation.update()
-        aitransfer.identify()
-        staff.check_morale()
-
-        # Initiate sponsorship generation if needed
-        if (game.date.day, game.date.month) == (4, 8):
-            if club.sponsorship.status == 0:
-                club.sponsorship.generate()
-
-        # Stop sale of season tickets and deposit earnings
-        if (game.date.day, game.date.month) == (16, 8):
-            if game.season_tickets_status == 0:
-                game.season_tickets_status = 1
-
-                sales.season_tickets()
-
-        # Player value adjustments
-        for playerid, player in game.players.items():
-            player.value = calculator.value(playerid)
-
-        widgets.date.update()
-
-        # Reload screen after each continue game
         game.window.screen_loader(game.active_screen_id)
-
-    def check_squad(self):
-        '''
-        Check whether the squad has been selected, determine the numbers
-        and return whether the game can proceed or not.
-        '''
-        class Errors:
-            team_count = 0
-            injuries = []
-            suspensions = []
-            errored = False
-
-        errors = Errors()
-
-        error = False
-        team_count = 0
-        sub_count = 0
-
-        for positionid, playerid in game.clubs[game.teamid].team.items():
-            if playerid:
-                player = game.players[playerid]
-
-                if player.injury_type != 0:
-                    errors.injuries.append(player)
-                    errors.errored = True
-
-                if player.suspension_type != 0:
-                    errors.suspensions.append(player)
-                    errors.errored = True
-
-            if playerid != 0:
-                if positionid < 11:
-                    team_count += 1
-
-                if positionid >= 11:
-                    sub_count += 1
-
-        errors.team_count = team_count
-
-        if team_count < 11:
-            errors.errored = True
-        elif sub_count < 5:
-            if not dialogs.not_enough_subs(sub_count):
-                error = True
-
-        if errors.errored:
-            error = True
-
-            dialog = dialogs.SquadReport()
-            dialog.display(errors)
-
-        return error
 
 
 def exit_game(widget=None, event=None):
@@ -891,7 +693,7 @@ game.database = database.Database()
 game.database = game.database.get_database_object()
 
 game.date = structures.Date()
-continuegame = ContinueGame()
+game.continuegame = game.ContinueGame()
 preferences.preferences = preferences.Preferences()
 music.music = music.Player()
 

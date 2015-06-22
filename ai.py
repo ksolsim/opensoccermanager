@@ -661,7 +661,7 @@ def renew_contract():
                                      team=club,
                                      period=contract)
 
-                    if playerid in game.clubs[game.teamid].shortlist:
+                    if playerid in game.clubs[game.teamid].shortlist.players:
                         name = player.get_name(mode=1)
                         club = game.clubs[player.club].name
 

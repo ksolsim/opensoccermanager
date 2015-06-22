@@ -550,7 +550,7 @@ class Loan:
             grid.attach(label, 0, 1, 1, 1)
 
             spinbutton = Gtk.SpinButton()
-            spinbutton.set_range(0, len(constants.dates) - game.dateindex)
+            spinbutton.set_range(0, len(constants.dates) - game.date.dateindex)
             spinbutton.set_value(4)
             spinbutton.set_increments(1, 1)
             grid.attach(spinbutton, 1, 1, 1, 1)
