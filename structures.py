@@ -162,8 +162,10 @@ class Date:
 
         # Stop sale of season tickets and deposit earnings
         if (game.date.day, game.date.month) == (16, 8):
-            if game.season_tickets_status == 0:
-                sales.season_tickets()
+            for club in game.clubs.values():
+                club.set_season_tickets_unavailable()
+
+            sales.season_tickets()
 
         # Player value adjustments
         for playerid, player in game.players.items():
@@ -178,7 +180,7 @@ class Date:
         events.update_advertising()
         club.sponsorship.update()
         events.refresh_staff()
-        events.team_training()
+        #events.team_training()
         events.individual_training()
         ai.renew_contract()
         events.injury_period()
@@ -412,9 +414,7 @@ class Club:
         self.shortlist = Shortlist()
         self.team_training = TeamTraining()
         self.individual_training = {}
-        self.tickets = [0] * 15
-        self.season_tickets = 40
-        self.school_tickets = 0
+        self.tickets = Tickets()
         self.accounts = accounts.Accounts()
         self.finances = [0, 0, 0, 0, 0, 0, 0, 0]
         self.sponsorship = advertising.Sponsorship()
@@ -455,6 +455,46 @@ class Club:
         else:
             self.programmes.maximum = 24
 
+    def set_ticket_prices(self):
+        '''
+        Set initial ticket prices.
+        '''
+        self.tickets.tickets[0] = 1 + self.reputation
+        self.tickets.tickets[1] = 1 + self.reputation + (self.reputation * 0.25)
+        self.tickets.tickets[2] = (1 + self.reputation) * 15
+        self.tickets.tickets[3] = 2 + self.reputation
+        self.tickets.tickets[4] = 2 + self.reputation + (self.reputation * 0.25)
+        self.tickets.tickets[5] = (2 + self.reputation) * 15
+        self.tickets.tickets[6] = 3 + self.reputation
+        self.tickets.tickets[7] = 3 + self.reputation + (self.reputation * 0.25)
+        self.tickets.tickets[8] = (3 + self.reputation) * 15
+        self.tickets.tickets[9] = 4 + self.reputation
+        self.tickets.tickets[10] = 4 + self.reputation + (self.reputation * 0.25)
+        self.tickets.tickets[11] = (4 + self.reputation) * 15
+        self.tickets.tickets[12] = 30 + self.reputation
+        self.tickets.tickets[13] = 30 + self.reputation + (self.reputation * 0.25)
+        self.tickets.tickets[14] = (30 + self.reputation) * 15
+
+        self.tickets.tickets = list(map(int, self.tickets.tickets))
+
+    def set_season_ticket_percentage(self):
+        '''
+        Set initial percentage of stadium available for season ticket sales.
+        '''
+        self.tickets.season_tickets = 40 + self.reputation
+
+    def set_school_tickets(self):
+        '''
+        Set number of free school tickets to make available.
+        '''
+        self.tickets.school_tickets = tickets = 100 * (int((20 - self.reputation) * 0.5) + 1)
+
+    def set_season_tickets_unavailable(self):
+        '''
+        Close season ticket sales prior to first game.
+        '''
+        self.tickets.season_tickets_available = False
+
 
 class League:
     def __init__(self):
@@ -485,6 +525,16 @@ class League:
 
 class Nation:
     pass
+
+
+class Tickets:
+    def __init__(self):
+        self.tickets = [0] * 15
+
+        self.season_tickets = 0
+        self.season_tickets_available = True
+
+        self.school_tickets = 0
 
 
 class Flotation:

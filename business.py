@@ -118,7 +118,7 @@ class Tickets(Gtk.Grid):
         grid.attach(self.labelStatus, 0, 2, 2, 1)
 
     def value_changed(self, scale, index):
-        game.clubs[game.teamid].tickets[index] = int(scale.get_value())
+        game.clubs[game.teamid].tickets.tickets[index] = int(scale.get_value())
 
     def format_value_tickets(self, scale, value):
         value = display.currency(value)
@@ -132,14 +132,14 @@ class Tickets(Gtk.Grid):
         return True
 
     def school_tickets(self, spinbutton):
-        game.clubs[game.teamid].school_tickets = spinbutton.get_value_as_int()
+        game.clubs[game.teamid].tickets.school_tickets = spinbutton.get_value_as_int()
 
     def season_tickets(self, spinbutton):
-        game.clubs[game.teamid].season_tickets = spinbutton.get_value_as_int()
+        game.clubs[game.teamid].tickets.season_tickets = spinbutton.get_value_as_int()
 
-    def run(self):
-        stadiumid = game.clubs[game.teamid].stadium
-        stadium = game.stadiums[stadiumid]
+    def populate_data(self):
+        club = game.clubs[game.teamid]
+        stadium = game.stadiums[club.stadium]
 
         # Determine standing / seating configurations
         uncovered_standing = False
@@ -178,8 +178,13 @@ class Tickets(Gtk.Grid):
         # Set capacities and standing / seating of stand
         for row in range(1, 6):
             for column in range(1, 4):
-                price = game.clubs[game.teamid].tickets[count]
-                self.scales[count].set_range(0, 999)
+                price = game.clubs[game.teamid].tickets.tickets[count]
+
+                if column < 3:
+                    self.scales[count].set_range(0, 99)
+                else:
+                    self.scales[count].set_range(0, 999)
+
                 self.scales[count].set_value(price)
 
                 if row == 1:
@@ -197,17 +202,21 @@ class Tickets(Gtk.Grid):
 
         self.spinbuttonSchoolTickets.set_range(0, stadium.capacity)
         self.spinbuttonSchoolTickets.set_increments(100, 1000)
-        self.spinbuttonSchoolTickets.set_value(game.clubs[game.teamid].school_tickets)
+        self.spinbuttonSchoolTickets.set_value(club.tickets.school_tickets)
 
-        self.spinbuttonSeasonTickets.set_value(game.clubs[game.teamid].season_tickets)
+        self.spinbuttonSeasonTickets.set_value(club.tickets.season_tickets)
 
-        if game.season_tickets_status == 0:
+        if game.clubs[game.teamid].tickets.season_tickets_available:
             status = "Season tickets are currently on sale."
         else:
             status = "Season tickets can not be purchased at this time."
-            self.spinbuttonSeasonTickets.set_sensitive(False)
+
+        self.spinbuttonSeasonTickets.set_sensitive(club.tickets.season_tickets_available)
 
         self.labelStatus.set_label(status)
+
+    def run(self):
+        self.populate_data()
 
         self.show_all()
 

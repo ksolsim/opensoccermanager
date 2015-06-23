@@ -231,16 +231,6 @@ def update_advertising():
     club.programmes.update()
 
 
-def season_tickets():
-    '''
-    Calculate the default percentage of season tickets to be sold based
-    on reputation of the club.
-    '''
-    percentage = game.clubs[game.teamid].reputation + 40
-
-    return percentage
-
-
 def team_training():
     # Refresh team training
     if game.team_training_timeout > 0:

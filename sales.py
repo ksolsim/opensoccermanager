@@ -28,20 +28,12 @@ def season_tickets():
     Determine number of season tickets to be sold prior to first game of
     the season, and calculate the amount of income from those sales.
     '''
-    game.season_tickets_status = 1
-
     club = game.clubs[game.teamid]
     stadium = game.stadiums[club.stadium]
 
-    capacity = 0
+    capacity = stadium.capacity
 
-    for stand in stadium.main:
-        capacity += stand.capacity
-
-    for stand in stadium.corner:
-        capacity += stand.capacity
-
-    max_season_tickets = (capacity * 0.01) * club.season_tickets
+    max_season_tickets = (capacity * 0.01) * club.tickets.season_tickets
 
     base_tickets = calculator.ticket_prices()
     minmax = base_tickets[11] * 0.1
@@ -49,26 +41,26 @@ def season_tickets():
     upper = minmax + base_tickets[11]
     lower = base_tickets[11] - minmax
 
-    if club.tickets[11] > upper:
-        diff = (club.tickets[11] - base_tickets[11]) / minmax
-        sold = (capacity * 0.01 * club.season_tickets) / diff
-    elif club.tickets[11] < lower:
-        diff = (base_tickets[11] - club.tickets[11]) / minmax
-        sold = ((capacity * 0.01) * (club.season_tickets * (10 / diff)))
+    if club.tickets.tickets[11] > upper:
+        diff = (club.tickets.tickets[11] - base_tickets[11]) / minmax
+        sold = (capacity * 0.01 * club.tickets.season_tickets) / diff
+    elif club.tickets.tickets[11] < lower:
+        diff = (base_tickets[11] - club.tickets.tickets[11]) / minmax
+        sold = ((capacity * 0.01) * (club.tickets.season_tickets * (10 / diff)))
     else:
         sold = max_season_tickets
 
     if sold > max_season_tickets:
         sold = max_season_tickets
 
-    sales = sold * club.tickets[11]
+    sales = sold * club.tickets.tickets[11]
 
     capacity = 0
 
     for stand in stadium.main:
         capacity += stand.box
 
-    box_sales = (capacity * 0.01) * club.season_tickets * club.tickets[14]
+    box_sales = (capacity * 0.01) * club.tickets.season_tickets * club.tickets.tickets[14]
 
     total = sales + box_sales
 

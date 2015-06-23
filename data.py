@@ -112,6 +112,10 @@ def datainit():
 
         club.set_advertising_spaces()
 
+        club.set_ticket_prices()
+        club.set_season_ticket_percentage()
+        club.set_school_tickets()
+
     # Import players
     game.database.cursor.execute("SELECT * FROM player JOIN playerattr ON player.id = playerattr.player WHERE year = ?", (game.date.year,))
     data = game.database.cursor.fetchall()
@@ -285,17 +289,6 @@ def dataloader(finances):
     # Generate advertising offers for hoardings/programmes
     club.hoardings.initialise()
     club.programmes.initialise()
-
-    # Initiate season ticket sales based on percentage of capacity
-    club.season_tickets = events.season_tickets()
-    game.season_tickets_status = 0
-
-    # Calculate base ticket prices
-    club.tickets = calculator.ticket_prices()
-
-    # Calculate free school tickets
-    tickets = int((20 - club.reputation) * 0.5) + 1  # Leave int to round
-    club.school_tickets = tickets * 100
 
     # Import resources
     resources.import_news()
