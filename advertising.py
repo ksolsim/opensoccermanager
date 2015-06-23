@@ -122,7 +122,7 @@ class Advertising:
         self.advertid = 0
 
         self.timeout = 0
-        self.alert = 0
+        self.alert = random.randint(8, 16)
 
     def initialise(self):
         self.companies = [item[0] for item in game.companies]
@@ -157,12 +157,6 @@ class Advertising:
 
         club.accounts.deposit(amount=cost, category="advertising")
 
-    def assistant(self):
-        '''
-        Have assistant manager handle advertising dealings.
-        '''
-        pass
-
     def update(self):
         '''
         Countdown for alerts and regeneration of adverts.
@@ -180,6 +174,9 @@ class Advertising:
         else:
             self.generate()
             self.timeout = random.randint(8, 12)
+
+        for advert in self.current.values():
+            advert.period -= 1
 
     def get_advert_count(self):
         '''

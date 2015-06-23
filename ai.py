@@ -808,45 +808,33 @@ def generate_team(clubid):
 
 def advertising():
     '''
-    Allow assistant manager to handle advertising by adding adverts to
-    hoardings and programmes on each turn when there is space for them
-    to be added.
+    Allow assistant manager to handle advertising.
     '''
     if game.advertising_assistant:
         club = game.clubs[game.teamid]
 
-        # Programmes
-        current_quantity = 0
-
-        for item in club.hoardings[1]:
-            current_quantity += item[1]
-
-        position = 0
-
-        for item in club.hoardings[0]:
-            if current_quantity + item[1] <= club.hoardings[2]:
-                club.hoardings[1].append(item[0:4])
-                current_quantity += item[1]
-                del club.hoardings[0][position]
-
-                club.accounts.deposit(amount=item[3], category=advertising)
-
-            position += 1
-
         # Hoardings
-        current_quantity = 0
+        delete = []
 
-        for item in club.programmes[1]:
-            current_quantity += item[1]
+        for advertid, advert in club.hoardings.available.items():
+            quantity = club.hoardings.get_advert_count()
 
-        position = 0
+            if quantity + advert.amount <= club.hoardings.maximum:
+                club.hoardings.current[advertid] = advert
+                delete.append(advertid)
 
-        for item in club.programmes[0]:
-            if current_quantity + item[1] <= club.programmes[2]:
-                club.programmes[1].append(item[0:4])
-                current_quantity += item[1]
-                del club.programmes[0][position]
+        for advertid in delete:
+            del club.hoardings.available[advertid]
 
-                club.accounts.deposit(amount=item[3], category=advertising)
+        # Programmes
+        delete = []
 
-            position += 1
+        for advertid, advert in club.programmes.available.items():
+            quantity = club.programmes.get_advert_count()
+
+            if quantity + advert.amount <= club.programmes.maximum:
+                club.programmes.current[advertid] = advert
+                delete.append(advertid)
+
+        for advertid in delete:
+            del club.programmes.available[advertid]
