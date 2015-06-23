@@ -410,7 +410,7 @@ class Club:
         self.scouts_available = {}
         self.scouts_hired = {}
         self.shortlist = Shortlist()
-        self.team_training = [0] * 42
+        self.team_training = TeamTraining()
         self.individual_training = {}
         self.tickets = [0] * 15
         self.season_tickets = 40
@@ -778,6 +778,26 @@ class Statistics:
 
         self.win = (0, ())
         self.loss = (0, ())
+
+
+class TeamTraining:
+    def __init__(self):
+        self.training = [0] * 42
+
+    def generate_schedule(self):
+        '''
+        Generate team training schedule.
+        '''
+        values = [count for count in range(2, 18)]
+        random.shuffle(values)
+
+        for count in range(0, 6):
+            self.training[count * 6] = values[count * 2]
+            self.training[count * 6 + 1] = values[count * 2 + 1]
+            self.training[count * 6 + 2] = 1
+            self.training[count * 6 + 3] = 0
+            self.training[count * 6 + 4] = 0
+            self.training[count * 6 + 5] = 0
 
 
 class IndividualTraining:

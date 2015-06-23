@@ -608,22 +608,11 @@ class Result:
 
 def team_training():
     '''
-    Generate team training schedules for all teams. Sets mix of training
-    for two hours in the morning, and also an individual session except
-    on Sunday.
+    Generate team training schedules for all teams.
     '''
     for clubid, club in game.clubs.items():
         if clubid != game.teamid:
-            values = [count for count in range(2, 17)]
-            random.shuffle(values)
-
-            for count in range(0, 6):
-                club.team_training[count * 6] = values[count * 2]
-                club.team_training[count * 6 + 1] = values[count * 2 + 1]
-                club.team_training[count * 6 + 2] = 1
-                club.team_training[count * 6 + 3] = 0
-                club.team_training[count * 6 + 4] = 0
-                club.team_training[count * 6 + 5] = 0
+            club.team_training.generate_schedule()
 
 
 def renew_contract():

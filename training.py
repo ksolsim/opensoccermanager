@@ -105,46 +105,29 @@ class TeamTraining(Gtk.Grid):
         '''
         Clear existing session and randomly generate new schedule.
         '''
-        # Reset comboboxes to zero
         for item in self.comboboxes:
             item.set_active(0)
 
-        values = [count for count in range(2, 18)]
-        random.shuffle(values)
-
-        self.comboboxes[0].set_active(values[0])
-        self.comboboxes[1].set_active(values[1])
-        self.comboboxes[2].set_active(1)
-        self.comboboxes[6].set_active(values[2])
-        self.comboboxes[7].set_active(values[3])
-        self.comboboxes[8].set_active(1)
-        self.comboboxes[12].set_active(values[4])
-        self.comboboxes[13].set_active(values[5])
-        self.comboboxes[14].set_active(1)
-        self.comboboxes[18].set_active(values[6])
-        self.comboboxes[19].set_active(values[7])
-        self.comboboxes[20].set_active(1)
-        self.comboboxes[24].set_active(values[8])
-        self.comboboxes[25].set_active(values[9])
-        self.comboboxes[26].set_active(1)
-        self.comboboxes[30].set_active(values[10])
-        self.comboboxes[31].set_active(values[11])
-        self.comboboxes[32].set_active(1)
+        game.clubs[game.teamid].team_training.generate_schedule()
+        self.populate_data()
 
     def training_changed(self, combobox, index):
-        game.clubs[game.teamid].team_training[index] = combobox.get_active()
+        game.clubs[game.teamid].team_training.training[index] = combobox.get_active()
 
         game.team_training_timeout = random.randint(16, 24)
 
-    def run(self):
+    def populate_data(self):
         count = 0
 
         for row in range(1, 8):
             for column in range(1, 7):
-                value = game.clubs[game.teamid].team_training[count]
+                value = game.clubs[game.teamid].team_training.training[count]
                 self.comboboxes[count].set_active(value)
 
                 count += 1
+
+    def run(self):
+        self.populate_data()
 
         self.show_all()
 
