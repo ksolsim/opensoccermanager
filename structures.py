@@ -420,9 +420,8 @@ class Club:
         self.sponsorship = advertising.Sponsorship()
         self.hoardings = advertising.Advertising()
         self.programmes = advertising.Advertising()
-        self.merchandise = [100] * len(constants.merchandise)
-        self.catering = [100] * len(constants.catering)
-        self.sales = [[], []]
+        self.merchandise = Merchandise()
+        self.catering = Catering()
         self.evaluation = [0, 0, 0, 0, 0]
         self.statistics = [0] * 3
         self.form = []
@@ -935,6 +934,79 @@ class TrainingCamp:
         options = self.days, self.quality, self.location, self.purpose, self.squad
 
         return options
+
+
+class Merchandise:
+    def __init__(self):
+        self.percentages = [100] * len(constants.merchandise)
+
+        self.sales = []
+
+    def calculate_sales(self):
+        club = game.clubs[game.teamid]
+
+        self.reset_sales()
+
+        for count, profit_percentage in enumerate(club.merchandise):
+            multiplier = constants.merchandise[count][2]
+            multiplier += random.randint(-3, 3)
+
+            potential_sales = attendance * (multiplier * 0.01)
+            sale_percentage = 200 - profit_percentage
+
+            if sale_percentage < 0:
+                sale_percentage = 0
+
+            sales = int((potential_sales * 0.25 * 0.01) * sale_percentage)
+
+            income = sales * (constants.merchandise[count][1] + (constants.merchandise[count][1] * (profit_percentage * 0.01)))
+            profit = income - (sales * constants.merchandise[count][1])
+            cost = income - profit
+
+            club.sales[0].append([sales, income, profit])
+
+            club.accounts.deposit(amount=income, category="merchandise")
+            club.accounts.withdraw(amount=cost, category="merchandise")
+
+    def reset_sales(self):
+        self.sales = []
+
+
+class Catering:
+    def __init__(self):
+        self.percentages = [100] * len(constants.catering)
+
+        self.sales = []
+
+    def calculate_sales(self):
+        club = game.clubs[game.teamid]
+
+        self.reset_sales()
+
+        for count, profit_percentage in enumerate(club.catering):
+            multiplier = constants.catering[count][2]
+            multiplier += random.randint(-3, 3)
+
+            potential_sales = attendance * (multiplier * 0.01)
+            sale_percentage = 200 - profit_percentage
+
+            if sale_percentage < 0:
+                sale_percentage = 0
+
+            sales = int((potential_sales * 0.25 * 0.01) * sale_percentage)
+
+            income = sales * (constants.catering[count][1] + (constants.catering[count][1] * (profit_percentage * 0.01)))
+            profit = income - (sales * constants.catering[count][1])
+            cost = income - profit
+
+            club.sales[0].append([sales, income, profit])
+
+            club.accounts.deposit(amount=income, category="catering")
+            club.accounts.withdraw(amount=cost, category="catering")
+
+    def reset_sales(self):
+        self.sales = []
+
 
 
 class Shortlist:

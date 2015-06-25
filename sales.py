@@ -71,7 +71,7 @@ def matchday_tickets(attendance):
     club = game.clubs[game.teamid]
     stadium = game.stadiums[club.stadium]
 
-    percentage = 100 - club.season_tickets
+    percentage = 100 - club.tickets.season_tickets
 
     amount = 0
 
@@ -101,7 +101,7 @@ def matchday_tickets(attendance):
     for count, value in enumerate(capacity):
         available = (percentage * 0.01) * value
 
-        amount += club.tickets[count * 3] * available
+        amount += club.tickets.tickets[count * 3] * available
 
     # Calculate box sales
     capacity = 0
@@ -110,16 +110,16 @@ def matchday_tickets(attendance):
         capacity += stand.box
 
     available = (percentage * 0.01) * capacity
-    amount += club.tickets[12] * available
+    amount += club.tickets.tickets[12] * available
 
     club.accounts.deposit(amount=amount, category="tickets")
 
 
 def merchandise(attendance):
     club = game.clubs[game.teamid]
-    club.sales[0] = []
+    club.merchandise.reset_sales()
 
-    for count, profit_percentage in enumerate(club.merchandise):
+    for count, profit_percentage in enumerate(club.merchandise.percentages):
         multiplier = constants.merchandise[count][2]
         multiplier += random.randint(-3, 3)
 
@@ -135,7 +135,7 @@ def merchandise(attendance):
         profit = income - (sales * constants.merchandise[count][1])
         cost = income - profit
 
-        club.sales[0].append([sales, income, profit])
+        club.merchandise.sales.append([sales, income, profit])
 
         club.accounts.deposit(amount=income, category="merchandise")
         club.accounts.withdraw(amount=cost, category="merchandise")
@@ -143,9 +143,9 @@ def merchandise(attendance):
 
 def catering(attendance):
     club = game.clubs[game.teamid]
-    club.sales[1] = []
+    club.catering.reset_sales()
 
-    for count, profit_percentage in enumerate(club.catering):
+    for count, profit_percentage in enumerate(club.catering.percentages):
         multiplier = constants.catering[count][2]
         multiplier += random.randint(-3, 3)
 
@@ -161,7 +161,8 @@ def catering(attendance):
         profit = income - (sales * constants.catering[count][1])
         cost = income - profit
 
-        club.sales[1].append([sales, income, profit])
+        club.catering.sales.append([sales, income, profit])
 
         club.accounts.deposit(amount=income, category="catering")
         club.accounts.withdraw(amount=cost, category="catering")
+

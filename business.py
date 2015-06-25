@@ -495,7 +495,7 @@ class Merchandise(Gtk.Grid):
     def value_changed(self, spinbutton, index):
         club = game.clubs[game.teamid]
 
-        club.merchandise[index] = spinbutton.get_value()
+        club.merchandise.percentages[index] = spinbutton.get_value()
 
         cost = constants.merchandise[index][1]
         profit = (self.spins[index].get_value() * 0.01) * cost + cost
@@ -510,17 +510,17 @@ class Merchandise(Gtk.Grid):
             cost = display.currency(item[1], mode=1)
             self.display[count][1].set_label("%s" % (cost))
 
-            value = game.clubs[game.teamid].merchandise[count]
+            value = game.clubs[game.teamid].merchandise.percentages[count]
             self.spins[count].set_value(value)
 
             profit = (self.spins[count].get_value() * 0.01) * item[1] + item[1]
             profit = display.currency(profit, mode=1)
             self.display[count][2].set_label("%s" % (profit))
 
-            if len(club.sales[0]) > 0:
-                sales = "%i" % (club.sales[0][count][0])
-                revenue = club.sales[0][count][1]
-                cost = club.sales[0][count][2]
+            if len(club.merchandise.sales) > 0:
+                sales = "%i" % (club.merchandise.sales[count][0])
+                revenue = club.merchandise.sales[count][1]
+                cost = club.merchandise.sales[count][2]
                 profit = revenue - cost
 
                 revenue = display.currency(revenue)
@@ -606,7 +606,7 @@ class Catering(Gtk.Grid):
         return True
 
     def value_changed(self, spinbutton, index):
-        game.clubs[game.teamid].catering[index] = spinbutton.get_value()
+        game.clubs[game.teamid].catering.percentages[index] = spinbutton.get_value()
 
         cost = constants.catering[index][1]
 
@@ -622,18 +622,18 @@ class Catering(Gtk.Grid):
             cost = display.currency(item[1], mode=1)
             self.display[count][1].set_label("%s" % (cost))
 
-            value = game.clubs[game.teamid].catering[count]
+            value = game.clubs[game.teamid].catering.percentages[count]
             self.spins[count].set_value(value)
 
             profit = (self.spins[count].get_value() * 0.01) * item[1] + item[1]
             profit = display.currency(profit, mode=1)
             self.display[count][2].set_label("%s" % (profit))
 
-            if len(club.sales[1]) > 0:
-                sales = "%i" % (club.sales[1][count][0])
+            if len(club.catering.sales) > 0:
+                sales = "%i" % (club.catering.sales[count][0])
 
-                revenue = club.sales[1][count][1]
-                cost = club.sales[1][count][2]
+                revenue = club.catering.sales[count][1]
+                cost = club.catering.sales[count][2]
                 profit = revenue - cost
 
                 revenue = display.currency(revenue)
