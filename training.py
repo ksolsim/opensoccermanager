@@ -114,7 +114,7 @@ class TeamTraining(Gtk.Grid):
     def training_changed(self, combobox, index):
         game.clubs[game.teamid].team_training.training[index] = combobox.get_active()
 
-        game.team_training_timeout = random.randint(16, 24)
+        game.clubs[game.teamid].team_training.timeout = random.randint(16, 24)
 
     def populate_data(self):
         count = 0

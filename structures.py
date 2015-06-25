@@ -180,7 +180,7 @@ class Date:
         events.update_advertising()
         club.sponsorship.update()
         events.refresh_staff()
-        #events.team_training()
+        events.team_training()
         events.individual_training()
         ai.renew_contract()
         events.injury_period()
@@ -834,6 +834,9 @@ class TeamTraining:
     def __init__(self):
         self.training = [0] * 42
 
+        self.timeout = 0
+        self.alert = 0
+
     def generate_schedule(self):
         '''
         Generate team training schedule.
@@ -848,6 +851,31 @@ class TeamTraining:
             self.training[count * 6 + 3] = 0
             self.training[count * 6 + 4] = 0
             self.training[count * 6 + 5] = 0
+
+    def get_sunday_training(self):
+        '''
+        Return True if team is training on Sunday.
+        '''
+        sunday = False
+
+        for trainingid in self.training[36:42]:
+            if trainingid != 0:
+                sunday = True
+
+        return sunday
+
+
+    def get_overworked_training(self):
+        '''
+        Return True if the team is being overworked.
+        '''
+        overwork = False
+
+        for trainingid in game.clubs[game.teamid].team_training.training:
+            if trainingid != 0:
+                overwork = True
+
+        return overwork
 
 
 class IndividualTraining:

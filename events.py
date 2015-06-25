@@ -232,44 +232,37 @@ def update_advertising():
 
 
 def team_training():
+    '''
+    Process countdown timers for team training updates.
+    '''
+    club = game.clubs[game.teamid]
+
     # Refresh team training
-    if game.team_training_timeout > 0:
-        game.team_training_timeout -= 1
-    elif game.team_training_timeout == 0:
+    if club.team_training.timeout > 0:
+        club.team_training.timeout -= 1
+    elif club.team_training.timeout == 0:
         game.news.publish("TT02")
 
-        game.team_training_timeout = 4
+        club.team_training.timeout = random.randint(4, 6)
 
-    # Check training on Sunday or if player being overworked
-    sunday = 0
-    overwork = 0
-
-    for trainingid in game.clubs[game.teamid].team_training[36:42]:
-        if trainingid != 0:
-            sunday += 1
-
-    for trainingid in game.clubs[game.teamid].team_training:
-        if trainingid != 0:
-            overwork += 1
-
-    if game.team_training_alert == 0:
-        if overwork > 18:
-            game.team_training_alert = random.randint(12, 18)
+    if club.team_training.alert == 0:
+        if club.team_training.get_overworked_training():
+            club.team_training.alert = random.randint(12, 18)
 
             for playerid in game.players.keys():
                 evaluation.morale(playerid, -5)
 
             game.news.publish("TT04")
 
-        if sunday > 0:
-            game.team_training_alert = random.randint(12, 18)
+        if club.team_training.get_sunday_training():
+            club.team_training.alert = random.randint(12, 18)
 
             for playerid in game.players.keys():
                 evaluation.morale(playerid, -3)
 
             game.news.publish("TT03")
     else:
-        game.team_training_alert -= 1
+        club.team_training.alert -= 1
 
 
 def individual_training():
