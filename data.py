@@ -264,6 +264,10 @@ def datainit():
     surnames = game.database.importer("staff")
     game.surnames = [name[0] for name in surnames]
 
+    # Import resources
+    resources.import_news()
+    resources.import_evaluation()
+
 
 def dataloader(finances):
     '''
@@ -290,10 +294,6 @@ def dataloader(finances):
     club.hoardings.initialise()
     club.programmes.initialise()
 
-    # Import resources
-    resources.import_news()
-    resources.import_evaluation()
-
     evaluation.update()
 
     money.calculate_loan()
@@ -307,14 +307,7 @@ def dataloader(finances):
     # Publish initial news articles
     game.news.publish("MA01")
 
-    initial = []
-
-    for count, week in enumerate(game.leagues[club.league].fixtures.fixtures):
-        for match in week:
-            if game.teamid in match and count < 3:
-                match = "%s - %s" % (game.clubs[match[0]].name,
-                                     game.clubs[match[1]].name)
-                initial.append(match)
+    initial = game.leagues[club.league].fixtures.get_initial_fixtures()
 
     game.news.publish("FX01",
                       fixture1=initial[0],

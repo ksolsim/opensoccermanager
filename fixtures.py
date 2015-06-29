@@ -18,6 +18,8 @@
 
 import random
 
+import game
+
 
 class Fixtures:
     def __init__(self):
@@ -78,3 +80,18 @@ class Fixtures:
         total = len(self.clubs) * 2 - 2
 
         return total
+
+    def get_initial_fixtures(self):
+        '''
+        Return the first three fixtures of the season.
+        '''
+        initial = []
+
+        for count, week in enumerate(game.leagues[game.teamid].fixtures.fixtures):
+            for match in week:
+                if game.teamid in match and count < 3:
+                    match = "%s - %s" % (game.clubs[match[0]].name,
+                                         game.clubs[match[1]].name)
+                    initial.append(match)
+
+        return initial
