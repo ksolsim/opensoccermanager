@@ -230,7 +230,3 @@ class TreeViewColumn(Gtk.TreeViewColumn):
         cellrenderertext = Gtk.CellRendererText()
         self.pack_start(cellrenderertext, True)
         self.add_attribute(cellrenderertext, "text", column)
-
-
-date = Date()
-news = News()

@@ -53,7 +53,7 @@ class News(Gtk.Grid):
         self.entrySearch = Gtk.SearchEntry()
         self.entrySearch.set_placeholder_text("Search")
         self.entrySearch.connect("activate", self.search_activated)
-        self.entrySearch.connect("icon-press", self.icon_press)
+        self.entrySearch.connect("icon-press", self.search_cleared)
         self.entrySearch.connect("changed", self.search_changed)
         self.entrySearch.add_accelerator("grab-focus",
                                          game.accelgroup,
@@ -88,20 +88,22 @@ class News(Gtk.Grid):
         scrolledwindow.set_hexpand(True)
         paned.add1(scrolledwindow)
 
-        treeviewNews = Gtk.TreeView()
-        treeviewNews.set_model(treemodelsort)
-        treeviewNews.set_activate_on_single_click(True)
-        treeviewNews.set_enable_search(False)
-        treeviewNews.set_search_column(-1)
-        treeviewNews.connect("row-activated", self.item_selected)
-        scrolledwindow.add(treeviewNews)
+        self.treeviewNews = Gtk.TreeView()
+        self.treeviewNews.set_model(treemodelsort)
+        self.treeviewNews.set_activate_on_single_click(True)
+        self.treeviewNews.set_enable_search(False)
+        self.treeviewNews.set_search_column(-1)
+        self.treeviewNews.connect("row-activated", self.item_selected)
+        scrolledwindow.add(self.treeviewNews)
+
+        self.treeselection = self.treeviewNews.get_selection()
 
         treeviewcolumn = widgets.TreeViewColumn(title="Date", column=1)
-        treeviewNews.append_column(treeviewcolumn)
+        self.treeviewNews.append_column(treeviewcolumn)
 
         treeviewcolumn = Gtk.TreeViewColumn("Title")
         treeviewcolumn.set_expand(True)
-        treeviewNews.append_column(treeviewcolumn)
+        self.treeviewNews.append_column(treeviewcolumn)
         cellrendererTitle = Gtk.CellRendererText()
         treeviewcolumn.pack_start(cellrendererTitle, True)
         treeviewcolumn.add_attribute(cellrendererTitle, "text", 2)
@@ -109,7 +111,7 @@ class News(Gtk.Grid):
         treeviewcolumn.add_attribute(cellrendererTitle, "weight", 7)
 
         treeviewcolumn = widgets.TreeViewColumn(title="Category", column=5)
-        treeviewNews.append_column(treeviewcolumn)
+        self.treeviewNews.append_column(treeviewcolumn)
 
         scrolledwindow = Gtk.ScrolledWindow()
         scrolledwindow.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.ALWAYS)
@@ -124,17 +126,30 @@ class News(Gtk.Grid):
         self.textviewNews.set_hexpand(True)
         scrolledwindow.add(self.textviewNews)
 
+    def select_oldest_item(self):
+        '''
+        Highlight the oldest unread item in the list.
+        '''
+        items = [item for item in self.liststoreNews]
+        items.reverse()
+
+        for item in items:
+            if item[6]:
+                treemodelsort = self.treeviewNews.get_model()
+                path1 = treemodelsort.convert_child_path_to_path(item.path)
+                treemodelfilter = treemodelsort.get_model()
+                path2 = treemodelfilter.convert_child_path_to_path(path1)
+                self.treeselection.select_path(path2)
+
     def search_changed(self, entry):
         if entry.get_text_length() == 0:
             self.treemodelfilter.refilter()
 
     def search_activated(self, entry):
-        criteria = self.entrySearch.get_text()
-
-        if criteria is not "":
+        if entry.get_text_length() > 0:
             self.treemodelfilter.refilter()
 
-    def icon_press(self, entry, position, event):
+    def search_cleared(self, entry, position, event):
         if position == Gtk.EntryIconPosition.SECONDARY:
             self.treemodelfilter.refilter()
 

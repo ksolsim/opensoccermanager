@@ -556,9 +556,11 @@ class ScreenGame(Gtk.Grid):
         grid.set_column_spacing(5)
         self.attach(grid, 0, 2, 1, 1)
 
+        widgets.date = widgets.Date()
         widgets.date.update()
         grid.attach(widgets.date, 0, 0, 1, 1)
 
+        widgets.news = widgets.News()
         widgets.news.connect("clicked", self.news_activated)
         grid.attach(widgets.news, 1, 0, 1, 1)
 
@@ -589,6 +591,8 @@ class ScreenGame(Gtk.Grid):
 
     def news_activated(self, button):
         game.window.screen_loader(3)
+
+        game.window.screenNews.select_oldest_item()
 
     def player_comparison(self, menuitem):
         if dialogs.comparison.comparison == [None, None]:

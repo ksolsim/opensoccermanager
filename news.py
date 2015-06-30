@@ -67,6 +67,9 @@ class News:
         self.newsid = 1
 
     def publish(self, newsid, **kwargs):
+        '''
+        Publish news article based on passed news identifier.
+        '''
         article = self.Article(newsid, kwargs)
         article.newsid = self.newsid
 
@@ -77,6 +80,9 @@ class News:
         self.newsid += 1
 
     def set_manager_name(self, previous):
+        '''
+        Update manager name in all news articles.
+        '''
         new = game.clubs[game.teamid].manager
 
         for article in self.articles.values():
