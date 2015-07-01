@@ -312,6 +312,7 @@ def dataloader(finances):
     game.news.publish("FX01",
                       fixture1=initial[0],
                       fixture2=initial[1],
-                      fixture3=initial[2],)
+                      fixture3=initial[2],
+                     )
 
     events.expectation()
