@@ -868,11 +868,13 @@ class TeamTraining:
         '''
         Return True if the team is being overworked.
         '''
-        overwork = False
+        count = 0
 
         for trainingid in game.clubs[game.teamid].team_training.training:
             if trainingid != 0:
-                overwork = True
+                count += 1
+
+        overwork = count > 18
 
         return overwork
 

@@ -290,7 +290,7 @@ class IndividualTraining(Gtk.Grid):
 
         self.show_all()
 
-        if 1 in game.clubs[game.teamid].team_training:
+        if 1 in game.clubs[game.teamid].team_training.training:
             self.infobar.hide()
 
         sensitive = len(game.clubs[game.teamid].coaches_hired) > 0

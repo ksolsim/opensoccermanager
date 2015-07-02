@@ -85,10 +85,7 @@ class Negotiation:
         visible = player.injury_period > 0
         infobar.set_visible(visible)
 
-        state = False
-
-        if dialog.run() == Gtk.ResponseType.OK:
-            state = True
+        state = dialog.run() == Gtk.ResponseType.OK
 
         dialog.destroy()
 

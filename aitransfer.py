@@ -267,16 +267,59 @@ class Negotiation:
         '''
         Update the transfer negotiation timeout and status.
         '''
-        if self.timeout > 0:
-            self.timeout -= 1
-
-            if self.timeout == 0:
+        if game.players[self.playerid].club == game.teamid:
+            if self.timeout > 0:
+                self.timeout -= 1
+            else:
                 if self.status == 1:
                     self.amount = game.players[self.playerid].value
                     self.status = 2
                 elif self.status == 3:
                     self.status = 4
                     self.delay_allowed = True
+        else:
+            self.update2()
+
+    def update2(self):
+        '''
+        Process negotiations for all other clubs.
+        '''
+        if self.timeout > 0:
+            self.timeout -= 1
+        else:
+            if self.status == 0:
+                print("Enquiry")
+                self.status = 1
+                self.timeout = self.get_timeout()
+            elif self.status == 1:
+                print("Enquiry response")
+                self.status = 2
+                self.timeout = self.get_timeout()
+            elif self.status == 2:
+                print("Offer")
+                self.status = 3
+                self.timeout = self.get_timeout()
+            elif self.status == 3:
+                print("Offer response")
+                self.status = 4
+                self.timeout = self.get_timeout()
+            elif self.status == 4:
+                print("Contract")
+                self.status = 5
+                self.timeout = self.get_timeout()
+            elif self.status == 5:
+                print("Contract response (from player)")
+                self.status = 6
+                self.timeout = self.get_timeout()
+            else:
+                self.move()
+
+            print(self.status)
+
+    def get_timeout(self):
+        timeout = random.randint(1, 4)
+
+        return timeout
 
     def response(self):
         '''
