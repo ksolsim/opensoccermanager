@@ -659,7 +659,7 @@ class Squad(Gtk.Grid):
             value = player.get_value()
             wage = player.get_wage()
             contract = player.get_contract()
-            morale = display.player_morale(player.morale)
+            morale = player.get_morale()
             appearances = player.get_appearances()
             cards = player.get_cards()
             rating = player.get_rating()

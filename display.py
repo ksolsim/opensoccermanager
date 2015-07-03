@@ -83,34 +83,6 @@ def player_of_the_season():
     return top
 
 
-def player_morale(value):
-    '''
-    Return the string indicating the players morale value.
-    '''
-    status = ""
-
-    if value >= 85:
-        status = constants.morale[8]
-    elif value >= 70:
-        status = constants.morale[7]
-    elif value >= 45:
-        status = constants.morale[6]
-    elif value >= 20:
-        status = constants.morale[5]
-    elif value >= 0:
-        status = constants.morale[4]
-    elif value >= -25:
-        status = constants.morale[3]
-    elif value >= -50:
-        status = constants.morale[2]
-    elif value >= -75:
-        status = constants.morale[1]
-    elif value >= -100:
-        status = constants.morale[0]
-
-    return status
-
-
 def value(value):
     value = calculator.value_rounder(value)
     currency, exchange = constants.currency[game.currency]

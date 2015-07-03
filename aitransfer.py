@@ -24,6 +24,9 @@ import display
 import game
 
 
+delete = []
+
+
 def identify():
     '''
     Identify players to purchase based on comparison to current squad.
@@ -235,19 +238,17 @@ class Negotiation:
 
         name = player.get_name()
 
-        if self.transfer_type != 2:
-            new_club = new_club.name
-        else:
-            new_club = "N/A"
-
         if self.transfer_type == 0:
             old_club = old_club.name
+            new_club = new_club.name
             fee = display.value(self.amount)
         elif negotiation.transfer_type == 1:
             old_club = old_club.name
+            new_club = new_club.name
             fee = "Loan"
         elif self.transfer_type == 2:
             old_club = ""
+            new_club = "N/A"
             fee = "Free Transfer"
 
         season = game.date.get_season()
@@ -261,7 +262,8 @@ class Negotiation:
                                player.assists,
                                player.man_of_the_match])
 
-        del game.negotiations[self.negotiationid]
+        delete.append(self.negotiationid)
+        #del game.negotiations[self.negotiationid]
 
     def update(self):
         '''
@@ -294,7 +296,7 @@ class Negotiation:
             elif self.status == 1:
                 print("Enquiry response")
                 self.status = 2
-                self.timeout = self.get_timeout()
+                self.timeout = 1
             elif self.status == 2:
                 print("Offer")
                 self.status = 3
@@ -302,7 +304,7 @@ class Negotiation:
             elif self.status == 3:
                 print("Offer response")
                 self.status = 4
-                self.timeout = self.get_timeout()
+                self.timeout = 1
             elif self.status == 4:
                 print("Contract")
                 self.status = 5
@@ -310,8 +312,9 @@ class Negotiation:
             elif self.status == 5:
                 print("Contract response (from player)")
                 self.status = 6
-                self.timeout = self.get_timeout()
+                self.timeout = 1
             else:
+                self.amount = game.players[self.playerid].value
                 self.move()
 
             print(self.status)

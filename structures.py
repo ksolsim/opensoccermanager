@@ -338,6 +338,33 @@ class Player:
             elif self.morale + amount < -100:
                 self.morale = -100
 
+    def get_morale(self):
+        '''
+        Return the string indicating the players morale value.
+        '''
+        status = ""
+
+        if self.morale >= 85:
+            status = constants.morale[8]
+        elif self.morale >= 70:
+            status = constants.morale[7]
+        elif self.morale >= 45:
+            status = constants.morale[6]
+        elif self.morale >= 20:
+            status = constants.morale[5]
+        elif self.morale >= 0:
+            status = constants.morale[4]
+        elif self.morale >= -25:
+            status = constants.morale[3]
+        elif self.morale >= -50:
+            status = constants.morale[2]
+        elif self.morale >= -75:
+            status = constants.morale[1]
+        elif self.morale >= -100:
+            status = constants.morale[0]
+
+        return status
+
     def get_appearances(self):
         '''
         Get number of appearances and substitute appearances.
@@ -833,7 +860,7 @@ class TeamTraining:
     def __init__(self):
         self.training = [0] * 42
 
-        self.timeout = 0
+        self.timeout = random.randint(8, 12)
         self.alert = 0
 
     def generate_schedule(self):

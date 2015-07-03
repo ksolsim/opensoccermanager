@@ -19,6 +19,7 @@
 from gi.repository import Gtk
 import random
 
+import aitransfer
 import calculator
 import constants
 import dialogs
@@ -34,6 +35,11 @@ def transfer():
     '''
     for negotiation in game.negotiations.values():
         negotiation.update()
+
+    for key in aitransfer.delete:
+        del game.negotiations[key]
+
+    aitransfer.delete = []
 
     for loan in game.loans.values():
         loan.update()
