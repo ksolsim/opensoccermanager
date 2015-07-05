@@ -181,17 +181,13 @@ class News(Gtk.Grid):
         criteria = self.entrySearch.get_text()
 
         for search in (model[treeiter][2], model[treeiter][3],):
-            if not re.findall(criteria, search, re.IGNORECASE):
-                show = False
-            else:
-                show = True
+            show = re.findall(criteria, search, re.IGNORECASE)
 
         if show:
             filterid = int(self.comboboxFilter.get_active_id())
 
             if filterid != 0:
-                if model[treeiter][4] != filterid:
-                    show = False
+                show = filterid == model[treeiter][4]
 
         return show
 

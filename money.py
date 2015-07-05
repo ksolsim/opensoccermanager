@@ -154,35 +154,24 @@ def calculate_grant():
     the determined amount for the club reputation.
     '''
     club = game.clubs[game.teamid]
-    reputation = club.reputation
 
-    state = False
-    amount = 0
+    state = club.reputation < 13
 
-    if reputation < 13:
-        state = True
-
-    if not state:
-        if club.accounts.balance <= (150000 * reputation):
-            state = True
-        else:
-            state = False
+    # Determine current bank balance
+    if state:
+        state = club.accounts.balance <= (150000 * club.reputation)
 
     # Determine stadium capacity
-    if not state:
+    if state:
         capacity = game.stadiums[club.stadium].capacity
 
-        if capacity < (1500 * reputation + (reputation * 0.5)):
-            state = True
-        else:
-            state = False
+        state = capacity < (1500 * club.reputation + (club.reputation * 0.5))
 
     # Calculate amount available for grant
     if state:
-        amount = reputation * reputation * 10000
+        amount = club.reputation ** 2 * 10000
         diff = amount * 0.1
         amount += random.randint(-diff, diff)
-        state = True
 
     if state:
         game.grant.maximum = calculator.value_rounder(amount)
@@ -194,7 +183,8 @@ def process_grant():
         game.grant.timeout -= 1
 
         if game.grant.timeout == 0:
-            deposit(game.grant.amount, 0)  ## Change category
+            club = game.clubs[game.teamid]
+            club.accounts.deposit(amount=game.grant.amount, category="grant")
             game.news.publish("SG01", amount=game.grant.amount)
 
 

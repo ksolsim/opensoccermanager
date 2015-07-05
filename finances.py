@@ -457,7 +457,7 @@ class Accounts(Gtk.Grid):
         self.labels_week = []
         self.labels_season = []
 
-        for count in range(0, 9):
+        for count in range(0, 10):
             label = widgets.AlignedLabel()
             self.labels_week.append(label)
             self.attach(label, 1, count + 1, 1, 1)
@@ -466,14 +466,14 @@ class Accounts(Gtk.Grid):
             self.labels_season.append(label)
             self.attach(label, 2, count + 1, 1, 1)
 
-        for count in range(9, 19):
+        for count in range(10, 20):
             label = widgets.AlignedLabel()
             self.labels_week.append(label)
-            self.attach(label, 5, count - 8, 1, 1)
+            self.attach(label, 5, count - 9, 1, 1)
 
             label = widgets.AlignedLabel()
             self.labels_season.append(label)
-            self.attach(label, 6, count - 8, 1, 1)
+            self.attach(label, 6, count - 9, 1, 1)
 
         label = Gtk.Label("<b>Income</b>")
         label.set_use_markup(True)
@@ -501,8 +501,10 @@ class Accounts(Gtk.Grid):
         self.attach(label, 0, 7, 1, 1)
         label = widgets.AlignedLabel("Loan")
         self.attach(label, 0, 8, 1, 1)
-        label = widgets.AlignedLabel("Television Money")
+        label = widgets.AlignedLabel("Grant")
         self.attach(label, 0, 9, 1, 1)
+        label = widgets.AlignedLabel("Television Money")
+        self.attach(label, 0, 10, 1, 1)
 
         separator = Gtk.Separator()
         separator.set_orientation(Gtk.Orientation.VERTICAL)
@@ -571,7 +573,7 @@ class Accounts(Gtk.Grid):
             amount = display.currency(item.season)
             self.labels_season[count].set_label("%s" % (amount))
 
-        for count, (key, item) in enumerate(club.accounts.expenditures.items(), start=9):
+        for count, (key, item) in enumerate(club.accounts.expenditures.items(), start=10):
             amount = display.currency(item.week)
             self.labels_week[count].set_label("%s" % (amount))
 

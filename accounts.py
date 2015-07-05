@@ -36,6 +36,7 @@ class Accounts:
                    ("tickets", self.Item()),
                    ("transfers", self.Item()),
                    ("loan", self.Item()),
+                   ("grant", self.Item()),
                    ("television", self.Item()),
                   )
 
@@ -83,11 +84,7 @@ class Accounts:
         '''
         Verify whether the withdrawal amount is permitted against the balance.
         '''
-        if (self.balance + game.overdraft.amount) - amount >= 0:
-            #self.withdraw(amount, category)
-            state = True
-        else:
-            state = False
+        state = (self.balance + game.overdraft.amount) - amount >= 0
 
         return state
 
