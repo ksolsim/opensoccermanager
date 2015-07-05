@@ -173,7 +173,7 @@ class PlayerInfo(Gtk.Dialog):
                           player.assists,
                           player.man_of_the_match])
 
-        for item in player.history:
+        for item in player.history.history:
             liststore.append(item)
 
         treeview = Gtk.TreeView()

@@ -34,8 +34,6 @@ db = database.Database()
 
 
 def open_file(filename):
-    db.connect(filename)
-
     # Clear existing data structures
     game.clubs = {}
     game.players = {}
@@ -53,7 +51,6 @@ def open_file(filename):
     game.companies = []
     game.surnames = []
     game.standings = structures.Standings()
-    game.records = [[], []]
     constants.buildings = []
     constants.merchandise = []
     constants.catering = []
@@ -86,8 +83,6 @@ def open_file(filename):
     game.overdraft = structures.Overdraft()
     game.bankloan = structures.BankLoan()
     game.grant = structures.Grant()
-
-    game.season_tickets_status = 0
 
     widgets.date.update()
 

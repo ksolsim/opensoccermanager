@@ -28,8 +28,6 @@ staff_timeout = 1
 coachid = 1
 scoutid = 1
 negotiationid = 1
-team_training_alert = 0
-team_training_timeout = 12
 advertising_assistant = False  # Toggle assistant handling advertising
 
 # Data

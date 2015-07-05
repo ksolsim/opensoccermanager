@@ -255,15 +255,14 @@ class Negotiation:
         games = "%i/%i" % (player.appearances, player.substitute)
 
         game.transfers.append([name, old_club, new_club, fee])
-        player.history.append([season,
-                               old_club,
-                               games,
-                               player.goals,
-                               player.assists,
-                               player.man_of_the_match])
+        player.history.history.append([season,
+                                       old_club,
+                                       games,
+                                       player.goals,
+                                       player.assists,
+                                       player.man_of_the_match])
 
         delete.append(self.negotiationid)
-        #del game.negotiations[self.negotiationid]
 
     def update(self):
         '''

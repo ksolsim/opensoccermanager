@@ -43,6 +43,7 @@ import match
 import menu
 import money
 import music
+import player
 import preferences
 import printing
 import sales
@@ -214,7 +215,7 @@ class Player:
         self.assists = 0
         self.man_of_the_match = 0
         self.rating = []
-        self.history = []
+        self.history = player.History()
 
     def get_skills(self):
         '''
@@ -820,8 +821,8 @@ class Statistics:
         self.yellows = 0
         self.reds = 0
 
-        self.win = (0, ())
-        self.loss = (0, ())
+        self.win = (None, ())
+        self.loss = (None, ())
 
         self.record = []
 
@@ -852,8 +853,8 @@ class Statistics:
         self.yellows = 0
         self.reds = 0
 
-        self.win = (0, ())
-        self.loss = (0, ())
+        self.win = (None, ())
+        self.loss = (None, ())
 
 
 class TeamTraining:
@@ -1035,7 +1036,6 @@ class Catering:
 
     def reset_sales(self):
         self.sales = []
-
 
 
 class Shortlist:

@@ -220,7 +220,7 @@ class Players(Gtk.Grid):
         playerid = model[treepath][0]
 
         dialog = dialogs.PlayerInfo(playerid)
-        dialog.show_all()
+        dialog.run()
         dialog.destroy()
 
     def search_activated(self, entry):
