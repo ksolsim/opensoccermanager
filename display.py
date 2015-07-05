@@ -21,6 +21,7 @@ import statistics
 import calculator
 import constants
 import game
+import preferences
 
 
 def format_position(value):
@@ -85,7 +86,7 @@ def player_of_the_season():
 
 def value(value):
     value = calculator.value_rounder(value)
-    currency, exchange = constants.currency[game.currency]
+    currency, exchange = constants.currency[preferences.preferences.currency]
 
     if value >= 1000000:
         amount = (value / 1000000) * exchange
@@ -102,8 +103,8 @@ def currency(amount, mode=0):
     Format the amount into the selected currency and convert to appropriate
     exchange rate.
     '''
-    currency = constants.currency[game.currency][0]
-    amount *= constants.currency[game.currency][1]
+    currency = constants.currency[preferences.preferences.currency][0]
+    amount *= constants.currency[preferences.preferences.currency][1]
 
     if mode == 0:
         amount = "%s%i" % (currency, amount)

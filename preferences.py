@@ -27,6 +27,9 @@ class Preferences(ConfigParser):
     def __init__(self):
         ConfigParser.__init__(self)
 
+        self.start_screen = None
+        self.currency = None
+
         self.home = os.path.expanduser("~")
         data = os.path.join(self.home, ".config", "opensoccermanager")
         save = os.path.join(data, "saves")
@@ -52,8 +55,8 @@ class Preferences(ConfigParser):
     def readfile(self):
         self.read(self.filename)
 
-        game.currency = int(self["INTERFACE"]["Currency"])
-        game.start_screen = int(self["INTERFACE"]["StartScreen"])
+        self.currency = int(self["INTERFACE"]["Currency"])
+        self.start_screen = int(self["INTERFACE"]["StartScreen"])
 
         self.maximized = self["INTERFACE"].getboolean("Maximized")
 

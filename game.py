@@ -23,6 +23,7 @@ import widgets
 
 teamid = None               # Team that user has selected
 active_screen = None        # Track screen currently in view
+active_screen_id = None
 
 staff_timeout = 1
 coachid = 1

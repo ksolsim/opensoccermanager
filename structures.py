@@ -146,7 +146,9 @@ class Date:
         widgets.nextmatch.update()
 
     def daily_events(self):
-        # Process everyday events
+        '''
+        Process events on each continue game operation.
+        '''
         transfer.transfer()
         events.injury()
         ai.advertising()
@@ -173,6 +175,9 @@ class Date:
             player.value = calculator.value(playerid)
 
     def weekly_events(self):
+        '''
+        Process events once the end of the week is reached.
+        '''
         club = game.clubs[game.teamid]
 
         club.accounts.reset_weekly()
@@ -284,7 +289,7 @@ class Player:
         Retrieve the player value formatted with currency.
         '''
         value = calculator.value_rounder(self.value)
-        currency, exchange = constants.currency[game.currency]
+        currency, exchange = constants.currency[preferences.preferences.currency]
 
         if value >= 1000000:
             amount = (value / 1000000) * exchange
@@ -300,7 +305,7 @@ class Player:
         Fetch the player wage and return with appropriate currency.
         '''
         wage = calculator.wage_rounder(self.wage)
-        currency, exchange = constants.currency[game.currency]
+        currency, exchange = constants.currency[preferences.preferences.currency]
 
         if wage >= 1000:
             amount = (wage / 1000) * exchange

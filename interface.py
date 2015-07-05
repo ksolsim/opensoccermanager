@@ -407,7 +407,7 @@ class PreferencesDialog(Gtk.Dialog):
         comboboxScreen.append("2", "Fixtures")
         comboboxScreen.append("3", "News")
         comboboxScreen.append("20", "Player Search")
-        comboboxScreen.set_active_id(str(game.start_screen))
+        comboboxScreen.set_active_id(str(preferences.preferences.start_screen))
         comboboxScreen.set_tooltip_text("Choose which screen should first appear when starting new and loading saved games.")
         comboboxScreen.connect("changed", self.change_screen)
         grid.attach(comboboxScreen, 1, 1, 3, 1)
@@ -418,7 +418,7 @@ class PreferencesDialog(Gtk.Dialog):
         comboboxCurrency.append("0", "British Pound")
         comboboxCurrency.append("1", "U.S. Dollar")
         comboboxCurrency.append("2", "Euro")
-        comboboxCurrency.set_active_id(str(game.currency))
+        comboboxCurrency.set_active_id(str(preferences.preferences.currency))
         comboboxCurrency.set_tooltip_text("The monetary currency which will be used during the game.")
         comboboxCurrency.connect("changed", self.change_currency)
         grid.attach(comboboxCurrency, 1, 2, 3, 1)
@@ -479,20 +479,14 @@ class PreferencesDialog(Gtk.Dialog):
         preferences.preferences.writefile()
 
     def change_currency(self, combobox):
-        game.currency = combobox.get_active_id()
-
-        preferences.preferences["INTERFACE"]["Currency"] = game.currency
+        preferences.preferences["INTERFACE"]["Currency"] = combobox.get_active_id()
         preferences.preferences.writefile()
 
-        game.currency = int(game.currency)
+        preferences.preferences.currency = int(preferences.preferences.currency)
 
     def change_screen(self, combobox):
-        game.start_screen = combobox.get_active_id()
-
-        preferences.preferences["INTERFACE"]["StartScreen"] = game.start_screen
+        preferences.preferences["INTERFACE"]["StartScreen"] = combobox.get_active_id()
         preferences.preferences.writefile()
-
-        game.start_screen = int(game.start_screen)
 
     def change_database_default(self, filechooser):
         directory = filechooser.get_uri()

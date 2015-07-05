@@ -23,6 +23,7 @@ import constants
 import database
 import display
 import game
+import preferences
 import resources
 import staff
 import structures

@@ -405,7 +405,7 @@ class ScreenDetails(Gtk.Grid):
             self.liststoreLeagues.clear()
 
             for league in league_data.fetchall():
-                self.liststoreLeagues.append([league[0], league[1]])
+                self.liststoreLeagues.append(league)
 
             sensitive = len(self.liststoreLeagues) > 0
             self.comboboxLeague.set_sensitive(sensitive)
@@ -425,7 +425,7 @@ class ScreenDetails(Gtk.Grid):
             self.liststoreClubs.clear()
 
             for club in club_data.fetchall():
-                self.liststoreClubs.append([club[0], club[1]])
+                self.liststoreClubs.append(club)
 
             sensitive = len(self.liststoreClubs) > 0
             self.comboboxClub.set_sensitive(sensitive)
@@ -495,7 +495,7 @@ class ScreenDetails(Gtk.Grid):
 
         game.window.remove(game.window.screenDetails)
         game.window.add(game.window.screenGame)
-        game.window.screen_loader(game.start_screen)
+        game.window.screen_loader(preferences.preferences.start_screen)
         game.window.screenGame.run()
 
 
