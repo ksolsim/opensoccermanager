@@ -155,6 +155,8 @@ class Date:
         evaluation.update()
         aitransfer.identify()
         staff.check_morale()
+        ai.transfer_list()
+        ai.loan_list()
 
         # Initiate sponsorship generation if needed
         if (game.date.day, game.date.month) == (4, 8):

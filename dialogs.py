@@ -47,8 +47,7 @@ class PlayerInfo(Gtk.Dialog):
         player = game.players[self.playerid]
         name = player.get_name(mode=1)
 
-        label = widgets.AlignedLabel()
-        label.set_label(name)
+        label = widgets.AlignedLabel("%s" % (name))
         label.set_hexpand(True)
         grid.attach(label, 0, 0, 1, 1)
 

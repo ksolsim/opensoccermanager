@@ -141,8 +141,7 @@ class ContinueGame:
             if playerid != 0:
                 if positionid < 11:
                     team_count += 1
-
-                if positionid >= 11:
+                elif positionid >= 11:
                     sub_count += 1
 
         errors.team_count = team_count

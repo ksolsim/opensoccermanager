@@ -185,7 +185,6 @@ class Negotiation:
 
         name = player.get_name(mode=1)
         wage = calculator.wage(self.playerid)
-        wage = calculator.wage_rounder(wage)
         leaguewin, leaguerunnerup, winbonus, goalbonus = calculator.bonus(wage)
 
         dialog = Gtk.Dialog()
