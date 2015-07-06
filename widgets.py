@@ -230,3 +230,10 @@ class TreeViewColumn(Gtk.TreeViewColumn):
         cellrenderertext = Gtk.CellRendererText()
         self.pack_start(cellrenderertext, True)
         self.add_attribute(cellrenderertext, "text", column)
+
+
+class Grid(Gtk.Grid):
+    def __init__(self):
+        Gtk.Grid.__init__(self)
+        self.set_row_spacing(5)
+        self.set_column_spacing(5)

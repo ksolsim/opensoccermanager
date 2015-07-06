@@ -481,7 +481,7 @@ class Negotiation:
             fee = "Free Transfer"
 
         season = game.date.get_season()
-        games = "%i/%i" % (player.appearances, player.substitute)
+        games = "%i (%i)" % (player.appearances, player.substitute)
 
         game.transfers.append([name, old_club, new_club, fee])
         player.history.history.append([season,
@@ -490,6 +490,12 @@ class Negotiation:
                                        player.goals,
                                        player.assists,
                                        player.man_of_the_match])
+
+        player.appearances = 0
+        player.substitute = 0
+        player.goals = 0
+        player.assists = 0
+        player.man_of_the_match = 0
 
         del game.negotiations[self.negotiationid]
 
@@ -561,7 +567,7 @@ class Loan:
             dialog.show_all()
 
             if dialog.run() == Gtk.ResponseType.OK:
-                if consider_extension(self.playerid):
+                if self.extend_loan_valid():
                     game.loans[self.playerid].period += spinbutton.get_value_as_int()
 
             dialog.destroy()
@@ -586,10 +592,7 @@ class Loan:
         messagedialog.set_markup("<span size='12000'><b>Cancel loan contract for %s?</b></span>" % (name))
         messagedialog.format_secondary_text("The player will be returned to his parent club.")
 
-        state = False
-
-        if messagedialog.run() == Gtk.ResponseType.ACCEPT:
-            state = True
+        state = messagedialog.run() == Gtk.ResponseType.ACCEPT
 
         messagedialog.destroy()
 
@@ -779,13 +782,3 @@ def consider_contract(negotiationid):
             negotiation.status = 7
             negotiation.timeout = random.randint(1, 4)
             game.news.publish("TO10", player=name)
-
-
-def consider_extension(playerid):
-    '''
-    Determine whether the parent club of the player will agree to a
-    loan extension.
-    '''
-    state = True
-
-    return state
