@@ -27,6 +27,7 @@ import events
 import fixtures
 import game
 import money
+import nation
 import news
 import resources
 import staff
@@ -44,7 +45,6 @@ def datainit():
     game.leagues = {}
     game.clubs = {}
     game.players = {}
-    game.nations = {}
     game.stadiums = {}
     game.negotiations = {}
     game.referees = {}
@@ -60,10 +60,6 @@ def datainit():
 
     game.news = news.News()
     game.statistics = structures.Statistics()
-
-    game.date.day = 1
-    game.date.month = 8
-    game.date.week = 1
 
     widgets.date.update()
 
@@ -151,13 +147,7 @@ def datainit():
         game.clubs[player.club].squad.append(playerid)
 
     # Import nations
-    for item in game.database.importer("nation"):
-        nation = structures.Nation()
-        nationid = item[0]
-        game.nations[nationid] = nation
-
-        nation.name = item[1]
-        nation.denonym = item[2]
+    nation.nationitem = nation.Nations()
 
     # Import referees
     game.database.cursor.execute("SELECT * FROM referee WHERE year = ?", (game.date.year,))

@@ -43,6 +43,7 @@ import match
 import menu
 import money
 import music
+import nation
 import player
 import preferences
 import printing
@@ -68,9 +69,9 @@ class Date:
 
         self.week = 1
 
-        self.fixturesindex = 0           # Index number of which fixture the game is on
-        self.eventindex = 0              # Position in relation to events
-        self.dateindex = 1               # Position in relation to dates
+        self.fixturesindex = 0  # Index number of which fixture the game is on
+        self.eventindex = 0     # Position in relation to events
+        self.dateindex = 1      # Position in relation to dates
         self.dateprev = 0
 
     def get_string_date(self):
@@ -282,9 +283,9 @@ class Player:
         '''
         Return the player nationality.
         '''
-        nation = game.nations[self.nationality].name
+        name = nation.get_nation(self.nationality)
 
-        return nation
+        return name
 
     def get_value(self):
         '''

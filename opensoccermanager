@@ -461,6 +461,8 @@ class ScreenDetails(Gtk.Grid):
         game.window.add(game.window.screenMain)
 
     def continue_button_clicked(self, button):
+        game.date = structures.Date()
+
         active = self.comboboxYear.get_active()
         game.date.year = int(self.liststoreYears[active][0])
 
@@ -557,7 +559,6 @@ class ScreenGame(Gtk.Grid):
         self.attach(grid, 0, 2, 1, 1)
 
         widgets.date = widgets.Date()
-        widgets.date.update()
         grid.attach(widgets.date, 0, 0, 1, 1)
 
         widgets.news = widgets.News()
@@ -696,7 +697,6 @@ def exit_game(widget=None, event=None):
 game.database = database.Database()
 game.database = game.database.get_database_object()
 
-game.date = structures.Date()
 game.continuegame = game.ContinueGame()
 preferences.preferences = preferences.Preferences()
 music.music = music.Player()
