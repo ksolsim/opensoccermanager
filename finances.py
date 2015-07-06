@@ -27,11 +27,6 @@ import widgets
 
 
 class Finances(Gtk.Grid):
-    class OverviewLabel(Gtk.Label):
-        def __init__(self):
-            Gtk.Label.__init__(self)
-            self.set_alignment(0, 0.5)
-
     class Loan(Gtk.Grid):
         def __init__(self, labelLoan):
             self.labelLoan = labelLoan
@@ -100,10 +95,8 @@ class Finances(Gtk.Grid):
             self.attach(buttonbox, 0, 10, 3, 1)
 
         def update_amount_button(self, spinbutton):
-            if spinbutton.get_value_as_int() > 0:
-                self.buttonApply.set_sensitive(True)
-            else:
-                self.buttonApply.set_sensitive(False)
+            sensitive = spinbutton.get_value_as_int() > 0
+            self.buttonApply.set_sensitive(sensitive)
 
             amount = self.spinbuttonAmount.get_value_as_int()
             years = self.spinbuttonYears.get_value_as_int()
@@ -114,10 +107,8 @@ class Finances(Gtk.Grid):
             self.labelWeekly.set_label("%s" % (repayment))
 
         def update_repay_button(self, spinbutton):
-            if spinbutton.get_value_as_int() > 0:
-                self.buttonRepay.set_sensitive(True)
-            else:
-                self.buttonRepay.set_sensitive(False)
+            sensitive = spinbutton.get_value_as_int() > 0
+            self.buttonRepay.set_sensitive(sensitive)
 
         def apply_loan(self, button):
             game.bankloan.amount = self.spinbuttonAmount.get_value_as_int()
@@ -143,7 +134,7 @@ class Finances(Gtk.Grid):
             '''
             amount = self.spinbuttonRepay.get_value_as_int()
 
-            if money.request(amount):
+            if game.clubs[game.teamid].accounts.request(amount):
                 game.clubs[game.teamid].accounts.withdraw(amount, "loan")
                 game.bankloan.amount -= amount
 
@@ -376,19 +367,19 @@ class Finances(Gtk.Grid):
 
         label = widgets.AlignedLabel("Current Loan")
         grid.attach(label, 0, 1, 1, 1)
-        self.labelLoan = self.OverviewLabel()
+        self.labelLoan = widgets.AlignedLabel()
         grid.attach(self.labelLoan, 1, 1, 1, 1)
         label = widgets.AlignedLabel("Current Overdraft")
         grid.attach(label, 0, 2, 1, 1)
-        self.labelOverdraft = self.OverviewLabel()
+        self.labelOverdraft = widgets.AlignedLabel()
         grid.attach(self.labelOverdraft, 1, 2, 1, 1)
         label = widgets.AlignedLabel("Stadium Improvement Status")
         grid.attach(label, 0, 3, 1, 1)
-        self.labelGrant = self.OverviewLabel()
+        self.labelGrant = widgets.AlignedLabel()
         grid.attach(self.labelGrant, 1, 3, 1, 1)
         label = widgets.AlignedLabel("Public Flotation Estimate")
         grid.attach(label, 0, 4, 1, 1)
-        self.labelFlotation = self.OverviewLabel()
+        self.labelFlotation = widgets.AlignedLabel()
         grid.attach(self.labelFlotation, 1, 4, 1, 1)
 
         # Loan

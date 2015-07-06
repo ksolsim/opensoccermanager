@@ -534,22 +534,21 @@ def refresh_staff():
     '''
     if game.staff_timeout > 0:
         game.staff_timeout -= 1
+    else:
+        club = game.clubs[game.teamid]
 
-        if game.staff_timeout == 0:
-            club = game.clubs[game.teamid]
+        club.coaches_available = {}
+        club.scouts_available = {}
 
-            club.coaches_available = {}
-            club.scouts_available = {}
+        for count in range(5):
+            coach = staff.Staff(staff_type=0)
+            club.coaches_available[coach.staffid] = coach
 
-            for count in range(5):
-                coach = staff.Staff(staff_type=0)
-                club.coaches_available[coach.staffid] = coach
+        for count in range(5):
+            scout = staff.Staff(staff_type=1)
+            club.scouts_available[scout.staffid] = scout
 
-            for count in range(5):
-                scout = staff.Staff(staff_type=1)
-                club.scouts_available[scout.staffid] = scout
-
-            game.staff_timeout = random.randint(8, 12)
+        game.staff_timeout = random.randint(8, 12)
 
 
 def update_morale(clubid, amount):

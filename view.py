@@ -429,9 +429,6 @@ class Players(Gtk.Grid):
                 column.set_visible(count == index)
 
     def populate_data(self, data):
-        self.treeviewPlayers.freeze_child_notify()
-        self.treeviewPlayers.set_model(None)
-
         self.liststorePlayers.clear()
 
         for playerid, player in data.items():
@@ -479,9 +476,6 @@ class Players(Gtk.Grid):
                                           cards,
                                           player.man_of_the_match,
                                           rating])
-
-        self.treeviewPlayers.set_model(self.treemodelsort)
-        self.treeviewPlayers.thaw_child_notify()
 
     def run(self):
         self.populate_data(game.players)
