@@ -461,11 +461,11 @@ class TrainingCamp(Gtk.Grid):
             self.update_total()
 
     def update_total(self):
-        player = self.training_camp.calculate_player()
+        player = self.training_camp.get_player_total()
         player = display.currency(player)
         self.labelPlayerCost.set_label("%s" % (player))
 
-        total = self.training_camp.calculate_total()
+        total = self.training_camp.get_total()
         total = display.currency(total)
         self.labelTotal.set_label("<b>%s</b>" % (total))
 
@@ -480,14 +480,13 @@ class TrainingCamp(Gtk.Grid):
         self.update_total()
 
     def confirm_training(self, button):
-        cost = self.training_camp.calculate_total()
+        cost = self.training_camp.get_total()
 
         if dialogs.confirm_training(cost):
-            if money.request(cost):
+            if game.clubs[game.teamid].accounts.request(cost):
                 game.clubs[game.teamid].accounts.withdraw(cost, "training")
 
-                options = self.training_camp.retrieve_options()
-                events.training_camp(options)
+                self.training_camp.apply_training()
 
             self.revert_training()
 
@@ -501,10 +500,8 @@ class TrainingCamp(Gtk.Grid):
             if item != 0:
                 count += 1
 
-        if count < 16:
-            self.buttonSquadWarning.show()
-        else:
-            self.buttonSquadWarning.hide()
+        visible = count < 16
+        self.buttonSquadWarning.set_visible(visible)
 
     def training_schedule_warning(self):
         '''
@@ -512,7 +509,7 @@ class TrainingCamp(Gtk.Grid):
         '''
         schedule = False
 
-        for item in game.clubs[game.teamid].team_training:
+        for item in game.clubs[game.teamid].team_training.training:
             if item != 0:
                 schedule = True
 
@@ -521,6 +518,8 @@ class TrainingCamp(Gtk.Grid):
         if self.radiobuttonSchedule.get_active():
             if not schedule:
                 self.buttonScheduleWarning.show()
+            else:
+                self.buttonScheduleWarning.hide()
         else:
             self.buttonScheduleWarning.hide()
 
@@ -531,4 +530,3 @@ class TrainingCamp(Gtk.Grid):
 
         self.squad_count_warning()
         self.training_schedule_warning()
-

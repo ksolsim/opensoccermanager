@@ -472,7 +472,7 @@ class Match(Gtk.Grid):
         self.process_remaining_league()
         self.process_remaining()
 
-        events.update_statistics(airesult)
+        game.statistics.update(airesult)
 
         widgets.continuegame.set_sensitive(True)
         self.buttonStart.set_sensitive(False)

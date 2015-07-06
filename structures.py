@@ -459,7 +459,6 @@ class Club:
         self.merchandise = Merchandise()
         self.catering = Catering()
         self.evaluation = [0, 0, 0, 0, 0]
-        self.statistics = [0] * 3
         self.form = []
         self.attendances = []
 
@@ -556,10 +555,6 @@ class League:
         Update results with latest for given teams.
         '''
         self.results[game.date.fixturesindex].append(result)
-
-
-class Nation:
-    pass
 
 
 class Tickets:
@@ -834,6 +829,30 @@ class Statistics:
 
         self.record = []
 
+    def update(self, result):
+        '''
+        Update statistical information with result.
+        '''
+        score = result.final_score
+
+        if result.clubid1 == game.teamid:
+            if score[0] > score[1]:
+                if score > self.win[1]:
+                    self.win = (result.clubid2, score)
+            elif score[1] > score[0]:
+                if score > self.loss[1]:
+                    self.loss = (result.clubid2, score)
+        elif result.clubid2 == game.teamid:
+            if score[0] < score[1]:
+                if score > self.win[1]:
+                    self.win = (result.clubid1, score)
+            elif score[1] < score[0]:
+                if score > self.loss[1]:
+                    self.loss = (result.clubid1, score)
+
+        self.yellows += result.yellows
+        self.reds += result.reds
+
     def reset_statistics(self):
         '''
         Save current statistics and reset to default for new season.
@@ -932,7 +951,10 @@ class TrainingCamp:
         self.purpose = 1
         self.squad = 0
 
-    def calculate_player(self):
+    def get_player_total(self):
+        '''
+        Calculate cost per player of training camp with current options.
+        '''
         quality = (self.quality * 550) * self.quality
         location = (self.location * 425) * self.location
         purpose = self.purpose * 350
@@ -941,8 +963,11 @@ class TrainingCamp:
 
         return cost
 
-    def calculate_total(self):
-        player = self.calculate_player()
+    def get_total(self):
+        '''
+        Calculate cost of training camp for current options.
+        '''
+        player = self.get_player_total()
 
         if self.squad == 0:
             squad = 16
@@ -962,16 +987,61 @@ class TrainingCamp:
         return total
 
     def revert_options(self):
+        '''
+        Reset selected options back to defaults.
+        '''
         self.days = 1
         self.quality = 1
         self.location = 1
         self.purpose = 1
         self.squad = 0
 
-    def retrieve_options(self):
+    def get_options(self):
+        '''
+        Return a tuple of the current options.
+        '''
         options = self.days, self.quality, self.location, self.purpose, self.squad
 
         return options
+
+    def apply_training(self):
+        '''
+        Take options provided by training camp screen and determine player changes.
+        '''
+        # Determine players to take on training camp
+        squad = []
+
+        if self.squad == 0:
+            for playerid in game.clubs[game.teamid].team.values():
+                if playerid != 0:
+                    squad.append(playerid)
+        elif self.squad == 1:
+            for playerid in game.clubs[game.teamid].squad:
+                if playerid not in game.clubs[game.teamid].team.values():
+                    squad.append(playerid)
+        else:
+            squad = [playerid for playerid in game.clubs[game.teamid].squad]
+
+        if self.purpose == 1:
+            # Leisure
+            morale = (self.quality) + (self.location) * self.days
+            morale = morale * 3
+            fitness = 1
+        elif self.purpose == 2:
+            # Schedule
+            morale = (self.quality) + (self.location) * self.days
+            morale = morale * 1.5
+            individual_training()
+            fitness = 3
+        elif self.purpose == 3:
+            # Intensive
+            morale = (-self.quality) + (-self.location) * -self.days
+            morale = -morale * 2
+            fitness = 8
+
+        for playerid in squad:
+            evaluation.morale(playerid, morale)
+            events.adjust_fitness(recovery=fitness)
 
 
 class Merchandise:

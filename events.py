@@ -378,48 +378,6 @@ def individual_training():
                 player.training_points = 99
 
 
-def training_camp(options):
-    '''
-    Take options provided by training camp screen and determine player changes.
-    '''
-    days = options[0]
-
-    # Determine players to take on training camp
-    squad = []
-
-    if options[4] == 0:
-        for playerid in game.clubs[game.teamid].team.values():
-            if playerid != 0:
-                squad.append(playerid)
-    elif options[4] == 1:
-        for playerid in game.clubs[game.teamid].squad:
-            if playerid not in game.clubs[game.teamid].team.values():
-                squad.append(playerid)
-    else:
-        squad = [playerid for playerid in game.clubs[game.teamid].squad]
-
-    if options[3] == 1:
-        # Leisure
-        morale = (options[1]) + (options[2]) * days
-        morale = morale * 3
-        fitness = 1
-    elif options[3] == 2:
-        # Schedule
-        morale = (options[1]) + (options[2]) * days
-        morale = morale * 1.5
-        individual_training()
-        fitness = 3
-    elif options[3] == 3:
-        # Intensive
-        morale = (-options[1]) + (-options[2]) * -days
-        morale = -morale * 2
-        fitness = 8
-
-    for playerid in squad:
-        evaluation.morale(playerid, morale)
-        adjust_fitness(recovery=fitness)
-
-
 def expectation():
     '''
     Determine the expectations for the season by comparing to other club
@@ -592,28 +550,6 @@ def refresh_staff():
                 club.scouts_available[scout.staffid] = scout
 
             game.staff_timeout = random.randint(8, 12)
-
-
-def update_statistics(result):
-    score = result.final_score
-
-    if result.clubid1 == game.teamid:
-        if score[0] > score[1]:
-            if score > game.statistics.win[1]:
-                game.statistics.win = (result.clubid2, score)
-        elif score[1] > score[0]:
-            if score > game.statistics.loss[1]:
-                game.statistics.loss = (result.clubid2, score)
-    elif result.clubid2 == game.teamid:
-        if score[0] < score[1]:
-            if score > game.statistics.win[1]:
-                game.statistics.win = (result.clubid1, score)
-        elif score[1] < score[0]:
-            if score > game.statistics.loss[1]:
-                game.statistics.loss = (result.clubid1, score)
-
-    game.statistics.yellows += result.yellows
-    game.statistics.reds += result.reds
 
 
 def update_morale(clubid, amount):
