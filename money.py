@@ -24,30 +24,6 @@ import game
 import news
 
 
-def pay_wages():
-    '''
-    Pay wages for both players and staff.
-    '''
-    club = game.clubs[game.teamid]
-
-    total = 0
-
-    for playerid in club.squad:
-        total += game.players[playerid].wage
-
-    club.accounts.withdraw(amount=total, category="playerwage")
-
-    total = 0
-
-    for staffid in club.coaches_hired:
-        total += club.coaches_hired[staffid].wage
-
-    for staffid in club.scouts_hired:
-        total += club.scouts_hired[staffid].wage
-
-    club.accounts.withdraw(amount=total, category="staffwage")
-
-
 def pay_bonus():
     '''
     Calculate the user-specified win bonus on the tactics screen.

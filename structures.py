@@ -184,7 +184,6 @@ class Date:
         club = game.clubs[game.teamid]
 
         club.accounts.reset_weekly()
-        money.pay_wages()
         events.update_contracts()
         events.update_advertising()
         club.sponsorship.update()
@@ -199,6 +198,9 @@ class Date:
         money.pay_overdraft()
         money.pay_loan()
         game.grant.update_grant()
+
+        for club in game.clubs.values():
+            club.pay_wages()
 
 
 class Player:
@@ -528,6 +530,27 @@ class Club:
         Close season ticket sales prior to first game.
         '''
         self.tickets.season_tickets_available = False
+
+    def pay_wages(self):
+        '''
+        Pay wages for both players and staff.
+        '''
+        total = 0
+
+        for playerid in self.squad:
+            total += game.players[playerid].wage
+
+        self.accounts.withdraw(amount=total, category="playerwage")
+
+        total = 0
+
+        for staffid in self.coaches_hired:
+            total += self.coaches_hired[staffid].wage
+
+        for staffid in self.scouts_hired:
+            total += self.scouts_hired[staffid].wage
+
+        self.accounts.withdraw(amount=total, category="staffwage")
 
 
 class League:
