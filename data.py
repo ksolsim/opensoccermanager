@@ -288,7 +288,6 @@ def dataloader(finances):
 
     money.calculate_loan()
     money.calculate_overdraft()
-    money.calculate_grant()
     money.flotation()
     ai.transfer_list()
     ai.loan_list()

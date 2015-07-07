@@ -147,47 +147,6 @@ def pay_overdraft():
             game.overdraft.rate = random.randint(4, 15)
 
 
-def calculate_grant():
-    '''
-    Check that the club reputation is less than 13, that the balance of
-    the club is not too high, and that the stadium capacity is less than
-    the determined amount for the club reputation.
-    '''
-    club = game.clubs[game.teamid]
-
-    state = club.reputation < 13
-
-    # Determine current bank balance
-    if state:
-        state = club.accounts.balance <= (150000 * club.reputation)
-
-    # Determine stadium capacity
-    if state:
-        capacity = game.stadiums[club.stadium].capacity
-
-        state = capacity < (1500 * club.reputation + (club.reputation * 0.5))
-
-    # Calculate amount available for grant
-    if state:
-        amount = club.reputation ** 2 * 10000
-        diff = amount * 0.1
-        amount += random.randint(-diff, diff)
-
-    if state:
-        game.grant.maximum = calculator.value_rounder(amount)
-        game.grant.status = state
-
-
-def process_grant():
-    if game.grant.timeout > 0:
-        game.grant.timeout -= 1
-
-        if game.grant.timeout == 0:
-            club = game.clubs[game.teamid]
-            club.accounts.deposit(amount=game.grant.amount, category="grant")
-            game.news.publish("SG01", amount=game.grant.amount)
-
-
 def flotation():
     '''
     Calculate estimated flotation amount for club.

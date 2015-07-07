@@ -288,16 +288,14 @@ class Finances(Gtk.Grid):
             self.spinbuttonGrant.set_sensitive(False)
             self.buttonGrant.set_sensitive(False)
 
-            game.grant.status = False
-            game.grant.timeout = random.randint(8, 10)
-            game.grant.amount = self.spinbuttonGrant.get_value_as_int()
-
-            money.process_grant()
+            self.amount = self.spinbuttonGrant.get_value_as_int()
 
         def run(self):
-            if game.grant.status:
-                value = display.currency(game.grant.maximum)
+            if game.grant.get_grant_allowed():
+                maximum = game.grant.get_grant_maximum()
+                value = display.currency(maximum)
                 self.labelGrantStatus.set_label("A maximum grant amount of %s is available." % (value))
+
                 self.buttonGrant.set_sensitive(True)
                 self.spinbuttonGrant.set_sensitive(True)
                 self.spinbuttonGrant.set_value(0)
@@ -305,6 +303,7 @@ class Finances(Gtk.Grid):
                 self.spinbuttonGrant.set_increments(10000, 100000)
             else:
                 self.labelGrantStatus.set_label("An improvement grant is not currently available.")
+
                 self.buttonGrant.set_sensitive(False)
                 self.spinbuttonGrant.set_sensitive(False)
 
@@ -423,8 +422,8 @@ class Finances(Gtk.Grid):
         amount = display.currency(game.overdraft.amount)
         self.labelOverdraft.set_label("%s" % (amount))
 
-        if game.grant.maximum > 0:
-            amount = display.currency(game.grant.maximum)
+        if game.grant.get_grant_allowed():
+            amount = display.currency(game.grant.get_grant_maximum())
         else:
             amount = "Not Available"
 

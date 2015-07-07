@@ -198,7 +198,7 @@ class Date:
         money.float_club()
         money.pay_overdraft()
         money.pay_loan()
-        money.process_grant()
+        game.grant.update_grant()
 
 
 class Player:
@@ -590,9 +590,42 @@ class BankLoan:
 
 class Grant:
     def __init__(self):
-        self.maximum = 0
         self.timeout = 0
-        self.status = 0
+        self.amount = 0
+
+    def get_grant_allowed(self):
+        club = game.clubs[game.teamid]
+
+        state = club.reputation < 13
+
+        # Determine current bank balance
+        if state:
+            state = club.accounts.balance <= (150000 * club.reputation)
+
+        # Determine stadium capacity
+        if state:
+            capacity = game.stadiums[club.stadium].capacity
+
+            state = capacity < (1500 * club.reputation + (club.reputation * 0.5))
+
+        return state
+
+    def get_grant_maximum(self):
+        amount = club.reputation ** 2 * 10000
+        diff = amount * 0.1
+        amount += random.randint(-diff, diff)
+
+        maximum = calculator.value_rounder(amount)
+
+        return maximum
+
+    def update_grant(self):
+        if self.timeout > 0:
+            self.timeout -= 1
+        else:
+            club = game.clubs[game.teamid]
+            club.accounts.deposit(amount=self.amount, category="grant")
+            game.news.publish("SG01", amount=self.amount)
 
 
 class Standings:
