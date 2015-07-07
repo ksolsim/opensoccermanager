@@ -48,6 +48,7 @@ import player
 import preferences
 import printing
 import sales
+import shortlist
 import squad
 import stadium
 import staff
@@ -450,12 +451,11 @@ class Club:
         self.coaches_hired = {}
         self.scouts_available = {}
         self.scouts_hired = {}
-        self.shortlist = Shortlist()
+        self.shortlist = shortlist.Shortlist()
         self.team_training = TeamTraining()
         self.individual_training = {}
         self.tickets = Tickets()
         self.accounts = accounts.Accounts()
-        self.finances = [0, 0, 0, 0, 0, 0, 0, 0]
         self.sponsorship = advertising.Sponsorship()
         self.hoardings = advertising.Advertising()
         self.programmes = advertising.Advertising()
@@ -1209,30 +1209,3 @@ class Catering:
 
     def reset_sales(self):
         self.sales = []
-
-
-class Shortlist:
-    def __init__(self):
-        self.players = []
-
-    def add_player(self, playerid):
-        '''
-        Add passed playerid to shortlisted players.
-        '''
-        if playerid not in self.players:
-            self.players.append(playerid)
-
-    def remove_player(self, playerid):
-        '''
-        Remove passed playerid from shortlisted players.
-        '''
-        if playerid in self.players:
-            self.players.remove(playerid)
-
-    def get_player_in_shortlist(self, playerid):
-        '''
-        Return whether a player is currently shortlisted.
-        '''
-        state = playerid in self.players
-
-        return state
