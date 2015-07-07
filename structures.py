@@ -615,6 +615,7 @@ class BankLoan:
 class Grant:
     def __init__(self):
         self.timeout = 0
+        self.status = 0
         self.amount = 0
 
     def get_grant_allowed(self):
@@ -643,13 +644,50 @@ class Grant:
 
         return maximum
 
+    def get_grant_response(self):
+        '''
+        Determine whether the grant request is accepted or rejected.
+        '''
+        response = random.choice((True, False))  # Replace with AI
+
+        return response
+
     def update_grant(self):
-        if self.timeout > 0:
-            self.timeout -= 1
-        else:
-            club = game.clubs[game.teamid]
-            club.accounts.deposit(amount=self.amount, category="grant")
-            game.news.publish("SG01", amount=self.amount)
+        '''
+        Update grant timeout.
+        '''
+        if self.status == 1:
+            if self.timeout > 0:
+                self.timeout -= 1
+            else:
+                if self.get_grant_response():
+                    self.status = 2
+
+                    club = game.clubs[game.teamid]
+                    club.accounts.deposit(amount=self.amount, category="grant")
+                    game.news.publish("SG01", amount=self.amount)
+                else:
+                    self.status = 3
+
+                    self.timeout = random.randint(26, 78)
+        elif self.status == 2:
+            if self.timeout > 0:
+                self.timeout -= 1
+            else:
+                print("Grant running")
+        elif self.status == 3:
+            if self.timeout > 0:
+                self.timeout -= 1
+            else:
+                self.status = 0
+
+    def set_grant_application(self, amount):
+        '''
+        Apply for grant with set amount.
+        '''
+        self.timeout = random.randint(6, 10)
+        self.status = 1
+        self.amount = amount
 
 
 class Standings:

@@ -288,7 +288,7 @@ class Finances(Gtk.Grid):
             self.spinbuttonGrant.set_sensitive(False)
             self.buttonGrant.set_sensitive(False)
 
-            self.amount = self.spinbuttonGrant.get_value_as_int()
+            game.grant.amount = self.spinbuttonGrant.get_value_as_int()
 
         def run(self):
             if game.grant.get_grant_allowed():
