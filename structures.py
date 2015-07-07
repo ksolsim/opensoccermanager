@@ -52,6 +52,7 @@ import squad
 import stadium
 import staff
 import structures
+import tactics
 import team
 import training
 import transfer
@@ -444,7 +445,7 @@ class Club:
         self.reputation = 0
         self.squad = []
         self.team = {}
-        self.tactics = [0, 0, 0, 0, 0, 1, 1, 0, 0]
+        self.tactics = tactics.Tactics()
         self.coaches_available = {}
         self.coaches_hired = {}
         self.scouts_available = {}

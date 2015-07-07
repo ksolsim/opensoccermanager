@@ -328,7 +328,7 @@ class Match(Gtk.Grid):
 
                     if count < 11:
                         # First Team
-                        formationid = game.clubs[team].tactics[0]
+                        formationid = game.clubs[team].tactics.formation
                         position = constants.formations[formationid][1][count]
                     elif count >= 11:
                         # Substitutes

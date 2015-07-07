@@ -28,17 +28,17 @@ def pay_bonus():
     '''
     Calculate the user-specified win bonus on the tactics screen.
     '''
-    if game.clubs[game.teamid].tactics[8] != 0:
+    if game.clubs[game.teamid].tactics.win_bonus != 0:
         total = 0
 
         for playerid in game.clubs[game.teamid].team:
             if playerid != 0:
                 total += game.players[playerid].wage
 
-        bonus = total * (game.clubs[game.teamid].tactics[8] * 0.1)
+        bonus = total * (game.clubs[game.teamid].tactics.win_bonus * 0.1)
         game.clubs[game.teamid].accounts.withdraw(bonus, "playerwage")
 
-        game.clubs[game.teamid].tactics[8] = 0
+        game.clubs[game.teamid].tactics.win_bonus = 0
 
 
 def pay_win_bonus():
@@ -71,7 +71,7 @@ def calculate_loan():
     Calculate maximum amount club is allowed to borrow as part of loan.
     '''
     club = game.clubs[game.teamid]
-    amount = 10000 * (club.reputation ** 2)
+    amount = club.reputation ** 2 * 10000
     amount = calculator.value_rounder(amount)
     game.bankloan.maximum = amount
 

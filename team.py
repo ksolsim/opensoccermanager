@@ -66,7 +66,7 @@ class Tactics(Gtk.Grid):
         self.comboboxCaptain.set_sensitive(False)
         self.comboboxCaptain.pack_start(cellrenderertext, True)
         self.comboboxCaptain.add_attribute(cellrenderertext, "text", 1)
-        self.comboboxCaptain.connect("changed", self.role_changed, 1)
+        self.comboboxCaptain.connect("changed", self.captain_changed)
         label.set_mnemonic_widget(self.comboboxCaptain)
         grid.attach(self.comboboxCaptain, 1, 1, 2, 1)
 
@@ -78,7 +78,7 @@ class Tactics(Gtk.Grid):
         self.comboboxPenaltyTaker.set_sensitive(False)
         self.comboboxPenaltyTaker.pack_start(cellrenderertext, True)
         self.comboboxPenaltyTaker.add_attribute(cellrenderertext, "text", 1)
-        self.comboboxPenaltyTaker.connect("changed", self.role_changed, 2)
+        self.comboboxPenaltyTaker.connect("changed", self.penalty_taker_changed)
         label.set_mnemonic_widget(self.comboboxPenaltyTaker)
         grid.attach(self.comboboxPenaltyTaker, 1, 2, 2, 1)
 
@@ -90,7 +90,7 @@ class Tactics(Gtk.Grid):
         self.comboboxFreeKickTaker.set_sensitive(False)
         self.comboboxFreeKickTaker.pack_start(cellrenderertext, True)
         self.comboboxFreeKickTaker.add_attribute(cellrenderertext, "text", 1)
-        self.comboboxFreeKickTaker.connect("changed", self.role_changed, 3)
+        self.comboboxFreeKickTaker.connect("changed", self.free_kick_taker_changed)
         label.set_mnemonic_widget(self.comboboxFreeKickTaker)
         grid.attach(self.comboboxFreeKickTaker, 1, 3, 2, 1)
 
@@ -102,7 +102,7 @@ class Tactics(Gtk.Grid):
         self.comboboxCornerTaker.set_sensitive(False)
         self.comboboxCornerTaker.pack_start(cellrenderertext, True)
         self.comboboxCornerTaker.add_attribute(cellrenderertext, "text", 1)
-        self.comboboxCornerTaker.connect("changed", self.role_changed, 4)
+        self.comboboxCornerTaker.connect("changed", self.corner_taker_changed)
         label.set_mnemonic_widget(self.comboboxCornerTaker)
         grid.attach(self.comboboxCornerTaker, 1, 4, 2, 1)
 
@@ -170,34 +170,52 @@ class Tactics(Gtk.Grid):
 
         if treeiter:
             model = combobox.get_model()
-            game.clubs[game.teamid].tactics[0] = model[treeiter][0]
+            game.clubs[game.teamid].tactics.formation = model[treeiter][0]
 
-    def role_changed(self, combobox, index):
-        '''
-        Store player ID for selected role (e.g. captain, penalty taker).
-        '''
+    def captain_changed(self, combobox):
         treeiter = combobox.get_active_iter()
 
         if treeiter:
             model = combobox.get_model()
-            game.clubs[game.teamid].tactics[index] = model[treeiter][0]
+            game.clubs[game.teamid].tactics.captain = model[treeiter][0]
+
+    def penalty_taker_changed(self, combobox):
+        treeiter = combobox.get_active_iter()
+
+        if treeiter:
+            model = combobox.get_model()
+            game.clubs[game.teamid].tactics.penalty_taker = model[treeiter][0]
+
+    def free_kick_taker_changed(self, combobox):
+        treeiter = combobox.get_active_iter()
+
+        if treeiter:
+            model = combobox.get_model()
+            game.clubs[game.teamid].tactics.free_kick_taker = model[treeiter][0]
+
+    def corner_taker_changed(self, combobox):
+        treeiter = combobox.get_active_iter()
+
+        if treeiter:
+            model = combobox.get_model()
+            game.clubs[game.teamid].tactics.corner_taker = model[treeiter][0]
 
     def style_changed(self, radiobutton, index):
         if radiobutton.get_active():
-            game.clubs[game.teamid].tactics[5] = index
+            game.clubs[game.teamid].tactics.style = index
 
     def tackling_changed(self, radiobutton, index):
         if radiobutton.get_active():
-            game.clubs[game.teamid].tactics[6] = index
+            game.clubs[game.teamid].tactics.tackling = index
 
     def passing_changed(self, radiobutton, index):
         if radiobutton.get_active():
-            game.clubs[game.teamid].tactics[7] = index
+            game.clubs[game.teamid].tactics.passing = index
 
     def bonus_changed(self, combobox):
         bonusid = combobox.get_active_id()
 
-        game.clubs[game.teamid].tactics[8] = int(bonusid)
+        game.clubs[game.teamid].tactics.win_bonus = int(bonusid)
 
     def run(self):
         self.liststoreFormation.clear()
@@ -210,10 +228,10 @@ class Tactics(Gtk.Grid):
         self.liststoreFreeKickTaker.clear()
         self.liststoreCornerTaker.clear()
 
-        self.liststoreCaptain.append(["0", "Not Selected"])
-        self.liststorePenaltyTaker.append(["0", "Not Selected"])
-        self.liststoreFreeKickTaker.append(["0", "Not Selected"])
-        self.liststoreCornerTaker.append(["0", "Not Selected"])
+        self.liststoreCaptain.append([None, "Not Selected"])
+        self.liststorePenaltyTaker.append([None, "Not Selected"])
+        self.liststoreFreeKickTaker.append([None, "Not Selected"])
+        self.liststoreCornerTaker.append([None, "Not Selected"])
 
         self.comboboxCaptain.set_sensitive(False)
         self.comboboxPenaltyTaker.set_sensitive(False)
@@ -236,32 +254,33 @@ class Tactics(Gtk.Grid):
                 self.comboboxFreeKickTaker.set_sensitive(True)
                 self.comboboxCornerTaker.set_sensitive(True)
 
-        self.comboboxFormation.set_active(game.clubs[game.teamid].tactics[0])
+        self.comboboxFormation.set_active(game.clubs[game.teamid].tactics.formation)
 
-        captain = str(game.clubs[game.teamid].tactics[1])
+        captain = str(game.clubs[game.teamid].tactics.captain)
 
         if not self.comboboxCaptain.set_active_id(captain):
             self.comboboxCaptain.set_active(0)
 
-        penaltytaker = str(game.clubs[game.teamid].tactics[2])
+        penaltytaker = str(game.clubs[game.teamid].tactics.penalty_taker)
 
         if not self.comboboxPenaltyTaker.set_active_id(penaltytaker):
             self.comboboxPenaltyTaker.set_active(0)
 
-        freekicktaker = str(game.clubs[game.teamid].tactics[3])
+        freekicktaker = str(game.clubs[game.teamid].tactics.free_kick_taker)
 
         if not self.comboboxFreeKickTaker.set_active_id(freekicktaker):
             self.comboboxFreeKickTaker.set_active(0)
 
-        cornertaker = str(game.clubs[game.teamid].tactics[4])
+        cornertaker = str(game.clubs[game.teamid].tactics.corner_taker)
 
         if not self.comboboxCornerTaker.set_active_id(cornertaker):
             self.comboboxCornerTaker.set_active(0)
 
-        self.style[game.clubs[game.teamid].tactics[5]].set_active(True)
-        self.tackling[game.clubs[game.teamid].tactics[6]].set_active(True)
-        self.passing[game.clubs[game.teamid].tactics[7]].set_active(True)
-        self.comboboxWinBonus.set_active(game.clubs[game.teamid].tactics[8])
+        self.style[game.clubs[game.teamid].tactics.style].set_active(True)
+        self.tackling[game.clubs[game.teamid].tactics.tackling].set_active(True)
+        self.passing[game.clubs[game.teamid].tactics.passing].set_active(True)
+
+        self.comboboxWinBonus.set_active(game.clubs[game.teamid].tactics.win_bonus)
 
         self.show_all()
 

@@ -559,8 +559,9 @@ def update_morale(clubid, amount):
         evaluation.morale(playerid, amount)
 
         # Add two points for captain
-        if playerid == int(game.clubs[clubid].tactics[1]):
-            evaluation.morale(playerid, 2)
+        if game.clubs[clubid].tactics.captain:
+            if playerid == game.clubs[clubid].tactics.captain:
+                evaluation.morale(playerid, 2)
 
 
 def update_condition():

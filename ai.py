@@ -126,11 +126,11 @@ class Result:
     def generate_goals(self):
         score1 = 1
 
-        if game.clubs[game.teamid].tactics[5] == 0:
+        if game.clubs[game.teamid].tactics.style == 0:
             start = 35
-        elif game.clubs[game.teamid].tactics[5] == 1:
+        elif game.clubs[game.teamid].tactics.style == 1:
             start = 50
-        elif game.clubs[game.teamid].tactics[5] == 2:
+        elif game.clubs[game.teamid].tactics.style == 2:
             start = 65
 
         for x in range(2, 9):
@@ -366,7 +366,7 @@ class Result:
         def generate(clubid):
             match_cards = [{}, {}]
 
-            multiplier = game.clubs[clubid].tactics[6] + 1
+            multiplier = game.clubs[clubid].tactics.tackling + 1
 
             fouls = random.randint(0, multiplier * 6) * 10
             yellow = random.randint(0, int(fouls * 0.5))
@@ -722,7 +722,7 @@ def generate_team(clubid):
     Determine players in squad for all other clubs.
     '''
     formationid = random.randint(0, 6)
-    game.clubs[clubid].tactics[0] = formationid
+    game.clubs[clubid].tactics.formation = formationid
     formation = constants.formations[formationid]
 
     squad = game.clubs[clubid].squad

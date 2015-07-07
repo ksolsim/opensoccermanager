@@ -693,7 +693,7 @@ class Squad(Gtk.Grid):
                                         ])
 
     def run(self):
-        formationid = game.clubs[game.teamid].tactics[0]
+        formationid = game.clubs[game.teamid].tactics.formation
 
         for count in range(0, 16):
             button = self.buttonTeam[count]
