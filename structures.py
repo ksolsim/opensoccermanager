@@ -342,16 +342,12 @@ class Player:
         '''
         Set the morale of the player between -100 and 100.
         '''
-        if amount > 0:
-            if self.morale + amount <= 100:
-                self.morale += amount
-            elif self.morale + amount > 100:
-                self.morale = 100
-        elif amount < 0:
-            if self.morale + amount >= -100:
-                self.morale += amount
-            elif self.morale + amount < -100:
-                self.morale = -100
+        self.morale += amount
+
+        if self.morale > 100:
+            self.morale = 100
+        elif self.morale < -100:
+            self.morale = -100
 
     def get_morale(self):
         '''
@@ -1137,5 +1133,6 @@ class TrainingCamp:
             fitness = 8
 
         for playerid in squad:
-            evaluation.morale(playerid, morale)
+            player = game.players[playerid]
+            player.set_morale(morale)
             events.adjust_fitness(recovery=fitness)

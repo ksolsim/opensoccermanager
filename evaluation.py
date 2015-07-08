@@ -19,17 +19,51 @@
 import game
 
 
-def morale(playerid, amount):
-    '''
-    Specify adjustment for player morale.
-    '''
-    player = game.players[playerid]
-    player.morale += amount
+class Evaluation:
+    def get_player_percentage(self):
+        '''
+        Return the player morale percentage.
+        '''
+        pass
 
-    if player.morale > 100:
-        player.morale = 100
-    elif player.morale < -100:
-        player.morale = -100
+    def get_staff_percentage(self):
+        '''
+        Return the staff morale percentage.
+        '''
+        pass
+
+    def get_media_percentage(self):
+        '''
+        Return the media rating percentage.
+        '''
+        pass
+
+    def get_fan_percentage(self):
+        '''
+        Return the fan morale percentage.
+        '''
+        pass
+
+    def get_chairman_percentage(self):
+        '''
+        Return the chairman morale percentage.
+        '''
+        pass
+
+    def get_overall_percentage(self):
+        '''
+        Return the overall manager percentage.
+        '''
+        club = game.clubs[game.teamid]
+
+        if club.evaluation[4] == 0:
+            multiplier = 0.25
+        else:
+            multiplier = 0.2
+
+        total = sum(club.evaluation) * multiplier
+
+        return total
 
 
 def update():

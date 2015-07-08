@@ -634,7 +634,7 @@ class Squad(Gtk.Grid):
             # Decrease morale
             if player.transfer[0]:
                 value = random.randint(15, 25)
-                evaluation.morale(playerid, value)
+                player.set_morale(value)
                 player.not_for_sale = False
         elif index == 1:
             player.transfer[1] = not player.transfer[1]

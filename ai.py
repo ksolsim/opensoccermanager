@@ -200,7 +200,7 @@ class Result:
             if playerid not in team:
                 player = game.players[playerid]
                 player.missed += 1
-                evaluation.morale(playerid, 3)
+                player.set_morale(3)
 
     def goalscorers(self):
         '''

@@ -40,7 +40,7 @@ def increment_goalscorers(scorers1, scorers2):
     for playerid in scorers:
         player = game.players[playerid]
         player.goals += 1
-        evaluation.morale(playerid, 3)
+        player.set_morale(3)
 
         if playerid in game.goalscorers:
             game.goalscorers[playerid] += 1
@@ -57,7 +57,7 @@ def increment_assists(assists1, assists2):
     for playerid in assists:
         player = game.players[playerid]
         player.assists += 1
-        evaluation.morale(playerid, 1)
+        player.set_morale(1)
 
         if playerid in game.assists:
             game.assists[playerid] += 1
@@ -250,7 +250,7 @@ def team_training():
             club.team_training.alert = random.randint(12, 18)
 
             for playerid in game.players.keys():
-                evaluation.morale(playerid, -5)
+                player.set_morale(-5)
 
             game.news.publish("TT04")
 
@@ -258,7 +258,7 @@ def team_training():
             club.team_training.alert = random.randint(12, 18)
 
             for playerid in game.players.keys():
-                evaluation.morale(playerid, -3)
+                player.set_morale(-3)
 
             game.news.publish("TT03")
     else:
@@ -556,12 +556,12 @@ def update_morale(clubid, amount):
     Increase or decrease player morale based on result.
     '''
     for playerid in game.clubs[clubid].squad:
-        evaluation.morale(playerid, amount)
+        player = game.players[playerid]
+        player.set_morale(amount)
 
         # Add two points for captain
-        if game.clubs[clubid].tactics.captain:
-            if playerid == game.clubs[clubid].tactics.captain:
-                evaluation.morale(playerid, 2)
+        if playerid == game.clubs[clubid].tactics.captain:
+            player.set_morale(2)
 
 
 def update_condition():

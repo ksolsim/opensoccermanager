@@ -364,7 +364,7 @@ def renew_player_contract(playerid):
         player.bonus = leaguechampions, leaguerunnerup, winbonus, goalbonus
         player.contract = spinbuttonContract.get_value_as_int() * 52
 
-        evaluation.morale(playerid, 15)
+        player.set_morale(15)
 
         state = True
 
