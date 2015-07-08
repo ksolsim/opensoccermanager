@@ -27,6 +27,7 @@ import events
 import fixtures
 import game
 import grant
+import loan
 import money
 import nation
 import news
@@ -247,7 +248,7 @@ def datainit():
             league.televised.append(random.randint(0, len(week) - 1))
 
     # Create financial objects
-    game.bankloan = structures.BankLoan()
+    game.bankloan = loan.Loan()
     game.overdraft = structures.Overdraft()
     game.grant = grant.Grant()
     game.flotation = structures.Flotation()
@@ -288,12 +289,11 @@ def dataloader(finances):
 
     evaluation.update()
 
-    money.calculate_loan()
     money.calculate_overdraft()
     money.flotation()
     ai.transfer_list()
     ai.loan_list()
-    teamtraining.get_schedule()
+    teamtraining.update_schedules()
 
     # Publish initial news articles
     game.news.publish("MA01")

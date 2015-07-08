@@ -70,7 +70,16 @@ class TeamTraining:
         return overwork
 
 
-def get_schedule():
+def get_schedule_set():
+    '''
+    Return whether a schedule has been set.
+    '''
+    schedule = not game.clubs[game.teamid].team_training.training != [0] * 42
+
+    return schedule
+
+
+def update_schedules():
     '''
     Generate team training schedules for all AI teams.
     '''

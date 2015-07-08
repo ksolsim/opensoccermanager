@@ -27,6 +27,7 @@ import game
 import individualtraining
 import money
 import structures
+import teamtraining
 import widgets
 
 
@@ -508,16 +509,8 @@ class TrainingCamp(Gtk.Grid):
         '''
         Display warning if there is no team training schedule assigned.
         '''
-        schedule = False
-
-        for item in game.clubs[game.teamid].team_training.training:
-            if item != 0:
-                schedule = True
-
-                break
-
         if self.radiobuttonSchedule.get_active():
-            if not schedule:
+            if teamtraining.get_schedule_set():
                 self.buttonScheduleWarning.show()
             else:
                 self.buttonScheduleWarning.hide()

@@ -58,6 +58,7 @@ import structures
 import tactics
 import team
 import teamtraining
+import tickets
 import training
 import transfer
 import version
@@ -194,7 +195,7 @@ class Date:
         club.perform_maintenance()
         money.float_club()
         money.pay_overdraft()
-        money.pay_loan()
+        game.bankloan.repay_loan()
         game.grant.update_grant()
 
         for club in game.clubs.values():
@@ -446,7 +447,7 @@ class Club:
         self.shortlist = shortlist.Shortlist()
         self.team_training = teamtraining.TeamTraining()
         self.individual_training = {}
-        self.tickets = Tickets()
+        self.tickets = tickets.Tickets()
         self.accounts = accounts.Accounts()
         self.sponsorship = advertising.Sponsorship()
         self.hoardings = advertising.Advertising()
@@ -516,7 +517,7 @@ class Club:
         '''
         Set number of free school tickets to make available.
         '''
-        self.tickets.school_tickets = tickets = 100 * (int((20 - self.reputation) * 0.5) + 1)
+        self.tickets.school_tickets = 100 * (int((20 - self.reputation) * 0.5) + 1)
 
     def set_season_tickets_unavailable(self):
         '''
@@ -573,16 +574,6 @@ class League:
         self.results[game.date.fixturesindex].append(result)
 
 
-class Tickets:
-    def __init__(self):
-        self.tickets = [0] * 15
-
-        self.season_tickets = 0
-        self.season_tickets_available = True
-
-        self.school_tickets = 0
-
-
 class Flotation:
     def __init__(self):
         self.amount = 0
@@ -591,13 +582,6 @@ class Flotation:
 
 
 class Overdraft:
-    def __init__(self):
-        self.amount = 0
-        self.rate = random.randint(4, 15)
-        self.timeout = random.randint(4, 16)
-
-
-class BankLoan:
     def __init__(self):
         self.amount = 0
         self.rate = random.randint(4, 15)

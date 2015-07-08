@@ -22,6 +22,7 @@ import random
 import dialogs
 import display
 import game
+import loan
 import money
 import widgets
 
@@ -102,7 +103,7 @@ class Finances(Gtk.Grid):
             years = self.spinbuttonYears.get_value_as_int()
             weeks = years * 52
 
-            repayment = money.calculate_loan_repayment(amount, weeks)
+            repayment = loan.get_repayment(amount, weeks)
             repayment = display.currency(repayment)
             self.labelWeekly.set_label("%s" % (repayment))
 
@@ -118,7 +119,7 @@ class Finances(Gtk.Grid):
             years = self.spinbuttonYears.get_value_as_int()
             weeks = years * 52
 
-            game.bankloan.repayment = money.calculate_loan_repayment(amount, weeks)
+            game.bankloan.repayment = loan.get_repayment(amount, weeks)
 
             self.update_finances()
 
@@ -153,13 +154,14 @@ class Finances(Gtk.Grid):
             self.labelLoan.set_label("%s" % (amount))
 
         def run(self):
-            amount = display.currency(game.bankloan.maximum)
+            maximum = game.bankloan.get_maximum()
+            amount = display.currency(maximum)
             self.labelLoanMaximum.set_label("%s" % (amount))
 
             self.labelLoanInterest.set_label("%i%%" % (game.bankloan.rate))
 
             self.spinbuttonAmount.set_value(0)
-            self.spinbuttonAmount.set_range(0, game.bankloan.maximum)
+            self.spinbuttonAmount.set_range(0, maximum)
             self.spinbuttonAmount.set_increments(10000, 100000)
             self.spinbuttonRepay.set_range(0, game.bankloan.amount)
             self.spinbuttonRepay.set_value(game.bankloan.amount)

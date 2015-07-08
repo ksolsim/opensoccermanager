@@ -66,33 +66,6 @@ def prize_money(position):
     return amount
 
 
-def calculate_loan():
-    '''
-    Calculate maximum amount club is allowed to borrow as part of loan.
-    '''
-    club = game.clubs[game.teamid]
-    amount = club.reputation ** 2 * 10000
-    amount = calculator.value_rounder(amount)
-    game.bankloan.maximum = amount
-
-
-def calculate_loan_repayment(amount, weeks):
-    repayment = amount * (game.bankloan.rate * 0.01 + 1) / weeks
-    repayment = math.ceil(repayment)
-
-    return repayment
-
-
-def pay_loan():
-    if game.bankloan.amount > 0:
-        if game.bankloan.repayment > game.bankloan.amount:
-            game.bankloan.repayment = game.bankloan.amount
-
-        game.bankloan.amount -= game.bankloan.repayment
-
-        game.clubs[game.teamid].accounts.withdraw(game.bankloan.repayment, "loan")
-
-
 def calculate_overdraft():
     club = game.clubs[game.teamid]
     amount = ((club.accounts.balance * 0.5) * 0.05) * club.reputation
