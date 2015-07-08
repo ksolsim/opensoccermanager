@@ -66,36 +66,6 @@ def prize_money(position):
     return amount
 
 
-def calculate_overdraft():
-    club = game.clubs[game.teamid]
-    amount = ((club.accounts.balance * 0.5) * 0.05) * club.reputation
-    amount = calculator.value_rounder(amount)
-    game.overdraft.maximum = amount
-
-
-def pay_overdraft():
-    if game.overdraft.amount > 0:
-        charge = game.overdraft.amount * 0.01
-        interest = 0
-
-        if game.clubs[game.teamid].balance < 0:
-            interest = game.overdraft.amount * game.overdraft.rate
-
-        amount = charge + interest
-
-        if amount > 0:
-            game.clubs[game.teamid].accounts.withdraw(amount, "overdraft")
-
-    if game.overdraft.timeout > 0:
-        game.overdraft.timeout -= 1
-
-        if game.overdraft.timeout == 0:
-            calculate_overdraft()
-
-            game.overdraft.timeout = random.randint(4, 16)
-            game.overdraft.rate = random.randint(4, 15)
-
-
 def flotation():
     '''
     Calculate estimated flotation amount for club.

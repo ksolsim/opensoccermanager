@@ -239,13 +239,14 @@ class Finances(Gtk.Grid):
             self.labelOverdraft.set_label("%s" % (amount))
 
         def run(self):
-            amount = display.currency(game.overdraft.maximum)
+            maximum = game.overdraft.get_maximum()
+            amount = display.currency(maximum)
             self.labelOverdraftMaximum.set_label("%s" % (amount))
 
             self.labelOverdraftInterest.set_label("%i%%" % (game.overdraft.rate))
 
             self.spinbuttonOverdraft.set_value(game.overdraft.amount)
-            self.spinbuttonOverdraft.set_range(0, game.overdraft.maximum)
+            self.spinbuttonOverdraft.set_range(0, maximum)
             self.spinbuttonOverdraft.set_increments(10000, 100000)
 
             amount = display.currency(0)

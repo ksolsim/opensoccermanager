@@ -32,6 +32,7 @@ import loan
 import money
 import nation
 import news
+import overdraft
 import resources
 import staff
 import structures
@@ -250,7 +251,7 @@ def datainit():
 
     # Create financial objects
     game.bankloan = loan.Loan()
-    game.overdraft = structures.Overdraft()
+    game.overdraft = overdraft.Overdraft()
     game.grant = grant.Grant()
     game.flotation = flotation.Flotation()
 
@@ -290,7 +291,6 @@ def dataloader(finances):
 
     evaluation.update()
 
-    money.calculate_overdraft()
     money.flotation()
     ai.transfer_list()
     ai.loan_list()

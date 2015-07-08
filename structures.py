@@ -194,8 +194,10 @@ class Date:
         events.update_condition()
         club.perform_maintenance()
         money.float_club()
-        money.pay_overdraft()
         game.bankloan.repay_loan()
+        game.bankloan.update_interest_rate()
+        game.overdraft.pay_overdraft()
+        game.overdraft.update_interest_rate()
         game.grant.update_grant()
 
         for club in game.clubs.values():
@@ -572,20 +574,6 @@ class League:
         Update results with latest for given teams.
         '''
         self.results[game.date.fixturesindex].append(result)
-
-
-class Flotation:
-    def __init__(self):
-        self.amount = 0
-        self.timeout = 0
-        self.status = 0
-
-
-class Overdraft:
-    def __init__(self):
-        self.amount = 0
-        self.rate = random.randint(4, 15)
-        self.timeout = random.randint(4, 16)
 
 
 class Standings:

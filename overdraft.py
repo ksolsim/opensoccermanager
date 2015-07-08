@@ -16,14 +16,13 @@
 #  OpenSoccerManager.  If not, see <http://www.gnu.org/licenses/>.
 
 
-import math
 import random
 
 import calculator
 import game
 
 
-class Loan:
+class Overdraft:
     def __init__(self):
         self.amount = 0
         self.rate = random.randint(4, 15)
@@ -31,13 +30,13 @@ class Loan:
 
     def get_maximum(self):
         '''
-        Get the maximum permissible amount to borrow.
+        Return the maximum allowed overdraft.
         '''
         club = game.clubs[game.teamid]
-        amount = club.reputation ** 2 * 10000
-        maximum = calculator.value_rounder(amount)
+        amount = ((club.accounts.balance * 0.5) * 0.05) * club.reputation
+        amount = calculator.value_rounder(amount)
 
-        return maximum
+        return amount
 
     def update_interest_rate(self):
         '''
@@ -47,29 +46,20 @@ class Loan:
             self.timeout -= 1
         else:
             self.rate = random.randint(4, 15)
-            self.timeout = random.randint(4, 20)
+            self.timeout = random.randint(12, 20)
 
-
-    def get_repayment(self, amount, weeks):
+    def pay_overdraft(self):
         '''
-        Return the repayment amount.
-        '''
-        repayment = amount * (self.rate * 0.01 + 1) / weeks
-        repayment = math.ceil(repayment)
-
-        return repayment
-
-
-    def repay_loan(self):
-        '''
-        Repayment of outstanding loan balance.
+        Pay charge on current overdraft in use.
         '''
         if self.amount > 0:
-            if self.get_repayment() > self.amount:
-                repayment = self.amount
-            else:
-                repayment = self.get_repayment()
+            charge = self.amount * 0.01
+            interest = 0
 
-            game.bankloan.amount -= repayment
+            if game.clubs[game.teamid].accounts.balance < 0:
+                interest = self.amount * self.rate
 
-            game.clubs[game.teamid].accounts.withdraw(repayment, "loan")
+            amount = charge + interest
+
+            if amount > 0:
+                game.clubs[game.teamid].accounts.withdraw(amount, "overdraft")
