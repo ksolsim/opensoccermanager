@@ -103,7 +103,7 @@ class Finances(Gtk.Grid):
             years = self.spinbuttonYears.get_value_as_int()
             weeks = years * 52
 
-            repayment = loan.get_repayment(amount, weeks)
+            repayment = game.bankloan.get_repayment(amount, weeks)
             repayment = display.currency(repayment)
             self.labelWeekly.set_label("%s" % (repayment))
 
@@ -118,8 +118,6 @@ class Finances(Gtk.Grid):
             amount = self.spinbuttonAmount.get_value_as_int()
             years = self.spinbuttonYears.get_value_as_int()
             weeks = years * 52
-
-            game.bankloan.repayment = loan.get_repayment(amount, weeks)
 
             self.update_finances()
 

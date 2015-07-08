@@ -47,24 +47,26 @@ class Loan:
             self.timeout = random.randint(4, 20)
 
 
-def get_repayment(amount, weeks):
-    '''
-    Return the repayment amount.
-    '''
-    repayment = amount * (game.bankloan.rate * 0.01 + 1) / weeks
-    repayment = math.ceil(repayment)
+    def get_repayment(self, amount, weeks):
+        '''
+        Return the repayment amount.
+        '''
+        repayment = amount * (self.rate * 0.01 + 1) / weeks
+        repayment = math.ceil(repayment)
 
-    return repayment
+        return repayment
 
 
-def repay_loan():
-    '''
-    Repayment of outstanding loan balance.
-    '''
-    if game.bankloan.amount > 0:
-        if game.bankloan.repayment > game.bankloan.amount:
-            game.bankloan.repayment = game.bankloan.amount
+    def repay_loan(self):
+        '''
+        Repayment of outstanding loan balance.
+        '''
+        if self.amount > 0:
+            if self.get_repayment() > self.amount:
+                repayment = self.amount
+            else:
+                repayment = self.get_repayment()
 
-        game.bankloan.amount -= game.bankloan.repayment
+            game.bankloan.amount -= repayment
 
-        game.clubs[game.teamid].accounts.withdraw(game.bankloan.repayment, "loan")
+            game.clubs[game.teamid].accounts.withdraw(repayment, "loan")

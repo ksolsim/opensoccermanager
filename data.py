@@ -25,6 +25,7 @@ import constants
 import evaluation
 import events
 import fixtures
+import flotation
 import game
 import grant
 import loan
@@ -251,7 +252,7 @@ def datainit():
     game.bankloan = loan.Loan()
     game.overdraft = structures.Overdraft()
     game.grant = grant.Grant()
-    game.flotation = structures.Flotation()
+    game.flotation = flotation.Flotation()
 
     # Import surnames for staff
     surnames = game.database.importer("staff")
