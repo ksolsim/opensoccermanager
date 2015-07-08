@@ -606,15 +606,6 @@ class Result:
             club.accounts.withdraw(amount, "playerwage")
 
 
-def team_training():
-    '''
-    Generate team training schedules for all teams.
-    '''
-    for clubid, club in game.clubs.items():
-        if clubid != game.teamid:
-            club.team_training.generate_schedule()
-
-
 def renew_contract():
     '''
     Renew player contracts, and announce big name players who have

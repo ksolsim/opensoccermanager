@@ -32,6 +32,7 @@ import news
 import resources
 import staff
 import structures
+import teamtraining
 import widgets
 
 
@@ -291,7 +292,7 @@ def dataloader(finances):
     money.flotation()
     ai.transfer_list()
     ai.loan_list()
-    ai.team_training()
+    teamtraining.get_schedule()
 
     # Publish initial news articles
     game.news.publish("MA01")

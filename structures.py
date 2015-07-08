@@ -57,6 +57,7 @@ import staff
 import structures
 import tactics
 import team
+import teamtraining
 import training
 import transfer
 import version
@@ -69,7 +70,6 @@ class Date:
         self.year = 2014
         self.month = 8
         self.day = 1
-        self.season = "2014/2015"
 
         self.week = 1
 
@@ -116,12 +116,6 @@ class Date:
         season = "%i/%i" % (self.year, self.year + 1)
 
         return season
-
-    def increment_season(self):
-        '''
-        Adjust the season attribute for new season.
-        '''
-        self.season = "%i/%i" % (self.year, self.year + 1)
 
     def increment_date(self):
         '''
@@ -450,7 +444,7 @@ class Club:
         self.scouts_available = {}
         self.scouts_hired = {}
         self.shortlist = shortlist.Shortlist()
-        self.team_training = TeamTraining()
+        self.team_training = teamtraining.TeamTraining()
         self.individual_training = {}
         self.tickets = Tickets()
         self.accounts = accounts.Accounts()
@@ -975,56 +969,6 @@ class Statistics:
 
         self.win = (None, ())
         self.loss = (None, ())
-
-
-class TeamTraining:
-    def __init__(self):
-        self.training = [0] * 42
-
-        self.timeout = random.randint(8, 12)
-        self.alert = 0
-
-    def generate_schedule(self):
-        '''
-        Generate team training schedule.
-        '''
-        values = [count for count in range(2, 18)]
-        random.shuffle(values)
-
-        for count in range(0, 6):
-            self.training[count * 6] = values[count * 2]
-            self.training[count * 6 + 1] = values[count * 2 + 1]
-            self.training[count * 6 + 2] = 1
-            self.training[count * 6 + 3] = 0
-            self.training[count * 6 + 4] = 0
-            self.training[count * 6 + 5] = 0
-
-    def get_sunday_training(self):
-        '''
-        Return True if team is training on Sunday.
-        '''
-        sunday = False
-
-        for trainingid in self.training[36:42]:
-            if trainingid != 0:
-                sunday = True
-
-        return sunday
-
-
-    def get_overworked_training(self):
-        '''
-        Return True if the team is being overworked.
-        '''
-        count = 0
-
-        for trainingid in game.clubs[game.teamid].team_training.training:
-            if trainingid != 0:
-                count += 1
-
-        overwork = count > 18
-
-        return overwork
 
 
 class IndividualTraining:
