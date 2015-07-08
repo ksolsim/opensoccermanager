@@ -604,84 +604,6 @@ class BankLoan:
         self.timeout = random.randint(4, 16)
 
 
-class Grant:
-    def __init__(self):
-        self.timeout = 0
-        self.status = 0
-        self.amount = 0
-
-    def get_grant_allowed(self):
-        club = game.clubs[game.teamid]
-
-        state = club.reputation < 13
-
-        # Determine current bank balance
-        if state:
-            state = club.accounts.balance <= (150000 * club.reputation)
-
-        # Determine stadium capacity
-        if state:
-            capacity = game.stadiums[club.stadium].capacity
-
-            state = capacity < (1500 * club.reputation + (club.reputation * 0.5))
-
-        return state
-
-    def get_grant_maximum(self):
-        amount = club.reputation ** 2 * 10000
-        diff = amount * 0.1
-        amount += random.randint(-diff, diff)
-
-        maximum = calculator.value_rounder(amount)
-
-        return maximum
-
-    def get_grant_response(self):
-        '''
-        Determine whether the grant request is accepted or rejected.
-        '''
-        response = random.choice((True, False))  # Replace with AI
-
-        return response
-
-    def update_grant(self):
-        '''
-        Update grant timeout.
-        '''
-        if self.status == 1:
-            if self.timeout > 0:
-                self.timeout -= 1
-            else:
-                if self.get_grant_response():
-                    self.status = 2
-
-                    club = game.clubs[game.teamid]
-                    club.accounts.deposit(amount=self.amount, category="grant")
-                    game.news.publish("SG01", amount=self.amount)
-                else:
-                    self.status = 3
-
-                    self.timeout = random.randint(26, 78)
-        elif self.status == 2:
-            if self.timeout > 0:
-                self.timeout -= 1
-            else:
-                print("Grant running")
-        elif self.status == 3:
-            if self.timeout > 0:
-                self.timeout -= 1
-            else:
-                self.status = 0
-
-    def set_grant_application(self, amount):
-        '''
-        Apply for grant with set amount.
-        '''
-        self.timeout = random.randint(6, 10)
-        self.status = 1
-        self.amount = amount
-
-
 class Standings:
     class Item:
         def __init__(self):
@@ -969,15 +891,6 @@ class Statistics:
 
         self.win = (None, ())
         self.loss = (None, ())
-
-
-class IndividualTraining:
-    def __init__(self):
-        self.playerid = 0
-        self.coachid = 0
-        self.skill = 0
-        self.intensity = 1
-        self.start_value = 0
 
 
 class TrainingCamp:

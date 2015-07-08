@@ -24,6 +24,7 @@ import dialogs
 import display
 import events
 import game
+import individualtraining
 import money
 import structures
 import widgets
@@ -236,7 +237,7 @@ class IndividualTraining(Gtk.Grid):
 
             club = game.clubs[game.teamid]
 
-            individual_training = structures.IndividualTraining()
+            individual_training = individualtraining.IndividualTraining()
             individual_training.playerid = playerid
             individual_training.coachid = coachid
             individual_training.skill = skill

@@ -26,6 +26,7 @@ import evaluation
 import events
 import fixtures
 import game
+import grant
 import money
 import nation
 import news
@@ -248,7 +249,7 @@ def datainit():
     # Create financial objects
     game.bankloan = structures.BankLoan()
     game.overdraft = structures.Overdraft()
-    game.grant = structures.Grant()
+    game.grant = grant.Grant()
     game.flotation = structures.Flotation()
 
     # Import surnames for staff
