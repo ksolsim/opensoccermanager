@@ -36,7 +36,7 @@ class Catering:
 
         self.reset_sales()
 
-        for count, profit_percentage in enumerate(club.catering):
+        for count, profit_percentage in enumerate(self.percentages):
             multiplier = constants.catering[count][2]
             multiplier += random.randint(-3, 3)
 
@@ -52,7 +52,7 @@ class Catering:
             profit = income - (sales * constants.catering[count][1])
             cost = income - profit
 
-            club.sales[0].append([sales, income, profit])
+            self.sales.append([sales, income, profit])
 
             club.accounts.deposit(amount=income, category="catering")
             club.accounts.withdraw(amount=cost, category="catering")

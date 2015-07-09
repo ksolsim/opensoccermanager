@@ -27,6 +27,7 @@ import money
 import news
 import sales
 import structures
+import tickets
 import widgets
 
 
@@ -464,7 +465,7 @@ class Match(Gtk.Grid):
 
         # Matchday ticket sales
         if self.team1.teamid == game.teamid:
-            sales.matchday_tickets(attendance)
+            tickets.calculate_matchday_tickets(attendance)
             game.clubs[game.teamid].merchandise.calculate_sales(attendance)
             game.clubs[game.teamid].catering.calculate_sales(attendance)
 

@@ -36,7 +36,7 @@ class Merchandise:
 
         self.reset_sales()
 
-        for count, profit_percentage in enumerate(club.merchandise):
+        for count, profit_percentage in enumerate(self.percentages):
             multiplier = constants.merchandise[count][2]
             multiplier += random.randint(-3, 3)
 
@@ -52,7 +52,7 @@ class Merchandise:
             profit = income - (sales * constants.merchandise[count][1])
             cost = income - profit
 
-            club.sales[0].append([sales, income, profit])
+            self.sales.append([sales, income, profit])
 
             club.accounts.deposit(amount=income, category="merchandise")
             club.accounts.withdraw(amount=cost, category="merchandise")

@@ -170,7 +170,7 @@ class Date:
             for club in game.clubs.values():
                 club.set_season_tickets_unavailable()
 
-            sales.season_tickets()
+            game.clubs[game.teamid].tickets.calculate_season_tickets()
 
         # Player value adjustments
         for playerid, player in game.players.items():

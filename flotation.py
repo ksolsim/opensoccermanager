@@ -68,7 +68,7 @@ class Flotation:
         club = game.clubs[game.teamid]
 
         amount = self.get_float_amount()
-        club.accounts.deposit(amount=amount, category=None)
+        #club.accounts.deposit(amount=amount, category=None)
         game.news.publish("FL01")
 
         self.status = 2
