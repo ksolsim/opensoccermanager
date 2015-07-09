@@ -335,14 +335,14 @@ class Finances(Gtk.Grid):
             buttonbox.add(buttonFloat)
 
         def apply_float(self, button):
-            if dialogs.float_club(game.flotation.amount):
-                game.flotation.status = 1
-                game.flotation.timeout = random.randint(12, 16)
+            if dialogs.float_club(game.flotation.get_float_amount()):
+                game.flotation.start_float()
 
                 button.set_sensitive(False)
 
         def run(self):
-            amount = display.currency(game.flotation.amount)
+            amount = game.flotation.get_float_amount()
+            amount = display.currency(amount)
             self.labelFlotationAmount.set_label("Floating at this time would raise %s." % (amount))
 
     def __init__(self):
@@ -430,7 +430,7 @@ class Finances(Gtk.Grid):
 
         self.labelGrant.set_label("%s" % (amount))
 
-        amount = display.currency(game.flotation.amount)
+        amount = display.currency(game.flotation.get_float_amount())
         self.labelFlotation.set_label("%s" % (amount))
 
         self.show_all()

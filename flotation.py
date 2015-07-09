@@ -68,5 +68,16 @@ class Flotation:
         club = game.clubs[game.teamid]
 
         amount = self.get_float_amount()
-        club.accounts.deposit(amount)
+        club.accounts.deposit(amount=amount, category=None)
         game.news.publish("FL01")
+
+        self.status = 2
+
+    def start_float(self):
+        '''
+        Start the procedure for floating the club.
+        '''
+        self.status = 1
+        self.timeout = random.randint(12, 16)
+
+        # Publish news article here

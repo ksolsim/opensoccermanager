@@ -291,7 +291,6 @@ def dataloader(finances):
 
     evaluation.update()
 
-    money.flotation()
     ai.transfer_list()
     ai.loan_list()
     teamtraining.update_schedules()

@@ -17,8 +17,8 @@
 
 
 NAME = "OpenSoccerManager"
-VERSION = 0.11
-DATE = "20150618"
+VERSION = 0.99
+DATE = "19700101"
 COMMENTS = "Free software soccer management game written in Python and GTK+."
 WEBSITE = "http://opensoccermanager.org/"
 AUTHORS = "Andrew Steele (andrew@andrewsteele.me.uk)"

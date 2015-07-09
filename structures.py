@@ -193,7 +193,7 @@ class Date:
         events.injury_period()
         events.update_condition()
         club.perform_maintenance()
-        money.float_club()
+        game.flotation.complete_float()
         game.bankloan.repay_loan()
         game.bankloan.update_interest_rate()
         game.overdraft.pay_overdraft()
