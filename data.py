@@ -33,7 +33,6 @@ import money
 import nation
 import news
 import overdraft
-import resources
 import staff
 import structures
 import teamtraining
@@ -258,10 +257,6 @@ def datainit():
     # Import surnames for staff
     surnames = game.database.importer("staff")
     game.surnames = [name[0] for name in surnames]
-
-    # Import resources
-    resources.import_news()
-    resources.import_evaluation()
 
 
 def dataloader(finances):

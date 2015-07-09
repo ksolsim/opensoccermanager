@@ -16,6 +16,8 @@
 #  OpenSoccerManager.  If not, see <http://www.gnu.org/licenses/>.
 
 
+import xml.dom.minidom
+import os
 import random
 
 import constants
@@ -27,7 +29,7 @@ import widgets
 class News:
     class Article:
         def __init__(self, newsid, kwargs):
-            item = random.choice(constants.news[newsid])
+            item = random.choice(game.news.news[newsid])
 
             self.date = game.date.get_string_date()
             self.title = item[0]
@@ -63,8 +65,12 @@ class News:
                     self.message = self.message.replace(key, value)
 
     def __init__(self):
+        self.news = {}
+
         self.articles = {}
         self.newsid = 1
+
+        self.populate_news()
 
     def publish(self, newsid, **kwargs):
         '''
@@ -100,3 +106,25 @@ class News:
                 count += 1
 
         return count
+
+    def populate_news(self):
+        '''
+        Load the news articles from file.
+        '''
+        filepath = os.path.join("resources", "news.xml")
+        news = xml.dom.minidom.parse(filepath)
+
+        for item in news.getElementsByTagName("article"):
+            newsid = item.getAttribute("id")
+
+            title = item.getElementsByTagName("title")[0]
+            title = title.firstChild.data
+            message = item.getElementsByTagName("message")[0]
+            message = message.firstChild.data
+            category = item.getElementsByTagName("category")[0]
+            category = category.firstChild.data
+
+            if newsid in self.news.keys():
+                self.news[newsid].append([title, message, category])
+            else:
+                self.news[newsid] = [[title, message, category]]

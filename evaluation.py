@@ -16,10 +16,16 @@
 #  OpenSoccerManager.  If not, see <http://www.gnu.org/licenses/>.
 
 
+import xml.dom.minidom
+import os
+
 import game
 
 
 class Evaluation:
+    def __init__(self):
+        self.statements = []
+
     def get_player_percentage(self):
         '''
         Return the player morale percentage.
@@ -64,6 +70,33 @@ class Evaluation:
         total = sum(club.evaluation) * multiplier
 
         return total
+
+    def populate_evaluations(self):
+        '''
+        Populate the evaluation statements.
+        '''
+        filepath = os.path.join("resources", "evaluation.xml")
+        evaluation = xml.dom.minidom.parse(filepath)
+
+        count = 0
+
+        for item in evaluation.firstChild.childNodes:
+            if item.nodeType == item.ELEMENT_NODE:
+                self.statements.append({})
+
+                messages = item.getElementsByTagName("message")
+
+                for text in messages:
+                    evaluationid = text.getAttribute("id")
+                    evaluationid = int(evaluationid)
+                    message = text.firstChild.data
+
+                    if evaluationid in self.statements[count].keys():
+                        self.statements[count][evaluationid].append(message)
+                    else:
+                        self.statements[count][evaluationid] = [message]
+
+                count += 1
 
 
 def update():

@@ -126,6 +126,9 @@ class Standings:
             item.reset_data()
 
     def get_data(self):
+        '''
+        Return the sorted league standings.
+        '''
         standings = []
 
         for key, value in self.clubs.items():

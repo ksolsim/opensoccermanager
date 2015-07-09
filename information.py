@@ -705,28 +705,28 @@ class Evaluation(Gtk.Grid):
 
         # Chairman
         value = evaluation.indexer(club.evaluation[0])
-        self.labelChairman.set_label('"%s"' % (random.choice(constants.evaluation[0][value])))
+        self.labelChairman.set_label('"%s"' % (random.choice(game.evaluation.statements[0][value])))
         self.labelChairmanPercent.set_markup("<b>%i%%</b>" % (club.evaluation[0]))
 
         # Fans
         value = evaluation.indexer(club.evaluation[1])
-        self.labelFans.set_label('"%s"' % (random.choice(constants.evaluation[1][value])))
+        self.labelFans.set_label('"%s"' % (random.choice(game.evaluation.statements[1][value])))
         self.labelFansPercent.set_markup("<b>%i%%</b>" % (club.evaluation[1]))
 
         # Finances
         value = evaluation.indexer(club.evaluation[2])
-        self.labelFinances.set_label('"%s"' % (random.choice(constants.evaluation[2][value])))
+        self.labelFinances.set_label('"%s"' % (random.choice(game.evaluation.statements[2][value])))
         self.labelFinancesPercent.set_markup("<b>%i%%</b>" % (club.evaluation[2]))
 
         # Players
         value = evaluation.indexer(club.evaluation[3])
-        self.labelPlayers.set_label('"%s"' % (random.choice(constants.evaluation[3][value])))
+        self.labelPlayers.set_label('"%s"' % (random.choice(game.evaluation.statements[3][value])))
         self.labelPlayersPercent.set_markup("<b>%i%%</b>" % (club.evaluation[3]))
 
         # Staff
         if len(club.scouts_hired) + len(club.coaches_hired) > 0:
             value = evaluation.indexer(club.evaluation[4])
-            self.labelStaff.set_label('"%s"' % (random.choice(constants.evaluation[4][value])))
+            self.labelStaff.set_label('"%s"' % (random.choice(game.evaluation.statements[4][value])))
             self.labelStaffPercent.set_markup("<b>%i%%</b>" % (club.evaluation[4]))
         else:
             self.labelStaff.set_label('"There are no scouts or coaches on staff."')
