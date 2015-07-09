@@ -25,7 +25,6 @@ import events
 import game
 import money
 import news
-import sales
 import structures
 import tickets
 import widgets

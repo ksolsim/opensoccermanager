@@ -16,7 +16,6 @@
 #  OpenSoccerManager.  If not, see <http://www.gnu.org/licenses/>.
 
 
-import random
 import operator
 import statistics
 
@@ -24,45 +23,25 @@ import accounts
 import advertising
 import ai
 import aitransfer
-import business
 import calculator
 import catering
 import constants
-import data
-import database
-import dialogs
 import display
 import evaluation
 import events
-import fileio
-import finances
 import fixtures
 import game
-import information
-import interface
-import match
-import menu
 import merchandise
-import money
-import music
 import nation
 import player
 import preferences
-import printing
-import sales
 import shortlist
-import squad
-import stadium
 import staff
-import structures
+import standings
 import tactics
-import team
 import teamtraining
 import tickets
-import training
 import transfer
-import version
-import view
 import widgets
 
 
@@ -557,7 +536,7 @@ class League:
 
         self.fixtures = fixtures.Fixtures()
         self.results = []
-        self.standings = Standings()
+        self.standings = standings.Standings()
 
         self.televised = []
 
@@ -574,161 +553,6 @@ class League:
         Update results with latest for given teams.
         '''
         self.results[game.date.fixturesindex].append(result)
-
-
-class Standings:
-    class Item:
-        def __init__(self):
-            self.played = 0
-            self.wins = 0
-            self.draws = 0
-            self.losses = 0
-            self.goals_for = 0
-            self.goals_against = 0
-            self.goal_difference = 0
-            self.points = 0
-
-        def get_data(self):
-            data = [self.played,
-                    self.wins,
-                    self.draws,
-                    self.losses,
-                    self.goals_for,
-                    self.goals_against,
-                    self.goal_difference,
-                    self.points
-                   ]
-
-            return data
-
-        def reset_data(self):
-            self.played = 0
-            self.wins = 0
-            self.draws = 0
-            self.losses = 0
-            self.goals_for = 0
-            self.goals_against = 0
-            self.goal_difference = 0
-            self.points = 0
-
-    def __init__(self):
-        self.clubs = {}
-
-    def add_item(self, clubid):
-        '''
-        Create initial data item for given club.
-        '''
-        self.clubs[clubid] = self.Item()
-
-        return self.clubs[clubid]
-
-    def update_item(self, result):
-        '''
-        Update information for specified club.
-        '''
-        team1 = result[0]
-        team2 = result[3]
-
-        self.clubs[team1].played += 1
-        self.clubs[team2].played += 1
-
-        if result[1] > result[2]:
-            self.clubs[team1].wins += 1
-            self.clubs[team2].losses += 1
-            self.clubs[team1].goals_for += result[1]
-            self.clubs[team1].goals_against += result[2]
-            self.clubs[team1].goal_difference = self.clubs[team1].goals_for - self.clubs[team1].goals_against
-            self.clubs[team2].goals_for += result[2]
-            self.clubs[team2].goals_against += result[1]
-            self.clubs[team2].goal_difference = self.clubs[team2].goals_for - self.clubs[team2].goals_against
-            self.clubs[team1].points += 3
-
-            game.clubs[team1].form.append("W")
-            game.clubs[team2].form.append("L")
-        elif result[2] > result[1]:
-            self.clubs[team2].wins += 1
-            self.clubs[team1].losses += 1
-            self.clubs[team2].goals_for += result[2]
-            self.clubs[team2].goals_against += result[1]
-            self.clubs[team2].goal_difference = self.clubs[team2].goals_for - self.clubs[team2].goals_against
-            self.clubs[team1].goals_for += result[1]
-            self.clubs[team1].goals_against += result[2]
-            self.clubs[team1].goal_difference = self.clubs[team1].goals_for - self.clubs[team1].goals_against
-            self.clubs[team2].points += 3
-
-            game.clubs[team1].form.append("L")
-            game.clubs[team2].form.append("W")
-        else:
-            self.clubs[team1].draws += 1
-            self.clubs[team2].draws += 1
-            self.clubs[team1].goals_for += result[1]
-            self.clubs[team1].goals_against += result[2]
-            self.clubs[team1].goal_difference = self.clubs[team1].goals_for - self.clubs[team1].goals_against
-            self.clubs[team2].goals_for += result[2]
-            self.clubs[team2].goals_against += result[1]
-            self.clubs[team2].goal_difference = self.clubs[team2].goals_for - self.clubs[team2].goals_against
-            self.clubs[team1].points += 1
-            self.clubs[team2].points += 1
-
-            game.clubs[team1].form.append("D")
-            game.clubs[team2].form.append("D")
-
-    def reset_standings(self):
-        '''
-        Clear information back to defaults.
-        '''
-        for item in self.clubs.values():
-            item.reset_data()
-
-    def get_data(self):
-        standings = []
-
-        for key, value in self.clubs.items():
-            item = []
-
-            club = game.clubs[key]
-            item = value.get_data()
-
-            form = "".join(club.form[-6:])
-
-            item.insert(0, key)
-            item.insert(1, club.name)
-            item.append(form)
-
-            standings.append(item)
-
-        if game.date.eventindex > 0:
-            standings = sorted(standings,
-                                key=operator.itemgetter(9, 8, 6, 7),
-                                reverse=True)
-        else:
-            standings = sorted(standings,
-                                key=operator.itemgetter(1))
-
-        return standings
-
-    def find_champion(self):
-        '''
-        Return club which is top of the league.
-        '''
-        standings = self.get_data()
-        champion = standings[0]
-
-        return champion
-
-    def find_position(self, teamid):
-        '''
-        Return position for given club.
-        '''
-        standings = self.get_data()
-
-        position = 0
-
-        for count, item in enumerate(standings, start=1):
-            if item[0] == teamid:
-                position = count
-
-        return position
 
 
 class Stadium:
