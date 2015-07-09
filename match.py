@@ -465,8 +465,8 @@ class Match(Gtk.Grid):
         # Matchday ticket sales
         if self.team1.teamid == game.teamid:
             sales.matchday_tickets(attendance)
-            sales.merchandise(attendance)
-            sales.catering(attendance)
+            game.clubs[game.teamid].merchandise.calculate_sales(attendance)
+            game.clubs[game.teamid].catering.calculate_sales(attendance)
 
         # Process remaining matches
         self.process_remaining_league()

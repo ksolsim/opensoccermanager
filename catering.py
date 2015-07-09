@@ -28,7 +28,10 @@ class Catering:
 
         self.sales = []
 
-    def calculate_sales(self):
+    def calculate_sales(self, attendance):
+        '''
+        Determine sales of merchandise for the given attendance.
+        '''
         club = game.clubs[game.teamid]
 
         self.reset_sales()
