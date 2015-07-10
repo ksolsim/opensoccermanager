@@ -94,6 +94,8 @@ class TeamTraining:
             if self.get_sunday_training():
                 self.alert = random.randint(12, 18)
 
+                club = game.clubs[game.teamid]
+
                 for playerid in club.squad:
                     game.players[playerid].set_morale(-3)
 

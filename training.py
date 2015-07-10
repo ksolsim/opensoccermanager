@@ -28,6 +28,7 @@ import individualtraining
 import money
 import structures
 import teamtraining
+import trainingcamp
 import widgets
 
 
@@ -307,7 +308,7 @@ class TrainingCamp(Gtk.Grid):
     __name__ = "trainingcamp"
 
     def __init__(self):
-        self.training_camp = structures.TrainingCamp()
+        self.training_camp = trainingcamp.TrainingCamp()
         self.defaults = []
 
         Gtk.Grid.__init__(self)
