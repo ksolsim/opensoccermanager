@@ -129,7 +129,7 @@ class Date:
         Process events on each continue game operation.
         '''
         transfer.transfer()
-        events.injury()
+        events.injury_generation()
         ai.advertising()
         evaluation.update()
         aitransfer.identify()
@@ -413,119 +413,6 @@ class Player:
         state = points >= 0
 
         return state
-
-
-class Club:
-    def __init__(self):
-        self.reputation = 0
-        self.squad = []
-        self.team = {}
-        self.tactics = tactics.Tactics()
-        self.coaches_available = {}
-        self.coaches_hired = {}
-        self.scouts_available = {}
-        self.scouts_hired = {}
-        self.shortlist = shortlist.Shortlist()
-        self.team_training = teamtraining.TeamTraining()
-        self.individual_training = {}
-        self.tickets = tickets.Tickets()
-        self.accounts = accounts.Accounts()
-        self.sponsorship = advertising.Sponsorship()
-        self.hoardings = advertising.Advertising()
-        self.programmes = advertising.Advertising()
-        self.merchandise = merchandise.Merchandise()
-        self.catering = catering.Catering()
-        self.evaluation = [0, 0, 0, 0, 0]
-        self.form = []
-        self.attendances = []
-
-    def get_stadium_name(self):
-        '''
-        Return the stadium name.
-        '''
-        stadium = game.stadiums[self.stadium].name
-
-        return stadium
-
-    def perform_maintenance(self):
-        '''
-        Calculate the cost of stadium and building maintenance.
-        '''
-        cost = calculator.maintenance()
-
-        self.accounts.withdraw(cost, "stadium")
-
-    def set_advertising_spaces(self):
-        '''
-        Set the maximum allowed advertising spaces.
-        '''
-        self.hoardings.maximum = 48
-
-        if self.reputation > 10:
-            self.programmes.maximum = 36
-        else:
-            self.programmes.maximum = 24
-
-    def set_ticket_prices(self):
-        '''
-        Set initial ticket prices.
-        '''
-        self.tickets.tickets[0] = 1 + self.reputation
-        self.tickets.tickets[1] = 1 + self.reputation + (self.reputation * 0.25)
-        self.tickets.tickets[2] = (1 + self.reputation) * 15
-        self.tickets.tickets[3] = 2 + self.reputation
-        self.tickets.tickets[4] = 2 + self.reputation + (self.reputation * 0.25)
-        self.tickets.tickets[5] = (2 + self.reputation) * 15
-        self.tickets.tickets[6] = 3 + self.reputation
-        self.tickets.tickets[7] = 3 + self.reputation + (self.reputation * 0.25)
-        self.tickets.tickets[8] = (3 + self.reputation) * 15
-        self.tickets.tickets[9] = 4 + self.reputation
-        self.tickets.tickets[10] = 4 + self.reputation + (self.reputation * 0.25)
-        self.tickets.tickets[11] = (4 + self.reputation) * 15
-        self.tickets.tickets[12] = 30 + self.reputation
-        self.tickets.tickets[13] = 30 + self.reputation + (self.reputation * 0.25)
-        self.tickets.tickets[14] = (30 + self.reputation) * 15
-
-        self.tickets.tickets = list(map(int, self.tickets.tickets))
-
-    def set_season_ticket_percentage(self):
-        '''
-        Set initial percentage of stadium available for season ticket sales.
-        '''
-        self.tickets.season_tickets = 40 + self.reputation
-
-    def set_school_tickets(self):
-        '''
-        Set number of free school tickets to make available.
-        '''
-        self.tickets.school_tickets = 100 * (int((20 - self.reputation) * 0.5) + 1)
-
-    def set_season_tickets_unavailable(self):
-        '''
-        Close season ticket sales prior to first game.
-        '''
-        self.tickets.season_tickets_available = False
-
-    def pay_wages(self):
-        '''
-        Pay wages for both players and staff.
-        '''
-        total = 0
-
-        for playerid in self.squad:
-            total += game.players[playerid].wage
-
-        self.accounts.withdraw(amount=total, category="playerwage")
-
-        total = 0
-
-        for staffid in self.coaches_hired:
-            total += self.coaches_hired[staffid].wage
-
-        for staffid in self.scouts_hired:
-            total += self.scouts_hired[staffid].wage
-
-        self.accounts.withdraw(amount=total, category="staffwage")
 
 
 class Stadium:

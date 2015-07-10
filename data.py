@@ -21,6 +21,7 @@ import random
 import advertising
 import ai
 import calculator
+import club
 import constants
 import evaluation
 import events
@@ -28,6 +29,7 @@ import fixtures
 import flotation
 import game
 import grant
+import injury
 import league
 import loan
 import money
@@ -37,6 +39,7 @@ import overdraft
 import referee
 import staff
 import structures
+import suspension
 import teamtraining
 import widgets
 
@@ -77,36 +80,7 @@ def datainit():
     league.leagueitem = league.Leagues()
 
     # Import clubs and populate club data structure
-    game.database.cursor.execute("SELECT * FROM club JOIN clubattr ON club.id = clubattr.club WHERE year = ?", (game.date.year,))
-    data = game.database.cursor.fetchall()
-
-    for item in data:
-        club = structures.Club()
-        clubid = item[0]
-        game.clubs[clubid] = club
-
-        club.name = item[1]
-        club.nickname = item[2]
-        club.league = item[6]
-        club.manager = item[7]
-        club.chairman = item[8]
-        club.stadium = item[9]
-        club.reputation = item[10]
-
-        # Initialise playerid in team to 0
-        for count in range(0, 16):
-            club.team[count] = 0
-
-        club.base_attendance = (74000 / (40 - club.reputation)) * club.reputation
-        club.base_attendance = int(club.base_attendance * 0.9)
-
-        league.leagueitem.leagues[club.league].add_club(clubid)
-
-        club.set_advertising_spaces()
-
-        club.set_ticket_prices()
-        club.set_season_ticket_percentage()
-        club.set_school_tickets()
+    club.clubitem = club.Clubs()
 
     # Import players
     game.database.cursor.execute("SELECT * FROM player JOIN playerattr ON player.id = playerattr.player WHERE year = ?", (game.date.year,))
@@ -204,21 +178,19 @@ def datainit():
 
         stadium.buildings = list(item[33:41])
 
-    for club in game.clubs.values():
+    '''for club in game.clubs.values():
         stadium = game.stadiums[club.stadium]
 
         if club.reputation > 12:
             stadium.plots = 60
         else:
-            stadium.plots = 40
+            stadium.plots = 40'''
 
     # Import injuries
-    for item in game.database.importer("injury"):
-        constants.injuries[item[0]] = item[1:]
+    injury.injuryitem = injury.Injuries()
 
     # Import suspensions
-    for item in game.database.importer("suspension"):
-        constants.suspensions[item[0]] = item[1:]
+    suspension.suspensionitem = suspension.Suspensions()
 
     # Setup fixture list
     league.leagueitem.generate_fixtures()

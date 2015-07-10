@@ -21,6 +21,7 @@ from gi.repository import Gtk
 import constants
 import display
 import game
+import league
 
 
 class InfoTip(Gtk.Grid):
@@ -112,7 +113,7 @@ class NextMatch(Gtk.Button):
 
         if current_date == constants.events[game.date.fixturesindex]:
             leagueid = game.clubs[game.teamid].league
-            fixtures = game.leagues[leagueid].fixtures
+            fixtures = league.leagueitem.leagues[leagueid].fixtures
 
             for match in fixtures.fixtures[game.date.fixturesindex]:
                 if game.teamid in match:

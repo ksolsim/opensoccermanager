@@ -23,7 +23,6 @@ from gi.repository import Gtk
 buildings = []
 merchandise = []
 catering = []
-injuries = {}
 suspensions = {}
 
 stands = ("North", "West", "South", "East", "North West", "North East", "South West", "South East")

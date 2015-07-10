@@ -26,6 +26,7 @@ import dialogs
 import display
 import filters
 import game
+import injury
 import menu
 import scout
 import transfer
@@ -941,10 +942,13 @@ class InjSus(Gtk.Grid):
             if player.injury_type != 0:
                 name = player.get_name(mode=1)
                 fitness = player.fitness
-                injury = constants.injuries[player.injury_type][0]
-                period = player.get_injury()
+                injury_name = injury.injuryitem.injuries[player.injury_type][0]
+                injury_period = player.get_injury()
 
-                self.liststoreInjuries.append([name, fitness, injury, period])
+                self.liststoreInjuries.append([name,
+                                               fitness,
+                                               injury_name,
+                                               injury_period])
 
         state = len(self.liststoreInjuries) > 0
         self.treeviewInjuries.set_sensitive(state)
@@ -957,10 +961,13 @@ class InjSus(Gtk.Grid):
             if player.injury_type != 0:
                 name = player.get_name(mode=1)
                 fitness = player.fitness
-                injury = constants.injuries[player.injury_type][0]
-                period = player.get_injury()
+                injury_name = injury.injuryitem.injuries[player.injury_type][0]
+                injury_period = player.get_injury()
 
-                self.liststoreInjuries.append([name, fitness, injury, period])
+                self.liststoreInjuries.append([name,
+                                               fitness,
+                                               injury_name,
+                                               injury_period])
 
         state = len(self.liststoreInjuries) > 0
         self.treeviewInjuries.set_sensitive(state)

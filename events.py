@@ -25,6 +25,7 @@ import display
 import evaluation
 import fixtures
 import game
+import injury
 import money
 import staff
 import widgets
@@ -65,7 +66,7 @@ def increment_assists(assists1, assists2):
             game.assists[playerid] = 1
 
 
-def injury():
+def injury_generation():
     '''
     Generate injuries outside of a match, typically through training.
     '''
@@ -91,12 +92,12 @@ def injury():
             player = game.players[playerid]
             name = player.get_name(mode=1)
 
-            injuryid = random.choice(list(constants.injuries.keys()))
-            injury = constants.injuries[injuryid]
+            injuryid = random.choice(list(injury.injuryitem.injuries.keys()))
+            inj = injury.injuryitem.injuries[injuryid]
 
             weighting = []
 
-            l = list(range(injury[4], injury[3] - 1, -1))
+            l = list(range(inj[4], inj[3] - 1, -1))
             count = 0
 
             for value in l:
@@ -114,7 +115,7 @@ def injury():
             player.fitness -= random.randint(10, 30)
 
             if clubid == game.teamid:
-                game.news.publish("IN01", player=name, weeks=period, injury=injury[0])
+                game.news.publish("IN01", player=name, weeks=period, injury=inj[0])
 
     adjust_fitness()
 
