@@ -33,6 +33,7 @@ import money
 import nation
 import news
 import overdraft
+import referee
 import staff
 import structures
 import teamtraining
@@ -154,22 +155,11 @@ def datainit():
     nation.nationitem = nation.Nations()
 
     # Import referees
-    game.database.cursor.execute("SELECT * FROM referee WHERE year = ?", (game.date.year,))
-    data = game.database.cursor.fetchall()
-
-    for item in data:
-        referee = structures.Referee()
-        refereeid = item[0]
-        game.referees[refereeid] = referee
-
-        referee.name = item[1]
-        referee.league = item[2]
-
-        game.leagues[referee.league].referees[refereeid] = referee
-
-    adjacent = (0, 1), (2, 0), (3, 2), (1, 3), # DO NOT REORDER/CHANGE!
+    referee.referees = referee.Referees()
 
     # Import stadiums
+    adjacent = (0, 1), (2, 0), (3, 2), (1, 3), # DO NOT REORDER/CHANGE!
+
     game.database.cursor.execute("SELECT * FROM stadium JOIN stadiumattr, clubattr ON clubattr.stadium = stadium.id WHERE clubattr.year = ?", (game.date.year,))
     data = game.database.cursor.fetchall()
 
