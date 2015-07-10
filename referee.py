@@ -17,6 +17,7 @@
 
 
 import game
+import league
 
 
 class Referees:
@@ -66,4 +67,4 @@ class Referees:
             referee.name = item[1]
             referee.league = item[2]
 
-            game.leagues[referee.league].referees[refereeid] = referee
+            league.leagueitem.leagues[referee.league].referees[refereeid] = referee

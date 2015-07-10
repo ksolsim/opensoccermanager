@@ -20,8 +20,6 @@ from gi.repository import Gtk
 
 
 # Populated by content of appropriate XML files and database tables
-news = {}
-evaluation = []
 buildings = []
 merchandise = []
 catering = []

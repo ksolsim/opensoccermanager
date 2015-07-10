@@ -528,33 +528,6 @@ class Club:
         self.accounts.withdraw(amount=total, category="staffwage")
 
 
-class League:
-    def __init__(self):
-        self.name = ""
-        self.teams = []
-        self.referees = {}
-
-        self.fixtures = fixtures.Fixtures()
-        self.results = []
-        self.standings = standings.Standings()
-
-        self.televised = []
-
-    def add_club(self, clubid):
-        '''
-        Add club to league and standings.
-        '''
-        self.teams.append(clubid)
-
-        self.standings.add_item(clubid)
-
-    def add_result(self, result):
-        '''
-        Update results with latest for given teams.
-        '''
-        self.results[game.date.fixturesindex].append(result)
-
-
 class Stadium:
     def __init__(self):
         self.capacity = 0

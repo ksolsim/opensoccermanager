@@ -28,6 +28,7 @@ import dialogs
 import display
 import evaluation
 import game
+import league
 import widgets
 
 
@@ -313,7 +314,7 @@ class Fixtures(Gtk.Grid):
         self.liststoreClubFixtures.clear()
 
         leagueid = game.clubs[game.teamid].league
-        fixtures = game.leagues[leagueid].fixtures
+        fixtures = league.leagueitem.leagues[leagueid].fixtures
 
         for week in fixtures.fixtures:
             for match in week:
@@ -329,7 +330,7 @@ class Fixtures(Gtk.Grid):
         if self.comboboxLeagues.get_active_id() is not None:
             leagueid = int(self.comboboxLeagues.get_active_id())
 
-            fixtures = game.leagues[leagueid].fixtures
+            fixtures = league.leagueitem.leagues[leagueid].fixtures
 
             for teamid1, teamid2 in fixtures.fixtures[self.page]:
                 team1 = game.clubs[teamid1].name
@@ -347,8 +348,8 @@ class Fixtures(Gtk.Grid):
 
         self.comboboxLeagues.remove_all()
 
-        for leagueid, league in game.leagues.items():
-            self.comboboxLeagues.append(str(leagueid), league.name)
+        for leagueid, value in league.leagueitem.leagues.items():
+            self.comboboxLeagues.append(str(leagueid), value.name)
 
         self.comboboxLeagues.set_active(0)
 
@@ -425,8 +426,8 @@ class Results(Gtk.Grid):
 
         self.treeviewResults.set_sensitive(False)
 
-        if len(game.leagues[self.leagueid].results) > 0:
-            for result in game.leagues[self.leagueid].results[self.page]:
+        if len(league.leagueitem.leagues[self.leagueid].results) > 0:
+            for result in league.leagueitem.leagues[self.leagueid].results[self.page]:
                 team1 = game.clubs[result[0]].name
                 team2 = game.clubs[result[3]].name
 
@@ -435,7 +436,7 @@ class Results(Gtk.Grid):
             self.labelNoResults.hide()
             self.treeviewResults.set_sensitive(True)
 
-        if len(game.leagues[self.leagueid].results) > 1:
+        if len(league.leagueitem.leagues[self.leagueid].results) > 1:
             self.buttonNext.set_sensitive(True)
             self.buttonPrevious.set_sensitive(True)
 
@@ -450,8 +451,8 @@ class Results(Gtk.Grid):
     def populate_leagues(self):
         self.comboboxLeagues.remove_all()
 
-        for leagueid, league in game.leagues.items():
-            self.comboboxLeagues.append(str(leagueid), league.name)
+        for leagueid, value in league.leagueitem.leagues.items():
+            self.comboboxLeagues.append(str(leagueid), value.name)
 
         self.comboboxLeagues.set_active(0)
 
@@ -470,9 +471,9 @@ class Results(Gtk.Grid):
         self.populate_data()
 
     def run(self):
-        self.show_all()
-
         self.populate_leagues()
+
+        self.show_all()
 
 
 class Standings(Gtk.Grid):

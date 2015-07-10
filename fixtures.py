@@ -19,6 +19,7 @@
 import random
 
 import game
+import league
 
 
 class Fixtures:
@@ -92,7 +93,7 @@ class Fixtures:
 
         club = game.clubs[game.teamid]
 
-        for count, week in enumerate(game.leagues[club.league].fixtures.fixtures):
+        for count, week in enumerate(league.leagueitem.leagues[club.league].fixtures.fixtures):
             for match in week:
                 if game.teamid in match and count < 3:
                     match = "%s - %s" % (game.clubs[match[0]].name,

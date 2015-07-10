@@ -28,6 +28,7 @@ import fixtures
 import flotation
 import game
 import grant
+import league
 import loan
 import money
 import nation
@@ -47,12 +48,10 @@ def datainit():
     information.
     '''
     # Clear data structures and reset date
-    game.leagues = {}
     game.clubs = {}
     game.players = {}
     game.stadiums = {}
     game.negotiations = {}
-    game.referees = {}
     game.injuries = {}
     game.suspensions = {}
     game.surnames = []
@@ -75,15 +74,7 @@ def datainit():
     game.companies = game.database.importer("company")
 
     # Import leagues
-    game.database.cursor.execute("SELECT * FROM league JOIN leagueattr ON league.id = leagueattr.league WHERE year = ?", (game.date.year,))
-    data = game.database.cursor.fetchall()
-
-    for item in data:
-        league = structures.League()
-        leagueid = item[0]
-        game.leagues[leagueid] = league
-
-        league.name = item[1]
+    league.leagueitem = league.Leagues()
 
     # Import clubs and populate club data structure
     game.database.cursor.execute("SELECT * FROM club JOIN clubattr ON club.id = clubattr.club WHERE year = ?", (game.date.year,))
@@ -109,7 +100,7 @@ def datainit():
         club.base_attendance = (74000 / (40 - club.reputation)) * club.reputation
         club.base_attendance = int(club.base_attendance * 0.9)
 
-        game.leagues[club.league].add_club(clubid)
+        league.leagueitem.leagues[club.league].add_club(clubid)
 
         club.set_advertising_spaces()
 
@@ -230,13 +221,15 @@ def datainit():
         constants.suspensions[item[0]] = item[1:]
 
     # Setup fixture list
+    league.leagueitem.generate_fixtures()
+    '''
     for leagueid, league in game.leagues.items():
         league.fixtures.generate(league.teams)
 
         league.televised = []
 
         for count, week in enumerate(league.fixtures.fixtures):
-            league.televised.append(random.randint(0, len(week) - 1))
+            league.televised.append(random.randint(0, len(week) - 1))'''
 
     # Create financial objects
     game.bankloan = loan.Loan()
@@ -283,7 +276,7 @@ def dataloader(finances):
     # Publish initial news articles
     game.news.publish("MA01")
 
-    initial = game.leagues[club.league].fixtures.get_initial_fixtures()
+    initial = league.leagueitem.leagues[club.league].fixtures.get_initial_fixtures()
 
     game.news.publish("FX01",
                       fixture1=initial[0],
