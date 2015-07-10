@@ -162,11 +162,11 @@ class Date:
         club = game.clubs[game.teamid]
 
         club.accounts.reset_weekly()
+        club.team_training.update()
         events.update_contracts()
         events.update_advertising()
         club.sponsorship.update()
         events.refresh_staff()
-        events.team_training()
         events.individual_training()
         ai.renew_contract()
         events.injury_period()

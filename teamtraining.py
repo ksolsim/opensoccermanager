@@ -69,6 +69,38 @@ class TeamTraining:
 
         return overwork
 
+    def update(self):
+        '''
+        Process countdown timers for team training updates.
+        '''
+        if self.timeout > 0:
+            self.timeout -= 1
+        else:
+            self.timeout = random.randint(8, 12)
+
+            game.news.publish("TT02")
+
+        if self.alert == 0:
+            if self.get_overworked_training():
+                self.alert = random.randint(12, 18)
+
+                club = game.clubs[game.teamid]
+
+                for playerid in club.squad:
+                    game.players[playerid].set_morale(-5)
+
+                game.news.publish("TT04")
+
+            if self.get_sunday_training():
+                self.alert = random.randint(12, 18)
+
+                for playerid in club.squad:
+                    game.players[playerid].set_morale(-3)
+
+                game.news.publish("TT03")
+        else:
+            self.alert -= 1
+
 
 def get_schedule_set():
     '''

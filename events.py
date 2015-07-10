@@ -231,40 +231,6 @@ def update_advertising():
     club.programmes.update()
 
 
-def team_training():
-    '''
-    Process countdown timers for team training updates.
-    '''
-    club = game.clubs[game.teamid]
-
-    # Refresh team training
-    if club.team_training.timeout > 0:
-        club.team_training.timeout -= 1
-    elif club.team_training.timeout == 0:
-        game.news.publish("TT02")
-
-        club.team_training.timeout = random.randint(4, 6)
-
-    if club.team_training.alert == 0:
-        if club.team_training.get_overworked_training():
-            club.team_training.alert = random.randint(12, 18)
-
-            for playerid in game.players.keys():
-                player.set_morale(-5)
-
-            game.news.publish("TT04")
-
-        if club.team_training.get_sunday_training():
-            club.team_training.alert = random.randint(12, 18)
-
-            for playerid in game.players.keys():
-                player.set_morale(-3)
-
-            game.news.publish("TT03")
-    else:
-        club.team_training.alert -= 1
-
-
 def individual_training():
     club = game.clubs[game.teamid]
 
