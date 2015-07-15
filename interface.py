@@ -23,10 +23,10 @@ import glob
 import os
 import platform
 
-import fileio
 import game
 import music
 import preferences
+import user
 import version
 import widgets
 
@@ -344,9 +344,10 @@ class NameChange(Gtk.Dialog):
         label.set_mnemonic_widget(combobox)
         grid.attach(combobox, 1, 0, 1, 1)
 
+        self.user = user.Names()
+
     def display(self):
-        for name in fileio.read_names():
-            self.liststoreName.append([name])
+        self.load_names()
 
         self.show_all()
         self.run()
@@ -356,28 +357,24 @@ class NameChange(Gtk.Dialog):
     def response_handler(self, dialog, response):
         if response == Gtk.ResponseType.APPLY:
             name = self.entry.get_text()
-
             game.clubs[game.teamid].manager = name
-            fileio.write_names(name, "a")
 
-            add = True
+            self.user.add_name(name)
 
-            for count, item in enumerate(self.liststoreName):
-                if item[0] == game.clubs[game.teamid].manager:
-                    add = False
-
-                    del self.liststoreName[count]
-                    self.liststoreName.prepend([game.clubs[game.teamid].manager])
-
-            if add:
-                self.liststoreName.prepend([game.clubs[game.teamid].manager])
-
-            names = [key[0] for key in self.liststoreName]
-            fileio.write_names(names)
+            self.load_names()
 
             self.state = True
 
         self.destroy()
+
+    def load_names(self):
+        '''
+        Load list of names to display in dropdown.
+        '''
+        self.liststoreName.clear()
+
+        for name in self.user.read_names():
+            self.liststoreName.append([name])
 
 
 class PreferencesDialog(Gtk.Dialog):

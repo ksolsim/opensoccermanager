@@ -729,29 +729,3 @@ def check_config():
 
     if not os.path.isdir(filepath):
         os.makedirs(filepath)
-
-
-def read_names():
-    filepath = os.path.join(game.data_location, "users.txt")
-    names = []
-
-    # Create username file if it does not already exist
-
-    with open(filepath, "r") as fp:
-        for item in fp.readlines():
-            item = item.strip("\n")
-            names.append(item)
-
-    return names
-
-
-def write_names(data, mode="w"):
-    filepath = os.path.join(game.data_location, "users.txt")
-
-    if mode is "w":
-        with open(filepath, "w") as fp:
-            for value in data:
-                fp.write("%s\n" % (value))
-    else:
-        with open(filepath, "a") as fp:
-            fp.write("%s\n" % (data))

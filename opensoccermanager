@@ -45,6 +45,7 @@ import stadium
 import structures
 import team
 import training
+import user
 import version
 import view
 import widgets
@@ -347,6 +348,8 @@ class ScreenDetails(Gtk.Grid):
         self.buttonContinue.connect("clicked", self.continue_button_clicked)
         buttonbox.add(self.buttonContinue)
 
+        self.user = user.Names()
+
     def run(self):
         # Load financials
         self.comboboxFinances.remove_all()
@@ -356,11 +359,9 @@ class ScreenDetails(Gtk.Grid):
             self.comboboxFinances.append(str(key), "%s (%s)" % (item[1], amount))
 
         # Load manager names
-        self.manager_names = [name for name in fileio.read_names()]
-
         self.liststoreName.clear()
 
-        for name in self.manager_names:
+        for name in self.user.read_names():
             self.liststoreName.append([name])
 
         self.entryName.set_text("")
@@ -477,13 +478,7 @@ class ScreenDetails(Gtk.Grid):
         manager = self.entryName.get_text()
         game.clubs[game.teamid].manager = manager
 
-        if manager in self.manager_names:
-            self.manager_names.remove(manager)
-
-        self.manager_names.insert(0, manager)
-
-        names = [name for name in self.manager_names]
-        fileio.write_names(names)
+        self.user.add_name(manager)
 
         # Grab finance setup
         if self.radiobuttonFinancesUSM.get_active():
