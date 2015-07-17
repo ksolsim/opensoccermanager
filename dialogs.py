@@ -1061,7 +1061,7 @@ class Opposition(Gtk.Dialog):
         treeview.set_search_column(-1)
         treeselection = treeview.get_selection()
         treeselection.set_mode(Gtk.SelectionMode.NONE)
-        treeviewcolumn = widgets.TreeViewColumn(title="", column=0)
+        treeviewcolumn = widgets.TreeViewColumn(column=0)
         treeview.append_column(treeviewcolumn)
         scrolledwindow.add(treeview)
 

@@ -68,3 +68,10 @@ class Referees:
             referee.league = item[2]
 
             league.leagueitem.leagues[referee.league].referees[refereeid] = referee
+
+    def reset_data(self):
+        '''
+        Iterate through each referee and clear statistics.
+        '''
+        for referee in self.referees.values():
+            referee.reset_statistics()

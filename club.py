@@ -23,6 +23,7 @@ import catering
 import game
 import league
 import merchandise
+import scout
 import shortlist
 import tactics
 import teamtraining
@@ -36,10 +37,9 @@ class Clubs:
             self.squad = []
             self.team = {}
             self.tactics = tactics.Tactics()
+            self.scouts = scout.Scouts()
             self.coaches_available = {}
             self.coaches_hired = {}
-            self.scouts_available = {}
-            self.scouts_hired = {}
             self.shortlist = shortlist.Shortlist()
             self.team_training = teamtraining.TeamTraining()
             self.individual_training = {}
@@ -142,10 +142,11 @@ class Clubs:
 
             self.accounts.withdraw(amount=total, category="staffwage")
 
+        def generate_scouts(self):
+            self.scouts.generate_initial_scouts()
+
     def __init__(self):
         self.clubs = {}
-
-        self.populate_data()
 
     def populate_data(self):
         '''
@@ -157,7 +158,7 @@ class Clubs:
         for item in data:
             club = self.Club()
             clubid = item[0]
-            game.clubs[clubid] = club
+            self.clubs[clubid] = club
 
             club.name = item[1]
             club.nickname = item[2]
@@ -181,3 +182,5 @@ class Clubs:
             club.set_ticket_prices()
             club.set_season_ticket_percentage()
             club.set_school_tickets()
+
+            club.generate_scouts()

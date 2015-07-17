@@ -50,6 +50,10 @@ def datainit():
     the season. Initially used to populate details screen for collecting player
     information.
     '''
+    # Import surnames for staff
+    surnames = game.database.importer("staff")
+    game.surnames = [name[0] for name in surnames]
+
     # Clear data structures and reset date
     game.clubs = {}
     game.players = {}
@@ -57,7 +61,6 @@ def datainit():
     game.negotiations = {}
     game.injuries = {}
     game.suspensions = {}
-    game.surnames = []
 
     game.goalscorers = {}
     game.assists = {}
@@ -81,6 +84,7 @@ def datainit():
 
     # Import clubs and populate club data structure
     club.clubitem = club.Clubs()
+    club.clubitem.populate_data()
 
     # Import players
     game.database.cursor.execute("SELECT * FROM player JOIN playerattr ON player.id = playerattr.player WHERE year = ?", (game.date.year,))
@@ -114,7 +118,7 @@ def datainit():
         player.wage = calculator.wage(item[0])
         player.bonus = calculator.bonus(player.wage)
 
-        game.clubs[player.club].squad.append(playerid)
+        club.clubitem.clubs[player.club].squad.append(playerid)
 
     # Import nations
     nation.nationitem = nation.Nations()
@@ -209,37 +213,24 @@ def datainit():
     game.grant = grant.Grant()
     game.flotation = flotation.Flotation()
 
-    # Import surnames for staff
-    surnames = game.database.importer("staff")
-    game.surnames = [name[0] for name in surnames]
-
 
 def dataloader(finances):
     '''
     Load remaining data attributes for user selected club. This includes the
     finances, sponsorship and advertising, and publishing initial new articles.
     '''
-    club = game.clubs[game.teamid]
+    clubitem = club.clubitem.clubs[game.teamid]
 
     if finances == -1:
-        club.accounts.balance = club.reputation ** 3 * random.randint(985, 1025) * 3
+        clubitem.accounts.balance = clubitem.reputation ** 3 * random.randint(985, 1025) * 3
     else:
-        club.accounts.balance = constants.money[finances][0]
-
-    # Generate coaches and scouts
-    for count in range(5):
-        coach = staff.Staff(staff_type=0)
-        club.coaches_available[coach.staffid] = coach
-
-    for count in range(5):
-        scout = staff.Staff(staff_type=1)
-        club.scouts_available[scout.staffid] = scout
+        clubitem.accounts.balance = constants.money[finances][0]
 
     # Generate advertising offers for hoardings/programmes
-    club.hoardings.initialise()
-    club.programmes.initialise()
+    clubitem.hoardings.initialise()
+    clubitem.programmes.initialise()
 
-    evaluation.update()
+    #evaluation.update()
 
     ai.transfer_list()
     ai.loan_list()
@@ -248,7 +239,7 @@ def dataloader(finances):
     # Publish initial news articles
     game.news.publish("MA01")
 
-    initial = league.leagueitem.leagues[club.league].fixtures.get_initial_fixtures()
+    initial = league.leagueitem.leagues[clubitem.league].fixtures.get_initial_fixtures()
 
     game.news.publish("FX01",
                       fixture1=initial[0],
@@ -256,4 +247,4 @@ def dataloader(finances):
                       fixture3=initial[2],
                      )
 
-    events.expectation()
+    #events.expectation()

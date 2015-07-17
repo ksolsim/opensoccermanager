@@ -248,7 +248,7 @@ class Fixtures(Gtk.Grid):
         self.treeviewClubFixtures.set_search_column(-1)
         scrolledwindow.add(self.treeviewClubFixtures)
 
-        treeviewcolumn = widgets.TreeViewColumn(title="", column=0)
+        treeviewcolumn = widgets.TreeViewColumn(column=0)
         self.treeviewClubFixtures.append_column(treeviewcolumn)
 
         # Fixtures for all clubs
@@ -407,9 +407,9 @@ class Results(Gtk.Grid):
         treeviewcolumn = widgets.TreeViewColumn(title="Home", column=0)
         treeviewcolumn.set_expand(True)
         self.treeviewResults.append_column(treeviewcolumn)
-        treeviewcolumn = widgets.TreeViewColumn(title="", column=1)
+        treeviewcolumn = widgets.TreeViewColumn(column=1)
         self.treeviewResults.append_column(treeviewcolumn)
-        treeviewcolumn = widgets.TreeViewColumn(title="", column=2)
+        treeviewcolumn = widgets.TreeViewColumn(column=2)
         self.treeviewResults.append_column(treeviewcolumn)
         treeviewcolumn = widgets.TreeViewColumn(title="Away", column=3)
         treeviewcolumn.set_expand(True)

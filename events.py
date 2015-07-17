@@ -446,8 +446,7 @@ def end_of_season():
         club.accounts.reset_accounts()
 
     # Reset referee stats
-    for referee in game.referees.values():
-        referee.reset_statistics()
+    referee.refereeitem.reset_statistics()
 
     # Age staff at end of season
     for scout in game.clubs[game.teamid].scouts_hired.values():

@@ -152,7 +152,7 @@ class Players(Gtk.Grid):
             label = Gtk.Label("%s" % (item))
             label.set_tooltip_text(constants.skill[count - 7])
             label.show()
-            treeviewcolumn = widgets.TreeViewColumn(title="", column=count)
+            treeviewcolumn = widgets.TreeViewColumn(column=count)
             treeviewcolumn.set_widget(label)
             treeviewcolumn.set_expand(True)
             self.tree_columns[1].append(treeviewcolumn)

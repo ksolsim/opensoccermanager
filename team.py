@@ -18,9 +18,11 @@
 
 from gi.repository import Gtk
 
+import club
 import constants
 import display
 import game
+import user
 import widgets
 
 
@@ -498,7 +500,7 @@ class Staff(Gtk.Grid):
                                               morale])
 
         def run(self):
-            self.populate_data()
+            #self.populate_data()
 
             self.treeviewAvailable.set_cursor(0)
 
@@ -591,31 +593,17 @@ class Staff(Gtk.Grid):
             self.liststoreAvailable.clear()
             self.liststoreCurrent.clear()
 
-            for scoutid, scout in game.clubs[game.teamid].scouts_available.items():
-                ability = constants.ability[scout.ability]
+            clubobj = user.get_user_club()
+
+            for scoutid, scout in clubobj.scouts.available.items():
                 wage = "%s" % (display.currency(scout.wage))
-                contract = scout.get_contract()
 
                 self.liststoreAvailable.append([scoutid,
                                                 scout.name,
                                                 scout.age,
-                                                ability,
+                                                scout.get_ability_string(),
                                                 wage,
-                                                contract])
-
-            for scoutid, scout in game.clubs[game.teamid].scouts_hired.items():
-                ability = constants.ability[scout.ability]
-                wage = "%s" % (display.currency(scout.wage))
-                contract = scout.get_contract()
-                morale = scout.get_morale()
-
-                self.liststoreCurrent.append([scoutid,
-                                              scout.name,
-                                              scout.age,
-                                              ability,
-                                              wage,
-                                              contract,
-                                              morale])
+                                                scout.get_contract_string()])
 
         def run(self):
             self.populate_data()

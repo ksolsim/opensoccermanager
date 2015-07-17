@@ -20,6 +20,7 @@ import xml.dom.minidom
 import os
 import random
 
+import club
 import constants
 import display
 import game
@@ -37,9 +38,9 @@ class News:
             self.category = int(item[2])
             self.unread = True
 
-            keys = {"_CLUB_": game.clubs[game.teamid].name,
-                    "_USER_": game.clubs[game.teamid].manager,
-                    "_CHAIRMAN_": game.clubs[game.teamid].chairman,
+            keys = {"_CLUB_": club.clubitem.clubs[game.teamid].name,
+                    "_USER_": club.clubitem.clubs[game.teamid].manager,
+                    "_CHAIRMAN_": club.clubitem.clubs[game.teamid].chairman,
                     "_SEASON_": game.date.get_season(),
                     "_FIXTURE1_": kwargs.get("fixture1"),
                     "_FIXTURE2_": kwargs.get("fixture2"),
@@ -89,7 +90,7 @@ class News:
         '''
         Update manager name in all news articles.
         '''
-        new = game.clubs[game.teamid].manager
+        new = club.clubitem.clubs[game.teamid].manager
 
         for article in self.articles.values():
             article.title = article.title.replace(previous, new)

@@ -18,6 +18,7 @@
 
 import os
 
+import club
 import game
 
 
@@ -61,3 +62,12 @@ class Names:
         with open(self.filepath, "w") as fp:
             for name in self.names:
                 fp.write("%s\n" % (name))
+
+
+def get_user_club():
+    '''
+    Return the user club object.
+    '''
+    clubobj = club.clubitem.clubs[game.teamid]
+
+    return clubobj

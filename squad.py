@@ -22,6 +22,7 @@ import random
 import re
 import unicodedata
 
+import club
 import constants
 import dialogs
 import display
@@ -55,7 +56,6 @@ class PlayerSelect(Gtk.Dialog):
         treemodelsort = Gtk.TreeModelSort(self.liststore)
         treemodelsort.set_sort_column_id(1, Gtk.SortType.ASCENDING)
 
-        cellrenderertext = Gtk.CellRendererText()
         treeview = Gtk.TreeView()
         treeview.set_hexpand(True)
         treeview.set_vexpand(True)
@@ -64,9 +64,7 @@ class PlayerSelect(Gtk.Dialog):
         treeview.set_enable_search(False)
         treeview.set_search_column(-1)
         treeview.connect("row-activated", self.row_activated)
-        treeviewcolumn = Gtk.TreeViewColumn(None,
-                                            cellrenderertext,
-                                            text=1)
+        treeviewcolumn = widgets.TreeViewColumn(column=1)
         treeview.append_column(treeviewcolumn)
         self.treeselection = treeview.get_selection()
         self.treeselection.connect("changed", self.selection_changed)
@@ -86,7 +84,7 @@ class PlayerSelect(Gtk.Dialog):
 
         values = {}
 
-        for playerid in game.clubs[game.teamid].squad:
+        for playerid in club.clubitem.clubs[game.teamid].squad:
             player = game.players[playerid]
             both = "%s %s" % (player.first_name, player.second_name)
 
@@ -102,11 +100,11 @@ class PlayerSelect(Gtk.Dialog):
 
     def search_changed(self, searchentry):
         if searchentry.get_text_length() == 0:
-            self.populate_data(game.clubs[game.teamid].squad)
+            self.populate_data(club.clubitem.clubs[game.teamid].squad)
 
     def search_cleared(self, searchentry, icon, entry):
         if icon == Gtk.EntryIconPosition.SECONDARY:
-            self.populate_data(game.clubs[game.teamid].squad)
+            self.populate_data(club.clubitem.clubs[game.teamid].squad)
 
     def selection_changed(self, treeselection):
         model, treeiter = treeselection.get_selected()
@@ -126,7 +124,7 @@ class PlayerSelect(Gtk.Dialog):
             self.liststore.append([str(playerid), name])
 
     def display(self):
-        self.populate_data(game.clubs[game.teamid].squad)
+        self.populate_data(club.clubitem.clubs[game.teamid].squad)
 
         self.show_all()
         response = self.run()
@@ -175,7 +173,7 @@ class Squad(Gtk.Grid):
         treemodelsort.set_sort_column_id(1, Gtk.SortType.ASCENDING)
 
         self.treemodelfilter = treemodelsort.filter_new()
-        self.treemodelfilter.set_visible_func(self.filter_visible, game.clubs)
+        ### self.treemodelfilter.set_visible_func(self.filter_visible, club.clubitem.clubs)
 
         grid = Gtk.Grid()
         grid.set_column_spacing(5)
@@ -256,7 +254,7 @@ class Squad(Gtk.Grid):
             label = Gtk.Label("%s" % (item))
             label.set_tooltip_text(constants.skill[count - 3])
             label.show()
-            treeviewcolumn = widgets.TreeViewColumn(title="", column=count)
+            treeviewcolumn = widgets.TreeViewColumn(column=count)
             treeviewcolumn.set_widget(label)
             self.tree_columns[1].append(treeviewcolumn)
 
@@ -364,7 +362,7 @@ class Squad(Gtk.Grid):
             pass
         elif selected == -1:
             button.set_label("")
-            game.clubs[game.teamid].team[count] = 0
+            club.clubitem.clubs[game.teamid].team[count] = 0
         else:
             self.update_squad(selected, count)
 
@@ -374,7 +372,7 @@ class Squad(Gtk.Grid):
         player is no longer set. Also used to clear the button text when
         starting a game from new.
         '''
-        for count, playerid in enumerate(game.clubs[game.teamid].team.values()):
+        for count, playerid in enumerate(club.clubitem.clubs[game.teamid].team.values()):
             if playerid != 0:
                 player = game.players[playerid]
                 name = player.get_name()
@@ -413,16 +411,16 @@ class Squad(Gtk.Grid):
         Remove player if they already exist in the squad list, and then
         set the player into the new position.
         '''
-        for key, item in game.clubs[game.teamid].team.items():
+        for key, item in club.clubitem.clubs[game.teamid].team.items():
             if item != 0 and str(item) == str(playerid):
-                game.clubs[game.teamid].team[key] = 0
+                club.clubitem.clubs[game.teamid].team[key] = 0
                 self.buttonTeam[key].set_label("")
 
         player = game.players[playerid]
         name = player.get_name()
         button = self.buttonTeam[count]
         button.set_label("%s" % (name))
-        game.clubs[game.teamid].team[count] = playerid
+        club.clubitem.clubs[game.teamid].team[count] = playerid
 
     def row_activated(self, widget, path=None, treeviewcolumn=None):
         '''
@@ -540,7 +538,7 @@ class Squad(Gtk.Grid):
         name = player.get_name()
 
         self.buttonTeam[index].set_label(name)
-        game.clubs[game.teamid].team[index] = playerid
+        club.clubitem.clubs[game.teamid].team[index] = playerid
 
     def remove_from_position(self, menuitem):
         '''
@@ -549,9 +547,9 @@ class Squad(Gtk.Grid):
         model, treeiter = self.treeselection.get_selected()
         playerid = model[treeiter][0]
 
-        for key, item in game.clubs[game.teamid].team.items():
+        for key, item in club.clubitem.clubs[game.teamid].team.items():
             if item == playerid:
-                game.clubs[game.teamid].team[key] = 0
+                club.clubitem.clubs[game.teamid].team[key] = 0
                 self.buttonTeam[key].set_label("")
 
     def renew_contract(self, menuitem):
@@ -580,7 +578,7 @@ class Squad(Gtk.Grid):
         cost = player.contract * player.wage
 
         if dialogs.release_player(name, cost):
-            club = game.clubs[game.teamid]
+            club = club.clubitem.clubs[game.teamid]
 
             if club.accounts.request(amount=cost):
                 club.accounts.withdraw(amount=cost, category="playerwage")
@@ -615,9 +613,9 @@ class Squad(Gtk.Grid):
         if loan.cancel_loan():
             loan.end_loan()
 
-            for key, item in game.clubs[game.teamid].team.items():
+            for key, item in club.clubitem.clubs[game.teamid].team.items():
                 if item == playerid:
-                    game.clubs[game.teamid].team[key] = 0
+                    club.clubitem.clubs[game.teamid].team[key] = 0
                     self.buttonTeam[key].set_label("")
 
             self.populate_data()
@@ -651,7 +649,7 @@ class Squad(Gtk.Grid):
     def populate_data(self):
         self.liststoreSquad.clear()
 
-        for playerid in game.clubs[game.teamid].squad:
+        for playerid in club.clubitem.clubs[game.teamid].squad:
             player = game.players[playerid]
 
             name = player.get_name()
@@ -693,12 +691,12 @@ class Squad(Gtk.Grid):
                                         ])
 
     def run(self):
-        formationid = game.clubs[game.teamid].tactics.formation
+        formationid = club.clubitem.clubs[game.teamid].tactics.formation
 
         for count in range(0, 16):
             button = self.buttonTeam[count]
 
-            playerid = game.clubs[game.teamid].team[count]
+            playerid = club.clubitem.clubs[game.teamid].team[count]
 
             if count < 11:
                 position = constants.formations[formationid][1][count]

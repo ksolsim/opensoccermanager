@@ -18,6 +18,7 @@
 
 import random
 
+import club
 import display
 import game
 
@@ -99,12 +100,12 @@ class Sponsorship:
 class Advertising:
     class Advert:
         def __init__(self, name):
-            club = game.clubs[game.teamid]
+            clubitem = club.clubitem.clubs[game.teamid]
 
             self.name = name
             self.amount = random.randint(1, 6)
             self.period = random.randint(4, 12)
-            self.cost = (club.reputation + random.randint(-5, 5)) * 100
+            self.cost = (clubitem.reputation + random.randint(-5, 5)) * 100
 
         def get_details(self):
             amount = display.currency(self.cost)
