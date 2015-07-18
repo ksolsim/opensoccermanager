@@ -20,6 +20,7 @@ import accounts
 import advertising
 import calculator
 import catering
+import coach
 import game
 import league
 import merchandise
@@ -38,8 +39,7 @@ class Clubs:
             self.team = {}
             self.tactics = tactics.Tactics()
             self.scouts = scout.Scouts()
-            self.coaches_available = {}
-            self.coaches_hired = {}
+            self.coaches = coach.Coaches()
             self.shortlist = shortlist.Shortlist()
             self.team_training = teamtraining.TeamTraining()
             self.individual_training = {}
@@ -145,6 +145,9 @@ class Clubs:
         def generate_scouts(self):
             self.scouts.generate_initial_scouts()
 
+        def generate_coaches(self):
+            self.coaches.generate_initial_coaches()
+
     def __init__(self):
         self.clubs = {}
 
@@ -183,4 +186,5 @@ class Clubs:
             club.set_season_ticket_percentage()
             club.set_school_tickets()
 
+            club.generate_coaches()
             club.generate_scouts()

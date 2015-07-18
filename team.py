@@ -469,11 +469,12 @@ class Staff(Gtk.Grid):
             self.liststoreAvailable.clear()
             self.liststoreCurrent.clear()
 
-            for coachid, coach in game.clubs[game.teamid].coaches_available.items():
+            clubobj = user.get_user_club()
+
+            for coachid, coach in clubobj.coaches.available.items():
                 ability = constants.ability[coach.ability]
                 speciality = constants.speciality[coach.speciality]
                 wage = "%s" % (display.currency(coach.wage))
-                contract = coach.get_contract()
 
                 self.liststoreAvailable.append([coachid,
                                                 coach.name,
@@ -481,14 +482,12 @@ class Staff(Gtk.Grid):
                                                 ability,
                                                 speciality,
                                                 wage,
-                                                contract])
+                                                coach.get_contract_string()])
 
-            for coachid, coach in game.clubs[game.teamid].coaches_hired.items():
+            for coachid, coach in clubobj.coaches.hired.items():
                 ability = constants.ability[coach.ability]
                 speciality = constants.speciality[coach.speciality]
                 wage = "%s" % (display.currency(coach.wage))
-                contract = coach.get_contract()
-                morale = coach.get_morale()
 
                 self.liststoreCurrent.append([coachid,
                                               coach.name,
@@ -496,11 +495,11 @@ class Staff(Gtk.Grid):
                                               ability,
                                               speciality,
                                               wage,
-                                              contract,
-                                              morale])
+                                              coach.get_contract_string(),
+                                              coach.get_morale_string()])
 
         def run(self):
-            #self.populate_data()
+            self.populate_data()
 
             self.treeviewAvailable.set_cursor(0)
 
@@ -604,6 +603,17 @@ class Staff(Gtk.Grid):
                                                 scout.get_ability_string(),
                                                 wage,
                                                 scout.get_contract_string()])
+
+            for scoutid, scout in clubobj.scouts.hired.items():
+                wage = "%s" % (display.currency(scout.wage))
+
+                self.liststoreAvailable.append([scoutid,
+                                                scout.name,
+                                                scout.age,
+                                                scout.get_ability_string(),
+                                                wage,
+                                                scout.get_contract_string(),
+                                                scout.get_morale_string()])
 
         def run(self):
             self.populate_data()
