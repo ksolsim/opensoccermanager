@@ -27,7 +27,6 @@ import fixtures
 import game
 import injury
 import money
-import staff
 import widgets
 
 

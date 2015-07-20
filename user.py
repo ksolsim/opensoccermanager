@@ -33,7 +33,7 @@ class Names:
 
     def add_name(self, name):
         '''
-        Add name to
+        Add name to user names list.
         '''
         if name in self.names:
             self.names.remove(name)

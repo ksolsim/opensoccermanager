@@ -17,7 +17,6 @@
 
 
 import operator
-import statistics
 
 import accounts
 import advertising
@@ -25,6 +24,7 @@ import ai
 import aitransfer
 import calculator
 import catering
+import club
 import constants
 import display
 import evaluation
@@ -36,7 +36,6 @@ import nation
 import player
 import preferences
 import shortlist
-import staff
 import standings
 import tactics
 import teamtraining
@@ -252,14 +251,14 @@ class Player:
 
     def get_club(self):
         '''
-        Return the club name, or none if uncontracted.
+        Return the club name, or none if player is without a contract.
         '''
         if self.club:
-            club = game.clubs[self.club].name
+            name = club.clubitem.clubs[self.club].name
         else:
-            club = ""
+            name = ""
 
-        return club
+        return name
 
     def get_nationality(self):
         '''
@@ -395,7 +394,8 @@ class Player:
         Display the average player rating.
         '''
         if self.rating != []:
-            rating = "%.1f" % (statistics.mean(self.rating))
+            average = sum(self.rating) / float(len(self.rating))
+            rating = "%.1f" % (average)
         else:
             rating = "0.0"
 
@@ -413,16 +413,6 @@ class Player:
         state = points >= 0
 
         return state
-
-
-class Stadium:
-    def __init__(self):
-        self.capacity = 0
-        self.maintenance = 100
-        self.main = []
-        self.corner = []
-        self.fines = 0
-        self.warnings = 0
 
 
 class Stand:

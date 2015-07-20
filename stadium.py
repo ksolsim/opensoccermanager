@@ -23,6 +23,8 @@ import constants
 import dialogs
 import display
 import game
+import stadiums
+import user
 import widgets
 
 
@@ -164,23 +166,26 @@ class Stadium(Gtk.Grid):
         grid.attach(self.labelMaintenanceCost, 1, 1, 1, 1)
 
     def run(self):
-        club = game.clubs[game.teamid]
-        stadium = game.stadiums[club.stadium]
+        clubobj = user.get_user_club()
+        stadiumobj = stadiums.stadiumitem.stadiums[clubobj.stadium]
 
-        self.revert_upgrade()
         self.update_capacity()
+
+        '''
+        self.revert_upgrade()
 
         self.cost = 0
         cost = display.currency(self.cost)
         self.labelCost.set_label("%s" % (cost))
 
-        self.spinbuttonMaintenance.set_value(stadium.maintenance)
+        self.spinbuttonMaintenance.set_value(stadiumobj.maintenance)
 
         cost = calculator.maintenance()
         cost = display.currency(cost)
         self.labelMaintenanceCost.set_label("%s" % (cost))
 
-        self.labelCondition.set_label("%i%%" % (stadium.condition))
+        self.labelCondition.set_label("%i%%" % (stadiumobj.condition))
+        '''
 
         self.show_all()
 
@@ -195,8 +200,8 @@ class Stadium(Gtk.Grid):
         self.labelMaintenanceCost.set_label("%s" % (cost))
 
     def update_capacity(self):
-        stadiumid = game.clubs[game.teamid].stadium
-        stadium = game.stadiums[stadiumid]
+        clubobj = user.get_user_club()
+        stadium = stadiums.stadiumitem.stadiums[clubobj.stadium]
 
         capacity = 0
 

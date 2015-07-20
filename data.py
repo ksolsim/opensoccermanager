@@ -37,7 +37,7 @@ import nation
 import news
 import overdraft
 import referee
-import staff
+import stadiums
 import structures
 import suspension
 import teamtraining
@@ -127,13 +127,17 @@ def datainit():
     referee.referees = referee.Referees()
 
     # Import stadiums
+    stadiums.stadiumitem = stadiums.Stadiums()
+    stadiums.stadiumitem.populate_data()
+
+    '''
     adjacent = (0, 1), (2, 0), (3, 2), (1, 3), # DO NOT REORDER/CHANGE!
 
     game.database.cursor.execute("SELECT * FROM stadium JOIN stadiumattr, clubattr ON clubattr.stadium = stadium.id WHERE clubattr.year = ?", (game.date.year,))
     data = game.database.cursor.fetchall()
 
     for item in data:
-        stadium = structures.Stadium()
+        stadium = stadiums.Stadium()
         stadiumid = item[0]
         game.stadiums[stadiumid] = stadium
 
@@ -181,8 +185,10 @@ def datainit():
             stadium.corner.append(stand)
 
         stadium.buildings = list(item[33:41])
+    '''
 
-    '''for club in game.clubs.values():
+    '''
+    for club in game.clubs.values():
         stadium = game.stadiums[club.stadium]
 
         if club.reputation > 12:
