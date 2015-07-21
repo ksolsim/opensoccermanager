@@ -16,32 +16,15 @@
 #  OpenSoccerManager.  If not, see <http://www.gnu.org/licenses/>.
 
 
-import operator
-
-import accounts
-import advertising
-import ai
-import aitransfer
 import calculator
-import catering
 import club
 import constants
 import display
 import evaluation
-import events
-import fixtures
 import game
-import merchandise
 import nation
 import player
 import preferences
-import shortlist
-import standings
-import tactics
-import teamtraining
-import tickets
-import transfer
-import widgets
 
 
 class Player:
@@ -275,13 +258,6 @@ class Player:
         state = points >= 0
 
         return state
-
-
-class Stand:
-    def __init__(self):
-        self.capacity = 0
-        self.seating = False
-        self.roof = False
 
 
 class Team:

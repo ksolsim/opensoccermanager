@@ -50,6 +50,27 @@ class Stadiums:
 
             return capacity
 
+    class MainStand:
+        def __init__(self):
+            self.capacity = 0
+            self.box = 0
+            self.seating = False
+            self.roof = False
+
+        def get_box_permitted(self):
+            '''
+            Return True if box is allowed to be built.
+            '''
+            permitted = self.capacity >= 5000 and self.roof
+
+            return permitted
+
+    class CornerStand:
+        def __init__(self):
+            self.capacity = 0
+            self.seating = False
+            self.roof = False
+
     def __init__(self):
         self.stadiums = {}
 
@@ -70,7 +91,7 @@ class Stadiums:
             stadium.name = item[1]
 
             for count, value in enumerate(item[5:9]):
-                stand = structures.Stand()
+                stand = self.MainStand()
                 stand.capacity = value
 
                 stand.box = item[13 + count]
@@ -78,7 +99,7 @@ class Stadiums:
                 stadium.main.append(stand)
 
             for count, value in enumerate(item[9:13]):
-                stand = structures.Stand()
+                stand = self.CornerStand()
                 stand.capacity = value
                 stadium.corner.append(stand)
 
