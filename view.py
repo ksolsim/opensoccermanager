@@ -54,7 +54,7 @@ class Players(Gtk.Grid):
         self.entrySearch = Gtk.SearchEntry()
         self.entrySearch.set_placeholder_text("Search")
         self.entrySearch.set_completion(entrycompletion)
-        self.entrySearch.set_tooltip_text("Enter player name to search for")
+        self.entrySearch.set_tooltip_text("Enter name of player to search.")
         self.entrySearch.connect("activate", self.search_activated)
         self.entrySearch.connect("icon-press", self.reset_activated)
         self.entrySearch.connect_after("backspace", self.backspace_activated)

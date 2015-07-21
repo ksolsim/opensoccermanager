@@ -101,7 +101,7 @@ class TeamTraining(Gtk.Grid):
         self.attach(buttonbox, 0, 8, 7, 1)
 
         buttonAssistant = widgets.Button("_Assistant Generated")
-        buttonAssistant.set_tooltip_text("Assistant Manager will generate a training schedule")
+        buttonAssistant.set_tooltip_text("Assistant Manager will generate a training schedule.")
         buttonAssistant.connect("clicked", self.assistant_generated)
         buttonbox.add(buttonAssistant)
 

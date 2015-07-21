@@ -355,7 +355,7 @@ class Advertising(Gtk.Grid):
 
         buttonAuto = Gtk.ToggleButton("_Assistant")
         buttonAuto.set_use_underline(True)
-        buttonAuto.set_tooltip_text("Advertising handled by assistant manager")
+        buttonAuto.set_tooltip_text("Advertising handled by assistant manager.")
         buttonAuto.connect("toggled", self.assistant_handler)
         buttonbox.add(buttonAuto)
 

@@ -339,7 +339,7 @@ class SquadFilter(Gtk.Dialog):
 
         self.checkbuttonAvailable = Gtk.CheckButton("_Show Only Available Players")
         self.checkbuttonAvailable.set_use_underline(True)
-        self.checkbuttonAvailable.set_tooltip_text("Injured or suspended players will not be displayed")
+        self.checkbuttonAvailable.set_tooltip_text("Injured or suspended players will not be displayed.")
         grid.attach(self.checkbuttonAvailable, 0, 1, 3, 1)
 
     def display(self):
