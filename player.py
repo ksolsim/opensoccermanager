@@ -20,9 +20,6 @@
 class Players:
     class Player:
         def __init__(self):
-            self.first_name = ""
-            self.second_name = ""
-            self.common_name = ""
             self.fitness = 100
             self.training_points = 0
             self.morale = 20

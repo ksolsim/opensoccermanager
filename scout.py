@@ -142,6 +142,14 @@ class Scouts:
             scout = self.Scout()
             self.available[scoutid] = scout
 
+    def get_number_of_scouts(self):
+        '''
+        Return the number of hired scouts.
+        '''
+        number = len(self.hired)
+
+        return number
+
 
 def individual(shortlist_playerid):
     '''

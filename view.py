@@ -30,6 +30,7 @@ import injury
 import menu
 import scout
 import transfer
+import user
 import widgets
 
 
@@ -712,7 +713,9 @@ class Shortlist(Gtk.Grid):
             playerid = model[treeiter][0]
             player = game.players[playerid]
 
-            if len(game.clubs[game.teamid].scouts_hired) > 0:
+            club = user.get_user_club()
+
+            if club.scout.get_number_of_scouts() > 0:
                 self.buttonScout.set_sensitive(True)
 
             if playerid in game.loans:
@@ -763,23 +766,19 @@ class Shortlist(Gtk.Grid):
     def populate_data(self):
         self.liststorePlayers.clear()
 
-        for playerid in game.clubs[game.teamid].shortlist.players:
+        club = user.get_user_club()
+
+        for playerid in club.shortlist.players:
             player = game.players[playerid]
-            name = player.get_name()
-            age = player.get_age()
-            club = player.get_club()
-            nation = player.get_nationality()
-            value = player.get_value()
-            wage = player.get_wage()
 
             self.liststorePlayers.append([playerid,
-                                          name,
-                                          age,
-                                          club,
-                                          nation,
+                                          player.get_name(),
+                                          player.get_age(),
+                                          player.get_club(),
+                                          player.get_nationality(),
                                           player.position,
-                                          value,
-                                          wage])
+                                          player.get_value(),
+                                          player.get_wage()])
 
     def run(self):
         self.populate_data()
