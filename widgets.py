@@ -22,6 +22,7 @@ import constants
 import display
 import game
 import league
+import user
 
 
 class InfoTip(Gtk.Grid):
@@ -72,7 +73,7 @@ class Date(Gtk.Label):
             '''
             Set tooltip information (i.e. nickname, chairman) and display.
             '''
-            club = game.clubs[game.teamid]
+            club = user.get_user_club()
 
             infotip.name = "%s" % (club.name)
             infotip.nickname = "%s" % (club.nickname)

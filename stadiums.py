@@ -82,8 +82,6 @@ class Stadiums:
                 stand.capacity = value
                 stadium.corner.append(stand)
 
-            print(stadium.name, stadium.get_capacity())
-
         '''
         stadium = self.Stadium()
         stadiumid = item[0]

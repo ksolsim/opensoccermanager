@@ -29,6 +29,7 @@ import club
 import constants
 import data
 import database
+import date
 import dialogs
 import display
 import fileio
@@ -463,7 +464,7 @@ class ScreenDetails(Gtk.Grid):
         game.window.add(game.window.screenMain)
 
     def continue_button_clicked(self, button):
-        game.date = structures.Date()
+        game.date = date.Date()
 
         active = self.comboboxYear.get_active()
         game.date.year = int(self.liststoreYears[active][0])
