@@ -38,6 +38,7 @@ import news
 import overdraft
 import referee
 import stadiums
+import statistics
 import structures
 import suspension
 import teamtraining
@@ -69,7 +70,7 @@ def datainit():
     game.transfers = []
 
     game.news = news.News()
-    game.statistics = structures.Statistics()
+    game.statistics = statistics.Statistics()
 
     widgets.date.update()
 

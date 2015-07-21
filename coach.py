@@ -137,3 +137,11 @@ class Coaches:
             coachid = self.get_coach_id()
             coach = self.Coach()
             self.available[coachid] = coach
+
+    def get_number_of_coaches(self):
+        '''
+        Return the number of coaches on staff.
+        '''
+        number = len(self.hired)
+
+        return number

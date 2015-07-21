@@ -22,6 +22,7 @@ import calculator
 import catering
 import coach
 import game
+import individualtraining
 import league
 import merchandise
 import scout
@@ -42,7 +43,7 @@ class Clubs:
             self.coaches = coach.Coaches()
             self.shortlist = shortlist.Shortlist()
             self.team_training = teamtraining.TeamTraining()
-            self.individual_training = {}
+            self.individual_training = individualtraining.IndividualTraining()
             self.tickets = tickets.Tickets()
             self.accounts = accounts.Accounts()
             self.sponsorship = advertising.Sponsorship()

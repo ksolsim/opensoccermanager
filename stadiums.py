@@ -71,6 +71,11 @@ class Stadiums:
             self.seating = False
             self.roof = False
 
+        def get_build_permitted(self):
+            '''
+            Return wheter the corner stand can be built.
+            '''
+
     def __init__(self):
         self.stadiums = {}
 

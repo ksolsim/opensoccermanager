@@ -29,6 +29,7 @@ import money
 import structures
 import teamtraining
 import trainingcamp
+import user
 import widgets
 
 
@@ -111,20 +112,25 @@ class TeamTraining(Gtk.Grid):
         for item in self.comboboxes:
             item.set_active(0)
 
-        game.clubs[game.teamid].team_training.generate_schedule()
+        club = user.get_user_club()
+        club.team_training.generate_schedule()
+
         self.populate_data()
 
     def training_changed(self, combobox, index):
-        game.clubs[game.teamid].team_training.training[index] = combobox.get_active()
+        club = user.get_user_club()
 
-        game.clubs[game.teamid].team_training.timeout = random.randint(16, 24)
+        club.team_training.training[index] = combobox.get_active()
+        club.team_training.timeout = random.randint(16, 24)
 
     def populate_data(self):
         count = 0
 
         for row in range(1, 8):
             for column in range(1, 7):
-                value = game.clubs[game.teamid].team_training.training[count]
+                club = user.get_user_club()
+
+                value = club.team_training.training[count]
                 self.comboboxes[count].set_active(value)
 
                 count += 1
@@ -259,9 +265,9 @@ class IndividualTraining(Gtk.Grid):
     def populate_data(self):
         self.liststore.clear()
 
-        club = game.clubs[game.teamid]
+        club = user.get_user_club()
 
-        for playerid, item in club.individual_training.items():
+        for playerid, item in club.individual_training.individual_training.items():
             player = game.players[playerid]
 
             skills = player.get_skills()
@@ -293,10 +299,12 @@ class IndividualTraining(Gtk.Grid):
 
         self.show_all()
 
-        if 1 in game.clubs[game.teamid].team_training.training:
+        club = user.get_user_club()
+
+        if 1 in club.team_training.training:
             self.infobar.hide()
 
-        sensitive = len(game.clubs[game.teamid].coaches_hired) > 0
+        sensitive = club.coaches.get_number_of_coaches() > 0
         self.treeview.set_sensitive(sensitive)
         self.buttonAdd.set_sensitive(sensitive)
 
