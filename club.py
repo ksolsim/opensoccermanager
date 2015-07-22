@@ -136,6 +136,22 @@ class Clubs:
 
             self.accounts.withdraw(amount=total, category="staffwage")
 
+        def pay_bonus(self):
+            '''
+            Calculate the user-specified win bonus on the tactics screen.
+            '''
+            if self.tactics.win_bonus != 0:
+                total = 0
+
+                for playerid in self.team.values():
+                    if playerid:
+                        total += game.players[player.wage]
+
+                bonus = total * (self.tactics.win_bonus * 0.1)
+                self.accounts.withdraw(amount=bonus, category="playerwage")
+
+                self.tactics.win_bonus = 0
+
         def generate_scouts(self):
             self.scouts.generate_initial_scouts()
 

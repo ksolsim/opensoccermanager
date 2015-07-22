@@ -24,6 +24,7 @@ from gi.repository import Gtk
 import os
 import subprocess
 
+from uigtk import accounts
 from uigtk import shortlist
 from uigtk import squad
 from uigtk import tactics
@@ -149,7 +150,7 @@ class Window(Gtk.Window):
         self.screenTickets = business.Tickets()
         self.screenStaff = team.Staff()
         self.screenTactics = tactics.Tactics()
-        self.screenAccounts = finances.Accounts()
+        self.screenAccounts = accounts.Accounts()
         self.screenMatch = match.Match()
         self.screenAdvertising = business.Advertising()
         self.screenMerchandise = business.Merchandise()

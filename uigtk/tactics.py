@@ -172,52 +172,66 @@ class Tactics(Gtk.Grid):
 
         if treeiter:
             model = combobox.get_model()
-            game.clubs[game.teamid].tactics.formation = model[treeiter][0]
+
+            club = user.get_user_club()
+            club.tactics.formation = model[treeiter][0]
 
     def captain_changed(self, combobox):
         treeiter = combobox.get_active_iter()
 
         if treeiter:
             model = combobox.get_model()
-            game.clubs[game.teamid].tactics.captain = model[treeiter][0]
+
+            club = user.get_user_club()
+            club.tactics.captain = model[treeiter][0]
 
     def penalty_taker_changed(self, combobox):
         treeiter = combobox.get_active_iter()
 
         if treeiter:
             model = combobox.get_model()
-            game.clubs[game.teamid].tactics.penalty_taker = model[treeiter][0]
+
+            club = user.get_user_club()
+            club.tactics.penalty_taker = model[treeiter][0]
 
     def free_kick_taker_changed(self, combobox):
         treeiter = combobox.get_active_iter()
 
         if treeiter:
             model = combobox.get_model()
-            game.clubs[game.teamid].tactics.free_kick_taker = model[treeiter][0]
+
+            club = user.get_user_club()
+            club.tactics.free_kick_taker = model[treeiter][0]
 
     def corner_taker_changed(self, combobox):
         treeiter = combobox.get_active_iter()
 
         if treeiter:
             model = combobox.get_model()
-            game.clubs[game.teamid].tactics.corner_taker = model[treeiter][0]
+
+            club = user.get_user_club()
+            club.tactics.corner_taker = model[treeiter][0]
 
     def style_changed(self, radiobutton, index):
         if radiobutton.get_active():
-            game.clubs[game.teamid].tactics.style = index
+            club = user.get_user_club()
+            club.tactics.style = index
 
     def tackling_changed(self, radiobutton, index):
         if radiobutton.get_active():
-            game.clubs[game.teamid].tactics.tackling = index
+            club = user.get_user_club()
+            club.tactics.tackling = index
 
     def passing_changed(self, radiobutton, index):
         if radiobutton.get_active():
-            game.clubs[game.teamid].tactics.passing = index
+            club = user.get_user_club()
+            club.tactics.passing = index
 
     def bonus_changed(self, combobox):
         bonusid = combobox.get_active_id()
 
-        game.clubs[game.teamid].tactics.win_bonus = int(bonusid)
+        club = user.get_user_club()
+        club.tactics.win_bonus = int(bonusid)
 
     def run(self):
         self.liststoreFormation.clear()
