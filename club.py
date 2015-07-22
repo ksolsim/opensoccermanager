@@ -21,6 +21,7 @@ import advertising
 import calculator
 import catering
 import coach
+import evaluation
 import game
 import individualtraining
 import league
@@ -51,7 +52,7 @@ class Clubs:
             self.programmes = advertising.Advertising()
             self.merchandise = merchandise.Merchandise()
             self.catering = catering.Catering()
-            self.evaluation = [0, 0, 0, 0, 0]
+            self.evaluation = evaluation.Evaluation()
             self.form = []
             self.attendances = []
 
@@ -62,14 +63,6 @@ class Clubs:
             stadium = game.stadiums[self.stadium].name
 
             return stadium
-
-        def perform_maintenance(self):
-            '''
-            Calculate the cost of stadium and building maintenance.
-            '''
-            cost = calculator.maintenance()
-
-            self.accounts.withdraw(cost, "stadium")
 
         def set_advertising_spaces(self):
             '''

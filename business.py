@@ -23,6 +23,7 @@ import random
 import constants
 import display
 import game
+import user
 import widgets
 
 
@@ -138,7 +139,7 @@ class Tickets(Gtk.Grid):
         game.clubs[game.teamid].tickets.season_tickets = spinbutton.get_value_as_int()
 
     def populate_data(self):
-        club = game.clubs[game.teamid]
+        club = user.get_user_club()
         stadium = game.stadiums[club.stadium]
 
         # Determine standing / seating configurations

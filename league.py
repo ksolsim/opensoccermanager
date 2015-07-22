@@ -49,6 +49,9 @@ class Leagues:
             self.results[game.date.fixturesindex].append(result)
 
         def generate_fixtures(self):
+            '''
+            Generate fixtures for list of teams.
+            '''
             self.fixtures.generate(self.teams)
 
     def __init__(self):
@@ -71,5 +74,31 @@ class Leagues:
             league.name = item[1]
 
     def generate_fixtures(self):
+        '''
+        Generate fixtures for all leagues.
+        '''
         for league in self.leagues.values():
             league.generate_fixtures()
+
+    def prize_money(self):
+        '''
+        Pay out prize money based on finishing position.
+        '''
+        for league in self.leagues.values():
+            standings = league.standings.get_data()
+
+            for position, standing in enumerate(standings, start=1):
+                clubid = standing[0]
+                club = club.clubitem.clubs[clubid]
+
+                amount = 250000 * (21 - position)
+
+                if position == 1:
+                    amount += 2500000
+                elif position == 2:
+                    amount += 500000
+
+                club.accounts.deposit(category="prizemoney", amount=amount)
+
+                position = standings.get_position_string(clubid)
+                game.news.publish("PZ01", amount=amount, position=position)

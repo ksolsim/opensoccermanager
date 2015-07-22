@@ -148,10 +148,12 @@ class Standings:
         if game.date.eventindex > 0:
             standings = sorted(standings,
                                 key=operator.itemgetter(9, 8, 6, 7),
-                                reverse=True)
+                                reverse=True
+                               )
         else:
             standings = sorted(standings,
-                                key=operator.itemgetter(1))
+                                key=operator.itemgetter(1)
+                               )
 
         return standings
 
@@ -177,3 +179,20 @@ class Standings:
                 position = count
 
         return position
+
+    def get_position_string(self, teamid):
+        '''
+        Return position as a display position.
+        '''
+        position = self.find_position(teamid)
+
+        if position == 1:
+            output = "%ist" % (position)
+        elif position == 2:
+            output = "%ind" % (position)
+        elif position == 3:
+            output = "%ird" % (position)
+        elif position >= 4:
+            output = "%ith" % (position)
+
+        return output

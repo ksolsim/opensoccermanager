@@ -49,18 +49,3 @@ def pay_win_bonus():
         if playerid != 0:
             amount = game.players[playerid].bonus[2]
             game.clubs[game.teamid].accounts.withdraw(amount, "playerwage")
-
-
-def prize_money(position):
-    '''
-    Handed out at end of season based on position, plus bonus for a
-    first or second place finish.
-    '''
-    amount = 250000 * (21 - position)
-
-    if position == 1:
-        amount += 2500000
-    elif position == 2:
-        amount += 500000
-
-    return amount

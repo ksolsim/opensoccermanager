@@ -192,7 +192,9 @@ class Players(Gtk.Grid):
         '''
         View players determined by scout to be recommended for the club.
         '''
-        if len(game.clubs[game.teamid].scouts_hired) > 0:
+        club = user.get_user_club()
+
+        if club.scouts.get_number_of_scouts() > 0:
             if menuitem.get_active():
                 players = scout.recommends()
 
@@ -284,7 +286,8 @@ class Players(Gtk.Grid):
         '''
         model, treeiter = self.treeselection.get_selected()
 
-        game.clubs[game.teamid].shortlist.add_player(model[treeiter][0])
+        club = user.get_user_club()
+        club.shortlist.add_player(model[treeiter][0])
 
     def remove_from_shortlist(self, menuitem):
         '''
@@ -292,7 +295,8 @@ class Players(Gtk.Grid):
         '''
         model, treeiter = self.treeselection.get_selected()
 
-        game.clubs[game.teamid].shortlist.remove_player(model[treeiter][0])
+        club = user.get_user_club()
+        club.shortlist.remove_player(model[treeiter][0])
 
     def context_menu(self, treeview, event):
         if event.button == 3:
@@ -301,7 +305,7 @@ class Players(Gtk.Grid):
             if treeiter:
                 playerid = model[treeiter][0]
                 player = game.players[playerid]
-                club = game.clubs[game.teamid]
+                club = user.get_user_club()
 
                 if playerid not in club.squad:
                     self.contextmenu.display()
@@ -715,7 +719,7 @@ class Shortlist(Gtk.Grid):
 
             club = user.get_user_club()
 
-            if club.scout.get_number_of_scouts() > 0:
+            if club.scouts.get_number_of_scouts() > 0:
                 self.buttonScout.set_sensitive(True)
 
             if playerid in game.loans:
@@ -740,7 +744,8 @@ class Shortlist(Gtk.Grid):
         playerid = model[treeiter][0]
 
         if dialogs.remove_from_shortlist(playerid):
-            game.clubs[game.teamid].shortlist.remove_player(playerid)
+            club = user.get_user_club()
+            club.shortlist.remove_player(playerid)
 
             self.populate_data()
 
@@ -758,7 +763,7 @@ class Shortlist(Gtk.Grid):
         playerid = model[treeiter][0]
 
         # Set to free transfer if player has no club
-        if game.players[playerid].club == 0:
+        if game.players[playerid].club is None:
             transfer_type = 2
 
         transfer.make_enquiry(playerid, transfer_type)

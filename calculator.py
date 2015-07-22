@@ -216,17 +216,3 @@ def ticket_prices():
     tickets = list(map(int, tickets))
 
     return tickets
-
-
-def maintenance():
-    club = game.clubs[game.teamid]
-    stadium = game.stadiums[club.stadium]
-
-    # Stadium maintenance cost
-    cost = (stadium.maintenance * 0.01) * stadium.capacity * 0.5
-
-    # Building maintenance cost
-    for count, item in enumerate(constants.buildings):
-        cost += (item[2] * 0.05) * stadium.buildings[count]
-
-    return cost

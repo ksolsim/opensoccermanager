@@ -24,6 +24,8 @@ from gi.repository import Gtk
 import os
 import subprocess
 
+from uigtk import tactics
+
 import business
 import club
 import constants
@@ -145,7 +147,7 @@ class Window(Gtk.Window):
         self.screenTrainingCamp = training.TrainingCamp()
         self.screenTickets = business.Tickets()
         self.screenStaff = team.Staff()
-        self.screenTactics = team.Tactics()
+        self.screenTactics = tactics.Tactics()
         self.screenAccounts = finances.Accounts()
         self.screenMatch = match.Match()
         self.screenAdvertising = business.Advertising()
