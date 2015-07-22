@@ -652,18 +652,8 @@ class Squad(Gtk.Grid):
         for playerid in club.clubitem.clubs[game.teamid].squad:
             player = game.players[playerid]
 
-            name = player.get_name()
-            nationality = player.get_nationality()
-            value = player.get_value()
-            wage = player.get_wage()
-            contract = player.get_contract()
-            morale = player.get_morale()
-            appearances = player.get_appearances()
-            cards = player.get_cards()
-            rating = player.get_rating()
-
             self.liststoreSquad.append([playerid,
-                                        name,
+                                        player.get_name(),
                                         player.position,
                                         player.keeping,
                                         player.tackling,
@@ -675,17 +665,17 @@ class Squad(Gtk.Grid):
                                         player.ball_control,
                                         player.set_pieces,
                                         player.fitness,
-                                        nationality,
-                                        value,
-                                        wage,
-                                        contract,
-                                        morale,
-                                        appearances,
+                                        player.get_nationality(),
+                                        player.get_value(),
+                                        player.get_wage(),
+                                        player.get_contract(),
+                                        player.get_morale(),
+                                        player.get_appearances(),
                                         player.goals,
                                         player.assists,
-                                        cards,
+                                        player.get_cards(),
                                         player.man_of_the_match,
-                                        rating,
+                                        player.get_rating(),
                                         player.injury_type,
                                         player.suspension_type,
                                         ])
