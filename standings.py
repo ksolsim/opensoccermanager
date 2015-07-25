@@ -18,6 +18,7 @@
 
 import operator
 
+import club
 import game
 
 
@@ -134,13 +135,13 @@ class Standings:
         for key, value in self.clubs.items():
             item = []
 
-            club = game.clubs[key]
+            clubobj = club.clubitem.clubs[key]
             item = value.get_data()
 
-            form = "".join(club.form[-6:])
+            form = "".join(clubobj.form[-6:])
 
             item.insert(0, key)
-            item.insert(1, club.name)
+            item.insert(1, clubobj.name)
             item.append(form)
 
             standings.append(item)

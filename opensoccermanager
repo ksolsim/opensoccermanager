@@ -25,9 +25,13 @@ import os
 import subprocess
 
 from uigtk import accounts
+from uigtk import buildings
 from uigtk import shortlist
 from uigtk import squad
+from uigtk import standings
 from uigtk import tactics
+from uigtk import tickets
+from uigtk import venue
 
 import business
 import club
@@ -47,7 +51,6 @@ import menu
 import music
 import preferences
 import printing
-import stadium
 import structures
 import team
 import training
@@ -140,14 +143,14 @@ class Window(Gtk.Window):
         self.screenStatistics = information.Statistics()
         self.screenFixtures = information.Fixtures()
         self.screenResults = information.Results()
-        self.screenStandings = information.Standings()
+        self.screenStandings = standings.Standings()
         self.screenNegotiations = view.Negotiations()
         self.screenShortlist = shortlist.Shortlist()
         self.screenInjSus = view.InjSus()
         self.screenTeamTraining = training.TeamTraining()
         self.screenIndividualTraining = training.IndividualTraining()
         self.screenTrainingCamp = training.TrainingCamp()
-        self.screenTickets = business.Tickets()
+        self.screenTickets = tickets.Tickets()
         self.screenStaff = team.Staff()
         self.screenTactics = tactics.Tactics()
         self.screenAccounts = accounts.Accounts()
@@ -155,10 +158,10 @@ class Window(Gtk.Window):
         self.screenAdvertising = business.Advertising()
         self.screenMerchandise = business.Merchandise()
         self.screenCatering = business.Catering()
-        self.screenBuildings = stadium.Buildings()
+        self.screenBuildings = buildings.Buildings()
         self.screenPlayers = view.Players()
         self.screenFinances = finances.Finances()
-        self.screenStadium = stadium.Stadium()
+        self.screenStadium = venue.Stadium()
 
         self.add(self.screenMain)
 
