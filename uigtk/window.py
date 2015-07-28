@@ -28,6 +28,7 @@ from uigtk import shortlist
 from uigtk import squad
 from uigtk import standings
 from uigtk import tactics
+from uigtk import teamtraining
 from uigtk import tickets
 from uigtk import venue
 
@@ -166,7 +167,7 @@ class Window(Gtk.Window):
         self.screenNegotiations = view.Negotiations()
         self.screenShortlist = shortlist.Shortlist()
         self.screenInjSus = view.InjSus()
-        self.screenTeamTraining = training.TeamTraining()
+        self.screenTeamTraining = teamtraining.TeamTraining()
         self.screenIndividualTraining = training.IndividualTraining()
         self.screenTrainingCamp = training.TrainingCamp()
         self.screenTickets = tickets.Tickets()
