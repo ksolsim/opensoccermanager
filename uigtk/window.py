@@ -21,6 +21,7 @@ import os
 
 from uigtk import accounts
 from uigtk import buildings
+from uigtk import injsus
 from uigtk import mainmenu
 from uigtk import details
 from uigtk import screen
@@ -166,7 +167,7 @@ class Window(Gtk.Window):
         self.screenStandings = standings.Standings()
         self.screenNegotiations = view.Negotiations()
         self.screenShortlist = shortlist.Shortlist()
-        self.screenInjSus = view.InjSus()
+        self.screenInjSus = injsus.InjSus()
         self.screenTeamTraining = teamtraining.TeamTraining()
         self.screenIndividualTraining = training.IndividualTraining()
         self.screenTrainingCamp = training.TrainingCamp()
