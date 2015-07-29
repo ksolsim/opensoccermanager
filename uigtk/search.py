@@ -23,10 +23,8 @@ import unicodedata
 
 import constants
 import dialogs
-import display
 import filters
 import game
-import injury
 import menu
 import scout
 import transfer
@@ -34,7 +32,7 @@ import user
 import widgets
 
 
-class Players(Gtk.Grid):
+class Search(Gtk.Grid):
     __name__ = "players"
 
     def __init__(self):

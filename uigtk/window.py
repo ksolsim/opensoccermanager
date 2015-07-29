@@ -26,6 +26,7 @@ from uigtk import mainmenu
 from uigtk import details
 from uigtk import negotiations
 from uigtk import screen
+from uigtk import search
 from uigtk import shortlist
 from uigtk import squad
 from uigtk import standings
@@ -46,7 +47,6 @@ import preferences
 import team
 import training
 import version
-import view
 
 
 class Window(Gtk.Window):
@@ -96,7 +96,7 @@ class Window(Gtk.Window):
                    17: self.screenMerchandise,
                    18: self.screenCatering,
                    19: self.screenTickets,
-                   20: self.screenPlayers,
+                   20: self.screenSearch,
                    21: self.screenNegotiations,
                    22: self.screenShortlist,
                    23: self.screenStaff,
@@ -181,7 +181,7 @@ class Window(Gtk.Window):
         self.screenMerchandise = business.Merchandise()
         self.screenCatering = business.Catering()
         self.screenBuildings = buildings.Buildings()
-        self.screenPlayers = view.Players()
+        self.screenSearch = search.Search()
         self.screenFinances = finances.Finances()
         self.screenStadium = venue.Stadium()
 
