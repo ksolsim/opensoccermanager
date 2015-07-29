@@ -24,6 +24,7 @@ from uigtk import buildings
 from uigtk import injsus
 from uigtk import mainmenu
 from uigtk import details
+from uigtk import negotiations
 from uigtk import screen
 from uigtk import shortlist
 from uigtk import squad
@@ -165,7 +166,7 @@ class Window(Gtk.Window):
         self.screenFixtures = information.Fixtures()
         self.screenResults = information.Results()
         self.screenStandings = standings.Standings()
-        self.screenNegotiations = view.Negotiations()
+        self.screenNegotiations = negotiations.Negotiations()
         self.screenShortlist = shortlist.Shortlist()
         self.screenInjSus = injsus.InjSus()
         self.screenTeamTraining = teamtraining.TeamTraining()
