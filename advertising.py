@@ -21,6 +21,7 @@ import random
 import club
 import display
 import game
+import user
 
 
 class Sponsorship:
@@ -41,8 +42,9 @@ class Sponsorship:
 
         self.period = random.randint(1, 5)
 
-        reputation = game.clubs[game.teamid].reputation
-        self.amount = (reputation * random.randrange(950, 1100, 10)) * reputation ** 2
+        club = user.get_user_club()
+
+        self.amount = (club.reputation * random.randrange(950, 1100, 10)) * club.reputation ** 2
 
         self.status = 1
         self.timeout = random.randint(4, 6)
@@ -78,7 +80,8 @@ class Sponsorship:
         '''
         self.status = 2
 
-        game.clubs[game.teamid].accounts.deposit(amount=self.amount, category="sponsorship")
+        club = user.get_user_club()
+        club.accounts.deposit(amount=self.amount, category="sponsorship")
 
     def reject(self):
         '''
@@ -153,7 +156,7 @@ class Advertising:
 
         self.timeout = random.randint(8, 12)
 
-        club = game.clubs[game.teamid]
+        club = user.get_user_club()
         cost = self.current[advertid].cost
 
         club.accounts.deposit(amount=cost, category="advertising")

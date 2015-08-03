@@ -20,6 +20,7 @@ from gi.repository import Gtk
 import os
 
 from uigtk import accounts
+from uigtk import advertising
 from uigtk import buildings
 from uigtk import injsus
 from uigtk import mainmenu
@@ -177,7 +178,7 @@ class Window(Gtk.Window):
         self.screenTactics = tactics.Tactics()
         self.screenAccounts = accounts.Accounts()
         self.screenMatch = match.Match()
-        self.screenAdvertising = business.Advertising()
+        self.screenAdvertising = advertising.Advertising()
         self.screenMerchandise = business.Merchandise()
         self.screenCatering = business.Catering()
         self.screenBuildings = buildings.Buildings()
