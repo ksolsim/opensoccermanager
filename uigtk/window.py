@@ -30,6 +30,7 @@ from uigtk import screen
 from uigtk import search
 from uigtk import shortlist
 from uigtk import squad
+from uigtk import staff
 from uigtk import standings
 from uigtk import tactics
 from uigtk import teamtraining
@@ -174,7 +175,7 @@ class Window(Gtk.Window):
         self.screenIndividualTraining = training.IndividualTraining()
         self.screenTrainingCamp = training.TrainingCamp()
         self.screenTickets = tickets.Tickets()
-        self.screenStaff = team.Staff()
+        self.screenStaff = staff.Staff()
         self.screenTactics = tactics.Tactics()
         self.screenAccounts = accounts.Accounts()
         self.screenMatch = match.Match()
