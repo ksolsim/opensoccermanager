@@ -22,9 +22,11 @@ import os
 from uigtk import accounts
 from uigtk import advertising
 from uigtk import buildings
+from uigtk import catering
 from uigtk import injsus
 from uigtk import mainmenu
 from uigtk import details
+from uigtk import merchandise
 from uigtk import negotiations
 from uigtk import screen
 from uigtk import search
@@ -37,7 +39,6 @@ from uigtk import teamtraining
 from uigtk import tickets
 from uigtk import venue
 
-import business
 import fileio
 import finances
 import game
@@ -46,7 +47,6 @@ import interface
 import match
 import music
 import preferences
-import team
 import training
 import version
 
@@ -180,8 +180,8 @@ class Window(Gtk.Window):
         self.screenAccounts = accounts.Accounts()
         self.screenMatch = match.Match()
         self.screenAdvertising = advertising.Advertising()
-        self.screenMerchandise = business.Merchandise()
-        self.screenCatering = business.Catering()
+        self.screenMerchandise = merchandise.Merchandise()
+        self.screenCatering = catering.Catering()
         self.screenBuildings = buildings.Buildings()
         self.screenSearch = search.Search()
         self.screenFinances = finances.Finances()
