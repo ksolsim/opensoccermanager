@@ -23,9 +23,10 @@ from uigtk import accounts
 from uigtk import advertising
 from uigtk import buildings
 from uigtk import catering
+from uigtk import details
+from uigtk import individualtraining
 from uigtk import injsus
 from uigtk import mainmenu
-from uigtk import details
 from uigtk import merchandise
 from uigtk import negotiations
 from uigtk import screen
@@ -37,6 +38,7 @@ from uigtk import standings
 from uigtk import tactics
 from uigtk import teamtraining
 from uigtk import tickets
+from uigtk import trainingcamp
 from uigtk import venue
 
 import fileio
@@ -47,7 +49,6 @@ import interface
 import match
 import music
 import preferences
-import training
 import version
 
 
@@ -172,8 +173,8 @@ class Window(Gtk.Window):
         self.screenShortlist = shortlist.Shortlist()
         self.screenInjSus = injsus.InjSus()
         self.screenTeamTraining = teamtraining.TeamTraining()
-        self.screenIndividualTraining = training.IndividualTraining()
-        self.screenTrainingCamp = training.TrainingCamp()
+        self.screenIndividualTraining = individualtraining.IndividualTraining()
+        self.screenTrainingCamp = trainingcamp.TrainingCamp()
         self.screenTickets = tickets.Tickets()
         self.screenStaff = staff.Staff()
         self.screenTactics = tactics.Tactics()
