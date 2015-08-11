@@ -24,12 +24,14 @@ from uigtk import advertising
 from uigtk import buildings
 from uigtk import catering
 from uigtk import details
+from uigtk import fixtures
 from uigtk import individualtraining
 from uigtk import injsus
 from uigtk import mainmenu
 from uigtk import merchandise
 from uigtk import negotiations
 from uigtk import news
+from uigtk import results
 from uigtk import screen
 from uigtk import search
 from uigtk import shortlist
@@ -167,8 +169,8 @@ class Window(Gtk.Window):
         self.screenEvaluation = information.Evaluation()
         self.screenCharts = information.Charts()
         self.screenStatistics = information.Statistics()
-        self.screenFixtures = information.Fixtures()
-        self.screenResults = information.Results()
+        self.screenFixtures = fixtures.Fixtures()
+        self.screenResults = results.Results()
         self.screenStandings = standings.Standings()
         self.screenNegotiations = negotiations.Negotiations()
         self.screenShortlist = shortlist.Shortlist()
