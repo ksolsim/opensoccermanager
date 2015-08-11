@@ -29,6 +29,7 @@ from uigtk import injsus
 from uigtk import mainmenu
 from uigtk import merchandise
 from uigtk import negotiations
+from uigtk import news
 from uigtk import screen
 from uigtk import search
 from uigtk import shortlist
@@ -162,7 +163,7 @@ class Window(Gtk.Window):
         self.screenGame = screen.ScreenGame()
 
         self.screenSquad = squad.Squad()
-        self.screenNews = information.News()
+        self.screenNews = news.News()
         self.screenEvaluation = information.Evaluation()
         self.screenCharts = information.Charts()
         self.screenStatistics = information.Statistics()
