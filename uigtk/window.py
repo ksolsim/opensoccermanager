@@ -38,6 +38,7 @@ from uigtk import shortlist
 from uigtk import squad
 from uigtk import staff
 from uigtk import standings
+from uigtk import statistics
 from uigtk import tactics
 from uigtk import teamtraining
 from uigtk import tickets
@@ -168,7 +169,7 @@ class Window(Gtk.Window):
         self.screenNews = news.News()
         self.screenEvaluation = information.Evaluation()
         self.screenCharts = information.Charts()
-        self.screenStatistics = information.Statistics()
+        self.screenStatistics = statistics.Statistics()
         self.screenFixtures = fixtures.Fixtures()
         self.screenResults = results.Results()
         self.screenStandings = standings.Standings()
