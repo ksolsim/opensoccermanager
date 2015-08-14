@@ -25,6 +25,7 @@ from uigtk import buildings
 from uigtk import catering
 from uigtk import charts
 from uigtk import details
+from uigtk import evaluation
 from uigtk import fixtures
 from uigtk import individualtraining
 from uigtk import injsus
@@ -49,7 +50,6 @@ from uigtk import venue
 import fileio
 import finances
 import game
-import information
 import interface
 import match
 import music
@@ -168,7 +168,7 @@ class Window(Gtk.Window):
 
         self.screenSquad = squad.Squad()
         self.screenNews = news.News()
-        self.screenEvaluation = information.Evaluation()
+        self.screenEvaluation = evaluation.Evaluation()
         self.screenCharts = charts.Charts()
         self.screenStatistics = statistics.Statistics()
         self.screenFixtures = fixtures.Fixtures()

@@ -17,17 +17,11 @@
 
 
 from gi.repository import Gtk
-from gi.repository import Gdk
 import random
-import re
-import statistics
 
-import constants
-import dialogs
-import display
 import evaluation
 import game
-import league
+import user
 import widgets
 
 
@@ -87,7 +81,7 @@ class Evaluation(Gtk.Grid):
     def run(self):
         evaluation.update()
 
-        club = game.clubs[game.teamid]
+        club = user.get_user_club()
 
         # Chairman
         value = evaluation.indexer(club.evaluation[0])

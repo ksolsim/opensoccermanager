@@ -20,6 +20,7 @@ import xml.dom.minidom
 import os
 
 import game
+import user
 
 
 class Evaluation:
@@ -103,7 +104,7 @@ def update():
     '''
     Update all evaluation value categories.
     '''
-    club = game.clubs[game.teamid]
+    club = user.get_user_club()
 
     # Fans
     points = 0
