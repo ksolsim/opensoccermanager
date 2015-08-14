@@ -22,6 +22,70 @@ import game
 import widgets
 
 
+class Charts(Gtk.Grid):
+    __name__ = "charts"
+
+    def __init__(self):
+        self.views = {0: GoalScorers(),
+                      1: Assists(),
+                      2: Cards(),
+                      3: Transfers(),
+                      4: Referees(),
+                     }
+
+        self.charts = self.views[0]
+
+        Gtk.Grid.__init__(self)
+        self.set_row_spacing(5)
+
+        buttonbox = Gtk.ButtonBox()
+        buttonbox.set_spacing(5)
+        buttonbox.set_layout(Gtk.ButtonBoxStyle.END)
+        self.attach(buttonbox, 1, 0, 1, 1)
+
+        label = Gtk.Label("View")
+        label.set_alignment(1, 0.5)
+        buttonbox.add(label)
+
+        comboboxChart = Gtk.ComboBoxText()
+        comboboxChart.append("0", "Goalscorers")
+        comboboxChart.append("1", "Assists")
+        comboboxChart.append("2", "Cards")
+        comboboxChart.append("3", "Transfers")
+        comboboxChart.append("4", "Referees")
+        comboboxChart.set_active(0)
+        comboboxChart.connect("changed", self.view_changed)
+        buttonbox.add(comboboxChart)
+
+        self.grid = Gtk.Grid()
+        self.grid.set_vexpand(True)
+        self.grid.set_hexpand(True)
+        self.grid.set_row_spacing(5)
+        self.grid.set_column_spacing(5)
+        self.attach(self.grid, 0, 2, 2, 1)
+
+        self.charts.set_vexpand(True)
+        self.charts.set_hexpand(True)
+        self.grid.add(self.charts)
+
+    def view_changed(self, combobox):
+        viewid = int(combobox.get_active_id())
+
+        if self.charts:
+            self.grid.remove(self.charts)
+
+        self.charts = self.views[viewid]
+        self.charts.set_vexpand(True)
+        self.charts.set_hexpand(True)
+
+        self.grid.add(self.charts)
+        self.charts.run()
+
+    def run(self):
+        self.charts.run()
+        self.show_all()
+
+
 class GoalScorers(Gtk.ScrolledWindow):
     def __init__(self):
         Gtk.ScrolledWindow.__init__(self)

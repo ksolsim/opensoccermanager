@@ -23,6 +23,7 @@ from uigtk import accounts
 from uigtk import advertising
 from uigtk import buildings
 from uigtk import catering
+from uigtk import charts
 from uigtk import details
 from uigtk import fixtures
 from uigtk import individualtraining
@@ -168,7 +169,7 @@ class Window(Gtk.Window):
         self.screenSquad = squad.Squad()
         self.screenNews = news.News()
         self.screenEvaluation = information.Evaluation()
-        self.screenCharts = information.Charts()
+        self.screenCharts = charts.Charts()
         self.screenStatistics = statistics.Statistics()
         self.screenFixtures = fixtures.Fixtures()
         self.screenResults = results.Results()
