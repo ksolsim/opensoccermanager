@@ -21,6 +21,7 @@ from gi.repository import Gdk
 import re
 import unicodedata
 
+from uigtk import playerinfo
 import constants
 import dialogs
 import filters
@@ -221,7 +222,7 @@ class Search(Gtk.Grid):
         model = treeview.get_model()
         playerid = model[treepath][0]
 
-        dialog = dialogs.PlayerInfo(playerid)
+        dialog = playerinfo.PlayerInfo(playerid)
         dialog.run()
         dialog.destroy()
 

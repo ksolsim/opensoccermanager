@@ -22,6 +22,7 @@ import random
 import re
 import unicodedata
 
+from uigtk import playerinfo
 import club
 import constants
 import dialogs
@@ -430,7 +431,7 @@ class Squad(Gtk.Grid):
         model, treeiter = self.treeselection.get_selected()
         playerid = model[treeiter][0]
 
-        dialog = dialogs.PlayerInfo(playerid)
+        dialog = playerinfo.PlayerInfo(playerid)
         dialog.run()
         dialog.destroy()
 
