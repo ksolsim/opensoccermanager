@@ -19,7 +19,7 @@
 from gi.repository import Gtk
 
 import game
-import stadiums
+import stadium
 import user
 import widgets
 

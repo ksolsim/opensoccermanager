@@ -21,7 +21,7 @@ from gi.repository import Gtk
 import constants
 import display
 import game
-import stadiums
+import stadium
 import user
 import widgets
 

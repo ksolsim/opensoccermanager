@@ -56,7 +56,8 @@ class Referees:
         '''
         Populate referee data.
         '''
-        game.database.cursor.execute("SELECT * FROM referee WHERE year = ?", (game.date.year,))
+        #game.database.cursor.execute("SELECT * FROM referee WHERE year = ?", (game.date.year,))
+        game.database.cursor.execute("SELECT referee.id, referee.name, refereeattr.league FROM referee JOIN refereeattr ON refereeattr.referee = referee.id WHERE year = ?", (game.date.year,))
         data = game.database.cursor.fetchall()
 
         for item in data:

@@ -23,7 +23,7 @@ import constants
 import dialogs
 import display
 import game
-import stadiums
+import stadium
 import user
 import widgets
 

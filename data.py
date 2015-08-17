@@ -37,7 +37,7 @@ import nation
 import news
 import overdraft
 import referee
-import stadiums
+import stadium
 import statistics
 import structures
 import suspension
@@ -92,34 +92,35 @@ def datainit():
     data = game.database.cursor.fetchall()
 
     for item in data:
-        player = structures.Player()
-        playerid = item[0]
-        game.players[playerid] = player
+        if item[9] in club.clubitem.clubs.keys():
+            player = structures.Player()
+            playerid = item[0]
+            game.players[playerid] = player
 
-        player.first_name = item[1]
-        player.second_name = item[2]
-        player.common_name = item[3]
-        player.date_of_birth = item[4]
-        player.nationality = item[5]
-        player.club = item[9]
-        player.position = item[10]
-        player.keeping = item[11]
-        player.tackling = item[12]
-        player.passing = item[13]
-        player.shooting = item[14]
-        player.heading = item[15]
-        player.pace = item[16]
-        player.stamina = item[17]
-        player.ball_control = item[18]
-        player.set_pieces = item[19]
-        player.training = item[20]
-        player.contract = random.randint(24, 260)
+            player.first_name = item[1]
+            player.second_name = item[2]
+            player.common_name = item[3]
+            player.date_of_birth = item[4]
+            player.nationality = item[5]
+            player.club = item[9]
+            player.position = item[10]
+            player.keeping = item[11]
+            player.tackling = item[12]
+            player.passing = item[13]
+            player.shooting = item[14]
+            player.heading = item[15]
+            player.pace = item[16]
+            player.stamina = item[17]
+            player.ball_control = item[18]
+            player.set_pieces = item[19]
+            player.training = item[20]
+            player.contract = random.randint(24, 260)
 
-        player.value = calculator.value(item[0])
-        player.wage = calculator.wage(item[0])
-        player.bonus = calculator.bonus(player.wage)
+            player.value = calculator.value(item[0])
+            player.wage = calculator.wage(item[0])
+            player.bonus = calculator.bonus(player.wage)
 
-        club.clubitem.clubs[player.club].squad.append(playerid)
+            club.clubitem.clubs[player.club].squad.append(playerid)
 
     # Import nations
     nation.nationitem = nation.Nations()
@@ -128,8 +129,8 @@ def datainit():
     referee.referees = referee.Referees()
 
     # Import stadiums
-    stadiums.stadiumitem = stadiums.Stadiums()
-    stadiums.stadiumitem.populate_data()
+    stadium.stadiumitem = stadium.Stadiums()
+    stadium.stadiumitem.populate_data()
 
     '''
     adjacent = (0, 1), (2, 0), (3, 2), (1, 3), # DO NOT REORDER/CHANGE!
@@ -188,14 +189,13 @@ def datainit():
         stadium.buildings = list(item[33:41])
     '''
 
-    '''
-    for club in game.clubs.values():
-        stadium = game.stadiums[club.stadium]
+    for clubobj in club.clubitem.clubs.values():
+        stadiumobj = stadium.stadiumitem.stadiums[clubobj.stadium]
 
-        if club.reputation > 12:
-            stadium.plots = 60
+        if clubobj.reputation > 12:
+            stadiumobj.plots = 60
         else:
-            stadium.plots = 40'''
+            stadiumobj.plots = 40
 
     # Import injuries
     injury.injuryitem = injury.Injuries()
