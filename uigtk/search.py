@@ -21,10 +21,10 @@ from gi.repository import Gdk
 import re
 import unicodedata
 
+from uigtk import filters
 from uigtk import playerinfo
 import constants
 import dialogs
-import filters
 import game
 import menu
 import scout

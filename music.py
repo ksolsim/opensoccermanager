@@ -20,8 +20,6 @@ from gi.repository import Gst
 import os
 import sys
 
-import game
-
 
 Gst.init(sys.argv)
 

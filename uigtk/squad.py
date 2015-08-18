@@ -22,6 +22,7 @@ import random
 import re
 import unicodedata
 
+from uigtk import filters
 from uigtk import playerinfo
 import club
 import constants
@@ -29,7 +30,6 @@ import dialogs
 import display
 import evaluation
 import events
-import filters
 import game
 import menu
 import widgets
@@ -174,7 +174,6 @@ class Squad(Gtk.Grid):
         treemodelsort.set_sort_column_id(1, Gtk.SortType.ASCENDING)
 
         self.treemodelfilter = treemodelsort.filter_new()
-        ### self.treemodelfilter.set_visible_func(self.filter_visible, club.clubitem.clubs)
 
         grid = Gtk.Grid()
         grid.set_column_spacing(5)
@@ -682,6 +681,8 @@ class Squad(Gtk.Grid):
                                         ])
 
     def run(self):
+        self.treemodelfilter.set_visible_func(self.filter_visible, club.clubitem.clubs)
+
         formationid = club.clubitem.clubs[game.teamid].tactics.formation
 
         for count in range(0, 16):

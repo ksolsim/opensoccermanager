@@ -19,7 +19,9 @@
 from gi.repository import Gtk
 import collections
 
-import game
+import uigtk.window
+
+import user
 import widgets
 
 
@@ -92,7 +94,6 @@ class SearchFilter(Gtk.Dialog):
         self.options = collections.OrderedDict(options)
 
         Gtk.Dialog.__init__(self)
-        self.set_transient_for(game.window)
         self.set_title("Filter Players")
         self.add_button("_Cancel", Gtk.ResponseType.CANCEL)
         self.add_button("_Filter", Gtk.ResponseType.OK)
@@ -211,7 +212,11 @@ class SearchFilter(Gtk.Dialog):
         grid.attach(self.set_pieces, 5, 2, 1, 1)
 
     def display(self):
-        self.checkbuttonShowOwnPlayers.set_label("_Display %s Players In Player Search" % (game.clubs[game.teamid].name))
+        self.set_transient_for(uigtk.window.window)
+
+        club = user.get_user_club()
+
+        self.checkbuttonShowOwnPlayers.set_label("_Display %s Players In Player Search" % (club.name))
         self.checkbuttonShowOwnPlayers.set_active(self.options["own_players"])
 
         self.comboboxPosition.set_active(self.options["position"])
@@ -313,7 +318,6 @@ class SquadFilter(Gtk.Dialog):
         self.options = collections.OrderedDict(options)
 
         Gtk.Dialog.__init__(self)
-        self.set_transient_for(game.window)
         self.set_title("Filter Squad")
         self.add_button("_Cancel", Gtk.ResponseType.CANCEL)
         self.add_button("_Filter", Gtk.ResponseType.OK)
@@ -343,6 +347,8 @@ class SquadFilter(Gtk.Dialog):
         grid.attach(self.checkbuttonAvailable, 0, 1, 3, 1)
 
     def display(self):
+        self.set_transient_for(uigtk.window.window)
+
         self.comboboxPosition.set_active(self.options["position"])
         self.checkbuttonAvailable.set_active(self.options["availableonly"])
 
