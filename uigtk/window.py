@@ -26,6 +26,7 @@ from uigtk import catering
 from uigtk import charts
 from uigtk import details
 from uigtk import evaluation
+from uigtk import finances
 from uigtk import fixtures
 from uigtk import individualtraining
 from uigtk import injsus
@@ -49,7 +50,6 @@ from uigtk import trainingcamp
 from uigtk import venue
 
 import fileio
-import finances
 import game
 import match
 import music
