@@ -20,9 +20,9 @@ from gi.repository import Gtk
 import os
 import subprocess
 
+from uigtk import interface
 import dialogs
 import game
-import interface
 import version
 import widgets
 

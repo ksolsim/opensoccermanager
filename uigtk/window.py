@@ -29,6 +29,7 @@ from uigtk import evaluation
 from uigtk import fixtures
 from uigtk import individualtraining
 from uigtk import injsus
+from uigtk import interface
 from uigtk import mainmenu
 from uigtk import merchandise
 from uigtk import negotiations
@@ -50,7 +51,6 @@ from uigtk import venue
 import fileio
 import finances
 import game
-import interface
 import match
 import music
 import preferences

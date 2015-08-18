@@ -18,6 +18,8 @@
 
 from gi.repository import Gtk
 
+from uigtk import interface
+from uigtk import printing
 import game
 import menu
 import widgets
