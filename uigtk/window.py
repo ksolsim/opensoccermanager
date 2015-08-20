@@ -32,6 +32,7 @@ from uigtk import individualtraining
 from uigtk import injsus
 from uigtk import interface
 from uigtk import mainmenu
+from uigtk import match
 from uigtk import merchandise
 from uigtk import negotiations
 from uigtk import news
@@ -51,7 +52,6 @@ from uigtk import venue
 
 import fileio
 import game
-import match
 import music
 import preferences
 import version
