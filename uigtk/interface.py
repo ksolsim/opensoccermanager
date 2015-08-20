@@ -340,7 +340,6 @@ class NameChange(Gtk.Dialog):
         combobox = Gtk.ComboBoxText.new_with_entry()
         combobox.set_model(self.liststoreName)
         self.entry = combobox.get_child()
-        self.entry.set_text(game.clubs[game.teamid].manager)
         label.set_mnemonic_widget(combobox)
         grid.attach(combobox, 1, 0, 1, 1)
 
@@ -349,6 +348,9 @@ class NameChange(Gtk.Dialog):
     def display(self):
         self.load_names()
 
+        club = user.get_user_club()
+        self.entry.set_text(club.manager)
+
         self.show_all()
         self.run()
 
@@ -356,10 +358,10 @@ class NameChange(Gtk.Dialog):
 
     def response_handler(self, dialog, response):
         if response == Gtk.ResponseType.APPLY:
-            name = self.entry.get_text()
-            game.clubs[game.teamid].manager = name
+            club = user.get_user_club()
+            club.manager = self.entry.get_text()
 
-            self.user.add_name(name)
+            self.user.add_name(club.manager)
 
             self.load_names()
 

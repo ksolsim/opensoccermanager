@@ -22,6 +22,7 @@ from uigtk import interface
 from uigtk import printing
 import game
 import menu
+import user
 import widgets
 
 
@@ -104,7 +105,7 @@ class ScreenGame(Gtk.Grid):
         self.show_all()
 
     def name_change(self, menuitem):
-        club = game.clubs[game.teamid]
+        club = user.get_user_club()
         previous = club.manager
 
         name_change = interface.NameChange()
