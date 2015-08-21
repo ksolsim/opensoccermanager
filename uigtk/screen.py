@@ -18,6 +18,7 @@
 
 from gi.repository import Gtk
 
+import uigtk.dialogs
 from uigtk import interface
 from uigtk import printing
 import game
@@ -59,7 +60,7 @@ class ScreenGame(Gtk.Grid):
         game.menu.menuitemStadium.connect("activate", lambda i: game.window.screen_loader(10))
         game.menu.menuitemBuildings.connect("activate", lambda i: game.window.screen_loader(14))
         game.menu.menuitemTickets.connect("activate", lambda i: game.window.screen_loader(19))
-        game.menu.menuitemSponsorship.connect("activate", lambda i: dialogs.sponsorship())
+        game.menu.menuitemSponsorship.connect("activate", lambda i: uigtk.sponsorship.display())
         game.menu.menuitemAdvertising.connect("activate", lambda i: game.window.screen_loader(16))
         game.menu.menuitemMerchandise.connect("activate", lambda i: game.window.screen_loader(17))
         game.menu.menuitemCatering.connect("activate", lambda i: game.window.screen_loader(18))
@@ -129,8 +130,8 @@ class ScreenGame(Gtk.Grid):
             dialogs.comparison.display()
 
     def view_opposition(self, menuitem):
-        opposition_dialog = dialogs.Opposition()
-        opposition_dialog.display()
+        dialog = uigtk.dialogs.Opposition()
+        dialog.display()
 
     def new_game_clicked(self, menuitem):
         exit_dialog = interface.ExitDialog()

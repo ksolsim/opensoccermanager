@@ -185,7 +185,7 @@ class Buildings(Gtk.Grid):
     def run(self):
         club = user.get_user_club()
 
-        stadium = stadiums.stadiumitem.stadiums[club.stadium]
+        stadiumobj = stadium.stadiumitem.stadiums[club.stadium]
 
         self.buildings = []
         self.plots = 0
@@ -201,15 +201,15 @@ class Buildings(Gtk.Grid):
             cost = display.currency(0)
             self.labels[count].set_label("%s" % (cost))
 
-            self.buildings.append(stadium.buildings[0 + count])
-            self.spins[count].set_value(stadium.buildings[0 + count])
+            self.buildings.append(stadiumobj.buildings[0 + count])
+            self.spins[count].set_value(stadiumobj.buildings[0 + count])
             self.spins[count].connect("value-changed", self.value_changed, count)
 
             # Total number of plots in use
-            self.plots += stadium.buildings[0 + count] * item[1]
+            self.plots += stadiumobj.buildings[0 + count] * item[1]
 
         self.labelFuturePlots.set_label("Planned number of plots: %i" % (self.futureplots))
-        self.labelCurrentPlots.set_label("Used %i out of total %i plots available" % (self.plots, stadium.plots))
+        self.labelCurrentPlots.set_label("Used %i out of total %i plots available" % (self.plots, stadiumobj.plots))
 
         cost = display.currency(0)
         self.labelTotal.set_markup("<b>%s</b>" % (cost))

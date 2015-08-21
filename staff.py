@@ -20,7 +20,6 @@ import random
 import string
 
 import constants
-import dialogs
 import game
 import news
 

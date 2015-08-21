@@ -20,7 +20,6 @@ import operator
 import random
 
 import constants
-import dialogs
 import display
 import evaluation
 import fixtures
@@ -405,7 +404,7 @@ def end_of_season():
     '''
     Process end of season events, and reset data for the following season.
     '''
-    dialogs.end_of_season()
+    #dialogs.end_of_season()
 
     # Reset and increment all values where appropriate
     game.date.day = 1

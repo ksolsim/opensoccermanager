@@ -167,25 +167,22 @@ class Stadium(Gtk.Grid):
 
     def run(self):
         clubobj = user.get_user_club()
-        stadiumobj = stadiums.stadiumitem.stadiums[clubobj.stadium]
+        stadiumobj = stadium.stadiumitem.stadiums[clubobj.stadium]
 
         self.update_capacity()
-
-        '''
         self.revert_upgrade()
 
         self.cost = 0
         cost = display.currency(self.cost)
         self.labelCost.set_label("%s" % (cost))
 
-        self.spinbuttonMaintenance.set_value(stadiumobj.maintenance)
+        self.spinbuttonMaintenance.set_value(stadiumobj.condition)
 
         cost = calculator.maintenance()
         cost = display.currency(cost)
         self.labelMaintenanceCost.set_label("%s" % (cost))
 
         self.labelCondition.set_label("%i%%" % (stadiumobj.condition))
-        '''
 
         self.show_all()
 
@@ -201,18 +198,18 @@ class Stadium(Gtk.Grid):
 
     def update_capacity(self):
         clubobj = user.get_user_club()
-        stadium = stadiums.stadiumitem.stadiums[clubobj.stadium]
+        stadiumobj = stadium.stadiumitem.stadiums[clubobj.stadium]
 
         capacity = 0
 
-        for stand in stadium.main:
+        for stand in stadiumobj.main:
             capacity += stand.capacity
             capacity += stand.box
 
-        for stand in stadium.corner:
+        for stand in stadiumobj.corner:
             capacity += stand.capacity
 
-        stadium.capacity = capacity
+        stadiumobj.capacity = capacity
 
         self.labelCurrentCapacity.set_label("%i" % (capacity))
 
@@ -411,12 +408,12 @@ class Stadium(Gtk.Grid):
         '''
         This function is also used to load the starting data set.
         '''
-        stadiumid = game.clubs[game.teamid].stadium
-        stadium = game.stadiums[stadiumid]
+        club = user.get_user_club()
+        stadiumobj = stadium.stadiumitem.stadiums[club.stadium]
 
         # Main stand
         for count, widget in enumerate(self.main_stand_widget):
-            capacity = stadium.main[count].capacity
+            capacity = stadiumobj.main[count].capacity
             widget.set_value(capacity)
             widget.set_range(capacity, 15000)
 
@@ -427,7 +424,7 @@ class Stadium(Gtk.Grid):
 
         # Corner stand
         for count, widget in enumerate(self.corner_stand_widget, start=4):
-            capacity = stadium.corner[count - 4].capacity
+            capacity = stadiumobj.corner[count - 4].capacity
             widget.set_value(capacity)
             widget.set_range(capacity, 3000)
 
@@ -442,7 +439,7 @@ class Stadium(Gtk.Grid):
         # Roof
         for count, widget in enumerate(self.roof_widget):
             if count < 4:
-                roof = stadium.main[count].roof
+                roof = stadiumobj.main[count].roof
 
                 # Main stands
                 if self.main_stand_widget[count].get_value_as_int() > 0:
@@ -451,7 +448,7 @@ class Stadium(Gtk.Grid):
                     if roof:
                         widget.set_sensitive(False)
             else:
-                roof = stadium.corner[count - 4].roof
+                roof = stadiumobj.corner[count - 4].roof
 
                 # Corner stands
                 if self.corner_stand_widget[count - 4].get_value_as_int() > 0:
@@ -463,11 +460,11 @@ class Stadium(Gtk.Grid):
         # Standing / Seating
         for count, widget in enumerate(self.standing_widget):
             if count < 4:
-                seating = stadium.main[count].seating
-                capacity = stadium.main[count].capacity
+                seating = stadiumobj.main[count].seating
+                capacity = stadiumobj.main[count].capacity
             else:
-                seating = stadium.corner[count - 4].seating
-                capacity = stadium.corner[count - 4].capacity
+                seating = stadiumobj.corner[count - 4].seating
+                capacity = stadiumobj.corner[count - 4].capacity
 
             if capacity > 0:
                 widget[1].set_active(True)
@@ -481,9 +478,9 @@ class Stadium(Gtk.Grid):
         # Executive boxes
         for count, widget in enumerate(self.box_widget):
             if count < 4:
-                capacity = stadium.main[count].box
-                stand_capacity = stadium.main[count].capacity
-                roof_status = stadium.main[count].roof
+                capacity = stadiumobj.main[count].box
+                stand_capacity = stadiumobj.main[count].capacity
+                roof_status = stadiumobj.main[count].roof
 
                 if stand_capacity >= 5000 and roof_status:
                     widget.set_value(capacity)

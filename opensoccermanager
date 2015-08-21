@@ -23,17 +23,17 @@
 from gi.repository import Gtk
 import os
 
+from uigtk import dialogs
 from uigtk import window
 
 import database
-import dialogs
 import game
 import music
 import preferences
 
 
-game.database = database.Database()
-game.database = game.database.get_database_object()
+databaseObject = database.Database()
+game.database = databaseObject.get_database_object()
 
 game.continuegame = game.ContinueGame()
 preferences.preferences = preferences.Preferences()
