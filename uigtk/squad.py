@@ -24,6 +24,7 @@ import unicodedata
 
 from uigtk import filters
 from uigtk import playerinfo
+from uigtk import playerselect
 import club
 import constants
 import dialogs
@@ -36,115 +37,6 @@ import player
 import widgets
 
 
-class PlayerSelect(Gtk.Dialog):
-    def __init__(self):
-        Gtk.Dialog.__init__(self)
-        self.set_transient_for(game.window)
-        self.set_default_size(-1, 250)
-        self.set_title("Player Selection")
-        self.add_button("C_lear", Gtk.ResponseType.REJECT)
-        self.add_button("_Cancel", Gtk.ResponseType.CANCEL)
-        self.add_button("_Select", Gtk.ResponseType.OK)
-        self.set_default_response(Gtk.ResponseType.OK)
-
-        grid = Gtk.Grid()
-        grid.set_row_spacing(5)
-        self.vbox.add(grid)
-
-        scrolledwindow = Gtk.ScrolledWindow()
-        grid.attach(scrolledwindow, 0, 0, 1, 1)
-
-        self.liststore = Gtk.ListStore(str, str)
-        treemodelsort = Gtk.TreeModelSort(self.liststore)
-        treemodelsort.set_sort_column_id(1, Gtk.SortType.ASCENDING)
-
-        treeview = Gtk.TreeView()
-        treeview.set_hexpand(True)
-        treeview.set_vexpand(True)
-        treeview.set_headers_visible(False)
-        treeview.set_model(treemodelsort)
-        treeview.set_enable_search(False)
-        treeview.set_search_column(-1)
-        treeview.connect("row-activated", self.row_activated)
-        treeviewcolumn = widgets.TreeViewColumn(column=1)
-        treeview.append_column(treeviewcolumn)
-        self.treeselection = treeview.get_selection()
-        self.treeselection.connect("changed", self.selection_changed)
-        scrolledwindow.add(treeview)
-
-        searchentry = Gtk.SearchEntry()
-        searchentry.connect("activate", self.search_activated)
-        searchentry.connect("changed", self.search_changed)
-        searchentry.connect("icon-press", self.search_cleared)
-        grid.attach(searchentry, 0, 1, 1, 1)
-
-    def row_activated(self, treeview, treepath, column):
-        self.response(Gtk.ResponseType.OK)
-
-    def search_activated(self, searchentry):
-        criteria = searchentry.get_text()
-
-        values = {}
-
-        for playerid in club.clubitem.clubs[game.teamid].squad:
-            playerobj = player.playeritem.players[playerid]
-            both = "%s %s" % (playerobj.first_name, playerobj.second_name)
-
-            for search in (playerobj.second_name, playerobj.common_name, playerobj.first_name, both):
-                search = "".join((c for c in unicodedata.normalize("NFD", search) if unicodedata.category(c) != "Mn"))
-
-                if re.findall(criteria, search, re.IGNORECASE):
-                    values[playerid] = playerobj
-
-                    break
-
-        self.populate_data(values)
-
-    def search_changed(self, searchentry):
-        if searchentry.get_text_length() == 0:
-            self.populate_data(club.clubitem.clubs[game.teamid].squad)
-
-    def search_cleared(self, searchentry, icon, entry):
-        if icon == Gtk.EntryIconPosition.SECONDARY:
-            self.populate_data(club.clubitem.clubs[game.teamid].squad)
-
-    def selection_changed(self, treeselection):
-        model, treeiter = treeselection.get_selected()
-
-        if treeiter:
-            self.set_response_sensitive(Gtk.ResponseType.OK, True)
-        else:
-            self.set_response_sensitive(Gtk.ResponseType.OK, False)
-
-    def populate_data(self, data=None):
-        self.liststore.clear()
-
-        for playerid in data:
-            playerobj = player.playeritem.players[playerid]
-            name = playerobj.get_name()
-
-            self.liststore.append([str(playerid), name])
-
-    def display(self):
-        self.populate_data(club.clubitem.clubs[game.teamid].squad)
-
-        self.show_all()
-        response = self.run()
-
-        selected = 0
-
-        if response == Gtk.ResponseType.OK:
-            model, treeiter = self.treeselection.get_selected()
-            selected = model[treeiter][0]
-            selected = int(selected)
-        elif response == Gtk.ResponseType.REJECT:
-            selected = -1
-
-        self.hide()
-
-        return selected
-
-
 class Squad(Gtk.Grid):
     __name__ = "squad"
 
@@ -155,7 +47,7 @@ class Squad(Gtk.Grid):
                    ("STRING", 0, 3),
                   ]
 
-        self.playerselect = PlayerSelect()
+        self.playerselect = playerselect.PlayerSelect()
         self.squadfilter = filters.SquadFilter()
 
         self.tree_columns = ([], [], [])
@@ -175,7 +67,7 @@ class Squad(Gtk.Grid):
         treemodelsort.set_sort_column_id(1, Gtk.SortType.ASCENDING)
 
         self.treemodelfilter = treemodelsort.filter_new()
-        self.treemodelfilter.set_visible_func(self.filter_visible, club.clubs)
+        self.treemodelfilter.set_visible_func(self.filter_visible, player.players)
 
         grid = Gtk.Grid()
         grid.set_column_spacing(5)
@@ -418,11 +310,11 @@ class Squad(Gtk.Grid):
                 club.clubs[game.teamid].team[key] = 0
                 self.buttonTeam[key].set_label("")
 
-        player = game.players[playerid]
-        name = player.get_name()
+        playerObject = player.players[playerid]
+        name = playerObject.get_name()
         button = self.buttonTeam[count]
         button.set_label("%s" % (name))
-        club.clubitem.clubs[game.teamid].team[count] = playerid
+        club.clubs[game.teamid].team[count] = playerid
 
     def row_activated(self, widget, path=None, treeviewcolumn=None):
         '''
@@ -441,9 +333,9 @@ class Squad(Gtk.Grid):
 
         if treeiter and event.button == 3:
             playerid = model[treeiter][0]
-            player = game.players[playerid]
+            playerObject = player.players[playerid]
 
-            self.contextmenu.menuitemNotForSale.set_active(player.not_for_sale)
+            self.contextmenu.menuitemNotForSale.set_active(playerObject.not_for_sale)
 
             self.contextmenu.show_all()
 
@@ -458,7 +350,7 @@ class Squad(Gtk.Grid):
                 self.contextmenu.menuitemExtendLoan.set_visible(True)
                 self.contextmenu.menuitemCancelLoan.set_visible(True)
             else:
-                if player.transfer[0]:
+                if playerObject.transfer[0]:
                     self.contextmenu.menuitemAddTransfer.set_sensitive(False)
                     self.contextmenu.menuitemRemoveTransfer.set_sensitive(True)
                     self.contextmenu.menuitemNotForSale.set_sensitive(False)
@@ -467,7 +359,7 @@ class Squad(Gtk.Grid):
                     self.contextmenu.menuitemRemoveTransfer.set_sensitive(False)
                     self.contextmenu.menuitemNotForSale.set_sensitive(True)
 
-                if player.transfer[1]:
+                if playerObject.transfer[1]:
                     self.contextmenu.menuitemAddLoan.set_sensitive(False)
                     self.contextmenu.menuitemRemoveLoan.set_sensitive(True)
                 else:
@@ -535,12 +427,12 @@ class Squad(Gtk.Grid):
         '''
         model, treeiter = self.treeselection.get_selected()
         playerid = model[treeiter][0]
-        player = game.players[playerid]
+        playerObject = player.players[playerid]
 
-        name = player.get_name()
+        name = playerObject.get_name()
 
         self.buttonTeam[index].set_label(name)
-        club.clubitem.clubs[game.teamid].team[index] = playerid
+        club.clubs[game.teamid].team[index] = playerid
 
     def remove_from_position(self, menuitem):
         '''
@@ -549,9 +441,9 @@ class Squad(Gtk.Grid):
         model, treeiter = self.treeselection.get_selected()
         playerid = model[treeiter][0]
 
-        for key, item in club.clubitem.clubs[game.teamid].team.items():
+        for key, item in club.clubs[game.teamid].team.items():
             if item == playerid:
-                club.clubitem.clubs[game.teamid].team[key] = 0
+                club.clubs[game.teamid].team[key] = 0
                 self.buttonTeam[key].set_label("")
 
     def renew_contract(self, menuitem):
