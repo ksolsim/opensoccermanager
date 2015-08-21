@@ -96,68 +96,10 @@ def datainit():
     referee.referees = referee.Referees()
 
     # Import stadiums
-    stadium.stadiumitem = stadium.Stadiums()
-    stadium.stadiumitem.populate_data()
-
-    '''
-    adjacent = (0, 1), (2, 0), (3, 2), (1, 3), # DO NOT REORDER/CHANGE!
-
-    game.database.cursor.execute("SELECT * FROM stadium JOIN stadiumattr, clubattr ON clubattr.stadium = stadium.id WHERE clubattr.year = ?", (game.date.year,))
-    data = game.database.cursor.fetchall()
-
-    for item in data:
-        stadium = stadiums.Stadium()
-        stadiumid = item[0]
-        game.stadiums[stadiumid] = stadium
-
-        stadium.name = item[1]
-        stadium.condition = 100
-        stadium.plots = 0
-        stadium.capacity = sum(item[5:17])
-        stadium.main = []
-        stadium.corner = []
-
-        for count, value in enumerate(item[5:9]):
-            stand = structures.Stand()
-            stand.capacity = value
-
-            if stand.capacity > 0:
-                stand.seating = bool(item[count + 17])
-                stand.roof = bool(item[count + 25])
-
-                if stand.capacity >= 5000 and stand.roof:
-                    stand.box = item[count + 13]
-                else:
-                    stand.box = 0
-            else:
-                stand.seating = False
-                stand.roof = False
-                stand.box = 0
-
-            stand.adjacent = adjacent[count]
-
-            stadium.main.append(stand)
-
-        for count, value in enumerate(item[9:13]):
-            stand = structures.Stand()
-            stand.capacity = value
-
-            if stand.capacity > 0:
-                stand.seating = bool(item[count + 21])
-                stand.roof = bool(item[count + 29])
-                stand.available = [False, False]
-            else:
-                stand.seating = False
-                stand.roof = False
-                stand.available = [False, False]
-
-            stadium.corner.append(stand)
-
-        stadium.buildings = list(item[33:41])
-    '''
+    stadium.populate_data()
 
     for clubobj in club.clubitem.clubs.values():
-        stadiumobj = stadium.stadiumitem.stadiums[clubobj.stadium]
+        stadiumobj = stadium.stadiums[clubobj.stadium]
 
         if clubobj.reputation > 12:
             stadiumobj.plots = 60
