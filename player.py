@@ -16,6 +16,15 @@
 #  OpenSoccerManager.  If not, see <http://www.gnu.org/licenses/>.
 
 
+import random
+
+import calculator
+import club
+import constants
+import game
+import nation
+import preferences
+
 
 class Players:
     class Player:
@@ -39,7 +48,7 @@ class Players:
             self.assists = 0
             self.man_of_the_match = 0
             self.rating = []
-            self.history = player.History()
+            self.history = History()
 
         def get_skills(self):
             '''
@@ -251,6 +260,44 @@ class Players:
 
     def __init__(self):
         self.players = {}
+
+    def populate_data(self):
+        '''
+        Populate player data.
+        '''
+        game.database.cursor.execute("SELECT * FROM player JOIN playerattr ON player.id = playerattr.player WHERE year = ?", (game.date.year,))
+        data = game.database.cursor.fetchall()
+
+        for item in data:
+            if item[9] in club.clubitem.clubs.keys():
+                player = self.Player()
+                playerid = item[0]
+                self.players[playerid] = player
+
+                player.first_name = item[1]
+                player.second_name = item[2]
+                player.common_name = item[3]
+                player.date_of_birth = item[4]
+                player.nationality = item[5]
+                player.club = item[9]
+                player.position = item[10]
+                player.keeping = item[11]
+                player.tackling = item[12]
+                player.passing = item[13]
+                player.shooting = item[14]
+                player.heading = item[15]
+                player.pace = item[16]
+                player.stamina = item[17]
+                player.ball_control = item[18]
+                player.set_pieces = item[19]
+                player.training = item[20]
+                player.contract = random.randint(24, 260)
+
+                player.value = calculator.value(item[0])
+                player.wage = calculator.wage(item[0])
+                player.bonus = calculator.bonus(player.wage)
+
+                club.clubitem.clubs[player.club].squad.append(playerid)
 
 
 class History:

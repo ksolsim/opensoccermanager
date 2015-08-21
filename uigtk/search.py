@@ -27,6 +27,7 @@ import constants
 import dialogs
 import game
 import menu
+import player
 import scout
 import transfer
 import user
@@ -107,7 +108,6 @@ class Search(Gtk.Grid):
                                               int, int, str, int, str,)
 
         self.treemodelfilter = self.liststorePlayers.filter_new()
-        self.treemodelfilter.set_visible_func(self.filter_visible, game.players)
 
         self.treemodelsort = Gtk.TreeModelSort(self.treemodelfilter)
         self.treemodelsort.set_default_sort_func(self.default_sort)
@@ -199,7 +199,7 @@ class Search(Gtk.Grid):
 
                 self.populate_data(players)
             else:
-                self.populate_data(game.players)
+                self.populate_data(player.playeritem.players)
         else:
             menuitem.handler_block(self.scout_handler_id)
             menuitem.set_active(False)
@@ -249,7 +249,7 @@ class Search(Gtk.Grid):
         Refilter search criteria when entry is emptied.
         '''
         if entry.get_text_length() == 0:
-            self.populate_data(game.players)
+            self.populate_data(player.playeritem.players)
             self.treemodelfilter.refilter()
 
     def reset_activated(self, widget=None, position=None, event=None):
@@ -262,7 +262,7 @@ class Search(Gtk.Grid):
 
         self.searchfilter.reset_defaults()
 
-        self.populate_data(game.players)
+        self.populate_data(player.playeritem.players)
         self.treemodelfilter.refilter()
 
     def make_transfer_offer(self, menuitem, transfer_type):
@@ -272,9 +272,9 @@ class Search(Gtk.Grid):
         model, treeiter = self.treeselection.get_selected()
 
         playerid = model[treeiter][0]
-        player = game.players[playerid]
+        playerobj = player.playeritem.players[playerid]
 
-        if not player.club:
+        if not playerobj.club:
             transfer_type = 2
 
         transfer.make_enquiry(playerid, transfer_type)
@@ -303,7 +303,7 @@ class Search(Gtk.Grid):
 
             if treeiter:
                 playerid = model[treeiter][0]
-                player = game.players[playerid]
+                playerobj = player.playeritem.players[playerid]
                 club = user.get_user_club()
 
                 if playerid not in club.squad:
@@ -316,7 +316,7 @@ class Search(Gtk.Grid):
                         self.contextmenu.menuitemAddShortlist.set_sensitive(True)
                         self.contextmenu.menuitemRemoveShortlist.set_sensitive(False)
 
-                    if player.club:
+                    if playerobj.club:
                         self.contextmenu.menuitemLoan.set_sensitive(True)
                     else:
                         self.contextmenu.menuitemLoan.set_sensitive(False)
@@ -483,6 +483,8 @@ class Search(Gtk.Grid):
                                           rating])
 
     def run(self):
-        self.populate_data(game.players)
+        self.treemodelfilter.set_visible_func(self.filter_visible, player.playeritem.players)
+
+        self.populate_data(player.playeritem.players)
 
         self.show_all()

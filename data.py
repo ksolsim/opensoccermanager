@@ -36,12 +36,14 @@ import money
 import nation
 import news
 import overdraft
+import player
 import referee
 import stadium
 import statistics
 import structures
 import suspension
 import teamtraining
+import user
 import widgets
 
 
@@ -57,7 +59,6 @@ def datainit():
 
     # Clear data structures and reset date
     game.clubs = {}
-    game.players = {}
     game.stadiums = {}
     game.negotiations = {}
     game.injuries = {}
@@ -80,6 +81,9 @@ def datainit():
     constants.catering = game.database.importer("catering")
     game.companies = game.database.importer("company")
 
+    # Import nations
+    nation.nationitem = nation.Nations()
+
     # Import leagues
     league.leagueitem = league.Leagues()
 
@@ -88,42 +92,8 @@ def datainit():
     club.clubitem.populate_data()
 
     # Import players
-    game.database.cursor.execute("SELECT * FROM player JOIN playerattr ON player.id = playerattr.player WHERE year = ?", (game.date.year,))
-    data = game.database.cursor.fetchall()
-
-    for item in data:
-        if item[9] in club.clubitem.clubs.keys():
-            player = structures.Player()
-            playerid = item[0]
-            game.players[playerid] = player
-
-            player.first_name = item[1]
-            player.second_name = item[2]
-            player.common_name = item[3]
-            player.date_of_birth = item[4]
-            player.nationality = item[5]
-            player.club = item[9]
-            player.position = item[10]
-            player.keeping = item[11]
-            player.tackling = item[12]
-            player.passing = item[13]
-            player.shooting = item[14]
-            player.heading = item[15]
-            player.pace = item[16]
-            player.stamina = item[17]
-            player.ball_control = item[18]
-            player.set_pieces = item[19]
-            player.training = item[20]
-            player.contract = random.randint(24, 260)
-
-            player.value = calculator.value(item[0])
-            player.wage = calculator.wage(item[0])
-            player.bonus = calculator.bonus(player.wage)
-
-            club.clubitem.clubs[player.club].squad.append(playerid)
-
-    # Import nations
-    nation.nationitem = nation.Nations()
+    player.playeritem = player.Players()
+    player.playeritem.populate_data()
 
     # Import referees
     referee.referees = referee.Referees()
@@ -226,16 +196,16 @@ def dataloader(finances):
     Load remaining data attributes for user selected club. This includes the
     finances, sponsorship and advertising, and publishing initial new articles.
     '''
-    clubitem = club.clubitem.clubs[game.teamid]
+    club = user.get_user_club()
 
     if finances == -1:
-        clubitem.accounts.balance = clubitem.reputation ** 3 * random.randint(985, 1025) * 3
+        club.accounts.balance = club.reputation ** 3 * random.randint(985, 1025) * 3
     else:
-        clubitem.accounts.balance = constants.money[finances][0]
+        club.accounts.balance = constants.money[finances][0]
 
     # Generate advertising offers for hoardings/programmes
-    clubitem.hoardings.initialise()
-    clubitem.programmes.initialise()
+    club.hoardings.initialise()
+    club.programmes.initialise()
 
     #evaluation.update()
 
@@ -246,7 +216,7 @@ def dataloader(finances):
     # Publish initial news articles
     game.news.publish("MA01")
 
-    initial = league.leagueitem.leagues[clubitem.league].fixtures.get_initial_fixtures()
+    initial = league.leagueitem.leagues[club.league].fixtures.get_initial_fixtures()
 
     game.news.publish("FX01",
                       fixture1=initial[0],

@@ -18,25 +18,25 @@
 
 import constants
 import game
+import player
 
 
 def value(playerid):
     '''
     Calculate player value.
     '''
-    player = game.players[playerid]
+    playeritem = player.playeritem.players[playerid]
 
-    position = player.position
-    age = player.get_age()
-    skills = player.get_skills()
+    age = playeritem.get_age()
+    skills = playeritem.get_skills()
 
-    if position in ("GK"):
+    if playeritem.position in ("GK"):
         primary = skills[0]
-    elif position in ("DL", "DR", "DC", "D"):
+    elif playeritem.position in ("DL", "DR", "DC", "D"):
         primary = skills[1]
-    elif position in ("ML", "MR", "MC", "M"):
+    elif playeritem.position in ("ML", "MR", "MC", "M"):
         primary = skills[2]
-    elif position in ("AS", "AF"):
+    elif playeritem.position in ("AS", "AF"):
         primary = skills[3]
 
     average = sum(skills[0:6]) + (skills[8] * 1.5) + (skills[5] * 0.2) + (skills[6] * 0.2) + (skills[7] * 1.5)
@@ -97,19 +97,18 @@ def wage(playerid):
     '''
     Calculate player wage
     '''
-    player = game.players[playerid]
+    playeritem = player.playeritem.players[playerid]
 
-    position = player.position
-    skills = player.get_skills()
-    value = player.value
+    skills = playeritem.get_skills()
+    value = playeritem.value
 
-    if position in ("GK"):
+    if playeritem.position in ("GK"):
         primary = skills[0]
-    elif position in ("DL", "DR", "DC", "D"):
+    elif playeritem.position in ("DL", "DR", "DC", "D"):
         primary = skills[1]
-    elif position in ("ML", "MR", "MC", "M"):
+    elif playeritem.position in ("ML", "MR", "MC", "M"):
         primary = skills[2]
-    elif position in ("AS", "AF"):
+    elif playeritem.position in ("AS", "AF"):
         primary = skills[3]
 
     average = sum(skills[0:6]) + (skills[8] * 1.5) + (skills[5] * 0.2) + (skills[6] * 0.2) + (skills[7] * 1.5)

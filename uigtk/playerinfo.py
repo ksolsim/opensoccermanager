@@ -20,6 +20,7 @@ from gi.repository import Gtk
 
 import display
 import game
+import player
 import widgets
 
 
@@ -38,8 +39,8 @@ class PlayerInfo(Gtk.Dialog):
         grid = Gtk.Grid()
         self.vbox.add(grid)
 
-        player = game.players[self.playerid]
-        name = player.get_name(mode=1)
+        playerobj = player.playeritem.players[self.playerid]
+        name = playerobj.get_name(mode=1)
 
         label = widgets.AlignedLabel("%s" % (name))
         label.set_hexpand(True)
@@ -85,7 +86,7 @@ class PlayerInfo(Gtk.Dialog):
         grid.attach(label, 0, 3, 1, 1)
 
         if self.playerid:
-            bonus = game.players[self.playerid].bonus
+            bonus = playerobj.bonus
 
             amount = display.currency(bonus[2])
             label = widgets.AlignedLabel(amount)
@@ -118,16 +119,16 @@ class PlayerInfo(Gtk.Dialog):
         grid.attach(label, 0, 3, 1, 1)
 
         if self.playerid:
-            player = game.players[self.playerid]
+            playerobj = player.playeritem.players[self.playerid]
 
-            if player.injury_type == 0:
+            if playerobj.injury_type == 0:
                 injury_type = "None"
                 injury_period = "N/A"
             else:
                 injury_type = constants.injuries[injuryid][0]
                 injury_period = player.get_injury()
 
-            if player.suspension_type == 0:
+            if playerobj.suspension_type == 0:
                 suspension_type = "None"
                 suspension_period = "N/A"
             else:
@@ -153,20 +154,19 @@ class PlayerInfo(Gtk.Dialog):
                                   Gtk.PolicyType.AUTOMATIC)
         grid2.attach(scrolledwindow, 0, 0, 1, 1)
 
-        player = game.players[self.playerid]
-        club = player.get_club()
+        club = playerobj.get_club()
         season = game.date.get_season()
-        games = player.get_appearances()
+        games = playerobj.get_appearances()
 
         liststore = Gtk.ListStore(str, str, str, int, int, int)
         liststore.append([season,
                           club,
                           games,
-                          player.goals,
-                          player.assists,
-                          player.man_of_the_match])
+                          playerobj.goals,
+                          playerobj.assists,
+                          playerobj.man_of_the_match])
 
-        for item in player.history.history:
+        for item in playerobj.history.history:
             liststore.append(item)
 
         treeview = Gtk.TreeView()

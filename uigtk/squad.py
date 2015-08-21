@@ -32,6 +32,7 @@ import evaluation
 import events
 import game
 import menu
+import player
 import widgets
 
 
@@ -86,14 +87,14 @@ class PlayerSelect(Gtk.Dialog):
         values = {}
 
         for playerid in club.clubitem.clubs[game.teamid].squad:
-            player = game.players[playerid]
-            both = "%s %s" % (player.first_name, player.second_name)
+            playerobj = player.playeritem.players[playerid]
+            both = "%s %s" % (playerobj.first_name, playerobj.second_name)
 
-            for search in (player.second_name, player.common_name, player.first_name, both):
+            for search in (playerobj.second_name, playerobj.common_name, playerobj.first_name, both):
                 search = "".join((c for c in unicodedata.normalize("NFD", search) if unicodedata.category(c) != "Mn"))
 
                 if re.findall(criteria, search, re.IGNORECASE):
-                    values[playerid] = player
+                    values[playerid] = playerobj
 
                     break
 
@@ -119,8 +120,8 @@ class PlayerSelect(Gtk.Dialog):
         self.liststore.clear()
 
         for playerid in data:
-            player = game.players[playerid]
-            name = player.get_name()
+            playerobj = player.playeritem.players[playerid]
+            name = playerobj.get_name()
 
             self.liststore.append([str(playerid), name])
 
@@ -374,7 +375,7 @@ class Squad(Gtk.Grid):
         '''
         for count, playerid in enumerate(club.clubitem.clubs[game.teamid].team.values()):
             if playerid != 0:
-                player = game.players[playerid]
+                player = player.playeritem.players[playerid]
                 name = player.get_name()
                 self.buttonTeam[count].set_label(name)
             else:
@@ -650,34 +651,34 @@ class Squad(Gtk.Grid):
         self.liststoreSquad.clear()
 
         for playerid in club.clubitem.clubs[game.teamid].squad:
-            player = game.players[playerid]
+            playerobj = player.playeritem.players[playerid]
 
             self.liststoreSquad.append([playerid,
-                                        player.get_name(),
-                                        player.position,
-                                        player.keeping,
-                                        player.tackling,
-                                        player.passing,
-                                        player.shooting,
-                                        player.heading,
-                                        player.pace,
-                                        player.stamina,
-                                        player.ball_control,
-                                        player.set_pieces,
-                                        player.fitness,
-                                        player.get_nationality(),
-                                        player.get_value(),
-                                        player.get_wage(),
-                                        player.get_contract(),
-                                        player.get_morale(),
-                                        player.get_appearances(),
-                                        player.goals,
-                                        player.assists,
-                                        player.get_cards(),
-                                        player.man_of_the_match,
-                                        player.get_rating(),
-                                        player.injury_type,
-                                        player.suspension_type,
+                                        playerobj.get_name(),
+                                        playerobj.position,
+                                        playerobj.keeping,
+                                        playerobj.tackling,
+                                        playerobj.passing,
+                                        playerobj.shooting,
+                                        playerobj.heading,
+                                        playerobj.pace,
+                                        playerobj.stamina,
+                                        playerobj.ball_control,
+                                        playerobj.set_pieces,
+                                        playerobj.fitness,
+                                        playerobj.get_nationality(),
+                                        playerobj.get_value(),
+                                        playerobj.get_wage(),
+                                        playerobj.get_contract(),
+                                        playerobj.get_morale(),
+                                        playerobj.get_appearances(),
+                                        playerobj.goals,
+                                        playerobj.assists,
+                                        playerobj.get_cards(),
+                                        playerobj.man_of_the_match,
+                                        playerobj.get_rating(),
+                                        playerobj.injury_type,
+                                        playerobj.suspension_type,
                                         ])
 
     def run(self):
