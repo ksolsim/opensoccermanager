@@ -86,8 +86,7 @@ def datainit():
     league.leagueitem = league.Leagues()
 
     # Import clubs
-    club.clubitem = club.Clubs()
-    club.clubitem.populate_data()
+    club.populate_data()
 
     # Import players
     player.populate_data()
@@ -98,7 +97,7 @@ def datainit():
     # Import stadiums
     stadium.populate_data()
 
-    for clubobj in club.clubitem.clubs.values():
+    for clubobj in club.clubs.values():
         stadiumobj = stadium.stadiums[clubobj.stadium]
 
         if clubobj.reputation > 12:

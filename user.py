@@ -68,6 +68,6 @@ def get_user_club():
     '''
     Return the user club object.
     '''
-    clubobj = club.clubitem.clubs[game.teamid]
+    clubObject = club.clubs[game.teamid]
 
-    return clubobj
+    return clubObject

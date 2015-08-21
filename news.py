@@ -38,9 +38,9 @@ class News:
             self.category = int(item[2])
             self.unread = True
 
-            keys = {"_CLUB_": club.clubitem.clubs[game.teamid].name,
-                    "_USER_": club.clubitem.clubs[game.teamid].manager,
-                    "_CHAIRMAN_": club.clubitem.clubs[game.teamid].chairman,
+            keys = {"_CLUB_": club.clubs[game.teamid].name,
+                    "_USER_": club.clubs[game.teamid].manager,
+                    "_CHAIRMAN_": club.clubs[game.teamid].chairman,
                     "_SEASON_": game.date.get_season(),
                     "_FIXTURE1_": kwargs.get("fixture1"),
                     "_FIXTURE2_": kwargs.get("fixture2"),

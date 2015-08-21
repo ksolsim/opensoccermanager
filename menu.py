@@ -57,11 +57,11 @@ class Menu(Gtk.MenuBar):
                                           mod,
                                           Gtk.AccelFlags.VISIBLE)
         menu.append(self.menuitemSave)
-        self.menuitemDelete = widgets.MenuItem("_Delete Game")
+        self.menuitemDelete = widgets.MenuItem("_Delete Game...")
         menu.append(self.menuitemDelete)
         separator = Gtk.SeparatorMenuItem()
         menu.append(separator)
-        self.menuitemPrint = widgets.MenuItem("_Print")
+        self.menuitemPrint = widgets.MenuItem("_Print...")
         key, mod = Gtk.accelerator_parse("<CONTROL>P")
         self.menuitemPrint.add_accelerator("activate",
                                           game.accelgroup,

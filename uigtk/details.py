@@ -256,7 +256,7 @@ class Details(Gtk.Grid):
 
         # Save manager name entered by player
         manager = self.entryName.get_text()
-        club.clubitem.clubs[game.teamid].manager = manager
+        club.clubs[game.teamid].manager = manager
 
         self.user.add_name(manager)
 

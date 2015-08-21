@@ -104,7 +104,7 @@ class Player:
         Return the club name, or none if player is without a contract.
         '''
         if self.club:
-            name = club.clubitem.clubs[self.club].name
+            name = club.clubs[self.club].name
         else:
             name = ""
 
@@ -273,7 +273,7 @@ def populate_data():
     data = game.database.cursor.fetchall()
 
     for item in data:
-        if item[9] in club.clubitem.clubs.keys():
+        if item[9] in club.clubs.keys():
             player = Player()
             playerid = item[0]
             players[playerid] = player
@@ -301,7 +301,7 @@ def populate_data():
             player.wage = calculator.wage(item[0])
             player.bonus = calculator.bonus(player.wage)
 
-            club.clubitem.clubs[player.club].squad.append(playerid)
+            club.clubs[player.club].squad.append(playerid)
 
 
 def get_player(playerid):

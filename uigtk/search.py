@@ -438,26 +438,12 @@ class Search(Gtk.Grid):
         self.liststorePlayers.clear()
 
         for playerid, player in data.items():
-            name = player.get_name()
-            age = player.get_age()
-            clubid = player.club
-            club = player.get_club()
-            nation = player.get_nationality()
-            display_value = player.get_value()
-            display_wage = player.get_wage()
-            display_contract = player.get_contract()
-            transfer_list = player.transfer[0]
-            loan_list = player.transfer[1]
-            appearances = player.get_appearances()
-            cards = player.get_cards()
-            rating = player.get_rating()
-
             self.liststorePlayers.append([playerid,
-                                          name,
-                                          age,
-                                          clubid,
-                                          club,
-                                          nation,
+                                          player.get_name(),
+                                          player.get_age(),
+                                          player.club,
+                                          player.get_club(),
+                                          player.get_nationality(),
                                           player.position,
                                           player.keeping,
                                           player.tackling,
@@ -469,19 +455,19 @@ class Search(Gtk.Grid):
                                           player.ball_control,
                                           player.set_pieces,
                                           player.value,
-                                          display_value,
+                                          player.get_value(),
                                           player.wage,
-                                          display_wage,
+                                          player.get_wage(),
                                           player.contract,
-                                          display_contract,
-                                          transfer_list,
-                                          loan_list,
-                                          appearances,
+                                          player.get_contract(),
+                                          player.transfer[0],
+                                          player.transfer[1],
+                                          player.get_appearances(),
                                           player.goals,
                                           player.assists,
-                                          cards,
+                                          player.get_cards(),
                                           player.man_of_the_match,
-                                          rating])
+                                          player.get_rating()])
 
     def run(self):
         self.populate_data(player.players)

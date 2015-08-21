@@ -175,6 +175,7 @@ class Squad(Gtk.Grid):
         treemodelsort.set_sort_column_id(1, Gtk.SortType.ASCENDING)
 
         self.treemodelfilter = treemodelsort.filter_new()
+        self.treemodelfilter.set_visible_func(self.filter_visible, club.clubs)
 
         grid = Gtk.Grid()
         grid.set_column_spacing(5)
@@ -373,7 +374,7 @@ class Squad(Gtk.Grid):
         player is no longer set. Also used to clear the button text when
         starting a game from new.
         '''
-        for count, playerid in enumerate(club.clubitem.clubs[game.teamid].team.values()):
+        for count, playerid in enumerate(club.clubs[game.teamid].team.values()):
             if playerid != 0:
                 player = player.playeritem.players[playerid]
                 name = player.get_name()
@@ -412,9 +413,9 @@ class Squad(Gtk.Grid):
         Remove player if they already exist in the squad list, and then
         set the player into the new position.
         '''
-        for key, item in club.clubitem.clubs[game.teamid].team.items():
+        for key, item in club.clubs[game.teamid].team.items():
             if item != 0 and str(item) == str(playerid):
-                club.clubitem.clubs[game.teamid].team[key] = 0
+                club.clubs[game.teamid].team[key] = 0
                 self.buttonTeam[key].set_label("")
 
         player = game.players[playerid]
@@ -650,7 +651,7 @@ class Squad(Gtk.Grid):
     def populate_data(self):
         self.liststoreSquad.clear()
 
-        for playerid in club.clubitem.clubs[game.teamid].squad:
+        for playerid in club.clubs[game.teamid].squad:
             playerObject = player.get_player(playerid)
 
             self.liststoreSquad.append([playerid,
@@ -682,14 +683,12 @@ class Squad(Gtk.Grid):
                                         ])
 
     def run(self):
-        self.treemodelfilter.set_visible_func(self.filter_visible, club.clubitem.clubs)
-
-        formationid = club.clubitem.clubs[game.teamid].tactics.formation
+        formationid = club.clubs[game.teamid].tactics.formation
 
         for count in range(0, 16):
             button = self.buttonTeam[count]
 
-            playerid = club.clubitem.clubs[game.teamid].team[count]
+            playerid = club.clubs[game.teamid].team[count]
 
             if count < 11:
                 position = constants.formations[formationid][1][count]

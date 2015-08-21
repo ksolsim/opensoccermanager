@@ -103,7 +103,7 @@ class Sponsorship:
 class Advertising:
     class Advert:
         def __init__(self, name):
-            clubitem = club.clubitem.clubs[game.teamid]
+            clubitem = club.clubs[game.teamid]
 
             self.name = name
             self.amount = random.randint(1, 6)
