@@ -19,34 +19,30 @@
 import game
 
 
-class Nations:
-    class Nation:
-        def __init__(self):
-            self.name = ""
-            self.denonym = ""
+nations = {}
 
+
+class Nation:
     def __init__(self):
-        self.nations = {}
+        self.name = ""
+        self.denonym = ""
 
-        self.populate_data()
 
-    def populate_data(self):
-        '''
-        Populate nation data.
-        '''
-        for item in game.database.importer("nation"):
-            nation = self.Nation()
-            nationid = item[0]
-            self.nations[nationid] = nation
+def populate_data():
+    '''
+    Populate nation data.
+    '''
+    for item in game.database.importer("nation"):
+        nation = Nation()
+        nationid = item[0]
+        nations[nationid] = nation
 
-            nation.name = item[1]
-            nation.denonym = item[2]
+        nation.name = item[1]
+        nation.denonym = item[2]
 
 
 def get_nation(nationid):
     '''
     Return the nation for the given ID.
     '''
-    name = nationitem.nations[nationid].name
-
-    return name
+    return nations[nationid]

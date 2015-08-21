@@ -58,8 +58,6 @@ def datainit():
     game.surnames = [name[0] for name in surnames]
 
     # Clear data structures and reset date
-    game.clubs = {}
-    game.stadiums = {}
     game.negotiations = {}
     game.injuries = {}
     game.suspensions = {}
@@ -82,12 +80,12 @@ def datainit():
     game.companies = game.database.importer("company")
 
     # Import nations
-    nation.nationitem = nation.Nations()
+    nation.populate_data()
 
     # Import leagues
     league.leagueitem = league.Leagues()
 
-    # Import clubs and populate club data structure
+    # Import clubs
     club.clubitem = club.Clubs()
     club.clubitem.populate_data()
 

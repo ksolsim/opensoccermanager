@@ -108,9 +108,9 @@ class Players:
             '''
             Return the player nationality.
             '''
-            name = nation.get_nation(self.nationality)
+            nationObject = nation.get_nation(self.nationality)
 
-            return name
+            return nationObject.name
 
         def get_value(self):
             '''
