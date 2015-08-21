@@ -90,8 +90,7 @@ def datainit():
     club.clubitem.populate_data()
 
     # Import players
-    player.playeritem = player.Players()
-    player.playeritem.populate_data()
+    player.populate_data()
 
     # Import referees
     referee.referees = referee.Referees()

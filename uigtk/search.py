@@ -108,6 +108,7 @@ class Search(Gtk.Grid):
                                               int, int, str, int, str,)
 
         self.treemodelfilter = self.liststorePlayers.filter_new()
+        self.treemodelfilter.set_visible_func(self.filter_visible, player.players)
 
         self.treemodelsort = Gtk.TreeModelSort(self.treemodelfilter)
         self.treemodelsort.set_default_sort_func(self.default_sort)
@@ -483,8 +484,6 @@ class Search(Gtk.Grid):
                                           rating])
 
     def run(self):
-        self.treemodelfilter.set_visible_func(self.filter_visible, player.playeritem.players)
-
-        self.populate_data(player.playeritem.players)
+        self.populate_data(player.players)
 
         self.show_all()

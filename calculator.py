@@ -25,7 +25,7 @@ def value(playerid):
     '''
     Calculate player value.
     '''
-    playeritem = player.playeritem.players[playerid]
+    playeritem = player.get_player(playerid)
 
     age = playeritem.get_age()
     skills = playeritem.get_skills()
@@ -97,7 +97,7 @@ def wage(playerid):
     '''
     Calculate player wage
     '''
-    playeritem = player.playeritem.players[playerid]
+    playeritem = player.get_player(playerid)
 
     skills = playeritem.get_skills()
     value = playeritem.value
