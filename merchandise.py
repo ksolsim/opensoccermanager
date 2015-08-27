@@ -20,6 +20,7 @@ import random
 
 import constants
 import game
+import user
 
 
 class Merchandise:
@@ -32,7 +33,7 @@ class Merchandise:
         '''
         Determine sales of merchandise for the given attendance.
         '''
-        club = game.clubs[game.teamid]
+        club = user.get_user_club()
 
         self.reset_sales()
 

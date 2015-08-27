@@ -95,7 +95,7 @@ class Merchandise(Gtk.Grid):
         return True
 
     def value_changed(self, spinbutton, index):
-        club = game.clubs[game.teamid]
+        club = user.get_user_club()
 
         club.merchandise.percentages[index] = spinbutton.get_value()
 
@@ -105,14 +105,14 @@ class Merchandise(Gtk.Grid):
         self.display[index][2].set_label("%s" % (profit))
 
     def run(self):
-        club = game.clubs[game.teamid]
+        club = user.get_user_club()
 
         for count, item in enumerate(constants.merchandise):
             self.display[count][0].set_label(item[0])
             cost = display.currency(item[1], mode=1)
             self.display[count][1].set_label("%s" % (cost))
 
-            value = game.clubs[game.teamid].merchandise.percentages[count]
+            value = club.merchandise.percentages[count]
             self.spins[count].set_value(value)
 
             profit = (self.spins[count].get_value() * 0.01) * item[1] + item[1]
