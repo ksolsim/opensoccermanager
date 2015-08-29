@@ -180,6 +180,11 @@ def populate_data():
     stadium.buildings = list(item[33:41])
     '''
 
+
 def perform_maintenance():
     for stadium in self.stadiums.values():
         stadium.pay_maintenance()
+
+
+def get_stadium(stadiumid):
+    return stadiums[stadiumid]

@@ -21,7 +21,7 @@ from gi.repository import Gtk
 import club
 import constants
 import display
-import game
+import player
 import user
 import widgets
 
@@ -258,8 +258,8 @@ class Tactics(Gtk.Grid):
 
         for playerid in club.team.values():
             if playerid != 0:
-                player = game.players[playerid]
-                name = player.get_name()
+                playerObject = player.players[playerid]
+                name = playerObject.get_name()
                 playerid = str(playerid)
 
                 self.liststoreCaptain.append([playerid, name])

@@ -18,6 +18,7 @@
 
 import calculator
 import game
+import user
 
 
 class Tickets:
@@ -33,14 +34,14 @@ class Tickets:
         '''
         Determine number of season tickets to be sold prior to first game.
         '''
-        club = game.clubs[game.teamid]
-        stadium = game.stadiums[club.stadium]
+        club = user.get_user_club()
+        stadiumobj = stadium.get_stadium(club.stadium)
 
-        capacity = stadium.capacity
+        capacity = stadiumobj.capacity
 
         max_season_tickets = (capacity * 0.01) * self.season_tickets
 
-        base_tickets = calculator.ticket_prices()
+        base_tickets = self.get_ticket_prices()
         minmax = base_tickets[11] * 0.1
 
         upper = minmax + base_tickets[11]
@@ -62,7 +63,7 @@ class Tickets:
 
         capacity = 0
 
-        for stand in stadium.main:
+        for stand in stadiumobj.main:
             capacity += stand.box
 
         box_sales = (capacity * 0.01) * self.season_tickets * self.tickets[14]
@@ -70,6 +71,31 @@ class Tickets:
         total = sales + box_sales
 
         club.accounts.deposit(amount=total, category="tickets")
+
+    def get_ticket_prices(self):
+        club = user.get_user_club()
+
+        tickets = [0] * 15
+
+        tickets[0] = 1 + club.reputation
+        tickets[1] = 1 + club.reputation + (club.reputation * 0.25)
+        tickets[2] = (1 + club.reputation) * 15
+        tickets[3] = 2 + club.reputation
+        tickets[4] = 2 + club.reputation + (club.reputation * 0.25)
+        tickets[5] = (2 + club.reputation) * 15
+        tickets[6] = 3 + club.reputation
+        tickets[7] = 3 + club.reputation + (club.reputation * 0.25)
+        tickets[8] = (3 + club.reputation) * 15
+        tickets[9] = 4 + club.reputation
+        tickets[10] = 4 + club.reputation + (club.reputation * 0.25)
+        tickets[11] = (4 + club.reputation) * 15
+        tickets[12] = 30 + club.reputation
+        tickets[13] = 30 + club.reputation + (club.reputation * 0.25)
+        tickets[14] = (30 + club.reputation) * 15
+
+        tickets = list(map(int, tickets))
+
+        return tickets
 
 
 def calculate_matchday_tickets(attendance):

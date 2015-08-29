@@ -305,6 +305,4 @@ def populate_data():
 
 
 def get_player(playerid):
-    playerObject = players[playerid]
-
-    return playerObject
+    return players[playerid]

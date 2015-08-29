@@ -18,6 +18,7 @@
 
 from gi.repository import Gtk
 
+import display
 import game
 import stadium
 import user
@@ -141,7 +142,7 @@ class Tickets(Gtk.Grid):
     def populate_data(self):
         club = user.get_user_club()
 
-        stadium = stadiums.stadiumitem.stadiums[club.stadium]
+        stadiumobj = stadium.get_stadium(club.stadium)
 
         # Determine standing / seating configurations
         uncovered_standing = False
@@ -150,7 +151,7 @@ class Tickets(Gtk.Grid):
         covered_seating = False
         box = False
 
-        for count, stand in enumerate(stadium.main):
+        for count, stand in enumerate(stadiumobj.main):
             if stand.capacity > 0:
                 if stand.seating and stand.roof:
                     covered_seating = True
@@ -164,7 +165,7 @@ class Tickets(Gtk.Grid):
                 if stand.box > 0:
                     box = True
 
-        for count, stand in enumerate(stadium.corner):
+        for count, stand in enumerate(stadiumobj.corner):
             if stand.capacity > 0:
                 if stand.seating and stand.roof:
                     covered_seating = True
@@ -202,7 +203,7 @@ class Tickets(Gtk.Grid):
 
                 count += 1
 
-        self.spinbuttonSchoolTickets.set_range(0, stadium.get_capacity())
+        self.spinbuttonSchoolTickets.set_range(0, stadiumobj.get_capacity())
         self.spinbuttonSchoolTickets.set_increments(100, 1000)
         self.spinbuttonSchoolTickets.set_value(club.tickets.school_tickets)
 

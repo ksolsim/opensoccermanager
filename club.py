@@ -198,3 +198,7 @@ def populate_data():
 
         club.generate_coaches()
         club.generate_scouts()
+
+
+def get_club(clubid):
+    return clubs[clubid]
