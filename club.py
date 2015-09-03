@@ -28,6 +28,7 @@ import league
 import merchandise
 import scout
 import shortlist
+import stadium
 import tactics
 import teamtraining
 import tickets
@@ -62,9 +63,9 @@ class Club:
         '''
         Return the stadium name.
         '''
-        stadium = game.stadiums[self.stadium].name
+        name = stadium.get_stadium(self.stadium).name
 
-        return stadium
+        return name
 
     def set_advertising_spaces(self):
         '''

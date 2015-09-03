@@ -135,7 +135,7 @@ class Standings:
         for key, value in self.clubs.items():
             item = []
 
-            clubobj = club.clubitem.clubs[key]
+            clubobj = club.get_club(key)
             item = value.get_data()
 
             form = "".join(clubobj.form[-6:])

@@ -17,12 +17,15 @@
 
 
 import ai
+import aitransfer
 import constants
 import evaluation
 import events
 import game
 import staff
 import transfer
+import user
+import widgets
 
 
 class Date:
@@ -111,7 +114,7 @@ class Date:
         transfer.transfer()
         events.injury_generation()
         ai.advertising()
-        evaluation.update()
+        #evaluation.update()
         aitransfer.identify()
         staff.check_morale()
         ai.transfer_list()
@@ -119,7 +122,7 @@ class Date:
 
         # Initiate sponsorship generation if needed
         if (game.date.day, game.date.month) == (4, 8):
-            club = game.clubs[game.teamid]
+            club = user.get_user_club()
 
             if club.sponsorship.status == 0:
                 club.sponsorship.generate()

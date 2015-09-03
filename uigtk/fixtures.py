@@ -127,8 +127,10 @@ class Fixtures(Gtk.Grid):
         for week in fixtures.fixtures:
             for match in week:
                 if game.teamid in match:
-                    match = "%s - %s" % (club.clubitem.clubs[match[0]].name,
-                                         club.clubitem.clubs[match[1]].name)
+                    club1 = club.get_club(match[0])
+                    club2 = club.get_club(match[1])
+
+                    match = "%s - %s" % (club1.name, club2.name)
                     self.liststoreClubFixtures.append([match])
 
         self.liststoreFixtures.clear()
@@ -141,13 +143,12 @@ class Fixtures(Gtk.Grid):
             fixtures = league.leagueitem.leagues[leagueid].fixtures
 
             for teamid1, teamid2 in fixtures.fixtures[self.page]:
-                team1 = club.clubitem.clubs[teamid1].name
-                team2 = club.clubitem.clubs[teamid2].name
+                club1 = club.get_club(teamid1)
+                club2 = club.get_club(teamid2)
 
-                #stadium = club.clubitem.clubs[teamid1].get_stadium_name()
-                stadium = ""
+                stadium = club1.get_stadium_name()
 
-                self.liststoreFixtures.append([team1, team2, stadium])
+                self.liststoreFixtures.append([club1.name, club2.name, stadium])
 
     def run(self):
         self.page = game.date.fixturesindex

@@ -22,6 +22,7 @@ import string
 import constants
 import game
 import news
+import user
 
 
 def check_morale():
@@ -30,9 +31,9 @@ def check_morale():
     '''
     counts = {}
 
-    club = game.clubs[game.teamid]
+    club = user.get_user_club()
 
-    for playerid, training in club.individual_training.items():
+    for playerid, training in club.individual_training.individual_training.items():
         if training.coachid in counts:
             counts[training.coachid] += 1
         else:
