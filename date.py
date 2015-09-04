@@ -18,10 +18,13 @@
 
 import ai
 import aitransfer
+import calculator
+import club
 import constants
 import evaluation
 import events
 import game
+import player
 import staff
 import transfer
 import user
@@ -122,37 +125,40 @@ class Date:
 
         # Initiate sponsorship generation if needed
         if (game.date.day, game.date.month) == (4, 8):
-            club = user.get_user_club()
+            clubObject = user.get_user_club()
 
-            if club.sponsorship.status == 0:
-                club.sponsorship.generate()
+            if clubObject.sponsorship.status == 0:
+                clubObject.sponsorship.generate()
 
         # Stop sale of season tickets and deposit earnings
         if (game.date.day, game.date.month) == (16, 8):
-            for club in game.clubs.values():
-                club.set_season_tickets_unavailable()
+            for clubObject in club.clubs.values():
+                clubObject.set_season_tickets_unavailable()
 
-            game.clubs[game.teamid].tickets.calculate_season_tickets()
+            clubObject = user.get_user_club()
+
+            clubObject.tickets.calculate_season_tickets()
 
         # Player value adjustments
-        for playerid, player in game.players.items():
-            player.value = calculator.value(playerid)
+        for playerid, playerObject in player.players.items():
+            playerObject.value = calculator.value(playerid)
 
     def weekly_events(self):
         '''
         Process events once the end of the week is reached.
         '''
-        club = game.clubs[game.teamid]
+        clubObject = user.get_user_club()
 
-        club.accounts.reset_weekly()
-        club.team_training.update()
+        clubObject.accounts.reset_weekly()
+        clubObject.team_training.update()
         events.update_contracts()
         events.update_advertising()
-        club.sponsorship.update()
+        clubObject.sponsorship.update()
         events.refresh_staff()
         events.individual_training()
         ai.renew_contract()
         events.injury_period()
+        '''
         events.update_condition()
         club.perform_maintenance()
         game.flotation.complete_float()
@@ -162,5 +168,6 @@ class Date:
         game.overdraft.update_interest_rate()
         game.grant.update_grant()
 
-        for club in game.clubs.values():
-            club.pay_wages()
+        for clubObject in club.clubs.values():
+            clubObject.pay_wages()
+        '''

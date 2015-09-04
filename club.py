@@ -26,6 +26,7 @@ import game
 import individualtraining
 import league
 import merchandise
+import player
 import scout
 import shortlist
 import sponsorship
@@ -126,7 +127,7 @@ class Club:
         total = 0
 
         for playerid in self.squad:
-            total += game.players[playerid].wage
+            total += player.players[playerid].wage
 
         self.accounts.withdraw(amount=total, category="playerwage")
 

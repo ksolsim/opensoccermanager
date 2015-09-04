@@ -26,6 +26,9 @@ import fixtures
 import game
 import injury
 import money
+import player
+import stadium
+import user
 import widgets
 
 
@@ -224,25 +227,25 @@ def update_contracts():
 
 
 def update_advertising():
-    club = game.clubs[game.teamid]
+    clubObject = user.get_user_club()
 
-    club.hoardings.update()
-    club.programmes.update()
+    clubObject.hoardings.update()
+    clubObject.programmes.update()
 
 
 def individual_training():
-    club = game.clubs[game.teamid]
+    clubObject = user.get_user_club()
 
-    for playerid in club.individual_training:
-        player = game.players[playerid]
+    for playerid in clubObject.individual_training.individual_training:
+        playerObject = player.players[playerid]
 
-        training = club.individual_training[playerid]
+        training = clubObject.individual_training[playerid]
 
         coachid = training.coachid
         skill = training.skill
         intensity = training.intensity + 1
 
-        coach = club.coaches_hired[coachid]
+        coach = clubObject.coaches_hired[coachid]
 
         ability = coach.ability + 1
 
@@ -277,70 +280,70 @@ def individual_training():
 
         sessions = 0.0
 
-        for value in club.team_training:
+        for value in clubObject.team_training:
             if value == 1:
                 sessions += 0.4
 
-        points = (ability * intensity * speciality * sessions) * (player.training * 0.1)
+        points = (ability * intensity * speciality * sessions) * (playerObject.training * 0.1)
 
-        player.training_points += points
-        player.training_points = int(player.training_points)
+        playerObject.training_points += points
+        playerObject.training_points = int(player.training_points)
 
-        if player.training_points >= 100:
+        if playerObject.training_points >= 100:
             if skill == 0:
-                player.keeping += 1
+                playerObject.keeping += 1
             elif skill == 1:
-                player.tackling += 1
+                playerObject.tackling += 1
             elif skill == 2:
-                player.passing += 1
+                playerObject.passing += 1
             elif skill == 3:
-                player.shooting += 1
+                playerObject.shooting += 1
             elif skill == 4:
-                player.heading += 1
+                playerObject.heading += 1
             elif skill == 5:
-                player.pace += 1
+                playerObject.pace += 1
             elif skill == 6:
-                player.stamina += 1
+                playerObject.stamina += 1
             elif skill == 7:
-                player.ball_control += 1
+                playerObject.ball_control += 1
             elif skill == 8:
-                player.set_pieces += 1
+                playerObject.set_pieces += 1
             elif skill == 9:
-                player.fitness += 1
+                playerObject.fitness += 1
 
-            player.training_points -= 100
+            playerObject.training_points -= 100
 
     # Reduce player skill when not individual training
-    for playerid in club.squad:
-        if playerid not in club.individual_training:
-            player = game.players[playerid]
+    for playerid in clubObject.squad:
+        if playerid not in clubObject.individual_training.individual_training:
+            playerObject = player.players[playerid]
 
             reduction = random.randint(1, 3)
-            player.training_points -= reduction
+            playerObject.training_points -= reduction
 
-            if player.training_points <= 0:
+            if playerObject.training_points <= 0:
                 skill = random.randint(0, 9)
 
                 if skill == 0:
-                    player.keeping -= 1
+                    playerObject.keeping -= 1
                 elif skill == 1:
-                    player.tackling -= 1
+                    playerObject.tackling -= 1
                 elif skill == 2:
-                    player.passing -= 1
+                    playerObject.passing -= 1
                 elif skill == 3:
-                    player.shooting -= 1
+                    playerObject.shooting -= 1
                 elif skill == 4:
-                    player.heading -= 1
+                    playerObject.heading -= 1
                 elif skill == 5:
-                    player.pace -= 1
+                    playerObject.pace -= 1
                 elif skill == 6:
-                    player.stamina -= 1
+                    playerObject.stamina -= 1
                 elif skill == 7:
-                    player.ball_control -= 1
+                    playerObject.ball_control -= 1
                 elif skill == 8:
-                    player.set_pieces -= 1
+                    playerObject.set_pieces -= 1
 
-                player.training_points = 99
+                playerObject.training_points = 99
 
 
 def expectation():
@@ -532,33 +535,33 @@ def update_condition():
     '''
     Update the current condition of the stadium.
     '''
-    club = game.clubs[game.teamid]
-    stadium = game.stadiums[club.stadium]
+    clubObject = user.get_user_club()
+    stadiumObject = stadium.stadiums[clubObject.stadium]
 
     # Adjust stadium condition
-    stadium.condition = stadium.maintenance + random.randint(-1, 2)
+    stadiumObject.condition = stadiumObject.maintenance + random.randint(-1, 2)
 
-    if stadium.condition > 100:
-        stadium.condition = 100
-    elif stadium.condition < 0:
-        stadium.condition = 0
+    if stadiumObject.condition > 100:
+        stadiumObject.condition = 100
+    elif stadiumObject.condition < 0:
+        stadiumObject.condition = 0
 
     # Publish news article
-    if stadium.condition <= 25:
+    if stadiumObject.condition <= 25:
         game.news.publish("SM01")
 
-        stadium.warnings += 1
-    elif stadium.condition <= 50:
+        stadiumObject.warnings += 1
+    elif stadiumObject.condition <= 50:
         game.news.publish("SM02")
 
-        stadium.warnings += 1
+        stadiumObject.warnings += 1
 
     # Issue FA fine
-    if stadium.warnings == 3:
-        fine = (stadium.capacity * 3) * (stadium.fines + 1)
+    if stadiumObject.warnings == 3:
+        fine = (stadiumObject.capacity * 3) * (stadiumObject.fines + 1)
         club.accounts.withdraw(fine, "fines")
 
         game.news.publish("SM03", amount=fine)
 
-        stadium.fines += 1
-        stadium.warnings = 0
+        stadiumObject.fines += 1
+        stadiumObject.warnings = 0

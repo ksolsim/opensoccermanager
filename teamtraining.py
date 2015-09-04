@@ -19,6 +19,7 @@
 import random
 
 import game
+import user
 
 
 class TeamTraining:
@@ -61,7 +62,9 @@ class TeamTraining:
         '''
         count = 0
 
-        for trainingid in game.clubs[game.teamid].team_training.training:
+        clubObject = user.get_user_club()
+
+        for trainingid in clubObject.team_training.training:
             if trainingid != 0:
                 count += 1
 
