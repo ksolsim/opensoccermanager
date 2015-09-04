@@ -28,6 +28,7 @@ import league
 import merchandise
 import scout
 import shortlist
+import sponsorship
 import stadium
 import tactics
 import teamtraining
@@ -50,7 +51,7 @@ class Club:
         self.individual_training = individualtraining.IndividualTraining()
         self.tickets = tickets.Tickets()
         self.accounts = accounts.Accounts()
-        self.sponsorship = advertising.Sponsorship()
+        self.sponsorship = sponsorship.Sponsorship()
         self.hoardings = advertising.Advertising()
         self.programmes = advertising.Advertising()
         self.merchandise = merchandise.Merchandise()

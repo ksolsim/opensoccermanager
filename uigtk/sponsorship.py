@@ -22,11 +22,49 @@ import uigtk.window
 import user
 
 
-class Sponsorship(Gtk.Dialog):
+class Sponsorship(Gtk.MessageDialog):
     def __init__(self):
         Gtk.MessageDialog.__init__(self)
         self.set_transient_for(uigtk.window.window)
         self.set_title("Sponsorship")
+        self.connect("response", self.on_response)
+
+    def on_response(self, dialog, response):
+        club = user.get_user_club()
+
+        if response == Gtk.ResponseType.ACCEPT:
+            club.sponsorship.accept()
+        elif response == Gtk.ResponseType.REJECT:
+            club.sponsorship.reject()
+
+        self.destroy()
 
     def display(self):
         club = user.get_user_club()
+
+        if club.sponsorship.status in (0, 2):
+            if club.sponsorship.status == 0:
+                self.set_markup("There are currently no sponsorship offers available.")
+            elif club.sponsorship.status == 2:
+                company, period, amount = club.sponsorship.get_details()
+
+                if period > 1:
+                    self.set_markup("The current sponsorship deal with %s runs for %i years." % (company, period))
+                else:
+                    self.set_markup("The current sponsorship deal with %s runs until the end of the season." % (company, period))
+
+            self.add_button("_Close", Gtk.ResponseType.CLOSE)
+        elif club.sponsorship.status == 1:
+            company, period, amount = club.sponsorship.get_details()
+
+            self.set_markup("<span size='12000'><b>%s have made a sponsorship offer to the club.</b></span>" % (company))
+
+            if period > 1:
+                self.format_secondary_text("The deal is for %i years and is worth %s." % (period, amount))
+            else:
+                self.format_secondary_text("The deal is for %i year and is worth %s." % (period, amount))
+
+            self.add_button("_Accept", Gtk.ResponseType.ACCEPT)
+            self.add_button("_Reject", Gtk.ResponseType.REJECT)
+
+        self.show_all()

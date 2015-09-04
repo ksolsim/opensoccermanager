@@ -26,7 +26,6 @@ import game
 import preferences
 import resources
 import staff
-import structures
 import transfer
 import widgets
 
