@@ -23,9 +23,9 @@ import ai
 import constants
 import events
 import game
+import match
 import money
 import news
-import structures
 import tickets
 import widgets
 
@@ -300,10 +300,10 @@ class Match(Gtk.Grid):
             if game.teamid in fixture:
                 match = fixture
 
-        self.team1 = structures.Team()
+        self.team1 = match.Team()
         self.team1.teamid = match[0]
         self.team1.name = game.clubs[self.team1.teamid].name
-        self.team2 = structures.Team()
+        self.team2 = match.Team()
         self.team2.teamid = match[1]
         self.team2.name = game.clubs[self.team2.teamid].name
 
@@ -484,8 +484,8 @@ class Match(Gtk.Grid):
 
     def process_remaining_league(self):
         for count, fixture in enumerate(game.leagues[self.leagueid].fixtures.fixtures[game.date.fixturesindex], start=1):
-            team1 = structures.Team()
-            team2 = structures.Team()
+            team1 = match.Team()
+            team2 = match.Team()
 
             team1.teamid = fixture[0]
             team2.teamid = fixture[1]
@@ -527,8 +527,8 @@ class Match(Gtk.Grid):
                 random.shuffle(self.referees)
 
                 for count, fixture in enumerate(league.fixtures.fixtures[game.date.fixturesindex], start=0):
-                    team1 = structures.Team()
-                    team2 = structures.Team()
+                    team1 = match.Team()
+                    team2 = match.Team()
 
                     team1.teamid = fixture[0]
                     team2.teamid = fixture[1]

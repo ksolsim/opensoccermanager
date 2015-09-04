@@ -18,7 +18,6 @@
 
 import constants
 import game
-import structures
 
 
 stadiums = {}
@@ -143,7 +142,7 @@ def populate_data():
     stadium.corner = []
 
     for count, value in enumerate(item[13:25]):
-        stand = structures.Stand()
+        stand = MainStand()
         stand.capacity = value
 
         if stand.capacity > 0:
@@ -164,7 +163,7 @@ def populate_data():
         stadium.main.append(stand)
 
     for count, value in enumerate(item[9:13]):
-        stand = structures.Stand()
+        stand = CornerStand()
         stand.capacity = value
 
         if stand.capacity > 0:

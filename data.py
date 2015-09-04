@@ -40,7 +40,6 @@ import player
 import referee
 import stadium
 import statistics
-import structures
 import suspension
 import teamtraining
 import user

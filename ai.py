@@ -23,8 +23,8 @@ import calculator
 import constants
 import evaluation
 import game
+import match
 import news
-import structures
 
 
 class Result:
@@ -438,7 +438,7 @@ class Result:
             # Process cards and add to chart
             for playerid, amount in match_cards[0].items():
                 if playerid not in game.cards.keys():
-                    cards = structures.Cards()
+                    cards = match.Cards()
                     game.cards[playerid] = cards
                 else:
                     cards = game.cards[playerid]
@@ -448,7 +448,7 @@ class Result:
 
             for playerid, amount in match_cards[1].items():
                 if playerid not in game.cards.keys():
-                    cards = structures.Cards()
+                    cards = match.Cards()
                     game.cards[playerid] = cards
                 else:
                     cards = game.cards[playerid]

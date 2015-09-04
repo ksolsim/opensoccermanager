@@ -26,7 +26,6 @@ import events
 import game
 import individualtraining
 import money
-import structures
 import teamtraining
 import trainingcamp
 import user

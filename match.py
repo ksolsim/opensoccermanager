@@ -16,17 +16,6 @@
 #  OpenSoccerManager.  If not, see <http://www.gnu.org/licenses/>.
 
 
-import calculator
-import club
-import constants
-import display
-import evaluation
-import game
-import nation
-import player
-import preferences
-
-
 class Team:
     def __init__(self):
         self.teamid = None
