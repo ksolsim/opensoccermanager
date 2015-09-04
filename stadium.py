@@ -16,6 +16,7 @@
 #  OpenSoccerManager.  If not, see <http://www.gnu.org/licenses/>.
 
 
+import constants
 import game
 import structures
 
@@ -57,11 +58,11 @@ class Stadium:
         Calculate cost of maintaining stadium.
         '''
         # Stadium maintenance cost
-        cost = (stadium.maintenance * 0.01) * stadium.capacity * 0.5
+        cost = (self.condition * 0.01) * self.get_capacity() * 0.5
 
         # Building maintenance cost
         for count, item in enumerate(constants.buildings):
-            cost += (item[2] * 0.05) * stadium.buildings[count]
+            cost += (item[2] * 0.05) * self.buildings[count]
 
         return cost
 

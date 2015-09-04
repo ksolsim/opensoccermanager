@@ -167,7 +167,7 @@ class Stadium(Gtk.Grid):
 
     def run(self):
         clubobj = user.get_user_club()
-        stadiumobj = stadium.stadiumitem.stadiums[clubobj.stadium]
+        stadiumobj = stadium.get_stadium(clubobj.stadium)
 
         self.update_capacity()
         self.revert_upgrade()
@@ -178,27 +178,31 @@ class Stadium(Gtk.Grid):
 
         self.spinbuttonMaintenance.set_value(stadiumobj.condition)
 
-        cost = calculator.maintenance()
+        '''
+        cost = stadiumobj.get_maintenance()
         cost = display.currency(cost)
         self.labelMaintenanceCost.set_label("%s" % (cost))
+        '''
 
         self.labelCondition.set_label("%i%%" % (stadiumobj.condition))
 
         self.show_all()
 
     def maintenance_changed(self, spinbutton):
-        stadiumid = game.clubs[game.teamid].stadium
-        stadium = game.stadiums[stadiumid]
+        club = user.get_user_club()
+        stadiumObject = stadium.get_stadium(club.stadium)
 
-        stadium.maintenance = spinbutton.get_value_as_int()
+        stadiumObject.maintenance = spinbutton.get_value_as_int()
 
+        '''
         cost = calculator.maintenance()
         cost = display.currency(cost)
         self.labelMaintenanceCost.set_label("%s" % (cost))
+        '''
 
     def update_capacity(self):
         clubobj = user.get_user_club()
-        stadiumobj = stadium.stadiumitem.stadiums[clubobj.stadium]
+        stadiumobj = stadium.get_stadium(clubobj.stadium)
 
         capacity = 0
 
@@ -239,11 +243,11 @@ class Stadium(Gtk.Grid):
                 self.box_widget[index].set_sensitive(False)
 
         # Corner stand availability
-        stadiumid = game.clubs[game.teamid].stadium
-        stadium = game.stadiums[stadiumid]
+        club = user.get_user_club()
+        stadiumObject = stadium.get_stadium(club.stadium)
 
         # (0, 1), (2, 0), (1, 3), (3, 2)
-        adjacent = stadium.main[index].adjacent
+        adjacent = stadiumObject.main[index].adjacent
 
         if spinbutton.get_value_as_int() < 8000:
             if self.main_stand_widget[adjacent[0]].get_value_as_int() < 8000:
@@ -296,25 +300,25 @@ class Stadium(Gtk.Grid):
         self.cost = 0
         upgrade_capacity = 0
 
-        stadiumid = game.clubs[game.teamid].stadium
-        stadium = game.stadiums[stadiumid]
+        club = user.get_user_club()
+        stadiumObject = stadium.get_stadium(club.stadium)
 
         for count, widget in enumerate(self.main_stand_widget):
-            capacity = stadium.main[count].capacity
+            capacity = stadiumObject.main[count].capacity
             new_capacity = widget.get_value_as_int()
             upgrade_capacity += new_capacity
 
             self.cost += ((new_capacity - capacity) / 1000) * 1200000
 
         for count, widget in enumerate(self.corner_stand_widget):
-            capacity = stadium.corner[count].capacity
+            capacity = stadiumObject.corner[count].capacity
             new_capacity = widget.get_value_as_int()
             upgrade_capacity += new_capacity
 
             self.cost += ((new_capacity - capacity) / 1000) * 750000
 
         for count, widget in enumerate(self.box_widget):
-            capacity = stadium.main[count].box
+            capacity = stadiumObject.main[count].box
             new_capacity = widget.get_value_as_int()
             upgrade_capacity += new_capacity
 
@@ -322,21 +326,21 @@ class Stadium(Gtk.Grid):
 
         for count, widget in enumerate(self.standing_widget):
             if count < 4:
-                if not stadium.main[count].seating:
+                if not stadiumObject.main[count].seating:
                     if widget[1].get_active():
                         self.cost += 525000
             else:
-                if not stadium.corner[count - 4].seating:
+                if not stadiumObject.corner[count - 4].seating:
                     if widget[1].get_active():
                         self.cost += 350000
 
         for count, widget in enumerate(self.roof_widget):
             if count < 4:
-                if not stadium.main[count].roof:
+                if not stadiumObject.main[count].roof:
                     if widget.get_active():
                         self.cost += 1200000
             else:
-                if not stadium.corner[count - 4].roof:
+                if not stadiumObject.corner[count - 4].roof:
                     if widget.get_active():
                         self.cost += 800000
 
@@ -408,8 +412,8 @@ class Stadium(Gtk.Grid):
         '''
         This function is also used to load the starting data set.
         '''
-        club = user.get_user_club()
-        stadiumobj = stadium.stadiumitem.stadiums[club.stadium]
+        clubobj = user.get_user_club()
+        stadiumobj = stadium.get_stadium(clubobj.stadium)
 
         # Main stand
         for count, widget in enumerate(self.main_stand_widget):
