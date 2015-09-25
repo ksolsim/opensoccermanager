@@ -73,6 +73,7 @@ class Stadium:
 
         self.accounts.withdraw(amount=cost, category="stadium")
 
+
 class MainStand:
     def __init__(self):
         self.capacity = 0
@@ -87,6 +88,7 @@ class MainStand:
         permitted = self.capacity >= 5000 and self.roof
 
         return permitted
+
 
 class CornerStand:
     def __init__(self):

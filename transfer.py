@@ -66,7 +66,7 @@ class Negotiation:
         club = player.get_club()
 
         dialog = Gtk.MessageDialog()
-        dialog.set_transient_for(game.window)
+        dialog.set_transient_for(window.window)
         dialog.set_title("Transfer Enquiry")
         dialog.add_button("_Cancel", Gtk.ResponseType.CANCEL)
         dialog.add_button("_Approach", Gtk.ResponseType.OK)
@@ -143,7 +143,7 @@ class Negotiation:
         club = player.get_club()
 
         dialog = Gtk.Dialog()
-        dialog.set_transient_for(game.window)
+        dialog.set_transient_for(window.window)
         dialog.set_border_width(5)
         dialog.set_resizable(False)
         dialog.set_title("Enquiry Accepted")
@@ -188,7 +188,7 @@ class Negotiation:
         leaguewin, leaguerunnerup, winbonus, goalbonus = calculator.bonus(wage)
 
         dialog = Gtk.Dialog()
-        dialog.set_transient_for(game.window)
+        dialog.set_transient_for(window.window)
         dialog.set_border_width(5)
         dialog.set_resizable(False)
         dialog.set_title("Offer Accepted")
@@ -269,7 +269,7 @@ class Negotiation:
         name = player.get_name(mode=1)
 
         messagedialog = Gtk.MessageDialog(type=Gtk.MessageType.QUESTION)
-        messagedialog.set_transient_for(game.window)
+        messagedialog.set_transient_for(window.window)
         messagedialog.set_title("Contract Accepted")
         messagedialog.add_button("C_ancel", Gtk.ResponseType.CANCEL)
         messagedialog.add_button("_Confirm", Gtk.ResponseType.OK)
@@ -304,7 +304,7 @@ class Negotiation:
         club = player.get_club()
 
         dialog = Gtk.Dialog()
-        dialog.set_transient_for(game.window)
+        dialog.set_transient_for(window.window)
         dialog.set_border_width(5)
         dialog.set_resizable(False)
         dialog.set_title("Loan Offer")
@@ -357,7 +357,7 @@ class Negotiation:
         club = player.get_club()
 
         messagedialog = Gtk.MessageDialog(type=Gtk.MessageType.QUESTION)
-        messagedialog.set_transient_for(game.window)
+        messagedialog.set_transient_for(window.window)
         messagedialog.set_title("Loan Accepted")
         messagedialog.add_button("_Cancel", Gtk.ResponseType.CANCEL)
         messagedialog.add_button("C_onfirm", Gtk.ResponseType.OK)
@@ -390,7 +390,7 @@ class Negotiation:
         title = ("Transfer Offer", "Loan Offer")[transfer]
 
         messagedialog = Gtk.MessageDialog(type=Gtk.MessageType.INFO)
-        messagedialog.set_transient_for(game.window)
+        messagedialog.set_transient_for(window.window)
         messagedialog.set_title(title)
         messagedialog.add_button("_Close", Gtk.ResponseType.CLOSE)
         messagedialog.set_markup(message[transfer][index])
@@ -537,7 +537,7 @@ class Loan:
 
         if self.extend_loan_valid():
             dialog = Gtk.Dialog()
-            dialog.set_transient_for(game.window)
+            dialog.set_transient_for(window.window)
             dialog.set_border_width(5)
             dialog.set_resizable(False)
             dialog.set_title("Extend Loan")
@@ -572,7 +572,7 @@ class Loan:
             dialog.destroy()
         else:
             messagedialog = Gtk.MessageDialog(type=Gtk.MessageType.INFO)
-            messagedialog.set_transient_for(game.window)
+            messagedialog.set_transient_for(window.window)
             messagedialog.set_markup("%s is already on loan until the end of the season." % (name))
             messagedialog.add_button("_Close", Gtk.ResponseType.CLOSE)
             messagedialog.run()
@@ -583,7 +583,7 @@ class Loan:
         name = player.get_name(mode=1)
 
         messagedialog = Gtk.MessageDialog(type=Gtk.MessageType.QUESTION)
-        messagedialog.set_transient_for(game.window)
+        messagedialog.set_transient_for(window.window)
         messagedialog.set_title("Cancel Loan")
         messagedialog.add_button("_Do Not Cancel", Gtk.ResponseType.REJECT)
         messagedialog.add_button("_Cancel Loan", Gtk.ResponseType.ACCEPT)

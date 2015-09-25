@@ -105,7 +105,7 @@ class Negotiation:
         name = player.get_name(mode=1)
 
         messagedialog = Gtk.MessageDialog()
-        messagedialog.set_transient_for(game.window)
+        messagedialog.set_transient_for(window.window)
         messagedialog.set_title("Transfer Enquiry")
         messagedialog.add_button("_Reject", Gtk.ResponseType.REJECT)
         messagedialog.add_button("_Accept", Gtk.ResponseType.ACCEPT)
@@ -133,7 +133,7 @@ class Negotiation:
         name = player.get_name(mode=1)
 
         dialog = Gtk.Dialog()
-        dialog.set_transient_for(game.window)
+        dialog.set_transient_for(window.window)
         dialog.set_title("Transfer Offer")
         dialog.set_border_width(5)
         dialog.add_button("_Reject", Gtk.ResponseType.REJECT)
@@ -184,7 +184,7 @@ class Negotiation:
         club = game.clubs[self.club].name
 
         messagedialog = Gtk.MessageDialog()
-        messagedialog.set_transient_for(game.window)
+        messagedialog.set_transient_for(window.window)
         messagedialog.set_title("Complete Transfer")
         messagedialog.add_button("_Cancel Transfer", Gtk.ResponseType.CANCEL)
 

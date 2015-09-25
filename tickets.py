@@ -18,6 +18,7 @@
 
 import calculator
 import game
+import stadium
 import user
 
 
@@ -37,7 +38,7 @@ class Tickets:
         club = user.get_user_club()
         stadiumobj = stadium.get_stadium(club.stadium)
 
-        capacity = stadiumobj.capacity
+        capacity = stadiumobj.get_capacity()
 
         max_season_tickets = (capacity * 0.01) * self.season_tickets
 

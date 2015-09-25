@@ -39,9 +39,9 @@ game.continuegame = game.ContinueGame()
 preferences.preferences = preferences.Preferences()
 music.music = music.Player()
 
-game.window = window.Window()
-window.window = game.window
-game.window.run()
+window.window = window.Window()
+game.window = window.window
+window.window.run()
 
 dialogs.comparison = dialogs.Comparison()
 

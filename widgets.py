@@ -18,7 +18,9 @@
 
 from gi.repository import Gtk
 
+import club
 import constants
+import date
 import display
 import game
 import league
@@ -113,13 +115,15 @@ class NextMatch(Gtk.Button):
         current_date = "%i/%i" % (game.date.day, game.date.month)
 
         if current_date == constants.events[game.date.fixturesindex]:
-            leagueid = game.clubs[game.teamid].league
+            clubObject = user.get_user_club()
+
+            leagueid = clubObject.league
             fixtures = league.leagueitem.leagues[leagueid].fixtures
 
             for match in fixtures.fixtures[game.date.fixturesindex]:
                 if game.teamid in match:
-                    team1 = game.clubs[match[0]].name
-                    team2 = game.clubs[match[1]].name
+                    team1 = club.clubs[match[0]].name
+                    team2 = club.clubs[match[1]].name
                     self.set_label("Today's Match: %s - %s" % (team1, team2))
                     self.show()
         else:

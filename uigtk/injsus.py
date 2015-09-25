@@ -174,14 +174,16 @@ class InjSus(Gtk.Grid):
     def populate_team_injured_data(self):
         self.liststoreInjuries.clear()
 
-        for playerid in club.clubitem.clubs[game.teamid].squad:
-            playerobj = player.playeritem.players[playerid]
+        club = user.get_user_club()
 
-            if playerobj.injury_type != 0:
-                name = playerobj.get_name(mode=1)
-                fitness = playerobj.fitness
-                injury_name = injury.injuryitem.injuries[playerobj.injury_type][0]
-                injury_period = playerobj.get_injury()
+        for playerid in club.squad:
+            playerObject = player.get_player(playerid)
+
+            if playerObject.injury_type != 0:
+                name = playerObject.get_name(mode=1)
+                fitness = playerObject.fitness
+                injury_name = injury.injuryitem.injuries[playerObject.injury_type][0]
+                injury_period = playerObject.get_injury()
 
                 self.liststoreInjuries.append([name,
                                                fitness,
@@ -214,13 +216,15 @@ class InjSus(Gtk.Grid):
     def populate_team_suspended_data(self):
         self.liststoreSuspensions.clear()
 
-        for playerid in game.clubs[game.teamid].squad:
-            player = game.players[playerid]
+        club = user.get_user_club()
 
-            if player.suspension_type != 0:
-                name = player.get_name(mode=1)
-                suspension = constants.suspensions[player.suspension_type][0]
-                period = player.get_suspension()
+        for playerid in club.squad:
+            playerObject = player.get_player(playerid)
+
+            if playerObject.suspension_type != 0:
+                name = playerObject.get_name(mode=1)
+                suspension = constants.suspensions[playerObject.suspension_type][0]
+                period = playerObject.get_suspension()
 
                 self.liststoreSuspensions.append([name, suspension, period])
 
