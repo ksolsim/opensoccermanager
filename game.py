@@ -46,8 +46,6 @@ negotiations = {}
 loans = {}
 
 # Charts
-goalscorers = {}
-assists = {}
 cleansheets = {}
 cards = {}
 transfers = []

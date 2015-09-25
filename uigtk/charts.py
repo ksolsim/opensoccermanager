@@ -18,7 +18,9 @@
 
 from gi.repository import Gtk
 
+import assists
 import game
+import goals
 import widgets
 
 
@@ -110,13 +112,13 @@ class GoalScorers(Gtk.ScrolledWindow):
     def run(self):
         self.liststore.clear()
 
-        goalscorers = sorted(game.goalscorers,
-                             key=game.goalscorers.get,
-                             reverse=True)
+        values = sorted(goals.chart.goalscorers,
+                         key=goals.chart.goalscorers.get,
+                         reverse=True)
 
-        for playerid in goalscorers[:25]:
-            player = game.players[playerid]
-            name = player.get_name(mode=1)
+        for playerid in values[:25]:
+            playerObject = player.get_player(playerid)
+            name = playerObject.get_name(mode=1)
             club = game.clubs[player.club].name
 
             self.liststore.append([name, club, game.goalscorers[playerid]])
@@ -148,11 +150,11 @@ class Assists(Gtk.ScrolledWindow):
     def run(self):
         self.liststore.clear()
 
-        assists = sorted(game.assists,
-                         key=game.assists.get,
+        values = sorted(assists.chart.assisters,
+                         key=assists.chart.assisters.get,
                          reverse=True)
 
-        for playerid in assists[:25]:
+        for playerid in values[:25]:
             player = game.players[playerid]
             name = player.get_name(mode=1)
             club = game.clubs[player.club].name

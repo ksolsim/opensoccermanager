@@ -20,6 +20,7 @@ import random
 
 import advertising
 import ai
+import assists
 import calculator
 import club
 import constants
@@ -28,6 +29,7 @@ import events
 import fixtures
 import flotation
 import game
+import goals
 import grant
 import injury
 import league
@@ -56,13 +58,14 @@ def datainit():
     surnames = game.database.importer("staff")
     game.surnames = [name[0] for name in surnames]
 
+    goals.chart = goals.Goals()
+    assists.chart = assists.Assists()
+
     # Clear data structures and reset date
     game.negotiations = {}
     game.injuries = {}
     game.suspensions = {}
 
-    game.goalscorers = {}
-    game.assists = {}
     game.cleansheets = {}
     game.cards = {}
     game.transfers = []
