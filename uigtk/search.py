@@ -84,15 +84,18 @@ class Search(Gtk.Grid):
         comboboxView.append("2", "Form")
         comboboxView.set_active(1)
         comboboxView.connect("changed", self.view_changed)
+        comboboxView.set_tooltip_text("Change visible information columns.")
         label.set_mnemonic_widget(comboboxView)
         buttonbox.add(comboboxView)
 
         buttonFilter = widgets.Button("_Filter")
         buttonFilter.connect("clicked", self.filter_dialog)
+        buttonFilter.set_tooltip_text("Filter which players are visible in the search list.")
         buttonbox.add(buttonFilter)
         self.buttonReset = widgets.Button("_Reset")
         self.buttonReset.set_sensitive(False)
         self.buttonReset.connect("clicked", self.reset_activated)
+        self.buttonReset.set_tooltip_text("Reset any currently active filter settings.")
         buttonbox.add(self.buttonReset)
 
         scrolledwindow = Gtk.ScrolledWindow()
@@ -250,7 +253,6 @@ class Search(Gtk.Grid):
         Refilter search criteria when entry is emptied.
         '''
         if entry.get_text_length() == 0:
-            self.populate_data(player.playeritem.players)
             self.treemodelfilter.refilter()
 
     def reset_activated(self, widget=None, position=None, event=None):
@@ -263,7 +265,6 @@ class Search(Gtk.Grid):
 
         self.searchfilter.reset_defaults()
 
-        self.populate_data(player.playeritem.players)
         self.treemodelfilter.refilter()
 
     def make_transfer_offer(self, menuitem, transfer_type):

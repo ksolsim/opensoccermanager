@@ -39,7 +39,7 @@ class PlayerInfo(Gtk.Dialog):
         grid = Gtk.Grid()
         self.vbox.add(grid)
 
-        playerobj = player.playeritem.players[self.playerid]
+        playerobj = player.get_player(self.playerid)
         name = playerobj.get_name(mode=1)
 
         label = widgets.AlignedLabel("%s" % (name))
@@ -119,21 +119,21 @@ class PlayerInfo(Gtk.Dialog):
         grid.attach(label, 0, 3, 1, 1)
 
         if self.playerid:
-            playerobj = player.playeritem.players[self.playerid]
+            playerobj = player.get_player(self.playerid)
 
             if playerobj.injury_type == 0:
                 injury_type = "None"
                 injury_period = "N/A"
             else:
                 injury_type = constants.injuries[injuryid][0]
-                injury_period = player.get_injury()
+                injury_period = playerobj.get_injury()
 
             if playerobj.suspension_type == 0:
                 suspension_type = "None"
                 suspension_period = "N/A"
             else:
                 suspension_type = constants.suspensions[suspensionid][0]
-                suspension_period = player.get_suspension()
+                suspension_period = playerobj.get_suspension()
 
             label = widgets.AlignedLabel("%s" % (injury_type))
             grid.attach(label, 1, 0, 1, 1)

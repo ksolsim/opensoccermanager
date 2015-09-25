@@ -84,6 +84,7 @@ class Squad(Gtk.Grid):
         comboboxView.append("2", "Form")
         comboboxView.set_active(1)
         comboboxView.connect("changed", self.view_changed)
+        comboboxView.set_tooltip_text("Change visible information columns.")
         label.set_mnemonic_widget(comboboxView)
         grid.attach(comboboxView, 1, 0, 1, 1)
 
@@ -96,10 +97,12 @@ class Squad(Gtk.Grid):
         grid.attach(buttonbox, 3, 0, 1, 1)
         buttonFilter = widgets.Button("F_ilter")
         buttonFilter.connect("clicked", self.filter_squad)
+        buttonFilter.set_tooltip_text("Filter which players are visible in the squad list.")
         buttonbox.add(buttonFilter)
         self.buttonReset = widgets.Button("_Reset")
         self.buttonReset.set_sensitive(False)
         self.buttonReset.connect("clicked", self.filter_reset)
+        self.buttonReset.set_tooltip_text("Reset any currently active filter settings.")
         buttonbox.add(self.buttonReset)
 
         scrolledwindow = Gtk.ScrolledWindow()
