@@ -52,3 +52,18 @@ def check_morale():
                 coach = club.coaches_hired[coachid]
                 news.publish("IT01", coach=coach.name)
                 coach.morale -= 1
+
+
+def refresh_staff():
+    '''
+    Regenerate the list of scouts and coaches available every 8-12 weeks.
+    '''
+    if game.staff_timeout > 0:
+        game.staff_timeout -= 1
+    else:
+        club = user.get_user_club()
+
+        club.coaches.generate_initial_coaches()
+        club.scouts.generate_initial_scouts()
+
+        game.staff_timeout = random.randint(8, 12)

@@ -154,7 +154,7 @@ class Date:
         events.update_contracts()
         events.update_advertising()
         clubObject.sponsorship.update()
-        events.refresh_staff()
+        staff.refresh_staff()
         events.individual_training()
         ai.renew_contract()
         events.injury_period()
@@ -167,7 +167,7 @@ class Date:
         game.overdraft.pay_overdraft()
         game.overdraft.update_interest_rate()
         game.grant.update_grant()
+        '''
 
         for clubObject in club.clubs.values():
             clubObject.pay_wages()
-        '''

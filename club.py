@@ -133,11 +133,11 @@ class Club:
 
         total = 0
 
-        for staffid in self.coaches_hired:
-            total += self.coaches_hired[staffid].wage
+        for staffid in self.coaches.hired:
+            total += self.coaches.hired[staffid].wage
 
-        for staffid in self.scouts_hired:
-            total += self.scouts_hired[staffid].wage
+        for staffid in self.scouts.hired:
+            total += self.scouts.hired[staffid].wage
 
         self.accounts.withdraw(amount=total, category="staffwage")
 

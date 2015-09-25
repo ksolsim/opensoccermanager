@@ -133,6 +133,8 @@ class Coaches:
         '''
         Select the first five coaches to start the game.
         '''
+        self.available = {}
+
         for count in range(0, 5):
             coachid = self.get_coach_id()
             coach = self.Coach()

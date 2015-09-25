@@ -19,6 +19,7 @@
 import operator
 import random
 
+import coach
 import constants
 import display
 import evaluation
@@ -27,6 +28,7 @@ import game
 import injury
 import money
 import player
+import scout
 import stadium
 import user
 import widgets
@@ -493,29 +495,6 @@ def end_of_season():
     game.clubs[game.teamid].accounts.deposit(amount=prize_money, category="prize")
     amount = display.currency(prize_money)
     game.news.publish("PZ01", amount=amount, position=position)
-
-
-def refresh_staff():
-    '''
-    Regenerate the list of scouts and coaches available every 8-12 weeks.
-    '''
-    if game.staff_timeout > 0:
-        game.staff_timeout -= 1
-    else:
-        club = game.clubs[game.teamid]
-
-        club.coaches_available = {}
-        club.scouts_available = {}
-
-        for count in range(5):
-            coach = staff.Staff(staff_type=0)
-            club.coaches_available[coach.staffid] = coach
-
-        for count in range(5):
-            scout = staff.Staff(staff_type=1)
-            club.scouts_available[scout.staffid] = scout
-
-        game.staff_timeout = random.randint(8, 12)
 
 
 def update_morale(clubid, amount):
