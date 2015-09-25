@@ -23,6 +23,7 @@
 from gi.repository import Gtk
 import os
 
+from uigtk import comparison
 from uigtk import dialogs
 from uigtk import window
 
@@ -43,7 +44,7 @@ window.window = window.Window()
 game.window = window.window
 window.window.run()
 
-dialogs.comparison = dialogs.Comparison()
+comparison.comparison = comparison.Comparison()
 
 
 if __name__ == "__main__":

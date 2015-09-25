@@ -16,6 +16,8 @@
 #  OpenSoccerManager.  If not, see <http://www.gnu.org/licenses/>.
 
 
+from uigtk import squadreport
+
 import constants
 import dialogs
 import widgets
@@ -155,7 +157,7 @@ class ContinueGame:
         if errors.errored:
             error = True
 
-            dialog = dialogs.SquadReport()
+            dialog = squadreport.SquadReport()
             dialog.display(errors)
 
         return error

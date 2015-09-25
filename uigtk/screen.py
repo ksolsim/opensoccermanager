@@ -19,7 +19,9 @@
 from gi.repository import Gtk
 
 import uigtk.dialogs
+from uigtk import comparison
 from uigtk import interface
+from uigtk import opposition
 from uigtk import printing
 from uigtk import sponsorship
 import game
@@ -123,15 +125,15 @@ class ScreenGame(Gtk.Grid):
         game.window.screenNews.select_oldest_item()
 
     def player_comparison(self, menuitem):
-        if dialogs.comparison.comparison == [None, None]:
+        if comparison.comparison.comparison == [None, None]:
             dialogs.error(3)
-        elif not dialogs.comparison.comparison[0] or not dialogs.comparison.comparison[1]:
+        elif not comparison.comparison.comparison[0] or not comparison.comparison.comparison[1]:
             dialogs.error(5)
         else:
-            dialogs.comparison.display()
+            comparison.comparison.display()
 
     def view_opposition(self, menuitem):
-        dialog = uigtk.dialogs.Opposition()
+        dialog = uigtk.opposition.Opposition()
         dialog.display()
 
     def sponsorship_clicked(self, menuitem):
