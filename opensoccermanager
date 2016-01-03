@@ -1,51 +1,8 @@
 #!/usr/bin/env python3
 
-#  OpenSoccerManager
-#
-#  Copyright 2015 Andrew Steele <andrew.steele@opensoccermanager.org>
-#
-#  This program is free software; you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation; either version 3 of the License, or
-#  (at your option) any later version.
-#
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with this program; if not, write to the Free Software
-#  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-#  MA 02110-1301, USA.
+import data
+import uigtk.window
 
 
-from gi.repository import Gtk
-import os
-
-from uigtk import comparison
-from uigtk import dialogs
-from uigtk import window
-
-import database
-import game
-import music
-import preferences
-
-
-databaseObject = database.Database()
-game.database = databaseObject.get_database_object()
-
-game.continuegame = game.ContinueGame()
-preferences.preferences = preferences.Preferences()
-music.music = music.Player()
-
-window.window = window.Window()
-game.window = window.window
-window.window.run()
-
-comparison.comparison = comparison.Comparison()
-
-
-if __name__ == "__main__":
-    Gtk.main()
+data.window = uigtk.window.Window()
+data.window.run()

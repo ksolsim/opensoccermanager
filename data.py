@@ -1,167 +1,41 @@
 #!/usr/bin/env python3
 
-#  This file is part of OpenSoccerManager.
-#
-#  OpenSoccerManager is free software: you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by the
-#  Free Software Foundation, either version 3 of the License, or (at your
-#  option) any later version.
-#
-#  OpenSoccerManager is distributed in the hope that it will be useful, but
-#  WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-#  or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-#  more details.
-#
-#  You should have received a copy of the GNU General Public License along with
-#  OpenSoccerManager.  If not, see <http://www.gnu.org/licenses/>.
+import database
+import music
+import preferences
+import structures.currency
+import structures.suspensions
+import structures.user
 
 
-import random
+# User information class
+user = None
 
-import advertising
-import ai
-import assists
-import calculator
-import club
-import constants
-import evaluation
-import events
-import fixtures
-import flotation
-import game
-import goals
-import grant
-import injury
-import league
-import loan
-import money
-import nation
-import news
-import overdraft
-import player
-import referee
-import stadium
-import statistics
-import suspension
-import teamtraining
-import user
-import widgets
+# Main window
+window = None
 
+# Global objects
+music = music.Music()                        # Music player object
+preferences = preferences.Preferences()      # Preferences configuration object
+database = database.Database()               # Database connection object
+names = structures.user.Names()              # Names object
+currency = structures.currency.Currency()    # Currency object
 
-def datainit():
-    '''
-    Populate data for game, including clubs, players and generate fixtures for
-    the season. Initially used to populate details screen for collecting player
-    information.
-    '''
-    # Import surnames for staff
-    surnames = game.database.importer("staff")
-    game.surnames = [name[0] for name in surnames]
+# In-game data handling objects
+players = None
+clubs = None
+stadiums = None
+leagues = None
+referees = None
+nations = None
+companies = None
+buildings = None
+merchandise = None
+catering = None
 
-    goals.chart = goals.Goals()
-    assists.chart = assists.Assists()
-
-    # Clear data structures and reset date
-    game.negotiations = {}
-    game.injuries = {}
-    game.suspensions = {}
-
-    game.cleansheets = {}
-    game.cards = {}
-    game.transfers = []
-
-    game.news = news.News()
-    game.statistics = statistics.Statistics()
-
-    widgets.date.update()
-
-    # Import extra data
-    constants.buildings = game.database.importer("buildings")
-    constants.merchandise = game.database.importer("merchandise")
-    constants.catering = game.database.importer("catering")
-    game.companies = game.database.importer("company")
-
-    # Import nations
-    nation.populate_data()
-
-    # Import leagues
-    league.leagueitem = league.Leagues()
-
-    # Import clubs
-    club.populate_data()
-
-    # Import players
-    player.populate_data()
-
-    # Import referees
-    referee.referees = referee.Referees()
-
-    # Import stadiums
-    stadium.populate_data()
-
-    for clubobj in club.clubs.values():
-        stadiumobj = stadium.stadiums[clubobj.stadium]
-
-        if clubobj.reputation > 12:
-            stadiumobj.plots = 60
-        else:
-            stadiumobj.plots = 40
-
-    # Import injuries
-    injury.injuryitem = injury.Injuries()
-
-    # Import suspensions
-    suspension.suspensionitem = suspension.Suspensions()
-
-    # Setup fixture list
-    league.leagueitem.generate_fixtures()
-    '''
-    for leagueid, league in game.leagues.items():
-        league.fixtures.generate(league.teams)
-
-        league.televised = []
-
-        for count, week in enumerate(league.fixtures.fixtures):
-            league.televised.append(random.randint(0, len(week) - 1))'''
-
-    # Create financial objects
-    game.bankloan = loan.Loan()
-    game.overdraft = overdraft.Overdraft()
-    game.grant = grant.Grant()
-    game.flotation = flotation.Flotation()
-
-
-def dataloader(finances):
-    '''
-    Load remaining data attributes for user selected club. This includes the
-    finances, sponsorship and advertising, and publishing initial new articles.
-    '''
-    club = user.get_user_club()
-
-    if finances == -1:
-        club.accounts.balance = club.reputation ** 3 * random.randint(985, 1025) * 3
-    else:
-        club.accounts.balance = constants.money[finances][0]
-
-    # Generate advertising offers for hoardings/programmes
-    club.hoardings.initialise()
-    club.programmes.initialise()
-
-    #evaluation.update()
-
-    ai.transfer_list()
-    ai.loan_list()
-    teamtraining.update_schedules()
-
-    # Publish initial news articles
-    game.news.publish("MA01")
-
-    initial = league.leagueitem.leagues[club.league].fixtures.get_initial_fixtures()
-
-    game.news.publish("FX01",
-                      fixture1=initial[0],
-                      fixture2=initial[1],
-                      fixture3=initial[2],
-                     )
-
-    #events.expectation()
+# In-game dynamic data handling objects
+date = None             # Date object
+negotiations = None     # Negotiations handler class
+loans = None            # Loans handler class
+comparison = None       # Comparison object
+calendar = None         # Calendar object

@@ -1,3 +1,0 @@
-Negotations are entered when a player is to be bought or sold. There are a number of stages which must be negotiated including negotiating the potential release, a fee (if the negotiation is a purchase), and agreeing the wage with the player.
-
-At any time it is possible to cancel the negotiation and pull out of the opportunity to transfer a player.

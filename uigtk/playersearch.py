@@ -1,0 +1,658 @@
+#!/usr/bin/env python3
+
+from gi.repository import Gtk
+from gi.repository import Gdk
+import re
+import unicodedata
+
+import data
+import structures.filters
+import structures.shortlist
+import structures.skills
+import uigtk.negotiations
+import uigtk.shared
+import uigtk.shortlist
+import uigtk.widgets
+
+
+class PlayerSearch(uigtk.widgets.Grid):
+    treeselection = None
+
+    playerfilter = None
+
+    def __init__(self):
+        uigtk.widgets.Grid.__init__(self)
+
+        self.liststorePlayers = Gtk.ListStore(int, str, int, int, str, str,
+                                              str, int, int, int, int, int,
+                                              int, int, int, int, int, str,
+                                              int, str, int, str, bool, bool,
+                                              str, int, int, str, int, str,)
+
+        self.liststoreSearch = Gtk.ListStore(str)
+
+        grid = uigtk.widgets.Grid()
+        self.attach(grid, 0, 0, 1, 1)
+
+        self.completionSearch = Gtk.EntryCompletion()
+        self.completionSearch.set_model(self.liststoreSearch)
+        self.completionSearch.set_text_column(0)
+
+        self.entrySearch = Gtk.SearchEntry()
+        self.entrySearch.set_placeholder_text("Search Players...")
+        self.entrySearch.set_completion(self.completionSearch)
+        key, modifier = Gtk.accelerator_parse("<Control>F")
+        self.entrySearch.add_accelerator("grab-focus",
+                                         data.window.accelgroup,
+                                         key,
+                                         modifier,
+                                         Gtk.AccelFlags.VISIBLE)
+        self.entrySearch.connect("activate", self.on_search_activated)
+        self.entrySearch.connect("icon-press", self.on_search_pressed)
+        self.entrySearch.connect("search-changed", self.on_search_changed)
+        grid.attach(self.entrySearch, 0, 0, 1, 1)
+
+        label = Gtk.Label()
+        label.set_hexpand(True)
+        grid.attach(label, 1, 0, 1, 1)
+
+        self.columnviews = uigtk.shared.ColumnViews()
+        self.columnviews.comboboxView.connect("changed", self.on_view_changed)
+        grid.attach(self.columnviews, 2, 0, 1, 1)
+
+        self.filterbuttons = uigtk.shared.FilterButtons()
+        self.filterbuttons.buttonFilter.connect("clicked", self.on_filter_clicked)
+        self.filterbuttons.buttonReset.connect("clicked", self.on_reset_clicked)
+        grid.attach(self.filterbuttons, 4, 0, 1, 1)
+
+        scrolledwindow = uigtk.widgets.ScrolledWindow()
+        self.attach(scrolledwindow, 0, 1, 1, 1)
+
+        self.treemodelfilter = self.liststorePlayers.filter_new()
+        self.treemodelfilter.set_visible_func(self.filter_visible, data.players.get_players())
+        self.treemodelsort = Gtk.TreeModelSort(self.treemodelfilter)
+        self.treemodelsort.set_sort_column_id(16, Gtk.SortType.DESCENDING)
+
+        treeview = uigtk.widgets.TreeView()
+        treeview.set_hexpand(True)
+        treeview.set_vexpand(True)
+        treeview.set_headers_clickable(True)
+        treeview.set_model(self.treemodelsort)
+        treeview.connect("row-activated", self.on_row_activated)
+        treeview.connect("button-release-event", self.on_button_release_event)
+        treeview.connect("key-press-event", self.on_key_press_event)
+        scrolledwindow.add(treeview)
+
+        PlayerSearch.treeselection = treeview.treeselection
+
+        self.tree_columns = ([], [], [])
+
+        # Personal
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Name", column=1)
+        treeviewcolumn.set_sort_column_id(1)
+        treeview.append_column(treeviewcolumn)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Age", column=2)
+        treeview.append_column(treeviewcolumn)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Club", column=4)
+        treeview.append_column(treeviewcolumn)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Nationality", column=5)
+        treeview.append_column(treeviewcolumn)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Position", column=6)
+        treeview.append_column(treeviewcolumn)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Value", column=17)
+        treeviewcolumn.set_sort_column_id(16)
+        self.tree_columns[0].append(treeviewcolumn)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Wage", column=19)
+        treeviewcolumn.set_sort_column_id(18)
+        self.tree_columns[0].append(treeviewcolumn)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Contract", column=21)
+        self.tree_columns[0].append(treeviewcolumn)
+
+        # Skills
+        skills = structures.skills.Skills()
+
+        for count, skill in enumerate(skills.get_skills(), start=7):
+            label = Gtk.Label("%s" % (skill[0]))
+            label.set_tooltip_text(skill[1])
+            label.show()
+            treeviewcolumn = uigtk.widgets.TreeViewColumn(column=count)
+            treeviewcolumn.set_expand(True)
+            treeviewcolumn.set_widget(label)
+            treeview.append_column(treeviewcolumn)
+            self.tree_columns[1].append(treeviewcolumn)
+
+        # Form
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Games", column=24)
+        self.tree_columns[2].append(treeviewcolumn)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Goals", column=25)
+        self.tree_columns[2].append(treeviewcolumn)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Assists", column=26)
+        self.tree_columns[2].append(treeviewcolumn)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Cards", column=27)
+        self.tree_columns[2].append(treeviewcolumn)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="MOTM", column=28)
+        self.tree_columns[2].append(treeviewcolumn)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Rating", column=29)
+        self.tree_columns[2].append(treeviewcolumn)
+
+        for columns in (self.tree_columns[0], self.tree_columns[2]):
+            for column in columns:
+                column.set_expand(True)
+                column.set_visible(False)
+                treeview.append_column(column)
+
+        self.contextmenu1 = ContextMenu1()
+        self.contextmenu2 = ContextMenu2()
+        self.filter_dialog = Filter()
+
+        PlayerSearch.playerfilter = structures.filters.Player()
+
+    def on_view_changed(self, combobox):
+        '''
+        Change visible columns in view.
+        '''
+        index = int(combobox.get_active_id())
+
+        for count, column_list in enumerate(self.tree_columns):
+            for column in column_list:
+                column.set_visible(count == index)
+
+    def on_key_press_event(self, widget, event):
+        '''
+        Key event when right-click menu is pressed on keyboard.
+        '''
+        if Gdk.keyval_name(event.keyval) == "Menu":
+            self.on_context_menu_event(event)
+
+    def on_button_release_event(self, treeview, event):
+        '''
+        Button event when right-click on mouse is made.
+        '''
+        if event.button == 3:
+            self.on_context_menu_event(event)
+
+    def on_context_menu_event(self, event):
+        '''
+        Display appropriate context menu for selected player.
+        '''
+        event.button = 3
+
+        club = data.clubs.get_club_by_id(data.user.team)
+
+        model, treeiter = self.treeselection.get_selected()
+        playerid = model[treeiter][0]
+
+        if playerid in club.squad.get_squad():
+            contextmenu = self.contextmenu1
+        else:
+            contextmenu = self.contextmenu2
+
+        contextmenu.playerid = playerid
+        contextmenu.show()
+        contextmenu.popup(None, None, None, None, event.button, event.time)
+
+    def on_search_activated(self, entry):
+        '''
+        Filter for entered name in players list.
+        '''
+        if entry.get_text_length() > 0:
+            self.treemodelfilter.refilter()
+
+            self.filterbuttons.buttonReset.set_sensitive(True)
+
+            entries = [item[0] for item in self.liststoreSearch]
+
+            search = entry.get_text()
+
+            if search not in entries:
+                self.liststoreSearch.append([search])
+
+    def on_search_pressed(self, entry, position, event):
+        '''
+        Clear search entry when secondary icon is pressed.
+        '''
+        if position == Gtk.EntryIconPosition.SECONDARY:
+            entry.set_text("")
+            self.treemodelfilter.refilter()
+
+            self.filterbuttons.buttonReset.set_sensitive(False)
+
+    def on_search_changed(self, entry):
+        '''
+        Clear filter if text length is zero.
+        '''
+        if entry.get_text_length() == 0:
+            self.treemodelfilter.refilter()
+
+            self.filterbuttons.buttonReset.set_sensitive(False)
+
+    def on_row_activated(self, treeview, treepath, treeviewcolumn):
+        '''
+        Launch player information screen for selected player.
+        '''
+        model = treeview.get_model()
+        playerid = model[treepath][0]
+
+        data.window.screen.change_visible_screen("playerinformation")
+        data.window.screen.active.set_visible_player(playerid)
+
+    def on_filter_clicked(self, button):
+        '''
+        Display filtering dialog.
+        '''
+        PlayerSearch.playerfilter.options = self.filter_dialog.show()
+
+        active = PlayerSearch.playerfilter.get_filter_active()
+        self.filterbuttons.buttonReset.set_sensitive(active)
+
+        self.treemodelfilter.refilter()
+
+    def on_reset_clicked(self, button):
+        '''
+        Clear filter settings and reset to default state.
+        '''
+        button.set_sensitive(False)
+        PlayerSearch.playerfilter.reset_filter()
+
+        self.treemodelfilter.refilter()
+
+    def filter_visible(self, model, treeiter, values):
+        visible = True
+
+        # Filter by search criteria
+        criteria = self.entrySearch.get_text()
+
+        for search in (model[treeiter][1],):
+            search = "".join((c for c in unicodedata.normalize("NFD", search) if unicodedata.category(c) != "Mn"))
+
+            if not re.findall(criteria, search, re.IGNORECASE):
+                visible = False
+
+        options = PlayerSearch.playerfilter.options
+
+        # Filter user club
+        if visible:
+            if not options["ownplayers"]:
+                if model[treeiter][3] == data.user.team:
+                    visible = False
+
+        # Filter position
+        if visible:
+            if options["position"] == 1:
+                if model[treeiter][6] not in ("GK",):
+                    visible = False
+            elif options["position"] == 2:
+                if model[treeiter][6] not in ("DL", "DR", "DC", "D"):
+                    visible = False
+            elif options["position"] == 3:
+                if model[treeiter][6] not in ("ML", "MR", "MC", "M"):
+                    visible = False
+            elif options["position"] == 4:
+                if model[treeiter][6] not in ("AF", "AS"):
+                    visible = False
+
+        # Filter age
+        if visible:
+            visible = options["age"][0] <= model[treeiter][2] <= options["age"][1]
+
+        # Filter value
+        if visible:
+            visible = options["value"][0] <= model[treeiter][16] <= options["value"][1]
+
+        # Filter status
+        if visible:
+            if options["status"] == 1:
+                if not model[treeiter][22]:
+                    visible = False
+            if options["status"] == 2:
+                if not model[treeiter][23]:
+                    visible = False
+            elif options["status"] == 3:
+                if model[treeiter][20] != 0:
+                    visible = False
+            elif options["status"] == 4:
+                if model[treeiter][20] > 52:
+                    visible = False
+
+        # Filter skills
+        if visible:
+            visible = options["keeping"][0] <= model[treeiter][7] <= options["keeping"][1]
+
+        if visible:
+            visible = options["tackling"][0] <= model[treeiter][8] <= options["tackling"][1]
+
+        if visible:
+            visible = options["passing"][0] <= model[treeiter][9] <= options["passing"][1]
+
+        if visible:
+            visible = options["shooting"][0] <= model[treeiter][10] <= options["shooting"][1]
+
+        if visible:
+            visible = options["heading"][0] <= model[treeiter][11] <= options["heading"][1]
+
+        if visible:
+            visible = options["pace"][0] <= model[treeiter][12] <= options["pace"][1]
+
+        if visible:
+            visible = options["stamina"][0] <= model[treeiter][13] <= options["stamina"][1]
+
+        if visible:
+            visible = options["ball_control"][0] <= model[treeiter][14] <= options["ball_control"][1]
+
+        if visible:
+            visible = options["set_pieces"][0] <= model[treeiter][15] <= options["set_pieces"][1]
+
+        return visible
+
+    def populate_data(self):
+        self.liststorePlayers.clear()
+
+        for playerid, player in data.players.get_players():
+            self.liststorePlayers.append([playerid,
+                                          player.get_name(),
+                                          player.get_age(),
+                                          player.squad,
+                                          player.get_club_name(),
+                                          player.get_nationality_name(),
+                                          player.position,
+                                          player.keeping,
+                                          player.tackling,
+                                          player.passing,
+                                          player.shooting,
+                                          player.heading,
+                                          player.pace,
+                                          player.stamina,
+                                          player.ball_control,
+                                          player.set_pieces,
+                                          player.get_value(),
+                                          player.get_value_as_string(),
+                                          player.contract.wage,
+                                          player.contract.get_wage(),
+                                          player.contract.contract,
+                                          player.contract.get_contract(),
+                                          player.transfer[0],
+                                          player.transfer[1],
+                                          player.get_appearances(),
+                                          player.goals,
+                                          player.assists,
+                                          player.get_cards(),
+                                          player.man_of_the_match,
+                                          player.get_rating()])
+
+    def run(self):
+        self.populate_data()
+        self.show_all()
+
+
+class Filter(Gtk.Dialog):
+    class Attributes(Gtk.Grid):
+        def __init__(self):
+            super().__init__()
+            self.set_column_spacing(5)
+
+            self.minimum = Gtk.SpinButton.new_with_range(0, 99, 1)
+            self.attach(self.minimum, 0, 0, 1, 1)
+
+            self.maximum = Gtk.SpinButton.new_with_range(0, 99, 1)
+            self.maximum.set_value(99)
+            self.attach(self.maximum, 1, 0, 1, 1)
+
+        def set_values(self, values):
+            '''
+            Set minimum and maximum values for skills.
+            '''
+            self.minimum.set_value(values[0])
+            self.maximum.set_value(values[1])
+
+        def get_values(self):
+            '''
+            Return list of minimum and maximum values.
+            '''
+            minimum = self.minimum.get_value_as_int()
+            maximum = self.maximum.get_value_as_int()
+
+            return [minimum, maximum]
+
+    def __init__(self, *args):
+        Gtk.Dialog.__init__(self)
+        self.set_transient_for(data.window)
+        self.set_resizable(False)
+        self.set_title("Filter Players")
+        self.add_button("_Cancel", Gtk.ResponseType.CANCEL)
+        self.add_button("_Filter", Gtk.ResponseType.OK)
+        self.set_default_response(Gtk.ResponseType.OK)
+        self.vbox.set_border_width(5)
+        self.vbox.set_spacing(5)
+
+        club = data.clubs.get_club_by_id(data.user.team)
+
+        self.checkbuttonShowOwnPlayers = uigtk.widgets.CheckButton()
+        self.checkbuttonShowOwnPlayers.set_label("Display %s Players In Search Results" % (club.name))
+        self.vbox.add(self.checkbuttonShowOwnPlayers)
+
+        frame = uigtk.widgets.CommonFrame("Personal")
+        self.vbox.pack_start(frame, True, True, 0)
+
+        label = uigtk.widgets.Label("_Position", leftalign=True)
+        frame.grid.attach(label, 0, 0, 1, 1)
+        self.comboboxPosition = Gtk.ComboBoxText()
+        self.comboboxPosition.append("0", "All")
+        self.comboboxPosition.append("1", "Goalkeeper")
+        self.comboboxPosition.append("2", "Defender")
+        self.comboboxPosition.append("3", "Midfielder")
+        self.comboboxPosition.append("4", "Attacker")
+        label.set_mnemonic_widget(self.comboboxPosition)
+        frame.grid.attach(self.comboboxPosition, 1, 0, 1, 1)
+
+        label = uigtk.widgets.Label("_Age", leftalign=True)
+        frame.grid.attach(label, 0, 1, 1, 1)
+        self.spinbuttonAgeMinimum = Gtk.SpinButton.new_with_range(16, 50, 1)
+        label.set_mnemonic_widget(self.spinbuttonAgeMinimum)
+        frame.grid.attach(self.spinbuttonAgeMinimum, 1, 1, 1, 1)
+        self.spinbuttonAgeMaximum = Gtk.SpinButton.new_with_range(16, 50, 1)
+        frame.grid.attach(self.spinbuttonAgeMaximum, 2, 1, 1, 1)
+
+        label = uigtk.widgets.Label("_Value", leftalign=True)
+        frame.grid.attach(label, 0, 2, 1, 1)
+        self.spinbuttonValueMinimum = Gtk.SpinButton.new_with_range(0, 100000000, 100000)
+        label.set_mnemonic_widget(self.spinbuttonValueMinimum)
+        frame.grid.attach(self.spinbuttonValueMinimum, 1, 2, 1, 1)
+        self.spinbuttonValueMaximum = Gtk.SpinButton.new_with_range(0, 100000000, 100000)
+        frame.grid.attach(self.spinbuttonValueMaximum, 2, 2, 1, 1)
+
+        label = uigtk.widgets.Label("_Status", leftalign=True)
+        frame.grid.attach(label, 0, 3, 1, 1)
+        self.comboboxStatus = Gtk.ComboBoxText()
+        self.comboboxStatus.append("0", "All Players")
+        self.comboboxStatus.append("1", "Available for Purchase")
+        self.comboboxStatus.append("2", "Available for Loan")
+        self.comboboxStatus.append("3", "Out of Contract")
+        self.comboboxStatus.append("4", "One Year or Less Remaining on Contract")
+        label.set_mnemonic_widget(self.comboboxStatus)
+        frame.grid.attach(self.comboboxStatus, 1, 3, 3, 1)
+
+        frame = uigtk.widgets.CommonFrame("Skills")
+        self.vbox.pack_start(frame, True, True, 0)
+
+        label = uigtk.widgets.Label("_Keeping", leftalign=True)
+        frame.grid.attach(label, 0, 0, 1, 1)
+        self.keeping = self.Attributes()
+        label.set_mnemonic_widget(self.keeping.minimum)
+        frame.grid.attach(self.keeping, 1, 0, 1, 1)
+        label = uigtk.widgets.Label("_Tackling", leftalign=True)
+        frame.grid.attach(label, 0, 1, 1, 1)
+        self.tackling = self.Attributes()
+        label.set_mnemonic_widget(self.tackling.minimum)
+        frame.grid.attach(self.tackling, 1, 1, 1, 1)
+        label = uigtk.widgets.Label("_Passing", leftalign=True)
+        frame.grid.attach(label, 0, 2, 1, 1)
+        self.passing = self.Attributes()
+        label.set_mnemonic_widget(self.passing.minimum)
+        frame.grid.attach(self.passing, 1, 2, 1, 1)
+        label = uigtk.widgets.Label("_Shooting", leftalign=True)
+        frame.grid.attach(label, 2, 0, 1, 1)
+        self.shooting = self.Attributes()
+        label.set_mnemonic_widget(self.shooting.minimum)
+        frame.grid.attach(self.shooting, 3, 0, 1, 1)
+        label = uigtk.widgets.Label("_Pace", leftalign=True)
+        frame.grid.attach(label, 2, 1, 1, 1)
+        self.pace = self.Attributes()
+        label.set_mnemonic_widget(self.pace.minimum)
+        frame.grid.attach(self.pace, 3, 1, 1, 1)
+        label = uigtk.widgets.Label("_Heading", leftalign=True)
+        frame.grid.attach(label, 2, 2, 1, 1)
+        self.heading = self.Attributes()
+        label.set_mnemonic_widget(self.heading.minimum)
+        frame.grid.attach(self.heading, 3, 2, 1, 1)
+        label = uigtk.widgets.Label("_Stamina", leftalign=True)
+        frame.grid.attach(label, 4, 0, 1, 1)
+        self.stamina = self.Attributes()
+        label.set_mnemonic_widget(self.stamina.minimum)
+        frame.grid.attach(self.stamina, 5, 0, 1, 1)
+        label = uigtk.widgets.Label("_Ball Control", leftalign=True)
+        frame.grid.attach(label, 4, 1, 1, 1)
+        self.ball_control = self.Attributes()
+        label.set_mnemonic_widget(self.ball_control.minimum)
+        frame.grid.attach(self.ball_control, 5, 1, 1, 1)
+        label = uigtk.widgets.Label("_Set Pieces", leftalign=True)
+        frame.grid.attach(label, 4, 2, 1, 1)
+        self.set_pieces = self.Attributes()
+        label.set_mnemonic_widget(self.set_pieces.minimum)
+        frame.grid.attach(self.set_pieces, 5, 2, 1, 1)
+
+    def show(self):
+        self.show_all()
+
+        options = PlayerSearch.playerfilter.options
+        options = PlayerSearch.playerfilter.options
+
+        self.checkbuttonShowOwnPlayers.set_active(options["ownplayers"])
+        self.comboboxPosition.set_active_id(str(options["position"]))
+        self.spinbuttonAgeMinimum.set_value(options["age"][0])
+        self.spinbuttonAgeMaximum.set_value(options["age"][1])
+        self.spinbuttonValueMinimum.set_value(options["value"][0])
+        self.spinbuttonValueMaximum.set_value(options["value"][1])
+        self.comboboxStatus.set_active_id(str(options["status"]))
+        self.keeping.set_values(options["keeping"])
+        self.tackling.set_values(options["tackling"])
+        self.passing.set_values(options["passing"])
+        self.shooting.set_values(options["shooting"])
+        self.heading.set_values(options["heading"])
+        self.pace.set_values(options["pace"])
+        self.stamina.set_values(options["stamina"])
+        self.ball_control.set_values(options["ball_control"])
+        self.set_pieces.set_values(options["set_pieces"])
+
+        if self.run() == Gtk.ResponseType.OK:
+            options["ownplayers"] = self.checkbuttonShowOwnPlayers.get_active()
+            options["position"] = int(self.comboboxPosition.get_active_id())
+            options["age"][0] = self.spinbuttonAgeMinimum.get_value_as_int()
+            options["age"][1] = self.spinbuttonAgeMaximum.get_value_as_int()
+            options["value"][0] = self.spinbuttonValueMinimum.get_value_as_int()
+            options["value"][1] = self.spinbuttonValueMaximum.get_value_as_int()
+            options["status"] = int(self.comboboxStatus.get_active_id())
+            options["keeping"] = self.keeping.get_values()
+            options["tackling"] = self.tackling.get_values()
+            options["passing"] = self.passing.get_values()
+            options["shooting"] = self.shooting.get_values()
+            options["pace"] = self.pace.get_values()
+            options["heading"] = self.heading.get_values()
+            options["stamina"] = self.stamina.get_values()
+            options["ball_control"] = self.ball_control.get_values()
+            options["set_pieces"] = self.set_pieces.get_values()
+
+        self.hide()
+
+        return options
+
+
+class ContextMenu1(Gtk.Menu):
+    '''
+    Context menu to be displayed for players belonging to user club.
+    '''
+    def __init__(self):
+        Gtk.Menu.__init__(self)
+
+        menuitem = uigtk.widgets.MenuItem("_Player Information")
+        menuitem.connect("activate", self.on_player_information_clicked)
+        self.append(menuitem)
+        separator = Gtk.SeparatorMenuItem()
+        self.append(separator)
+        menuitem = uigtk.widgets.MenuItem("Add To _Comparison")
+        menuitem.connect("activate", self.on_comparison_clicked)
+        self.append(menuitem)
+
+    def on_player_information_clicked(self, *args):
+        '''
+        Launch player information screen for selected player.
+        '''
+        data.window.screen.change_visible_screen("playerinformation")
+        data.window.screen.active.set_visible_player(self.playerid)
+
+    def on_comparison_clicked(self, *args):
+        '''
+        Add player to stack for comparison.
+        '''
+        data.comparison.add_to_comparison(self.playerid)
+
+    def show(self):
+        self.show_all()
+
+
+class ContextMenu2(ContextMenu1):
+    '''
+    Content menu displayed for players belonging to other clubs.
+    '''
+    def __init__(self):
+        ContextMenu1.__init__(self)
+
+        separator = Gtk.SeparatorMenuItem()
+        self.insert(separator, 1)
+        menuitem = uigtk.widgets.MenuItem("Make Offer To _Purchase")
+        menuitem.connect("activate", self.on_purchase_offer_clicked)
+        self.insert(menuitem, 2)
+        menuitem = uigtk.widgets.MenuItem("Make Offer To _Loan")
+        menuitem.connect("activate", self.on_loan_offer_clicked)
+        self.insert(menuitem, 3)
+        self.menuitemAddShortlist = uigtk.widgets.MenuItem("_Add To Shortlist")
+        self.menuitemAddShortlist.connect("activate", self.on_add_to_shortlist_clicked)
+        self.insert(self.menuitemAddShortlist, 4)
+        self.menuitemRemoveShortlist = uigtk.widgets.MenuItem("_Remove From Shortlist")
+        self.menuitemRemoveShortlist.connect("activate", self.on_remove_from_shortlist_clicked)
+        self.insert(self.menuitemRemoveShortlist, 5)
+
+    def on_purchase_offer_clicked(self, *args):
+        '''
+        Initiate purchase offer of selected player.
+        '''
+        data.negotiations.initialise_purchase(self.playerid)
+
+    def on_loan_offer_clicked(self, *args):
+        '''
+        Initiate loan offer of selected player.
+        '''
+        data.negotiations.initialise_loan(self.playerid)
+
+    def on_add_to_shortlist_clicked(self, *args):
+        '''
+        Add player to shortlist.
+        '''
+        self.club.shortlist.add_to_shortlist(self.playerid)
+
+    def on_remove_from_shortlist_clicked(self, *args):
+        '''
+        Remove player from shortlist.
+        '''
+        dialog = uigtk.shortlist.RemoveShortlist()
+
+        if dialog.show(self.playerid) == 1:
+            self.club.shortlist.remove_from_shortlist(self.playerid)
+
+    def show(self):
+        self.club = data.clubs.get_club_by_id(data.user.team)
+
+        self.show_all()
+
+        sensitive = self.club.shortlist.get_player_in_shortlist(self.playerid)
+        self.menuitemAddShortlist.set_sensitive(not sensitive)
+        self.menuitemRemoveShortlist.set_sensitive(sensitive)

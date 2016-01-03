@@ -1,3 +1,0 @@
-Injuries can occur to players during matches or training with players at an increased risk of injury the lower their fitness level. When injured, the injury type and length will be displayed.
-
-Suspensions can occur when a player is sent off in a match, or through accumulation of yellow cards over the season. Different suspensions have different lengths, and the length of time serving the suspension decreases with each match played.

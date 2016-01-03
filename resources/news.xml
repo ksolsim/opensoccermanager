@@ -12,7 +12,7 @@
     </article>
     <article id="FX01">
         <title>League fixtures announced for _SEASON_ season</title>
-        <message>The league fixtures for the _SEASON_ season have been announced. The first three are _FIXTURE1_, _FIXTURE2_, and _FIXTURE3_.</message>
+        <message>The league fixtures for the _SEASON_ season have been announced. The first three opposition we will play are _FIXTURE1_, _FIXTURE2_, and _FIXTURE3_.</message>
         <category>6</category>
     </article>
     <article id="FX01">
@@ -351,6 +351,11 @@
         <category>1</category>
     </article>
     <article id="FL01">
+        <title>Process to float club now started</title>
+        <message>The process to float the club on the stock market has now begun, and the market response will take several months. It is imperative our results on and off the field during this time are good to ensure we get the best possible return.</message>
+        <category>5</category>
+    </article>
+    <article id="FL02">
         <title>Club flotation on stock market completed</title>
         <message>The board have now confirmed that the public offering on the club has now been completed and all the shares have been purchased. We are also pleased to announce that the club made more money than was originally estimated.</message>
         <category>5</category>

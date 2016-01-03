@@ -1,9 +1,0 @@
-There are five categories of evaluation which rate your performance as manager over various aspects of the club. These categories are:
-
-* Chairman
-* Fans
-* Finances
-* Players
-* Staff
-
-An overall rating determines the quality of your management.

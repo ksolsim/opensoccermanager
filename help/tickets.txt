@@ -1,5 +1,0 @@
-Ticket prices can be set for the various combinations of stadium setup, with difference prices being assigned for standing, seating, covered, uncovered, and boxes. Ticket type prices can also be assigned for league and cup matches, and season tickets.
-
-Free school tickets can be offered in amounts of 100, and while not generating ticket money, will go some way to increasing attendance and sales of catering and merchandise products. Typically, they are useful when the club is doing poorly and attendance is lower than the total capacity of the stadium.
-
-The season ticket allocation percentage can be set at the beginning of the season. If the value is too high, the number of matchday ticket sales will be reduced. If the value is too low, the club will struggle to fill the stadium for some games during the season.

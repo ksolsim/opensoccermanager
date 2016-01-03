@@ -1,284 +1,337 @@
 #!/usr/bin/env python3
 
-#  This file is part of OpenSoccerManager.
-#
-#  OpenSoccerManager is free software: you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by the
-#  Free Software Foundation, either version 3 of the License, or (at your
-#  option) any later version.
-#
-#  OpenSoccerManager is distributed in the hope that it will be useful, but
-#  WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-#  or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-#  more details.
-#
-#  You should have received a copy of the GNU General Public License along with
-#  OpenSoccerManager.  If not, see <http://www.gnu.org/licenses/>.
-
-
 from gi.repository import Gtk
-import os
 
-import club
-import constants
 import data
-import date
-import display
-import game
-import preferences
-import user
-import widgets
+import structures.start
+import uigtk.mainscreen
+import uigtk.widgets
 
 
-class Details(Gtk.Grid):
+class Details(uigtk.widgets.Grid):
     '''
-    Grab details for the game including manager name, club and finances.
+    Details collection screen including name, year, league, club, and financial
+    selection.
     '''
+    class User(uigtk.widgets.Grid):
+        '''
+        User details collection interface.
+        '''
+        def __init__(self):
+            uigtk.widgets.Grid.__init__(self)
+
+            frame = uigtk.widgets.CommonFrame("User")
+            self.attach(frame, 0, 0, 1, 1)
+
+            label = uigtk.widgets.Label("_Name", leftalign=True)
+            Details.sizegroupLabel.add_widget(label)
+            frame.grid.attach(label, 0, 0, 1, 1)
+            self.comboboxName = Gtk.ComboBoxText.new_with_entry()
+            self.comboboxName.set_hexpand(True)
+            self.entryName = self.comboboxName.get_child()
+            self.entryName.set_input_purpose(Gtk.InputPurpose.NAME)
+            self.entryName.set_tooltip_text("Managerial name of user to be used in-game.")
+            label.set_mnemonic_widget(self.comboboxName);
+            frame.grid.attach(self.comboboxName, 1, 0, 1, 1)
+
+            frame = uigtk.widgets.CommonFrame("Game")
+            self.attach(frame, 0, 1, 1, 1)
+
+            label = uigtk.widgets.Label("_Start Season", leftalign=True)
+            Details.sizegroupLabel.add_widget(label)
+            frame.grid.attach(label, 0, 0, 1, 1)
+            self.comboboxSeason = Gtk.ComboBoxText()
+            self.comboboxSeason.set_tooltip_text("Specify starting season of the game and the data to load.")
+            self.comboboxSeason.connect("changed", self.on_season_changed)
+            label.set_mnemonic_widget(self.comboboxSeason)
+            frame.grid.attach(self.comboboxSeason, 1, 0, 1, 1)
+
+            label = uigtk.widgets.Label("_League", leftalign=True)
+            Details.sizegroupLabel.add_widget(label)
+            frame.grid.attach(label, 0, 1, 1, 1)
+            self.comboboxLeague = Gtk.ComboBoxText()
+            self.comboboxLeague.set_tooltip_text("League in which the preferred club to manage is located.")
+            self.comboboxLeague.connect("changed", self.on_league_changed)
+            label.set_mnemonic_widget(self.comboboxLeague)
+            frame.grid.attach(self.comboboxLeague, 1, 1, 2, 1)
+
+            label = uigtk.widgets.Label("_Club", leftalign=True)
+            Details.sizegroupLabel.add_widget(label)
+            frame.grid.attach(label, 0, 2, 1, 1)
+            self.comboboxClub = Gtk.ComboBoxText()
+            self.comboboxClub.set_tooltip_text("Club which the user is going to be managing.")
+            label.set_mnemonic_widget(self.comboboxClub)
+            frame.grid.attach(self.comboboxClub, 1, 2, 2, 1)
+
+            # Finances
+            self.comboboxCategorisedAmount = Gtk.ComboBoxText()
+            self.comboboxCategorisedAmount.set_sensitive(False)
+            frame.grid.attach(self.comboboxCategorisedAmount, 1, 4, 2, 1)
+
+            label = uigtk.widgets.Label("Finances", leftalign=True)
+            Details.sizegroupLabel.add_widget(label)
+            frame.grid.attach(label, 0, 3, 2, 1)
+
+            buttonbox = uigtk.widgets.ButtonBox()
+            buttonbox.set_layout(Gtk.ButtonBoxStyle.START)
+            frame.grid.attach(buttonbox, 1, 3, 2, 1)
+
+            self.radiobuttonReputational = uigtk.widgets.RadioButton("_Reputational")
+            self.radiobuttonReputational.finances = 0
+            self.radiobuttonReputational.set_tooltip_text("Initial bank balance based on club reputation.")
+            self.radiobuttonReputational.connect("toggled", self.on_finances_toggled)
+            buttonbox.add(self.radiobuttonReputational)
+            self.radiobuttonCategorised = uigtk.widgets.RadioButton("C_ategorised")
+            self.radiobuttonCategorised.join_group(self.radiobuttonReputational)
+            self.radiobuttonCategorised.finances = 1
+            self.radiobuttonCategorised.set_tooltip_text("Initial bank balance based on set value.")
+            self.radiobuttonCategorised.connect("toggled", self.on_finances_toggled)
+            buttonbox.add(self.radiobuttonCategorised)
+
+            self.finances = structures.finances.FinanceCategories()
+
+        def populate_names(self):
+            '''
+            Load list of previously used player names.
+            '''
+            self.entryName.set_text("")
+            self.comboboxName.remove_all()
+
+            for name in data.names.get_names():
+                self.comboboxName.append_text(name)
+
+        def populate_seasons(self):
+            '''
+            Load season selection into dropdown.
+            '''
+            self.comboboxSeason.remove_all()
+
+            for season in data.seasons.get_seasons():
+                text = "%i/%i" % (season, season + 1)
+                self.comboboxSeason.append(str(season), text)
+
+            self.comboboxSeason.set_active(0)
+
+        def on_season_changed(self, combobox):
+            '''
+            Adjust data for selected season.
+            '''
+            self.populate_leagues()
+
+        def populate_leagues(self):
+            '''
+            Load league selection for given season.
+            '''
+            season = self.comboboxSeason.get_active_id()
+
+            data.database.cursor.execute("SELECT * FROM league \
+                                         JOIN leagueattr \
+                                         ON league.id = leagueattr.league \
+                                         WHERE leagueattr.year = ? \
+                                         ORDER BY league.name ASC",
+                                         (season,))
+            leagues = data.database.cursor.fetchall()
+
+            self.comboboxLeague.remove_all()
+
+            for league in leagues:
+                self.comboboxLeague.append(str(league[0]), league[1])
+
+            self.comboboxLeague.set_active(0)
+
+        def on_league_changed(self, combobox):
+            '''
+            Adjust data for selected league.
+            '''
+            self.populate_clubs()
+
+        def populate_clubs(self):
+            '''
+            Load club selection for given league.
+            '''
+            season = self.comboboxSeason.get_active_id()
+            leagueid = self.comboboxLeague.get_active_id()
+
+            data.database.cursor.execute("SELECT * FROM club \
+                                          JOIN clubattr \
+                                          ON club.id = clubattr.club \
+                                          WHERE clubattr.league = ? \
+                                          AND clubattr.year = ? \
+                                          ORDER BY club.name ASC",
+                                          (leagueid, season))
+            clubs = data.database.cursor.fetchall()
+
+            self.comboboxClub.remove_all()
+
+            for club in clubs:
+                self.comboboxClub.append(str(club[0]), club[1])
+
+            self.comboboxClub.set_active(0)
+
+        def on_finances_toggled(self, radiobutton):
+            '''
+            Enable category-based finances dropdown menu.
+            '''
+            if radiobutton.finances == 1:
+                state = radiobutton.get_active()
+                self.comboboxCategorisedAmount.set_sensitive(state)
+
+        def populate_finances(self):
+            self.comboboxCategorisedAmount.remove_all()
+
+            for key, value in self.finances.get_categories():
+                amount = data.currency.get_currency(value[0], integer=True)
+                category = "%s (%s)" % (value[1], amount)
+                self.comboboxCategorisedAmount.append(str(key), category)
+
+            self.comboboxCategorisedAmount.set_active(0)
+
+    class Buttons(uigtk.widgets.ButtonBox):
+        '''
+        Button interface for continue or back.
+        '''
+        def __init__(self):
+            uigtk.widgets.ButtonBox.__init__(self)
+            self.set_layout(Gtk.ButtonBoxStyle.END)
+
+            self.buttonBack = uigtk.widgets.Button("_Back")
+            self.buttonBack.set_tooltip_text("Return back to the main menu.")
+            self.add(self.buttonBack)
+
+            self.buttonStart = uigtk.widgets.Button("_Start Game")
+            self.buttonStart.set_sensitive(False)
+            self.buttonStart.set_tooltip_text("Start playing game with entered details.")
+            self.add(self.buttonStart)
+
+        def set_start_sensitive(self, sensitive):
+            self.buttonStart.set_sensitive(sensitive)
+
+    sizegroupLabel = Gtk.SizeGroup()
+
     def __init__(self):
-        Gtk.Grid.__init__(self)
-        self.set_row_spacing(5)
-        self.set_column_spacing(5)
+        uigtk.widgets.Grid.__init__(self)
         self.set_border_width(5)
 
-        self.liststoreName = Gtk.ListStore(str)
-        self.liststoreYears = Gtk.ListStore(int)
-        self.liststoreLeagues = Gtk.ListStore(int, str)
-        self.liststoreClubs = Gtk.ListStore(int, str)
+        self.sizegroupLabel.set_mode(Gtk.SizeGroupMode.HORIZONTAL)
 
-        treemodelsort = Gtk.TreeModelSort(self.liststoreClubs)
-        treemodelsort.set_sort_column_id(1, Gtk.SortType.ASCENDING)
-
-        label = widgets.AlignedLabel("_Name")
+        label = Gtk.Label()
+        label.set_hexpand(True)
         self.attach(label, 0, 0, 1, 1)
-        self.comboboxName = Gtk.ComboBoxText.new_with_entry()
-        self.comboboxName.set_model(self.liststoreName)
-        self.comboboxName.set_tooltip_text("Your manager name which will be used in the game.")
-        self.entryName = self.comboboxName.get_child()
-        self.entryName.connect("changed", self.continue_status)
-        label.set_mnemonic_widget(self.comboboxName)
-        self.attach(self.comboboxName, 1, 0, 1, 1)
+        label = Gtk.Label()
+        label.set_hexpand(True)
+        self.attach(label, 2, 0, 1, 1)
 
-        label = widgets.AlignedLabel("_Database")
-        self.attach(label, 0, 1, 1, 1)
+        grid = uigtk.widgets.Grid()
+        grid.set_hexpand(False)
+        self.attach(grid, 1, 0, 1, 1)
+
+        frame = uigtk.widgets.CommonFrame("Database")
+        grid.attach(frame, 0, 0, 1, 1)
+
+        label = uigtk.widgets.Label("_Location", leftalign=True)
+        self.sizegroupLabel.add_widget(label)
+        frame.grid.attach(label, 0, 1, 1, 1)
         self.filechooserDatabase = Gtk.FileChooserButton()
+        self.filechooserDatabase.set_hexpand(True)
         self.filechooserDatabase.set_title("Select Database")
         self.filechooserDatabase.set_action(Gtk.FileChooserAction.OPEN)
-        self.filechooserDatabase.connect("file-set", self.file_chooser_set)
+        self.filechooserDatabase.set_tooltip_text("Database of data to be loaded and used by the game.")
+        self.filechooserDatabase.connect("file-set", self.on_database_file_set)
+        label.set_mnemonic_widget(self.filechooserDatabase)
+        frame.grid.attach(self.filechooserDatabase, 1, 1, 1, 1)
+
         filefilter = Gtk.FileFilter()
         filefilter.set_name("Database Files")
         filefilter.add_pattern("*.db")
         self.filechooserDatabase.add_filter(filefilter)
         label.set_mnemonic_widget(self.filechooserDatabase)
-        self.attach(self.filechooserDatabase, 1, 1, 1, 1)
 
-        cellrenderertext = Gtk.CellRendererText()
+        self.user = self.User()
+        self.user.set_sensitive(False)
+        self.user.entryName.connect("changed", self.on_name_changed)
+        grid.attach(self.user, 0, 1, 1, 1)
 
-        label = widgets.AlignedLabel("_Year")
-        self.attach(label, 0, 2, 1, 1)
-        self.comboboxYear = Gtk.ComboBox()
-        self.comboboxYear.set_model(self.liststoreYears)
-        self.comboboxYear.pack_start(cellrenderertext, True)
-        self.comboboxYear.add_attribute(cellrenderertext, "text", 0)
-        self.comboboxYear.connect("changed", self.year_changed)
-        self.comboboxYear.set_tooltip_text("Season in which the game will start.")
-        label.set_mnemonic_widget(self.comboboxYear)
-        self.attach(self.comboboxYear, 1, 2, 1, 1)
+        self.buttons = self.Buttons()
+        self.buttons.buttonBack.connect("clicked", self.on_back_clicked)
+        self.buttons.buttonStart.connect("clicked", self.on_start_clicked)
+        grid.attach(self.buttons, 0, 2, 1, 1)
 
-        label = widgets.AlignedLabel("_League")
-        self.attach(label, 0, 3, 1, 1)
-        self.comboboxLeague = Gtk.ComboBox()
-        self.comboboxLeague.set_model(self.liststoreLeagues)
-        self.comboboxLeague.pack_start(cellrenderertext, True)
-        self.comboboxLeague.add_attribute(cellrenderertext, "text", 1)
-        self.comboboxLeague.connect("changed", self.league_changed)
-        self.comboboxLeague.set_tooltip_text("League in which the team you wish to manage is found.")
-        label.set_mnemonic_widget(self.comboboxLeague)
-        self.attach(self.comboboxLeague, 1, 3, 1, 1)
+    def on_database_file_set(self, filechooserbutton):
+        '''
+        Enable details entry if database is selected.
+        '''
+        if self.filechooserDatabase.get_filename():
+            self.user.set_sensitive(True)
+        else:
+            self.user.set_sensitive(False)
 
-        label = widgets.AlignedLabel("_Club")
-        self.attach(label, 0, 4, 1, 1)
-        self.comboboxClub = Gtk.ComboBox()
-        self.comboboxClub.set_model(treemodelsort)
-        self.comboboxClub.pack_start(cellrenderertext, True)
-        self.comboboxClub.add_attribute(cellrenderertext, "text", 1)
-        self.comboboxClub.connect("changed", self.continue_status)
-        self.comboboxClub.set_tooltip_text("Club which you wish to manage.")
-        label.set_mnemonic_widget(self.comboboxClub)
-        self.attach(self.comboboxClub, 1, 4, 1, 1)
+    def on_name_changed(self, entry):
+        '''
+        Allow game to be started if name is entered.
+        '''
+        state = entry.get_text_length() > 0
+        self.buttons.set_start_sensitive(state)
 
-        label = widgets.AlignedLabel("_Finances")
-        self.attach(label, 0, 5, 1, 1)
-        self.radiobuttonFinancesRep = Gtk.RadioButton("Reputation-Based Finances")
-        self.radiobuttonFinancesRep.set_tooltip_text("Starting bank balance based on popularity of club.")
-        self.radiobuttonFinancesRep.connect("toggled", self.finances_changed)
-        label.set_mnemonic_widget(self.radiobuttonFinancesRep)
-        self.attach(self.radiobuttonFinancesRep, 1, 5, 1, 1)
-        self.radiobuttonFinancesUSM = Gtk.RadioButton("USM-Based Finances")
-        self.radiobuttonFinancesUSM.join_group(self.radiobuttonFinancesRep)
-        self.radiobuttonFinancesUSM.set_tooltip_text("Starting bank balance for all teams at set amount.")
-        self.radiobuttonFinancesUSM.connect("toggled", self.finances_changed)
-        self.attach(self.radiobuttonFinancesUSM, 2, 5, 1, 1)
-        self.comboboxFinances = Gtk.ComboBoxText()
-        self.comboboxFinances.set_sensitive(False)
-        self.attach(self.comboboxFinances, 1, 6, 2, 1)
+    def on_back_clicked(self, *args):
+        '''
+        Return back to main menu screen.
+        '''
+        data.window.remove(self)
+        data.window.add(data.window.welcome)
 
-        buttonbox = Gtk.ButtonBox()
-        buttonbox.set_spacing(5)
-        buttonbox.set_layout(Gtk.ButtonBoxStyle.END)
-        self.attach(buttonbox, 0, 7, 3, 1)
-        buttonBack = widgets.Button("_Back")
-        buttonBack.connect("clicked", self.back_button_clicked)
-        buttonBack.set_tooltip_text("Go back to main menu.")
-        buttonbox.add(buttonBack)
-        self.buttonContinue = widgets.Button("_Continue")
-        self.buttonContinue.set_sensitive(False)
-        self.buttonContinue.connect("clicked", self.continue_button_clicked)
-        self.buttonContinue.set_tooltip_text("Start the game with entered details.")
-        buttonbox.add(self.buttonContinue)
+    def on_start_clicked(self, *args):
+        '''
+        Load main game screen with screen from preferences.
+        '''
+        season = self.user.comboboxSeason.get_active_id()
+        teamid = int(self.user.comboboxClub.get_active_id())
 
-        self.user = user.Names()
+        start = structures.start.Start(teamid, season)
+
+        name = self.user.entryName.get_text()
+        start.set_manager_name(name)
+
+        self.set_initial_finances()
+
+        data.window.remove(self)
+        data.window.add(data.window.mainscreen)
+        data.window.mainscreen.grid.attach(data.window.screen, 0, 0, 1, 1)
+
+        data.window.mainscreen.information.update_date()
+
+        data.window.screen.run()
+        data.window.screen.change_visible_screen("squad")
+
+        data.database.close()
+
+        start.setup_initial_values()
+
+    def set_initial_finances(self):
+        '''
+        Call initial balance generation based on option.
+        '''
+        if self.user.radiobuttonReputational.get_active():
+            option = -1
+        else:
+            option = int(self.user.comboboxCategorisedAmount.get_active_id())
+
+        data.clubs.set_initial_balance(option)
 
     def run(self):
-        # Load financials
-        self.comboboxFinances.remove_all()
+        if data.database.connect("databases/opensoccermanager.db"):
+            self.filechooserDatabase.set_filename("databases/opensoccermanager.db")
 
-        for key, item in constants.money.items():
-            amount = display.currency(item[0])
-            self.comboboxFinances.append(str(key), "%s (%s)" % (item[1], amount))
+            self.user.set_sensitive(True)
+            self.user.populate_names()
 
-        # Load manager names
-        self.liststoreName.clear()
+            data.seasons = structures.seasons.Seasons()
+            self.user.populate_seasons()
 
-        for name in self.user.read_names():
-            self.liststoreName.append([name])
+            if len(data.names.get_names()) > 0:
+                self.user.entryName.set_text(data.names.get_first_name())
 
-        self.entryName.set_text("")
-        self.radiobuttonFinancesRep.set_active(True)
-        self.comboboxFinances.set_active(0)
+            self.user.populate_finances()
 
-        if game.database.connect():
-            # Set database to open
-            filepath = os.path.join("databases", "%s" % (game.database_filename))
-            self.filechooserDatabase.select_filename(filepath)
-
-            self.load_year_list()
+        self.user.radiobuttonReputational.set_active(True)
 
         self.show_all()
-        self.entryName.grab_focus()
-
-    def year_changed(self, combobox=None):
-        self.load_league_list()
-
-    def league_changed(self, combobox=None):
-        self.load_club_list()
-
-    def load_year_list(self):
-        year_data = game.database.cursor.execute("SELECT * FROM year ORDER BY year ASC")
-
-        self.liststoreYears.clear()
-
-        for year in year_data.fetchall():
-            self.liststoreYears.append([year[0]])
-
-        self.comboboxYear.set_active(0)
-
-    def load_league_list(self):
-        model = self.comboboxYear.get_model()
-        treeiter = self.comboboxYear.get_active()
-
-        if treeiter != -1:
-            year = model[treeiter][0]
-
-            league_data = game.database.cursor.execute("SELECT league.id, league.name FROM league JOIN leagueattr ON leagueattr.league = league.id WHERE year = ?", (year,))
-
-            self.liststoreLeagues.clear()
-
-            for league in league_data.fetchall():
-                self.liststoreLeagues.append(league)
-
-            sensitive = len(self.liststoreLeagues) > 0
-            self.comboboxLeague.set_sensitive(sensitive)
-            self.comboboxLeague.set_active(0)
-
-    def load_club_list(self):
-        active = self.comboboxYear.get_active()
-        year = self.liststoreYears[active][0]
-
-        active = self.comboboxLeague.get_active()
-
-        if active != -1:
-            league = self.liststoreLeagues[active][0]
-
-            club_data = game.database.cursor.execute("SELECT club.id, club.name FROM club JOIN clubattr ON clubattr.club = club.id WHERE year = ? AND league = ?", (year, league))
-
-            self.liststoreClubs.clear()
-
-            for club in club_data.fetchall():
-                self.liststoreClubs.append(club)
-
-            sensitive = len(self.liststoreClubs) > 0
-            self.comboboxClub.set_sensitive(sensitive)
-            self.comboboxClub.set_active(0)
-        else:
-            sensitive = len(self.liststoreClubs) > 0
-            self.comboboxClub.set_sensitive(sensitive)
-            self.liststoreClubs.clear()
-
-    def file_chooser_set(self, filechooserbutton):
-        game.database_filename = filechooserbutton.get_filename()
-        game.database.connect(game.database_filename)
-
-        preferences.preferences["DATABASE"]["Database"] = game.database_filename
-        preferences.preferences.writefile()
-
-        self.load_year_list()
-
-    def finances_changed(self, radiobutton):
-        active = self.radiobuttonFinancesUSM.get_active()
-        self.comboboxFinances.set_sensitive(active)
-
-    def continue_status(self, widget=None):
-        sensitive = self.entryName.get_text_length() > 0
-
-        if sensitive:
-            sensitive = self.comboboxClub.get_active() != -1
-
-        self.buttonContinue.set_sensitive(sensitive)
-
-    def back_button_clicked(self, button):
-        game.window.remove(game.window.screenDetails)
-        game.window.add(game.window.screenMain)
-
-    def continue_button_clicked(self, button):
-        game.date = date.Date()
-
-        active = self.comboboxYear.get_active()
-        game.date.year = int(self.liststoreYears[active][0])
-
-        # Get club ID number from combobox
-        treeiter = self.comboboxClub.get_active_iter()
-        model = self.comboboxClub.get_model()
-        game.teamid = model[treeiter][0]
-
-        data.datainit()
-
-        # Save manager name entered by player
-        manager = self.entryName.get_text()
-        club.clubs[game.teamid].manager = manager
-
-        self.user.add_name(manager)
-
-        # Grab finance setup
-        if self.radiobuttonFinancesUSM.get_active():
-            finance = int(self.comboboxFinances.get_active_id())
-        else:
-            finance = -1
-
-        data.dataloader(finance)
-
-        game.database.connection.close()
-
-        game.window.remove(game.window.screenDetails)
-        game.window.add(game.window.screenGame)
-        game.window.screen_loader(preferences.preferences.start_screen)
-        game.window.screenGame.run()

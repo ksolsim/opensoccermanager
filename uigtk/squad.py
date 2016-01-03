@@ -1,614 +1,890 @@
 #!/usr/bin/env python3
 
-#  This file is part of OpenSoccerManager.
-#
-#  OpenSoccerManager is free software: you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by the
-#  Free Software Foundation, either version 3 of the License, or (at your
-#  option) any later version.
-#
-#  OpenSoccerManager is distributed in the hope that it will be useful, but
-#  WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-#  or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-#  more details.
-#
-#  You should have received a copy of the GNU General Public License along with
-#  OpenSoccerManager.  If not, see <http://www.gnu.org/licenses/>.
-
-
 from gi.repository import Gtk
 from gi.repository import Gdk
-import random
 import re
 import unicodedata
 
-from uigtk import filters
-from uigtk import playerinfo
-from uigtk import playerselect
-import club
-import constants
-import dialogs
-import display
-import evaluation
-import events
-import game
-import menu
-import player
-import widgets
+import data
+import structures.filters
+import structures.skills
+import uigtk.widgets
 
 
-class Squad(Gtk.Grid):
-    __name__ = "squad"
+targets = [("MY_TREE_MODEL_ROW", Gtk.TargetFlags.SAME_APP, 0),
+           ("TEXT", 0, 1)]
+
+
+class Squad(uigtk.widgets.Grid):
+    club = None
+
+    squadfilter = None
+
+    squadlist = None
+    treeselection = None
+    firstteam = None
+    substitutions = None
 
     def __init__(self):
-        targets = [("MY_TREE_MODEL_ROW", Gtk.TargetFlags.SAME_APP, 0),
-                   ("text/plain", 0, 1),
-                   ("TEXT", 0, 2),
-                   ("STRING", 0, 3),
-                  ]
+        uigtk.widgets.Grid.__init__(self)
 
-        self.playerselect = playerselect.PlayerSelect()
-        self.squadfilter = filters.SquadFilter()
-
-        self.tree_columns = ([], [], [])
-
-        Gtk.Grid.__init__(self)
-        self.set_row_spacing(5)
-        self.set_column_spacing(5)
-
-        self.liststoreSquad = Gtk.ListStore(int, str, str, int, int,
-                                            int, int, int, int, int,
-                                            int, int, int, str, str,
-                                            str, str, str, str, int,
-                                            int, str, int, str, int,
-                                            int,)
-
-        treemodelsort = Gtk.TreeModelSort(self.liststoreSquad)
-        treemodelsort.set_sort_column_id(1, Gtk.SortType.ASCENDING)
-
-        self.treemodelfilter = treemodelsort.filter_new()
-        self.treemodelfilter.set_visible_func(self.filter_visible, player.players)
-
-        grid = Gtk.Grid()
-        grid.set_column_spacing(5)
+        grid = uigtk.widgets.Grid()
         self.attach(grid, 0, 0, 1, 1)
 
-        label = Gtk.Label("_View")
-        label.set_use_underline(True)
-        label.set_alignment(1, 0.5)
-        grid.attach(label, 0, 0, 1, 1)
-        comboboxView = Gtk.ComboBoxText()
-        comboboxView.set_hexpand(False)
-        comboboxView.append("0", "Personal")
-        comboboxView.append("1", "Skills")
-        comboboxView.append("2", "Form")
-        comboboxView.set_active(1)
-        comboboxView.connect("changed", self.view_changed)
-        comboboxView.set_tooltip_text("Change visible information columns.")
-        label.set_mnemonic_widget(comboboxView)
-        grid.attach(comboboxView, 1, 0, 1, 1)
+        self.columnviews = uigtk.shared.ColumnViews()
+        self.columnviews.comboboxView.connect("changed", self.on_view_changed)
+        grid.attach(self.columnviews, 1, 0, 1, 1)
 
         label = Gtk.Label()
         label.set_hexpand(True)
         grid.attach(label, 2, 0, 1, 1)
 
-        buttonbox = Gtk.ButtonBox()
-        buttonbox.set_spacing(5)
-        grid.attach(buttonbox, 3, 0, 1, 1)
-        buttonFilter = widgets.Button("F_ilter")
-        buttonFilter.connect("clicked", self.filter_squad)
-        buttonFilter.set_tooltip_text("Filter which players are visible in the squad list.")
-        buttonbox.add(buttonFilter)
-        self.buttonReset = widgets.Button("_Reset")
-        self.buttonReset.set_sensitive(False)
-        self.buttonReset.connect("clicked", self.filter_reset)
-        self.buttonReset.set_tooltip_text("Reset any currently active filter settings.")
-        buttonbox.add(self.buttonReset)
+        self.filterbuttons = uigtk.shared.FilterButtons()
+        self.filterbuttons.buttonFilter.connect("clicked", self.on_filter_clicked)
+        self.filterbuttons.buttonReset.connect("clicked", self.on_reset_clicked)
+        grid.attach(self.filterbuttons, 3, 0, 1, 1)
 
-        scrolledwindow = Gtk.ScrolledWindow()
-        scrolledwindow.set_policy(Gtk.PolicyType.NEVER,
-                                  Gtk.PolicyType.AUTOMATIC)
+        scrolledwindow = uigtk.widgets.ScrolledWindow()
         self.attach(scrolledwindow, 0, 1, 1, 1)
 
-        treeviewSquad = Gtk.TreeView()
-        treeviewSquad.set_model(self.treemodelfilter)
-        treeviewSquad.set_vexpand(True)
-        treeviewSquad.set_hexpand(True)
-        treeviewSquad.set_search_column(1)
-        treeviewSquad.enable_model_drag_source(Gdk.ModifierType.BUTTON1_MASK, targets, Gdk.DragAction.COPY)
-        treeviewSquad.connect("row-activated", self.row_activated)
-        treeviewSquad.connect("button-release-event", self.context_menu)
-        treeviewSquad.connect("drag-data-get", self.on_drag_data_get)
-        self.treeselection = treeviewSquad.get_selection()
-        scrolledwindow.add(treeviewSquad)
+        Squad.squadlist = SquadList()
 
-        treeviewcolumn = widgets.TreeViewColumn(title="Name", column=1)
-        treeviewcolumn.set_expand(True)
-        treeviewSquad.append_column(treeviewcolumn)
-        treeviewcolumn = widgets.TreeViewColumn(title="Position", column=2)
-        treeviewcolumn.set_expand(True)
-        treeviewSquad.append_column(treeviewcolumn)
+        self.treemodelfilter = Squad.squadlist.filter_new()
+        self.treemodelfilter.set_visible_func(self.filter_visible, data.players.get_players())
+        treemodelsort = Gtk.TreeModelSort(self.treemodelfilter)
+        treemodelsort.set_sort_column_id(1, Gtk.SortType.ASCENDING)
+
+        treeview = Gtk.TreeView()
+        treeview.set_vexpand(True)
+        treeview.set_hexpand(True)
+        treeview.set_model(treemodelsort)
+        treeview.set_search_column(1)
+        treeview.enable_model_drag_source(Gdk.ModifierType.BUTTON1_MASK,
+                                          targets,
+                                          Gdk.DragAction.COPY)
+        treeview.connect("row-activated", self.on_row_activated)
+        treeview.connect("button-release-event", self.on_button_release_event)
+        treeview.connect("key-press-event", self.on_key_press_event)
+        treeview.connect("drag-data-get", self.on_drag_data_get)
+        scrolledwindow.add(treeview)
+
+        Squad.treeselection = treeview.get_selection()
+
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Name", column=1)
+        treeview.append_column(treeviewcolumn)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Position", column=2)
+        treeview.append_column(treeviewcolumn)
+
+        self.tree_columns = ([], [], [])
 
         # Personal
-        treeviewcolumn = widgets.TreeViewColumn(title="Nationality", column=13)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Nationality", column=13)
         self.tree_columns[0].append(treeviewcolumn)
-        treeviewcolumn = widgets.TreeViewColumn(title="Value", column=14)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Value", column=14)
         self.tree_columns[0].append(treeviewcolumn)
-        treeviewcolumn = widgets.TreeViewColumn(title="Wages", column=15)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Wage", column=15)
         self.tree_columns[0].append(treeviewcolumn)
-        treeviewcolumn = widgets.TreeViewColumn(title="Contract", column=16)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Contract", column=16)
         self.tree_columns[0].append(treeviewcolumn)
-        treeviewcolumn = widgets.TreeViewColumn(title="Morale", column=17)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Morale", column=17)
         self.tree_columns[0].append(treeviewcolumn)
-
-        for column in self.tree_columns[0]:
-            column.set_expand(True)
-            column.set_visible(False)
-            treeviewSquad.append_column(column)
 
         # Skills
-        for count, item in enumerate(constants.short_skill, start=3):
-            label = Gtk.Label("%s" % (item))
-            label.set_tooltip_text(constants.skill[count - 3])
+        skills = structures.skills.Skills()
+
+        for count, skill in enumerate(skills.get_skills(), start=3):
+            label = Gtk.Label("%s" % (skill[0]))
+            label.set_tooltip_text(skill[1])
             label.show()
-            treeviewcolumn = widgets.TreeViewColumn(column=count)
+            treeviewcolumn = uigtk.widgets.TreeViewColumn(column=count)
+            treeviewcolumn.set_expand(True)
             treeviewcolumn.set_widget(label)
+            treeview.append_column(treeviewcolumn)
             self.tree_columns[1].append(treeviewcolumn)
 
-        treeviewcolumn = widgets.TreeViewColumn(title="Fitness", column=12)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Fitness", column=12)
+        treeview.append_column(treeviewcolumn)
         self.tree_columns[1].append(treeviewcolumn)
 
-        for column in self.tree_columns[1]:
-            column.set_expand(True)
-            treeviewSquad.append_column(column)
-
         # Form
-        treeviewcolumn = widgets.TreeViewColumn(title="Games", column=18)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Games", column=18)
         self.tree_columns[2].append(treeviewcolumn)
-        treeviewcolumn = widgets.TreeViewColumn(title="Goals", column=19)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Goals", column=19)
         self.tree_columns[2].append(treeviewcolumn)
-        treeviewcolumn = widgets.TreeViewColumn(title="Assists", column=20)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Assists", column=20)
         self.tree_columns[2].append(treeviewcolumn)
-        treeviewcolumn = widgets.TreeViewColumn(title="Cards", column=21)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Cards", column=21)
         self.tree_columns[2].append(treeviewcolumn)
-        treeviewcolumn = widgets.TreeViewColumn(title="MOTM", column=22)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="MOTM", column=22)
         self.tree_columns[2].append(treeviewcolumn)
-        treeviewcolumn = widgets.TreeViewColumn(title="Rating", column=23)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Rating", column=23)
         self.tree_columns[2].append(treeviewcolumn)
 
-        for column in self.tree_columns[2]:
-            column.set_expand(True)
-            column.set_visible(False)
-            column.set_fixed_width(50)
-            treeviewSquad.append_column(column)
+        for columns in (self.tree_columns[0], self.tree_columns[2]):
+            for column in columns:
+                column.set_expand(True)
+                column.set_visible(False)
+                treeview.append_column(column)
 
-        self.notebook = Gtk.Notebook()
-        self.notebook.set_size_request(200, -1)
-        self.notebook.set_hexpand(False)
-        self.notebook.set_vexpand(True)
-        self.attach(self.notebook, 1, 0, 1, 2)
+        notebook = Gtk.Notebook()
+        notebook.set_hexpand(False)
+        notebook.set_size_request(225, -1)
+        self.attach(notebook, 1, 0, 1, 2)
 
-        # Team notebook page
-        label = Gtk.Label("_Team")
-        label.set_use_underline(True)
+        Squad.firstteam = FirstTeam()
+        label = uigtk.widgets.Label("_Team")
+        notebook.append_page(Squad.firstteam, label)
 
-        self.gridTeam = Gtk.Grid()
-        self.gridTeam.set_border_width(5)
-        self.gridTeam.set_row_spacing(5)
-        self.gridTeam.set_column_spacing(5)
-        self.notebook.append_page(self.gridTeam, label)
+        Squad.substitutions = Substitutions()
+        label = uigtk.widgets.Label("_Subs")
+        notebook.append_page(self.substitutions, label)
 
-        self.labelTeam = []
+        self.contextmenu = ContextMenu()
+        self.filter_dialog = Filter()
 
-        for count in range(0, 11):
-            label = widgets.Label()
-            self.gridTeam.attach(label, 0, count, 1, 1)
-            self.labelTeam.append(label)
-
-        # Subs notebook page
-        label = Gtk.Label("_Subs")
-        label.set_use_underline(True)
-
-        self.gridSubs = Gtk.Grid()
-        self.gridSubs.set_border_width(5)
-        self.gridSubs.set_row_spacing(5)
-        self.gridSubs.set_column_spacing(5)
-        self.notebook.append_page(self.gridSubs, label)
-
-        self.labelSubs = []
-
-        for count in range(0, 5):
-            label = widgets.Label()
-            self.gridSubs.attach(label, 0, count, 1, 1)
-            self.labelSubs.append(label)
-
-        self.buttonTeam = []
-
-        for count in range(0, 16):
-            button = Gtk.Button("")
-            button.set_hexpand(True)
-            button.drag_dest_set(Gtk.DestDefaults.ALL, [], Gdk.DragAction.COPY)
-            button.drag_dest_add_text_targets()
-            button.connect("drag-data-received", self.on_drag_data_received)
-            button.connect("clicked", self.squad_dialog, count)
-            self.buttonTeam.append(button)
-
-            if count < 11:
-                self.gridTeam.attach(button, 1, count, 1, 1)
-            else:
-                self.gridSubs.attach(button, 1, count - 11, 1, 1)
-
-        # Context menu
-        self.contextmenu = menu.SquadContextMenu()
-        self.contextmenu.menuitemRemovePosition.connect("activate", self.remove_from_position)
-        self.contextmenu.menuitemAddTransfer.connect("activate", self.transfer_status, 0)
-        self.contextmenu.menuitemRemoveTransfer.connect("activate", self.transfer_status, 0)
-        self.contextmenu.menuitemAddLoan.connect("activate", self.transfer_status, 1)
-        self.contextmenu.menuitemRemoveLoan.connect("activate", self.transfer_status, 1)
-        self.contextmenu.menuitemRelease.connect("activate", self.release_player)
-        self.contextmenu.menuitemRenewContract.connect("activate", self.renew_contract)
-        self.contextmenu.menuitemNotForSale.connect("toggled", self.not_for_sale)
-        self.contextmenu.menuitemExtendLoan.connect("activate", self.extend_loan)
-        self.contextmenu.menuitemCancelLoan.connect("activate", self.cancel_loan)
-        self.contextmenu.menuitemPlayerInfo.connect("activate", self.row_activated)
-
-    def squad_dialog(self, button, count):
-        selected = self.playerselect.display()
-
-        if selected == 0:
-            pass
-        elif selected == -1:
-            button.set_label("")
-            club.clubitem.clubs[game.teamid].team[count] = 0
-        else:
-            self.update_squad(selected, count)
-
-    def display_squad(self):
-        '''
-        Display the set items within the squad button list, or clear if
-        player is no longer set. Also used to clear the button text when
-        starting a game from new.
-        '''
-        for count, playerid in enumerate(club.clubs[game.teamid].team.values()):
-            if playerid != 0:
-                player = player.playeritem.players[playerid]
-                name = player.get_name()
-                self.buttonTeam[count].set_label(name)
-            else:
-                self.buttonTeam[count].set_label("")
+        Squad.squadfilter = structures.filters.Squad()
 
     def on_drag_data_get(self, treeview, context, selection, info, time):
-        treeselection = treeview.get_selection()
-        model, treeiter = treeselection.get_selected()
-        data = "%s" % (model[treeiter][0])
-        data = bytes(data, "utf-8")
+        model, treeiter = Squad.treeselection.get_selected()
+
+        data = bytes("%i" % (model[treeiter][0]), "utf-8")
         selection.set(selection.get_target(), 8, data)
 
-    def on_drag_data_received(self, button, context, x, y, selection, info, time):
-        playerid = selection.get_data().decode("utf-8")
-        playerid = int(playerid)
+    def on_key_press_event(self, widget, event):
+        if Gdk.keyval_name(event.keyval) == "Menu":
+            self.on_context_menu_event(event)
 
-        count = 0
+    def on_button_release_event(self, widget, event):
+        self.on_context_menu_event(event)
 
-        for widget in self.buttonTeam:
-            if button is widget:
-                key = count
-
-            count += 1
-
-        self.update_squad(playerid, key)
-
-        if context.get_actions() == Gdk.DragAction.COPY:
-            context.finish(True, False, time)
-
-        return
-
-    def update_squad(self, playerid, count):
-        '''
-        Remove player if they already exist in the squad list, and then
-        set the player into the new position.
-        '''
-        for key, item in club.clubs[game.teamid].team.items():
-            if item != 0 and str(item) == str(playerid):
-                club.clubs[game.teamid].team[key] = 0
-                self.buttonTeam[key].set_label("")
-
-        playerObject = player.players[playerid]
-        name = playerObject.get_name()
-        button = self.buttonTeam[count]
-        button.set_label("%s" % (name))
-        club.clubs[game.teamid].team[count] = playerid
-
-    def row_activated(self, widget, path=None, treeviewcolumn=None):
-        '''
-        Display the extra player information dialog box when double
-        clicking a row in the squad.
-        '''
-        model, treeiter = self.treeselection.get_selected()
-        playerid = model[treeiter][0]
-
-        dialog = playerinfo.PlayerInfo(playerid)
-        dialog.run()
-        dialog.destroy()
-
-    def context_menu(self, widget, event):
-        model, treeiter = self.treeselection.get_selected()
-
-        if treeiter and event.button == 3:
+    def on_context_menu_event(self, event):
+        if event.button == 3:
+            model, treeiter = Squad.treeselection.get_selected()
             playerid = model[treeiter][0]
-            playerObject = player.players[playerid]
 
-            self.contextmenu.menuitemNotForSale.set_active(playerObject.not_for_sale)
+            self.contextmenu.playerid = playerid
+            self.contextmenu.show()
+            self.contextmenu.popup(None,
+                                   None,
+                                   None,
+                                   None,
+                                   event.button,
+                                   event.time)
 
-            self.contextmenu.show_all()
+    def on_row_activated(self, treeview, treepath, treeviewcolumn):
+        '''
+        Launch player information screen with player details.
+        '''
+        model = treeview.get_model()
+        playerid = model[treepath][0]
 
-            if playerid in game.loans:
-                self.contextmenu.menuitemAddTransfer.set_visible(False)
-                self.contextmenu.menuitemRemoveTransfer.set_visible(False)
-                self.contextmenu.menuitemAddLoan.set_visible(False)
-                self.contextmenu.menuitemRemoveLoan.set_visible(False)
-                self.contextmenu.menuitemRelease.set_visible(False)
-                self.contextmenu.menuitemRenewContract.set_visible(False)
-                self.contextmenu.menuitemNotForSale.set_visible(False)
-                self.contextmenu.menuitemExtendLoan.set_visible(True)
-                self.contextmenu.menuitemCancelLoan.set_visible(True)
-            else:
-                if playerObject.transfer[0]:
-                    self.contextmenu.menuitemAddTransfer.set_sensitive(False)
-                    self.contextmenu.menuitemRemoveTransfer.set_sensitive(True)
-                    self.contextmenu.menuitemNotForSale.set_sensitive(False)
-                else:
-                    self.contextmenu.menuitemAddTransfer.set_sensitive(True)
-                    self.contextmenu.menuitemRemoveTransfer.set_sensitive(False)
-                    self.contextmenu.menuitemNotForSale.set_sensitive(True)
+        data.window.screen.change_visible_screen("playerinformation")
+        data.window.screen.active.set_visible_player(playerid)
 
-                if playerObject.transfer[1]:
-                    self.contextmenu.menuitemAddLoan.set_sensitive(False)
-                    self.contextmenu.menuitemRemoveLoan.set_sensitive(True)
-                else:
-                    self.contextmenu.menuitemAddLoan.set_sensitive(True)
-                    self.contextmenu.menuitemRemoveLoan.set_sensitive(False)
-
-                self.contextmenu.menuitemRelease.set_visible(True)
-                self.contextmenu.menuitemNotForSale.set_visible(True)
-                self.contextmenu.menuitemExtendLoan.set_visible(False)
-                self.contextmenu.menuitemCancelLoan.set_visible(False)
-
-            self.contextmenu.popup(None, None, None, None, event.button, event.time)
-
-    def view_changed(self, combobox):
+    def on_view_changed(self, combobox):
+        '''
+        Change which columns of information are visible.
+        '''
         index = int(combobox.get_active_id())
 
         for count, column_list in enumerate(self.tree_columns):
             for column in column_list:
                 column.set_visible(count == index)
 
-    def filter_squad(self, button):
-        self.squadfilter.display()
+    def on_filter_clicked(self, button):
+        '''
+        Display squad view filtering dialog.
+        '''
+        Squad.squadfilter.options = self.filter_dialog.show()
 
-        sensitive = self.squadfilter.options != self.squadfilter.defaults
-        self.buttonReset.set_sensitive(sensitive)
+        active = Squad.squadfilter.get_filter_active()
+        self.filterbuttons.buttonReset.set_sensitive(active)
 
         self.treemodelfilter.refilter()
 
-    def filter_reset(self, button):
-        self.squadfilter.reset_defaults()
+    def on_reset_clicked(self, button):
+        '''
+        Clear filter settings and reset to default state.
+        '''
+        button.set_sensitive(False)
+        Squad.squadfilter.reset_filter()
 
-        self.buttonReset.set_sensitive(False)
         self.treemodelfilter.refilter()
 
     def filter_visible(self, model, treeiter, data):
         display = True
 
-        # Filter by selected position
-        if self.squadfilter.options["position"] == 1:
-            if model[treeiter][2] not in ("GK"):
+        if Squad.squadfilter.options["position"] == 1:
+            if model[treeiter][2] not in ("GK",):
                 display = False
-        elif self.squadfilter.options["position"] == 2:
+        elif Squad.squadfilter.options["position"] == 2:
             if model[treeiter][2] not in ("DL", "DR", "DC", "D"):
                 display = False
-        elif self.squadfilter.options["position"] == 3:
+        elif Squad.squadfilter.options["position"] == 3:
             if model[treeiter][2] not in ("ML", "MR", "MC", "M"):
                 display = False
-        elif self.squadfilter.options["position"] == 4:
+        elif Squad.squadfilter.options["position"] == 4:
             if model[treeiter][2] not in ("AF", "AS"):
-                display = False
-
-        # Filter injured and suspended players
-        if self.squadfilter.options["availableonly"]:
-            if model[treeiter][24] != 0:
-                display = False
-
-            if model[treeiter][25] != 0:
                 display = False
 
         return display
 
-    def add_to_position(self, menuitem, event, index):
-        '''
-        Add selected player to specified position.
-        '''
-        model, treeiter = self.treeselection.get_selected()
-        playerid = model[treeiter][0]
-        playerObject = player.players[playerid]
-
-        name = playerObject.get_name()
-
-        self.buttonTeam[index].set_label(name)
-        club.clubs[game.teamid].team[index] = playerid
-
-    def remove_from_position(self, menuitem):
-        '''
-        Find player in squad list and remove from set position.
-        '''
-        model, treeiter = self.treeselection.get_selected()
-        playerid = model[treeiter][0]
-
-        for key, item in club.clubs[game.teamid].team.items():
-            if item == playerid:
-                club.clubs[game.teamid].team[key] = 0
-                self.buttonTeam[key].set_label("")
-
-    def renew_contract(self, menuitem):
-        '''
-        Initiate contract negotiations for selected player.
-        '''
-        model, treeiter = self.treeselection.get_selected()
-        playerid = model[treeiter][0]
-
-        if game.players[playerid].renew_contract:
-            if dialogs.renew_player_contract(playerid):
-                self.populate_data()
-        else:
-            dialogs.error(8)
-
-    def release_player(self, menuitem):
-        '''
-        Initiate release of selected player from the club.
-        '''
-        model, treeiter = self.treeselection.get_selected()
-
-        playerid = model[treeiter][0]
-        player = game.players[playerid]
-
-        name = player.get_name(mode=1)
-        cost = player.contract * player.wage
-
-        if dialogs.release_player(name, cost):
-            club = club.clubitem.clubs[game.teamid]
-
-            if club.accounts.request(amount=cost):
-                club.accounts.withdraw(amount=cost, category="playerwage")
-
-                player.club = None
-                club.squad.remove(playerid)
-
-                self.populate_data()
-
-    def extend_loan(self, menuitem):
-        '''
-        Request loan extension from parent club of selected player.
-        '''
-        model, treeiter = self.treeselection.get_selected()
-
-        playerid = model[treeiter][0]
-
-        game.loans[playerid].extend_loan()
-
-    def cancel_loan(self, menuitem):
-        '''
-        Cancel loan deal for selected player and return to parent club.
-        '''
-        model, treeiter = self.treeselection.get_selected()
-
-        playerid = model[treeiter][0]
-        player = game.players[playerid]
-        name = player.get_name(mode=1)
-
-        loan = game.loans[playerid]
-
-        if loan.cancel_loan():
-            loan.end_loan()
-
-            for key, item in club.clubitem.clubs[game.teamid].team.items():
-                if item == playerid:
-                    club.clubitem.clubs[game.teamid].team[key] = 0
-                    self.buttonTeam[key].set_label("")
-
-            self.populate_data()
-
-    def transfer_status(self, menuitem, index):
-        model, treeiter = self.treeselection.get_selected()
-
-        playerid = model[treeiter][0]
-        player = game.players[playerid]
-
-        if index == 0:
-            player.transfer[0] = not player.transfer[0]
-
-            # Decrease morale
-            if player.transfer[0]:
-                value = random.randint(15, 25)
-                player.set_morale(value)
-                player.not_for_sale = False
-        elif index == 1:
-            player.transfer[1] = not player.transfer[1]
-
-    def not_for_sale(self, menuitem):
-        '''
-        Set the selected player as not for sale.
-        '''
-        model, treeiter = self.treeselection.get_selected()
-        playerid = model[treeiter][0]
-
-        game.players[playerid].not_for_sale = menuitem.get_active()
-
     def populate_data(self):
-        self.liststoreSquad.clear()
+        Squad.squadlist.update()
 
-        for playerid in club.clubs[game.teamid].squad:
-            playerObject = player.get_player(playerid)
-
-            self.liststoreSquad.append([playerid,
-                                        playerObject.get_name(),
-                                        playerObject.position,
-                                        playerObject.keeping,
-                                        playerObject.tackling,
-                                        playerObject.passing,
-                                        playerObject.shooting,
-                                        playerObject.heading,
-                                        playerObject.pace,
-                                        playerObject.stamina,
-                                        playerObject.ball_control,
-                                        playerObject.set_pieces,
-                                        playerObject.fitness,
-                                        playerObject.get_nationality(),
-                                        playerObject.get_value(),
-                                        playerObject.get_wage(),
-                                        playerObject.get_contract(),
-                                        playerObject.get_morale(),
-                                        playerObject.get_appearances(),
-                                        playerObject.goals,
-                                        playerObject.assists,
-                                        playerObject.get_cards(),
-                                        playerObject.man_of_the_match,
-                                        playerObject.get_rating(),
-                                        playerObject.injury_type,
-                                        playerObject.suspension_type,
-                                        ])
+    def populate_selection(self):
+        '''
+        Call to update team selection interface.
+        '''
+        self.firstteam.populate_team()
+        self.substitutions.populate_subs()
 
     def run(self):
-        formationid = club.clubs[game.teamid].tactics.formation
+        Squad.club = data.clubs.get_club_by_id(data.user.team)
 
-        for count in range(0, 16):
-            button = self.buttonTeam[count]
-
-            playerid = club.clubs[game.teamid].team[count]
-
-            if count < 11:
-                position = constants.formations[formationid][1][count]
-                self.labelTeam[count].set_label("_%s" % (position))
-                self.labelTeam[count].set_mnemonic_widget(button)
-            else:
-                self.labelSubs[count - 11].set_label("Sub _%s" % (count - 10))
-                self.labelSubs[count - 11].set_mnemonic_widget(button)
-
-        # Context menu for "Add To Position"
-        self.menuPosition = Gtk.Menu()
-        self.contextmenu.menuitemAddPosition.set_submenu(self.menuPosition)
-
-        for count, item in enumerate(constants.formations[formationid][1]):
-            menuitem = Gtk.MenuItem("%s" % (item))
-            menuitem.connect_after("button-release-event", self.add_to_position, count)
-            self.menuPosition.append(menuitem)
-
-        for item in range(1, 6):
-            menuitem = Gtk.MenuItem("Sub %i" % (item))
-            menuitem.connect_after("button-release-event", self.add_to_position, item + 10)
-            self.menuPosition.append(menuitem)
-
-        # Populate data across squad screen
         self.populate_data()
-        self.display_squad()
+        self.populate_selection()
+        self.show_all()
+
+
+class SquadList(Gtk.ListStore):
+    '''
+    ListStore holding list of players in squad.
+    '''
+    def __init__(self):
+        Gtk.ListStore.__init__(self)
+        self.set_column_types([int, str, str, int, int, int, int,
+                               int, int, int, int, int, int, str,
+                               str, str, str, str, str, int, int,
+                               str, int, str, int, int])
+
+    def update(self):
+        self.clear()
+
+        for playerid in Squad.club.squad.get_squad():
+            player = data.players.get_player_by_id(playerid)
+
+            self.append([playerid,
+                         player.get_name(),
+                         player.position,
+                         player.keeping,
+                         player.tackling,
+                         player.passing,
+                         player.shooting,
+                         player.heading,
+                         player.pace,
+                         player.stamina,
+                         player.ball_control,
+                         player.set_pieces,
+                         player.fitness,
+                         player.get_nationality_name(),
+                         player.get_value_as_string(),
+                         player.contract.get_wage(),
+                         player.contract.get_contract(),
+                         player.get_morale(),
+                         player.get_appearances(),
+                         player.goals,
+                         player.assists,
+                         player.get_cards(),
+                         player.man_of_the_match,
+                         player.get_rating(),
+                         player.injury.injury_type,
+                         player.suspension.suspension_type])
+
+
+class FirstTeam(uigtk.widgets.Grid):
+    def __init__(self):
+        uigtk.widgets.Grid.__init__(self)
+        self.set_border_width(5)
+
+        self.labels = []
+        self.buttons = []
+
+        for count in range(0, 11):
+            label = uigtk.widgets.Label()
+            self.attach(label, 0, count, 1, 1)
+            self.labels.append(label)
+
+            button = Gtk.Button("")
+            button.set_hexpand(True)
+            button.drag_source_set(Gdk.ModifierType.BUTTON1_MASK, None, Gdk.DragAction.COPY)
+            button.drag_source_add_text_targets()
+            button.drag_dest_set(Gtk.DestDefaults.ALL, [], Gdk.DragAction.COPY)
+            button.drag_dest_add_text_targets()
+            button.connect("drag-data-get", self.on_drag_data_get, count)
+            button.connect("drag-data-received", self.on_drag_data_received, count)
+            button.connect("clicked", self.on_player_select_clicked, count)
+            label.set_mnemonic_widget(button)
+            self.attach(button, 1, count, 1, 1)
+            self.buttons.append(button)
+
+    def on_drag_data_get(self, button, context, selection, info, time, positionid):
+        '''
+        Process dragged data and get player from specified position.
+        '''
+        playerid = Squad.club.squad.teamselection.team[positionid]
+
+        if playerid:
+            Squad.club.squad.teamselection.team[positionid] = None
+
+            data = bytes("%i" % (playerid), "utf-8")
+            selection.set(selection.get_target(), 8, data)
+
+        return
+
+    def on_drag_data_received(self, button, context, x, y, selection, info, time, positionid):
+        '''
+        Process dropped data and set player into squad at specified postion.
+        '''
+        playerid = int(selection.get_data().decode("utf-8"))
+
+        Squad.club.squad.teamselection.add_to_team(playerid, positionid)
+        Squad.populate_selection(Squad)
+
+        if context.get_actions() == Gdk.DragAction.COPY:
+            context.finish(True, False, time)
+
+        return
+
+    def on_player_select_clicked(self, button, positionid):
+        '''
+        Add player into squad at specified position.
+        '''
+        dialog = PlayerSelect()
+        status = dialog.show()
+
+        if status == -1:
+            Squad.club.squad.teamselection.remove_from_subs_by_position(positionid)
+            Squad.populate_selection(Squad)
+        elif status == 0:
+            pass
+        else:
+            Squad.club.squad.teamselection.add_to_team(status, positionid)
+            Squad.populate_selection(Squad)
+
+    def populate_team(self):
+        club = data.clubs.get_club_by_id(data.user.team)
+
+        for count, position in enumerate(club.tactics.get_formation_positions()):
+            label = self.labels[count]
+            label.set_label("_%s" % (position))
+
+        for count, playerid in enumerate(Squad.club.squad.teamselection.get_team_selection()):
+            if playerid:
+                player = data.players.get_player_by_id(playerid)
+                self.buttons[count].set_label(player.get_name())
+            else:
+                self.buttons[count].set_label("")
+
+
+class Substitutions(uigtk.widgets.Grid):
+    def __init__(self):
+        uigtk.widgets.Grid.__init__(self)
+        self.set_border_width(5)
+
+        self.buttons = []
+
+        for count in range(0, 5):
+            label = uigtk.widgets.Label("Sub _%i" % (count + 1))
+            self.attach(label, 0, count, 1, 1)
+
+            button = Gtk.Button("")
+            button.set_hexpand(True)
+            button.drag_source_set(Gdk.ModifierType.BUTTON1_MASK, None, Gdk.DragAction.COPY)
+            button.drag_source_add_text_targets()
+            button.drag_dest_set(Gtk.DestDefaults.ALL, [], Gdk.DragAction.COPY)
+            button.drag_dest_add_text_targets()
+            button.connect("drag-data-get", self.on_drag_data_get, count)
+            button.connect("drag-data-received", self.on_drag_data_received, count)
+            button.connect("clicked", self.on_player_select_clicked, count)
+            label.set_mnemonic_widget(button)
+            self.attach(button, 1, count, 1, 1)
+            self.buttons.append(button)
+
+    def on_drag_data_get(self, button, context, selection, info, time, positionid):
+        '''
+        Process dragged data and get player from specified position.
+        '''
+        playerid = Squad.club.squad.teamselection.subs[positionid]
+
+        if playerid:
+            Squad.club.squad.teamselection.subs[positionid] = None
+
+            data = bytes("%i" % (playerid), "utf-8")
+            selection.set(selection.get_target(), 8, data)
+
+        return
+
+    def on_drag_data_received(self, button, context, x, y, selection, info, time, positionid):
+        '''
+        Process dropped data and set player into squad at specified postion.
+        '''
+        playerid = int(selection.get_data().decode("utf-8"))
+
+        Squad.club.squad.teamselection.add_to_subs(playerid, positionid)
+        Squad.populate_selection(Squad)
+
+        if context.get_actions() == Gdk.DragAction.COPY:
+            context.finish(True, False, time)
+
+        return
+
+    def on_player_select_clicked(self, button, positionid):
+        '''
+        Add player into substitutes at specified position.
+        '''
+        dialog = PlayerSelect()
+        status = dialog.show()
+
+        if status == -1:
+            Squad.club.squad.teamselection.remove_from_subs_by_position(positionid)
+            Squad.populate_selection(Squad)
+        elif status == 0:
+            pass
+        else:
+            Squad.club.squad.teamselection.add_to_subs(status, positionid)
+            Squad.populate_selection(Squad)
+
+    def populate_subs(self):
+        for count, playerid in enumerate(Squad.club.squad.teamselection.get_subs_selection()):
+            if playerid:
+                player = data.players.get_player_by_id(playerid)
+                self.buttons[count].set_label(player.get_name())
+            else:
+                self.buttons[count].set_label("")
+
+
+class PlayerSelect(Gtk.Dialog):
+    def __init__(self, *args):
+        self.liststore = Gtk.ListStore(int, str)
+
+        Gtk.Dialog.__init__(self)
+        self.set_transient_for(data.window)
+        self.set_size_request(-1, 250)
+        self.set_resizable(False)
+        self.set_title("Player Selection")
+        self.add_button("_Clear", Gtk.ResponseType.REJECT)
+        self.add_button("C_lose", Gtk.ResponseType.CLOSE)
+        self.add_button("_Select", Gtk.ResponseType.OK)
+        self.set_default_response(Gtk.ResponseType.OK)
+        self.set_response_sensitive(Gtk.ResponseType.OK, False)
+        self.vbox.set_border_width(5)
+        self.vbox.set_spacing(5)
+
+        scrolledwindow = uigtk.widgets.ScrolledWindow()
+        self.vbox.add(scrolledwindow)
+
+        self.treemodelfilter = self.liststore.filter_new()
+        self.treemodelfilter.set_visible_func(self.on_filter_visible,
+                                              data.players.get_players())
+        treemodelsort = Gtk.TreeModelSort(self.treemodelfilter)
+        treemodelsort.set_sort_column_id(1, Gtk.SortType.ASCENDING)
+
+        self.treeview = uigtk.widgets.TreeView()
+        self.treeview.set_vexpand(True)
+        self.treeview.set_hexpand(True)
+        self.treeview.set_headers_visible(False)
+        self.treeview.set_model(treemodelsort)
+        self.treeview.connect("row-activated", self.on_row_activated)
+        self.treeview.treeselection.connect("changed", self.on_treeselection_changed)
+        scrolledwindow.add(self.treeview)
+
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(column=1)
+        self.treeview.append_column(treeviewcolumn)
+
+        self.entrySearch = Gtk.SearchEntry()
+        self.entrySearch.set_placeholder_text("Search Players...")
+        self.entrySearch.connect("activate", self.on_search_activated)
+        self.entrySearch.connect("changed", self.on_search_changed)
+        self.entrySearch.connect("icon-press", self.on_search_pressed)
+        self.vbox.add(self.entrySearch)
+
+        self.populate_data()
+
+    def on_filter_visible(self, model, treeiter, data):
+        visible = True
+
+        criteria = self.entrySearch.get_text()
+
+        for search in (model[treeiter][1],):
+            search = "".join((c for c in unicodedata.normalize("NFD", search) if unicodedata.category(c) != "Mn"))
+
+            if not re.findall(criteria, search, re.IGNORECASE):
+                visible = False
+
+        return visible
+
+    def on_search_activated(self, entry):
+        '''
+        Filter items to match search criteria.
+        '''
+        if self.entrySearch.get_text_length() > 0:
+            self.treemodelfilter.refilter()
+
+    def on_search_pressed(self, entry, position, event):
+        '''
+        Clear text content of search entry.
+        '''
+        if position == Gtk.EntryIconPosition.SECONDARY:
+            entry.set_text("")
+            self.treemodelfilter.refilter()
+
+    def on_search_changed(self, entry):
+        '''
+        Refilter visible players when search entry is emptied.
+        '''
+        if entry.get_text_length() == 0:
+            self.treemodelfilter.refilter()
+
+    def on_row_activated(self, *args):
+        '''
+        Confirm response on double-clicking of player.
+        '''
+        self.response(Gtk.ResponseType.OK)
+
+    def on_treeselection_changed(self, treeselection):
+        '''
+        Update button state on treeview selection.
+        '''
+        model, treeiter =  treeselection.get_selected()
+
+        if treeiter:
+            self.set_response_sensitive(Gtk.ResponseType.OK, True)
+        else:
+            self.set_response_sensitive(Gtk.ResponseType.OK, False)
+
+    def populate_data(self):
+        self.liststore.clear()
+
+        club = data.clubs.get_club_by_id(data.user.team)
+
+        for playerid in club.squad.get_squad():
+            player = data.players.get_player_by_id(playerid)
+            self.liststore.append([playerid, player.get_name()])
+
+    def show(self):
+        self.show_all()
+
+        response = self.run()
+        status = 0
+
+        if response == Gtk.ResponseType.OK:
+            model, treeiter = self.treeview.treeselection.get_selected()
+            status = model[treeiter][0]
+        elif response == Gtk.ResponseType.REJECT:
+            status = -1
+
+        self.destroy()
+
+        return status
+
+
+class Filter(Gtk.Dialog):
+    def __init__(self, *args):
+        Gtk.Dialog.__init__(self)
+        self.set_transient_for(data.window)
+        self.set_resizable(False)
+        self.set_title("Filter Squad")
+        self.add_button("_Cancel", Gtk.ResponseType.CANCEL)
+        self.add_button("_Filter", Gtk.ResponseType.OK)
+        self.set_default_response(Gtk.ResponseType.OK)
+        self.vbox.set_border_width(5)
+        self.vbox.set_spacing(5)
+
+        grid = uigtk.widgets.Grid()
+        self.vbox.add(grid)
+
+        label = uigtk.widgets.Label("_Position", leftalign=True)
+        grid.attach(label, 0, 0, 1, 1)
+        self.comboboxPosition = Gtk.ComboBoxText()
+        self.comboboxPosition.append("0", "All")
+        self.comboboxPosition.append("1", "Goalkeeper")
+        self.comboboxPosition.append("2", "Defender")
+        self.comboboxPosition.append("3", "Midfielder")
+        self.comboboxPosition.append("4", "Attacker")
+        self.comboboxPosition.set_active(0)
+        self.comboboxPosition.set_tooltip_text("Set position from which players should be visible.")
+        label.set_mnemonic_widget(self.comboboxPosition)
+        grid.attach(self.comboboxPosition, 1, 0, 1, 1)
+
+        self.checkbuttonAvailable = uigtk.widgets.CheckButton("_Show Only Available Players")
+        self.checkbuttonAvailable.set_tooltip_text("Hide injured or suspended players from display.")
+        grid.attach(self.checkbuttonAvailable, 0, 1, 3, 1)
+
+    def show(self):
+        self.show_all()
+
+        options = Squad.squadfilter.options
+
+        self.comboboxPosition.set_active_id(str(options["position"]))
+        self.checkbuttonAvailable.set_active(options["availableonly"])
+
+        if self.run() == Gtk.ResponseType.OK:
+            options["position"] = int(self.comboboxPosition.get_active_id())
+            options["availableonly"] = self.checkbuttonAvailable.get_active()
+
+        self.hide()
+
+        return options
+
+
+class ContextMenu(Gtk.Menu):
+    playerid = None
+
+    def __init__(self):
+        Gtk.Menu.__init__(self)
+
+        menuitem = uigtk.widgets.MenuItem("_Player Information")
+        menuitem.connect("activate", self.on_player_information_clicked)
+        self.append(menuitem)
+
+        separator = Gtk.SeparatorMenuItem()
+        self.append(separator)
+
+        self.menuitemAddTeam = uigtk.widgets.MenuItem("_Add To Team")
+        self.append(self.menuitemAddTeam)
+        menuitem = uigtk.widgets.MenuItem("_Remove From Team")
+        menuitem.connect("activate", self.on_remove_from_team_clicked)
+        self.append(menuitem)
+
+        separator = Gtk.SeparatorMenuItem()
+        self.append(separator)
+
+        self.menuitemAddPurchase = uigtk.widgets.MenuItem("_Add To Purchase List")
+        self.menuitemAddPurchase.connect("activate", self.on_purchase_list_clicked)
+        self.append(self.menuitemAddPurchase)
+        self.menuitemRemovePurchase = uigtk.widgets.MenuItem("_Remove From Purchase List")
+        self.menuitemRemovePurchase.connect("activate", self.on_purchase_list_clicked)
+        self.append(self.menuitemRemovePurchase)
+        self.menuitemAddLoan = uigtk.widgets.MenuItem("_Add To Loan List")
+        self.menuitemAddLoan.connect("activate", self.on_loan_list_clicked)
+        self.append(self.menuitemAddLoan)
+        self.menuitemRemoveLoan = uigtk.widgets.MenuItem("_Remove From Loan List")
+        self.menuitemRemoveLoan.connect("activate", self.on_loan_list_clicked)
+        self.append(self.menuitemRemoveLoan)
+        menuitem = uigtk.widgets.MenuItem("_Renew Contract")
+        menuitem.connect("activate", self.on_renew_contract_clicked)
+        self.append(menuitem)
+        menuitem = uigtk.widgets.MenuItem("_Terminate Contract")
+        menuitem.connect("activate", self.on_terminate_contract_clicked)
+        self.append(menuitem)
+
+        separator = Gtk.SeparatorMenuItem()
+        self.append(separator)
+
+        menuitem = uigtk.widgets.MenuItem("Add To _Comparison")
+        menuitem.connect("activate", self.on_comparison_clicked)
+        self.append(menuitem)
+
+    def on_remove_from_team_clicked(self, *args):
+        '''
+        Remove player from team if found in team selection.
+        '''
+        club = data.clubs.get_club_by_id(data.user.team)
+        club.squad.teamselection.remove_from_team(ContextMenu.playerid)
+
+        Squad.populate_selection(Squad)
+
+    def on_purchase_list_clicked(self, *args):
+        '''
+        Add player to the transfer list for sale.
+        '''
+        self.player.transfer[0] = not self.player.transfer[0]
+
+    def on_loan_list_clicked(self, *args):
+        '''
+        Add player to the transfer list for loan.
+        '''
+        self.player.transfer[1] = not self.player.transfer[1]
+
+    def on_renew_contract_clicked(self, *args):
+        '''
+        Query user to renew contract of selected player.
+        '''
+        dialog = RenewContract(self.playerid)
+
+        if dialog.show() == 1:
+            pass
+
+    def on_terminate_contract_clicked(self, *args):
+        '''
+        Query user to terminate contract of selected player.
+        '''
+        dialog = TerminateContract(self.playerid)
+
+        if dialog.show() == 1:
+            player = data.players.get_player_by_id(self.playerid)
+            club = data.clubs.get_club_by_id(player.squad)
+
+            club.squad.remove_from_squad(self.playerid)
+            player.squad = None
+            player.contract.set_contract(0)
+
+            Squad.squadlist.update()
+
+    def on_comparison_clicked(self, *args):
+        '''
+        Add player to stack for comparison.
+        '''
+        data.comparison.add_to_comparison(self.playerid)
+
+    def on_player_information_clicked(self, *args):
+        '''
+        Launch player information screen for selected player.
+        '''
+        data.window.screen.change_visible_screen("playerinformation")
+        data.window.screen.active.set_visible_player(self.playerid)
+
+    def show(self):
+        ContextMenu.playerid = self.playerid
+        self.player = data.players.get_player_by_id(self.playerid)
+
+        self.menuitemAddPurchase.set_sensitive(not self.player.transfer[0])
+        self.menuitemRemovePurchase.set_sensitive(self.player.transfer[0])
+        self.menuitemAddLoan.set_sensitive(not self.player.transfer[1])
+        self.menuitemRemoveLoan.set_sensitive(self.player.transfer[1])
+
+        self.positionmenu = PositionMenu()
+        self.menuitemAddTeam.set_submenu(self.positionmenu)
+        self.positionmenu.show()
 
         self.show_all()
+
+
+class PositionMenu(Gtk.Menu):
+    '''
+    Context submenu for adding players to positions via menu.
+    '''
+    def __init__(self):
+        Gtk.Menu.__init__(self)
+
+        self.club = data.clubs.get_club_by_id(data.user.team)
+
+    def on_add_team_clicked(self, menuitem, event, positionid):
+        '''
+        Add player id to passed position id.
+        '''
+        self.club.squad.teamselection.add_to_team(ContextMenu.playerid, positionid)
+        Squad.populate_selection(Squad)
+
+    def on_add_subs_clicked(self, menuitem, event, subid):
+        '''
+        Add player id to passed position (substitution) id.
+        '''
+        self.club.squad.teamselection.add_to_subs(ContextMenu.playerid, subid)
+        Squad.populate_selection(Squad)
+
+    def show(self):
+        for count, position in enumerate(self.club.tactics.get_formation_positions()):
+            menuitem = uigtk.widgets.MenuItem("_%s" % (position))
+            menuitem.connect("button-release-event", self.on_add_team_clicked, count)
+            self.append(menuitem)
+
+        for count in range(0, 5):
+            menuitem = uigtk.widgets.MenuItem("Sub _%i" % (count + 1))
+            menuitem.connect("button-release-event", self.on_add_subs_clicked, count)
+            self.append(menuitem)
+
+
+class RenewContract(Gtk.Dialog):
+    '''
+    Dialog to arrange details for renewing specified players contract.
+    '''
+    def __init__(self, playerid):
+        player = data.players.get_player_by_id(playerid)
+
+        Gtk.MessageDialog.__init__(self)
+        self.set_transient_for(data.window)
+        self.set_resizable(False)
+        self.set_title("Renew Contract")
+        self.add_button("_Cancel", Gtk.ResponseType.CANCEL)
+        self.add_button("_Renew", Gtk.ResponseType.OK)
+        self.set_default_response(Gtk.ResponseType.CANCEL)
+        self.vbox.set_border_width(5)
+        self.vbox.set_spacing(5)
+
+        label = uigtk.widgets.Label("Contract renewal details for %s" % (player.get_name(mode=1)), leftalign=True)
+        self.vbox.add(label)
+
+        frame = uigtk.widgets.CommonFrame("Details")
+        self.vbox.add(frame)
+
+        label = uigtk.widgets.Label("_Weekly Wage", leftalign=True)
+        frame.grid.attach(label, 0, 0, 1, 1)
+        spinbuttonWage = uigtk.widgets.SpinButton(maximum=100000)
+        label.set_mnemonic_widget(spinbuttonWage)
+        #spinbuttonWage.set_value(wage)
+        frame.grid.attach(spinbuttonWage, 1, 0, 1, 1)
+        label = uigtk.widgets.Label("League _Champions Bonus", leftalign=True)
+        frame.grid.attach(label, 0, 1, 1, 1)
+        spinbuttonLeagueChampions = uigtk.widgets.SpinButton(maximum=200000)
+        label.set_mnemonic_widget(spinbuttonLeagueChampions)
+        #spinbuttonLeagueChampions.set_value(leaguewin)
+        frame.grid.attach(spinbuttonLeagueChampions, 1, 1, 1, 1)
+        label = uigtk.widgets.Label("League _Runner Up Bonus", leftalign=True)
+        frame.grid.attach(label, 0, 2, 1, 1)
+        spinbuttonLeagueRunnerUp = uigtk.widgets.SpinButton(maximum=200000)
+        label.set_mnemonic_widget(spinbuttonLeagueRunnerUp)
+        #spinbuttonLeagueRunnerUp.set_value(leaguerunnerup)
+        frame.grid.attach(spinbuttonLeagueRunnerUp, 1, 2, 1, 1)
+        label = uigtk.widgets.Label("_Win Bonus", leftalign=True)
+        frame.grid.attach(label, 0, 3, 1, 1)
+        spinbuttonWinBonus = uigtk.widgets.SpinButton(maximum=10000)
+        label.set_mnemonic_widget(spinbuttonWinBonus)
+        #spinbuttonWinBonus.set_value(winbonus)
+        frame.grid.attach(spinbuttonWinBonus, 1, 3, 1, 1)
+        label = uigtk.widgets.Label("_Goal Bonus", leftalign=True)
+        frame.grid.attach(label, 0, 4, 1, 1)
+        spinbuttonGoalBonus = uigtk.widgets.SpinButton(maximum=10000)
+        label.set_mnemonic_widget(spinbuttonGoalBonus)
+        #spinbuttonGoalBonus.set_value(goalbonus)
+        frame.grid.attach(spinbuttonGoalBonus, 1, 4, 1, 1)
+        label = uigtk.widgets.Label("_Contract Length", leftalign=True)
+        frame.grid.attach(label, 0, 5, 1, 1)
+        spinbuttonContract = Gtk.SpinButton.new_with_range(1, 5, 1)
+        label.set_mnemonic_widget(spinbuttonContract)
+        #spinbuttonContract.set_value(contract)
+        frame.grid.attach(spinbuttonContract, 1, 5, 1, 1)
+
+    def show(self, *args):
+        self.show_all()
+
+        state = 0
+
+        if self.run() == Gtk.ResponseType.OK:
+            print("Made offer to player...")
+            state = 1
+
+        self.destroy()
+
+        return state
+
+
+class TerminateContract(Gtk.MessageDialog):
+    '''
+    Confirmation dialog to arrange termination of a players contract.
+    '''
+    def __init__(self, playerid):
+        player = data.players.get_player_by_id(playerid)
+
+        payout = data.currency.get_currency(player.contract.get_termination_payout(), integer=True)
+
+        Gtk.MessageDialog.__init__(self)
+        self.set_transient_for(data.window)
+        self.set_title("Terminate Contract")
+        self.set_property("message-type", Gtk.MessageType.QUESTION)
+        self.set_markup("<span size='12000'><b>Do you wish to terminate the contract of %s?</b></span>" % (player.get_name(mode=1)))
+        self.format_secondary_text("The player will be paid %s for the remainder of his contract." % (payout))
+        self.add_button("_Do Not Terminate", Gtk.ResponseType.CANCEL)
+        self.add_button("_Terminate Contract", Gtk.ResponseType.OK)
+        self.set_default_response(Gtk.ResponseType.CANCEL)
+
+    def show(self):
+        state = 0
+
+        if self.run() == Gtk.ResponseType.OK:
+            state = 1
+
+        self.destroy()
+
+        return state

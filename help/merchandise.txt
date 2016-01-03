@@ -1,3 +1,0 @@
-Merchandise is sold through shops (stalls, programme vendors, small shops, and large shops). Different sized shops sell different amounts of items.
-
-The production cost is the amount it costs for the club to produce the item. The profit percentage is adjustable by the player and allows for higher or lower percentages which determine the resale cost to the fans. The higher the cost, the fewer items that are likely to be sold, however clubs performing better will be able to markup their products more than clubs performing badly.
