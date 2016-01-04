@@ -272,7 +272,7 @@ class PlayerSearch(uigtk.widgets.Grid):
 
         # Filter user club
         if visible:
-            if not options["ownplayers"]:
+            if not options["own_players"]:
                 if model[treeiter][3] == data.user.team:
                     visible = False
 
@@ -387,15 +387,24 @@ class PlayerSearch(uigtk.widgets.Grid):
 class Filter(Gtk.Dialog):
     class Attributes(Gtk.Grid):
         def __init__(self):
-            super().__init__()
+            Gtk.Grid.__init__(self)
             self.set_column_spacing(5)
 
             self.minimum = Gtk.SpinButton.new_with_range(0, 99, 1)
+            self.minimum.connect("value-changed", self.on_minimum_changed)
             self.attach(self.minimum, 0, 0, 1, 1)
 
             self.maximum = Gtk.SpinButton.new_with_range(0, 99, 1)
             self.maximum.set_value(99)
             self.attach(self.maximum, 1, 0, 1, 1)
+
+        def on_minimum_changed(self, spinbutton):
+            '''
+            Update minimum value permitted in maximum spin button.
+            '''
+            minimum = spinbutton.get_value_as_int()
+            maximum = spinbutton.get_range()[1]
+            self.maximum.set_range(minimum, maximum)
 
         def set_values(self, values):
             '''
@@ -447,6 +456,7 @@ class Filter(Gtk.Dialog):
         label = uigtk.widgets.Label("_Age", leftalign=True)
         frame.grid.attach(label, 0, 1, 1, 1)
         self.spinbuttonAgeMinimum = Gtk.SpinButton.new_with_range(16, 50, 1)
+        self.spinbuttonAgeMinimum.connect("value-changed", self.on_age_changed)
         label.set_mnemonic_widget(self.spinbuttonAgeMinimum)
         frame.grid.attach(self.spinbuttonAgeMinimum, 1, 1, 1, 1)
         self.spinbuttonAgeMaximum = Gtk.SpinButton.new_with_range(16, 50, 1)
@@ -455,6 +465,7 @@ class Filter(Gtk.Dialog):
         label = uigtk.widgets.Label("_Value", leftalign=True)
         frame.grid.attach(label, 0, 2, 1, 1)
         self.spinbuttonValueMinimum = Gtk.SpinButton.new_with_range(0, 100000000, 100000)
+        self.spinbuttonValueMinimum.connect("value-changed", self.on_value_changed)
         label.set_mnemonic_widget(self.spinbuttonValueMinimum)
         frame.grid.attach(self.spinbuttonValueMinimum, 1, 2, 1, 1)
         self.spinbuttonValueMaximum = Gtk.SpinButton.new_with_range(0, 100000000, 100000)
@@ -520,13 +531,28 @@ class Filter(Gtk.Dialog):
         label.set_mnemonic_widget(self.set_pieces.minimum)
         frame.grid.attach(self.set_pieces, 5, 2, 1, 1)
 
+    def on_age_changed(self, spinbutton):
+        '''
+        Update age ranges on change of minimum age amount.
+        '''
+        minimum = spinbutton.get_value_as_int()
+        maximum = spinbutton.get_range()[1]
+        self.spinbuttonAgeMaximum.set_range(minimum, maximum)
+
+    def on_value_changed(self, spinbutton):
+        '''
+        Update value ranges on change of minimum value amount.
+        '''
+        minimum = spinbutton.get_value_as_int()
+        maximum = spinbutton.get_range()[1]
+        self.spinbuttonValueMaximum.set_range(minimum, maximum)
+
     def show(self):
         self.show_all()
 
         options = PlayerSearch.playerfilter.options
-        options = PlayerSearch.playerfilter.options
 
-        self.checkbuttonShowOwnPlayers.set_active(options["ownplayers"])
+        self.checkbuttonShowOwnPlayers.set_active(options["own_players"])
         self.comboboxPosition.set_active_id(str(options["position"]))
         self.spinbuttonAgeMinimum.set_value(options["age"][0])
         self.spinbuttonAgeMaximum.set_value(options["age"][1])
@@ -544,12 +570,12 @@ class Filter(Gtk.Dialog):
         self.set_pieces.set_values(options["set_pieces"])
 
         if self.run() == Gtk.ResponseType.OK:
-            options["ownplayers"] = self.checkbuttonShowOwnPlayers.get_active()
+            options["own_players"] = self.checkbuttonShowOwnPlayers.get_active()
             options["position"] = int(self.comboboxPosition.get_active_id())
-            options["age"][0] = self.spinbuttonAgeMinimum.get_value_as_int()
-            options["age"][1] = self.spinbuttonAgeMaximum.get_value_as_int()
-            options["value"][0] = self.spinbuttonValueMinimum.get_value_as_int()
-            options["value"][1] = self.spinbuttonValueMaximum.get_value_as_int()
+            options["age"] = [self.spinbuttonAgeMinimum.get_value_as_int(),
+                              self.spinbuttonAgeMaximum.get_value_as_int()]
+            options["value"] = [self.spinbuttonValueMinimum.get_value_as_int(),
+                                self.spinbuttonValueMaximum.get_value_as_int()]
             options["status"] = int(self.comboboxStatus.get_active_id())
             options["keeping"] = self.keeping.get_values()
             options["tackling"] = self.tackling.get_values()
