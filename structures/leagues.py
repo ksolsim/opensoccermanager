@@ -30,6 +30,12 @@ class Leagues:
             '''
             self.referees.append(refereeid)
 
+        def get_clubs(self):
+            '''
+            Return list of clubs associated with league.
+            '''
+            return self.clubs
+
     def __init__(self, season):
         self.leagues = {}
         self.season = season

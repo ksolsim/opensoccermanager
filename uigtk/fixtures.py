@@ -183,6 +183,7 @@ class FriendlyDialog(Gtk.Dialog):
         self.set_transient_for(data.window)
         self.set_title("Arrange Friendly")
         self.set_resizable(False)
+        self.set_modal(True)
         self.add_button("_Cancel", Gtk.ResponseType.CANCEL)
         self.add_button("_Arrange", Gtk.ResponseType.OK)
         self.set_default_response(Gtk.ResponseType.CANCEL)
@@ -192,24 +193,63 @@ class FriendlyDialog(Gtk.Dialog):
         grid = uigtk.widgets.Grid()
         self.vbox.add(grid)
 
+        self.liststoreLeagues = Gtk.ListStore(str, str)
+        self.treemodelsort = Gtk.TreeModelSort(self.liststoreLeagues)
+        self.treemodelsort.set_sort_column_id(1, Gtk.SortType.ASCENDING)
+
         label = uigtk.widgets.Label("_League", leftalign=True)
         grid.attach(label, 0, 0, 1, 1)
-        self.comboboxLeague = Gtk.ComboBoxText()
+        self.comboboxLeague = uigtk.widgets.ComboBox(column=1)
+        self.comboboxLeague.set_model(self.treemodelsort)
+        self.comboboxLeague.set_id_column(0)
+        self.comboboxLeague.set_tooltip_text("Choose league of opposition team for friendly.")
+        self.comboboxLeague.connect("changed", self.on_league_changed)
         label.set_mnemonic_widget(self.comboboxLeague)
         grid.attach(self.comboboxLeague, 1, 0, 1, 1)
 
+        self.liststoreClubs = Gtk.ListStore(str, str)
+        self.treemodelsort = Gtk.TreeModelSort(self.liststoreClubs)
+        self.treemodelsort.set_sort_column_id(1, Gtk.SortType.ASCENDING)
+
         label = uigtk.widgets.Label("_Opposition", leftalign=True)
         grid.attach(label, 0, 1, 1, 1)
-        self.comboboxOpposition = Gtk.ComboBoxText()
+        self.comboboxOpposition = uigtk.widgets.ComboBox(column=1)
+        self.comboboxOpposition.set_model(self.treemodelsort)
+        self.comboboxOpposition.set_id_column(0)
+        self.comboboxOpposition.set_tooltip_text("Choose opposition to compete in friendly match.")
         label.set_mnemonic_widget(self.comboboxOpposition)
         grid.attach(self.comboboxOpposition, 1, 1, 1, 1)
 
-        self.populate_data()
+        self.populate_leagues()
 
         self.show_all()
 
-    def populate_data(self):
-        pass
+        self.comboboxLeague.set_active(0)
+
+    def on_league_changed(self, combobox):
+        '''
+        Repopulate clubs list when league selection is changed.
+        '''
+        if combobox.get_active_id():
+            self.populate_clubs()
+
+    def populate_leagues(self):
+        self.liststoreLeagues.clear()
+
+        for leagueid, league in data.leagues.get_leagues():
+            self.liststoreLeagues.append([str(leagueid), league.name])
+
+    def populate_clubs(self):
+        self.liststoreClubs.clear()
+
+        for leagueid, league in data.leagues.get_leagues():
+            for clubid in league.get_clubs():
+                if leagueid == int(self.comboboxLeague.get_active_id()):
+                    if clubid != data.user.team:
+                        club = data.clubs.get_club_by_id(clubid)
+                        self.liststoreClubs.append([str(clubid), club.name])
+
+        self.comboboxOpposition.set_active(0)
 
     def on_response(self, dialog, response):
         self.destroy()
