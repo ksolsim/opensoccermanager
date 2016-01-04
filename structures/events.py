@@ -17,6 +17,8 @@ class Events:
         self.club.finances.loan.update_interest_rate()
         self.club.finances.overdraft.update_interest_rate()
         data.players.update_contracts()
+        self.club.pay_players()
+        self.club.pay_staff()
         self.club.coaches.update_contracts()
         self.club.scouts.update_contracts()
         data.advertising.decrement_advertising()

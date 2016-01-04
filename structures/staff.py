@@ -27,6 +27,17 @@ class Staff:
         '''
         return len(self.hired)
 
+    def get_total_wage(self):
+        '''
+        Return wages for all staff members contracted to the club.
+        '''
+        wage = 0
+
+        for itemid, item in self.hired.items():
+            wage += item.wage
+
+        return wage
+
 
 class Member(Staff):
     '''

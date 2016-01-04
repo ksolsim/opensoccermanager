@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import data
 import structures.staff
 
 
@@ -10,11 +11,17 @@ class Scouts(structures.staff.Staff):
         self.scoutid = 0
 
     def get_scoutid(self):
+        '''
+        Return unique scout id.
+        '''
         self.scoutid += 1
 
         return self.scoutid
 
     def get_scout_by_id(self, scoutid):
+        '''
+        Return hired scout for given scout id.
+        '''
         return self.hired[scoutid]
 
     def generate_initial_staff(self):
@@ -22,9 +29,8 @@ class Scouts(structures.staff.Staff):
         Generate the first five staff members.
         '''
         for count in range(0, 5):
-            scout = Scout()
             scoutid = self.get_scoutid()
-            self.available[scoutid] = scout
+            self.available[scoutid] = Scout(scoutid)
 
     def update_contracts(self):
         '''
@@ -38,10 +44,28 @@ class Scouts(structures.staff.Staff):
             elif scout.contract == 0:
                 del self.hired[scoutid]
 
+    def hire_staff(self, scoutid):
+        '''
+        Add given scout id to hired staff listing.
+        '''
+        self.hired[scoutid] = self.available[scoutid]
+        del self.available[scoutid]
+
+    def fire_staff(self, scoutid):
+        '''
+        Remove given scout id from hired staff listing and pay off contract.
+        '''
+        scout = self.hired[scoutid]
+        club = data.clubs.get_club_by_id(data.user.team)
+
+        club.accounts.withdraw(scout.get_payout(), "staffwage")
+        del self.hired[scoutid]
+
 
 class Scout(structures.staff.Member):
-    def __init__(self):
+    def __init__(self, scoutid):
         structures.staff.Member.__init__(self)
+        self.scoutid = scoutid
 
 
 class ScoutReport:
@@ -49,8 +73,7 @@ class ScoutReport:
         self.report = {0: "The scouting team report that %s would not be a good signing.",
                        1: "%s would be considered a good signing by the scouting staff.",
                        2: "After some scouting, %s would be an excellent addition to the squad.",
-                       3: "The scouts report that %s would be a top prospect for the future.",
-                      }
+                       3: "The scouts report that %s would be a top prospect for the future."}
 
     def get_scout_report(self, reportid):
         '''

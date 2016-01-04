@@ -246,14 +246,14 @@ class Staff(Gtk.Grid):
                 wage = data.currency.get_currency(coach.wage, integer=True)
 
                 self.liststoreHired.append([coachid,
-                                              coach.name,
-                                              coach.age,
-                                              ability,
-                                              speciality,
-                                              wage,
-                                              coach.get_contract_string(),
-                                              morale.get_morale(coach.morale),
-                                              "%s Players" % (coach.count_players_training())])
+                                            coach.name,
+                                            coach.age,
+                                            ability,
+                                            speciality,
+                                            wage,
+                                            coach.get_contract_string(),
+                                            morale.get_morale(coach.morale),
+                                            "%s Players" % (coach.count_players_training())])
 
         def run(self):
             self.club = data.clubs.get_club_by_id(data.user.team)
@@ -321,8 +321,7 @@ class Staff(Gtk.Grid):
                 dialog = HireStaff(name=scout.name, role="Scout")
 
                 if dialog.show():
-                    self.club.scouts.hired[scoutid] = self.club.scouts.available[scoutid]
-                    del self.club.scouts.available[scoutid]
+                    self.club.scouts.hire_staff(scoutid)
 
                     self.populate_data()
 
@@ -336,7 +335,7 @@ class Staff(Gtk.Grid):
                 dialog = FireStaff(scout.name, scout.get_payout())
 
                 if dialog.show():
-                    del self.club.scouts.hired[scoutid]
+                    self.club.scouts.fire_staff(scoutid)
 
                     self.populate_data()
 
@@ -397,12 +396,12 @@ class Staff(Gtk.Grid):
                 wage = data.currency.get_currency(scout.wage, integer=True)
 
                 self.liststoreHired.append([scoutid,
-                                              scout.name,
-                                              scout.age,
-                                              ability,
-                                              wage,
-                                              scout.get_contract_string(),
-                                              morale.get_morale(scout.morale)])
+                                            scout.name,
+                                            scout.age,
+                                            ability,
+                                            wage,
+                                            scout.get_contract_string(),
+                                            morale.get_morale(scout.morale)])
 
         def run(self):
             self.club = data.clubs.get_club_by_id(data.user.team)

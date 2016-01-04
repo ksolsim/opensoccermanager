@@ -19,9 +19,7 @@ class Accounts:
                    ("transfers", self.Item()),
                    ("loan", self.Item()),
                    ("grant", self.Item()),
-                   ("television", self.Item()),
-                  )
-
+                   ("television", self.Item()))
         self.incomes = collections.OrderedDict(incomes)
 
         expenditures = (("fines", self.Item()),
@@ -33,9 +31,7 @@ class Accounts:
                         ("catering", self.Item()),
                         ("loan", self.Item()),
                         ("overdraft", self.Item()),
-                        ("training", self.Item()),
-                       )
-
+                        ("training", self.Item()))
         self.expenditures = collections.OrderedDict(expenditures)
 
         self.income = 0

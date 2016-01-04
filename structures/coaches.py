@@ -32,8 +32,7 @@ class Coaches(structures.staff.Staff):
         '''
         for count in range(0, 5):
             coachid = self.get_coachid()
-            coach = Coach(coachid)
-            self.available[coachid] = coach
+            self.available[coachid] = Coach(coachid)
 
     def update_contracts(self):
         '''
@@ -42,14 +41,22 @@ class Coaches(structures.staff.Staff):
         for coachid, coach in self.hired.items():
             coach.contract -= 1
 
-            if coach.contract == 0:
+            if coach.contract in (4, 8, 12):
+                print("Coach contract ending soon")
+            elif coach.contract == 0:
                 del self.hired[coachid]
 
     def hire_staff(self, coachid):
+        '''
+        Add given coach id to hired staff listing.
+        '''
         self.hired[coachid] = self.available[coachid]
         del self.available[coachid]
 
     def fire_staff(self, coachid):
+        '''
+        Remove given coach id from hired staff listing and pay off contract.
+        '''
         coach = self.hired[coachid]
         club = data.clubs.get_club_by_id(data.user.team)
 
