@@ -86,6 +86,7 @@ class Screen(Gtk.Grid):
             self.remove(self.active)
 
         self.active = self.screens[name]
+        self.active.name = name
         self.add(self.active)
         self.active.run()
 

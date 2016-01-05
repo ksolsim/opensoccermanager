@@ -1,0 +1,25 @@
+Capacity
+
+A maximum capacity of 74000 is allowed, with four main stands, four corner stands, and four banks of executive boxes. The main stands on the north, south, east, and west of the stadium can have a maximum capacity of 15000. The corner stands each have a maximum capacity of 3000. Finally, the executive boxes each have a maximum of 500 attendees.
+
+Corner stands
+
+A corner stand can only be built when an adjacent main stand exists next to it.
+
+Roof
+
+Roofs are an option which can be added to both main and corner stands, however once added, can not be removed.
+
+Executive boxes
+
+An executive box can only be added to the main stands. Before construction can begin, the stand must have a roof and a capacity of 5000 or more.
+
+Standing and seating
+
+Stands can be configured to be standing or seating, however once a stand has been converted to seating, it can not be reverted back.
+
+Maintenance
+
+Maintaining the stadium is required to ensure that ground remains in good condition. At 100%, the ground will stay maintained to the required level. However, a reduction is percentage of the budget allocated will save the club money, but have the negative effect that the ground condition will deteriorate. If the stadium becomes too unmaintained, parts may be shut due to safety resulting in lost revenue and fines. To recover a stadium in poor condition, the budget can be increased to a maximum of 110% of required, and repairs will be made.
+
+As stadium capacity increases, the cost of maintaining the stadium will also increase.

@@ -1,0 +1,9 @@
+Advertising is used to earn additional money from the club, by providing a way for companies to advertise in programmes and on hoardings positioned around the pitch.
+
+On the left, is a current list of offers with the amount of time the advertising will be up for and the amount of money the company is willing to pay. When double-clicked or dragged-and-dropped, the advertising will be agreed and the club will be paid.
+
+As the game continues, the period remaining will decrease. When no time is left on the advertising item, it will be removed.
+
+Assistant
+
+Managing the advertising is a job which needs to be kept up to, so a manager may wish to delegate the responsiblity to the assistant manager by clicking the Assistant button. Doing this will ensure that the advertising is purchased whenever possible.

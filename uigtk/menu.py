@@ -236,6 +236,13 @@ class Menu(Gtk.MenuBar):
         menu = Gtk.Menu()
         menuitem.set_submenu(menu)
         menuitemContents = uigtk.widgets.MenuItem("_Contents")
+        key, modifier = Gtk.accelerator_parse("F1")
+        menuitemContents.add_accelerator("activate",
+                                         data.window.accelgroup,
+                                         key,
+                                         modifier,
+                                         Gtk.AccelFlags.VISIBLE)
+        menuitemContents.connect("activate", self.on_help_clicked)
         menu.append(menuitemContents)
         menuitemVersions = uigtk.widgets.MenuItem("_Versions")
         menuitemVersions.connect("activate", uigtk.version.Dialog)
@@ -279,6 +286,9 @@ class Menu(Gtk.MenuBar):
         Load appropriate screen for item activated.
         '''
         data.window.screen.change_visible_screen(menuitem.name)
+
+    def on_help_clicked(self, *args):
+        data.window.help_dialog.show()
 
     def on_quit_clicked(self, *args):
         data.window.on_quit_game()

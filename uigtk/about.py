@@ -24,4 +24,4 @@ class Dialog(Gtk.AboutDialog):
         self.show()
 
     def on_response(self, *args):
-        self.destroy()
+        self.hide()

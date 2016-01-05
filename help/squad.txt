@@ -1,0 +1,17 @@
+The squad selection screen lists all the players belonging to your club, along with other important information such as position, contract length, skills, fitness, goals, appearances and much more.
+
+In the right panel, both the starting eleven and substitutes can be selected using the buttons which launch a player selection dialog. Alternatively, players can be dragged-and-dropped from the squad list onto the button, or placed in the preferred position by right-clicking the player and choosing the position.
+
+Context Menu
+
+Right-clicking each player displays a context menu which allows the player to be placed on or removed from the transfer and/or loan list.
+
+Players can also be quick sold, which entails the game selecting an appropriate club and selling the player for less than his market value. Players can also be released on a free transfer however the club will be required to pay off the remainder of his contract.
+
+At any time, a player can be offered a new contract however he may not agree to the new contract depending on his morale.
+
+If a player is being heavily chased by other clubs, but you do not wish to sell, the player can be declared as not for sale, which will surpress transfer offers from other clubs.
+
+Filter
+
+A filter dialog is provided to list only players in the specified position. It can also be used to filter out players who are not available for the next game due to injury and suspension.

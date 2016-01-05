@@ -5,6 +5,7 @@ from gi.repository import GdkPixbuf
 import os
 
 import data
+import uigtk.helpdialog
 import uigtk.quitdialog
 import uigtk.screen
 import uigtk.welcome
@@ -29,8 +30,7 @@ class Window(Gtk.Window):
             xposition, yposition = data.preferences.window_position
             self.move(xposition, yposition)
 
-        width, height = data.preferences.window_size
-        self.set_default_size(width, height)
+        self.set_default_size(*data.preferences.window_size)
 
         self.accelgroup = Gtk.AccelGroup()
         self.add_accel_group(self.accelgroup)
@@ -64,6 +64,7 @@ class Window(Gtk.Window):
     def run(self):
         self.mainscreen = uigtk.mainscreen.MainScreen()
         self.screen = uigtk.screen.Screen()
+        self.help_dialog = uigtk.helpdialog.HelpDialog()
 
         self.welcome = uigtk.welcome.Welcome()
         self.add(self.welcome)
