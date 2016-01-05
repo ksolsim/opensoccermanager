@@ -73,32 +73,32 @@ class PlayerSearch(uigtk.widgets.Grid):
         self.treemodelsort = Gtk.TreeModelSort(self.treemodelfilter)
         self.treemodelsort.set_sort_column_id(16, Gtk.SortType.DESCENDING)
 
-        treeview = uigtk.widgets.TreeView()
-        treeview.set_hexpand(True)
-        treeview.set_vexpand(True)
-        treeview.set_headers_clickable(True)
-        treeview.set_model(self.treemodelsort)
-        treeview.connect("row-activated", self.on_row_activated)
-        treeview.connect("button-release-event", self.on_button_release_event)
-        treeview.connect("key-press-event", self.on_key_press_event)
-        scrolledwindow.add(treeview)
+        self.treeview = uigtk.widgets.TreeView()
+        self.treeview.set_hexpand(True)
+        self.treeview.set_vexpand(True)
+        self.treeview.set_headers_clickable(True)
+        self.treeview.set_model(self.treemodelsort)
+        self.treeview.connect("row-activated", self.on_row_activated)
+        self.treeview.connect("button-release-event", self.on_button_release_event)
+        self.treeview.connect("key-press-event", self.on_key_press_event)
+        scrolledwindow.add(self.treeview)
 
-        PlayerSearch.treeselection = treeview.treeselection
+        PlayerSearch.treeselection = self.treeview.treeselection
 
         self.tree_columns = ([], [], [])
 
         # Personal
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Name", column=1)
         treeviewcolumn.set_sort_column_id(1)
-        treeview.append_column(treeviewcolumn)
+        self.treeview.append_column(treeviewcolumn)
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Age", column=2)
-        treeview.append_column(treeviewcolumn)
+        self.treeview.append_column(treeviewcolumn)
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Club", column=4)
-        treeview.append_column(treeviewcolumn)
+        self.treeview.append_column(treeviewcolumn)
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Nationality", column=5)
-        treeview.append_column(treeviewcolumn)
+        self.treeview.append_column(treeviewcolumn)
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Position", column=6)
-        treeview.append_column(treeviewcolumn)
+        self.treeview.append_column(treeviewcolumn)
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Value", column=17)
         treeviewcolumn.set_sort_column_id(16)
         self.tree_columns[0].append(treeviewcolumn)
@@ -118,7 +118,7 @@ class PlayerSearch(uigtk.widgets.Grid):
             treeviewcolumn = uigtk.widgets.TreeViewColumn(column=count)
             treeviewcolumn.set_expand(True)
             treeviewcolumn.set_widget(label)
-            treeview.append_column(treeviewcolumn)
+            self.treeview.append_column(treeviewcolumn)
             self.tree_columns[1].append(treeviewcolumn)
 
         # Form
@@ -139,7 +139,7 @@ class PlayerSearch(uigtk.widgets.Grid):
             for column in columns:
                 column.set_expand(True)
                 column.set_visible(False)
-                treeview.append_column(column)
+                self.treeview.append_column(column)
 
         self.contextmenu1 = ContextMenu1()
         self.contextmenu2 = ContextMenu2()
@@ -196,7 +196,7 @@ class PlayerSearch(uigtk.widgets.Grid):
         Filter for entered name in players list.
         '''
         if entry.get_text_length() > 0:
-            self.treemodelfilter.refilter()
+            self.reset_view()
 
             self.filterbuttons.buttonReset.set_sensitive(True)
 
@@ -213,7 +213,7 @@ class PlayerSearch(uigtk.widgets.Grid):
         '''
         if position == Gtk.EntryIconPosition.SECONDARY:
             entry.set_text("")
-            self.treemodelfilter.refilter()
+            self.reset_view()
 
             self.filterbuttons.buttonReset.set_sensitive(False)
 
@@ -222,7 +222,7 @@ class PlayerSearch(uigtk.widgets.Grid):
         Clear filter if text length is zero.
         '''
         if entry.get_text_length() == 0:
-            self.treemodelfilter.refilter()
+            self.reset_view()
 
             self.filterbuttons.buttonReset.set_sensitive(False)
 
@@ -245,7 +245,7 @@ class PlayerSearch(uigtk.widgets.Grid):
         active = PlayerSearch.playerfilter.get_filter_active()
         self.filterbuttons.buttonReset.set_sensitive(active)
 
-        self.treemodelfilter.refilter()
+        self.reset_view()
 
     def on_reset_clicked(self, button):
         '''
@@ -254,7 +254,16 @@ class PlayerSearch(uigtk.widgets.Grid):
         button.set_sensitive(False)
         PlayerSearch.playerfilter.reset_filter()
 
+        self.reset_view()
+
+    def reset_view(self):
+        '''
+        Refilter tree view and highlight top row.
+        '''
         self.treemodelfilter.refilter()
+
+        self.treeview.scroll_to_cell(0)
+        self.treeselection.select_path(0)
 
     def filter_visible(self, model, treeiter, values):
         visible = True
@@ -382,6 +391,8 @@ class PlayerSearch(uigtk.widgets.Grid):
     def run(self):
         self.populate_data()
         self.show_all()
+
+        self.treeselection.select_path(0)
 
 
 class Filter(Gtk.Dialog):
