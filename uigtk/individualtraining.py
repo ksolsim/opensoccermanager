@@ -221,8 +221,8 @@ class IndividualTraining(Gtk.Grid):
         self.buttonAddTraining.connect("clicked", self.on_add_clicked)
         buttonbox.add(self.buttonAddTraining)
         self.buttonEditTraining = uigtk.widgets.Button("_Edit Player")
-        self.buttonEditTraining.set_tooltip_text("Edit individual training for selected player.")
         self.buttonEditTraining.set_sensitive(False)
+        self.buttonEditTraining.set_tooltip_text("Edit individual training for selected player.")
         self.buttonEditTraining.connect("clicked", self.on_edit_clicked)
         buttonbox.add(self.buttonEditTraining)
         self.buttonRemoveTraining = uigtk.widgets.Button("_Remove Player")
@@ -237,6 +237,7 @@ class IndividualTraining(Gtk.Grid):
         '''
         dialog = self.AddTraining()
         dialog.show()
+
         self.populate_data()
 
     def on_edit_clicked(self, *args):
@@ -247,10 +248,10 @@ class IndividualTraining(Gtk.Grid):
 
         if treeiter:
             playerid = model[treeiter][0]
-            print("Edit")
 
             dialog = self.AddTraining(playerid)
             dialog.show()
+
             self.populate_data()
 
     def on_remove_clicked(self, *args):
@@ -264,6 +265,7 @@ class IndividualTraining(Gtk.Grid):
 
         if dialog.show():
             self.club.individual_training.remove_from_training(playerid)
+
             self.populate_data()
 
     def on_selection_changed(self, treeselection):
