@@ -7,12 +7,13 @@ import os
 import data
 
 
-class Dialog(Gtk.AboutDialog):
+class AboutDialog(Gtk.AboutDialog):
     def __init__(self, *args):
         logo = data.window.logo.scale_simple(64, 64, GdkPixbuf.InterpType.BILINEAR)
 
         Gtk.AboutDialog.__init__(self)
         self.set_transient_for(data.window)
+        self.set_modal(True)
         self.set_program_name("OpenSoccerManager")
         self.set_website("https://opensoccermanager.org/")
         self.set_website_label("Website")

@@ -16,6 +16,7 @@ class IndividualTraining(Gtk.Grid):
 
             Gtk.Dialog.__init__(self)
             self.set_transient_for(data.window)
+            self.set_modal(True)
             self.set_resizable(False)
             self.set_title("Individual Training")
             self.vbox.set_border_width(5)
@@ -149,6 +150,7 @@ class IndividualTraining(Gtk.Grid):
 
             Gtk.MessageDialog.__init__(self)
             self.set_transient_for(data.window)
+            self.set_modal(True)
             self.set_title("Individual Training")
             self.set_property("message-type", Gtk.MessageType.QUESTION)
             self.set_markup("Do you want to remove %s from individual training?" % (player.get_name(mode=1)))
@@ -321,4 +323,7 @@ class Status:
                        4: "No longer progressing."}
 
     def get_status(self, index):
+        '''
+        Get status string for given index.
+        '''
         return self.status[index]

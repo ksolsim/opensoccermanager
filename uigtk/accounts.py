@@ -116,7 +116,7 @@ class Income(uigtk.widgets.Grid):
 
 class Expenditure(uigtk.widgets.Grid):
     def __init__(self):
-        super().__init__()
+        uigtk.widgets.Grid.__init__(self)
         self.set_hexpand(True)
 
         self.heading = Heading("Expenditure")

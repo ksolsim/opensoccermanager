@@ -10,8 +10,9 @@ class ManagerName(Gtk.Dialog):
     def __init__(self, *args):
         Gtk.Dialog.__init__(self)
         self.set_transient_for(data.window)
-        self.set_title("Manager Name")
+        self.set_modal(True)
         self.set_resizable(False)
+        self.set_title("Manager Name")
         self.add_button("C_lose", Gtk.ResponseType.CLOSE)
         self.add_button("_Change", Gtk.ResponseType.OK)
         self.set_default_response(Gtk.ResponseType.OK)

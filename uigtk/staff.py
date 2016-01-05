@@ -437,6 +437,7 @@ class HireStaff(Gtk.MessageDialog):
     def __init__(self, name, role):
         Gtk.MessageDialog.__init__(self)
         self.set_transient_for(data.window)
+        self.set_modal(True)
         self.set_title("Hire Staff")
         self.set_markup("Hire %s for the role of %s?" % (name, role))
         self.set_property("message-type", Gtk.MessageType.QUESTION)
@@ -455,6 +456,7 @@ class FireStaff(Gtk.MessageDialog):
     def __init__(self, name, payout):
         Gtk.MessageDialog.__init__(self)
         self.set_transient_for(data.window)
+        self.set_modal(True)
         self.set_title("Fire Staff")
         self.set_property("message-type", Gtk.MessageType.QUESTION)
         self.set_markup("<span size='12000'><b>Terminate the contract of %s?</b></span>" % (name))
@@ -482,6 +484,7 @@ class FireStaffError(Gtk.MessageDialog):
 
         Gtk.MessageDialog.__init__(self)
         self.set_transient_for(data.window)
+        self.set_modal(True)
         self.set_title("Fire Staff")
         self.set_markup("<span size='12000'><b>%s</b></span>" % (message))
         self.format_secondary_text("Please remove all players from their individual training roster.")
@@ -499,6 +502,7 @@ class RenewContract(Gtk.MessageDialog):
     def __init__(self, name, period, amount):
         Gtk.MessageDialog.__init__(self)
         self.set_transient_for(data.window)
+        self.set_modal(True)
         self.set_title("Hire Staff")
         self.set_property("message-type", Gtk.MessageType.QUESTION)
         self.set_markup("<span size='12000'><b>Do you want to renew the contract of %s?</b></span>" % (name))
@@ -521,6 +525,7 @@ class RenewContractError(Gtk.MessageDialog):
     def __init__(self, name):
         Gtk.MessageDialog.__init__(self)
         self.set_transient_for(data.window)
+        self.set_modal(True)
         self.set_title("Renew Contract")
         self.set_markup("%s is not willing to negotiate a new contract at this time." % (name))
         self.add_button("_Close", Gtk.ResponseType.CLOSE)
@@ -534,6 +539,7 @@ class ImproveWage(Gtk.MessageDialog):
     def __init__(self, name, amount):
         Gtk.MessageDialog.__init__(self)
         self.set_transient_for(data.window)
+        self.set_modal(True)
         self.set_title("Improve Wage")
         self.set_property("message-type", Gtk.MessageType.QUESTION)
         self.set_markup("Offer improved wage of %s per week to %s?" % (data.currency.get_currency(amount, integer=True), name))

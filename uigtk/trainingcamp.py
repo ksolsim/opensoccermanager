@@ -8,7 +8,7 @@ import uigtk.widgets
 
 class TrainingCamp(uigtk.widgets.Grid):
     def __init__(self):
-        super().__init__()
+        uigtk.widgets.Grid.__init__(self)
 
         frame = uigtk.widgets.CommonFrame("Details")
         frame.grid.set_row_homogeneous(True)
@@ -126,8 +126,9 @@ class TrainingCamp(uigtk.widgets.Grid):
 
 class ConfirmTraining(Gtk.MessageDialog):
     def __init__(self, cost):
-        super(self).__init__()
+        Gtk.MessageDialog.__init__(self)
         self.set_transient_for(data.window)
+        self.set_modal(True)
         self.set_title("Confirm Training")
         self.add_button("_Cancel", Gtk.ResponseType.CANCEL)
         self.add_button("C_onfirm", Gtk.ResponseType.OK)

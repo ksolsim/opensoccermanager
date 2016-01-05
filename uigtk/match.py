@@ -153,6 +153,7 @@ class NotEnoughPlayers(Gtk.MessageDialog):
     def __init__(self, count):
         Gtk.MessageDialog.__init__(self)
         self.set_transient_for(data.window)
+        self.set_modal(True)
         self.set_title("Not Enough Players")
 
         if count == 0:
@@ -179,6 +180,7 @@ class NotEnoughSubs(Gtk.MessageDialog):
     def __init__(self, count):
         Gtk.MessageDialog.__init__(self)
         self.set_transient_for(data.window)
+        self.set_modal(True)
         self.set_title("Not Enough Substitutes")
 
         if count == 0:

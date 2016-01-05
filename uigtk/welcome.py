@@ -4,7 +4,7 @@ from gi.repository import Gtk
 from gi.repository import Gdk
 
 import data
-import uigtk.about
+import uigtk.aboutdialog
 import uigtk.deletedialog
 import uigtk.details
 import uigtk.filedialog
@@ -93,7 +93,7 @@ class Welcome(Gtk.Grid):
 
         buttonAbout = uigtk.widgets.Button("_Version 0.99 (01011970)")
         buttonAbout.set_relief(Gtk.ReliefStyle.NONE)
-        buttonAbout.connect("clicked", uigtk.about.Dialog)
+        buttonAbout.connect("clicked", uigtk.aboutdialog.AboutDialog)
         self.attach(buttonAbout, 0, 2, 1, 1)
 
         buttonLink = Gtk.LinkButton("https://opensoccermanager.org/")

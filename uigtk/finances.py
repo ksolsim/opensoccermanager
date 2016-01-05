@@ -40,6 +40,7 @@ class Loan(uigtk.widgets.CommonFrame):
         def __init__(self, amount, interest):
             Gtk.MessageDialog.__init__(self)
             self.set_transient_for(data.window)
+            self.set_modal(True)
             self.set_title("Confirm Loan")
             self.set_property("message-type", Gtk.MessageType.QUESTION)
             self.set_markup("Apply for loan of %s at %i%% interest?" % (amount, interest))
@@ -155,6 +156,7 @@ class Overdraft(uigtk.widgets.CommonFrame):
         def __init__(self, amount, interest):
             Gtk.MessageDialog.__init__(self)
             self.set_transient_for(data.window)
+            self.set_modal(True)
             self.set_title("Confirm Overdraft")
             self.set_property("message-type", Gtk.MessageType.QUESTION)
             self.set_markup("Apply for overdraft of %s at %i%% interest?" % (amount, interest))
@@ -283,6 +285,7 @@ class Flotation(uigtk.widgets.CommonFrame):
         def __init__(self):
             Gtk.MessageDialog.__init__(self)
             self.set_transient_for(data.window)
+            self.set_modal(True)
             self.set_title("Float Club")
             self.set_property("message-type", Gtk.MessageType.QUESTION)
             self.set_markup("<span size='12000'><b>Do you really want to float the club?</b></span>")

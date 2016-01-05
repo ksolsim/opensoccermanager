@@ -13,11 +13,12 @@ class Dialog(Gtk.Dialog):
     def __init__(self, *args):
         Gtk.Dialog.__init__(self)
         self.set_transient_for(data.window)
-        self.set_title("Preferences")
+        self.set_modal(True)
         self.set_resizable(False)
-        self.set_border_width(5)
+        self.set_title("Preferences")
         self.add_button("_Close", Gtk.ResponseType.CLOSE)
         self.connect("response", self.on_response)
+        self.vbox.set_border_width(5)
         self.vbox.set_spacing(5)
 
         frame = uigtk.widgets.CommonFrame("Music")

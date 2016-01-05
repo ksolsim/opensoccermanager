@@ -12,6 +12,7 @@ class LoadDialog(Gtk.FileChooserDialog):
     def __init__(self, *args):
         Gtk.FileChooserDialog.__init__(self)
         self.set_transient_for(data.window)
+        self.set_modal(True)
         self.set_title("Load Game")
         self.add_button("_Cancel", Gtk.ResponseType.CANCEL)
         self.add_button("_Open", Gtk.ResponseType.OK)
@@ -37,6 +38,7 @@ class SaveDialog(Gtk.FileChooserDialog):
     def __init__(self, *args):
         Gtk.FileChooserDialog.__init__(self)
         self.set_transient_for(data.window)
+        self.set_modal(True)
         self.set_title("Save Game")
         self.add_button("_Cancel", Gtk.ResponseType.CANCEL)
         self.add_button("_Save", Gtk.ResponseType.OK)

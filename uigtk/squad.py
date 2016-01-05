@@ -460,6 +460,7 @@ class PlayerSelect(Gtk.Dialog):
 
         Gtk.Dialog.__init__(self)
         self.set_transient_for(data.window)
+        self.set_modal(True)
         self.set_size_request(-1, 250)
         self.set_resizable(False)
         self.set_title("Player Selection")
@@ -583,6 +584,7 @@ class Filter(Gtk.Dialog):
     def __init__(self, *args):
         Gtk.Dialog.__init__(self)
         self.set_transient_for(data.window)
+        self.set_modal(True)
         self.set_resizable(False)
         self.set_title("Filter Squad")
         self.add_button("_Cancel", Gtk.ResponseType.CANCEL)
@@ -795,6 +797,7 @@ class RenewContract(Gtk.Dialog):
 
         Gtk.MessageDialog.__init__(self)
         self.set_transient_for(data.window)
+        self.set_modal(True)
         self.set_resizable(False)
         self.set_title("Renew Contract")
         self.add_button("_Cancel", Gtk.ResponseType.CANCEL)
@@ -803,7 +806,7 @@ class RenewContract(Gtk.Dialog):
         self.vbox.set_border_width(5)
         self.vbox.set_spacing(5)
 
-        label = uigtk.widgets.Label("Contract renewal details for %s" % (player.get_name(mode=1)), leftalign=True)
+        label = uigtk.widgets.Label("Contract renewal details for %s." % (player.get_name(mode=1)), leftalign=True)
         self.vbox.add(label)
 
         frame = uigtk.widgets.CommonFrame("Details")
@@ -871,6 +874,7 @@ class TerminateContract(Gtk.MessageDialog):
 
         Gtk.MessageDialog.__init__(self)
         self.set_transient_for(data.window)
+        self.set_modal(True)
         self.set_title("Terminate Contract")
         self.set_property("message-type", Gtk.MessageType.QUESTION)
         self.set_markup("<span size='12000'><b>Do you wish to terminate the contract of %s?</b></span>" % (player.get_name(mode=1)))

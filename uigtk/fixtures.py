@@ -13,9 +13,15 @@ class Fixtures(uigtk.widgets.Grid):
         grid = uigtk.widgets.Grid()
         self.attach(grid, 0, 0, 1, 1)
 
+        self.liststoreLeagues = Gtk.ListStore(str, str)
+        treemodelsort = Gtk.TreeModelSort(self.liststoreLeagues)
+        treemodelsort.set_sort_column_id(1, Gtk.SortType.ASCENDING)
+
         label = uigtk.widgets.Label("_League")
         grid.attach(label, 0, 0, 1, 1)
-        self.comboboxLeagues = Gtk.ComboBoxText()
+        self.comboboxLeagues = uigtk.widgets.ComboBox(column=1)
+        self.comboboxLeagues.set_model(treemodelsort)
+        self.comboboxLeagues.set_id_column(0)
         self.comboboxLeagues.set_tooltip_text("Select league to show visible fixtures.")
         self.comboboxLeagues.connect("changed", self.on_league_changed)
         label.set_mnemonic_widget(self.comboboxLeagues)
@@ -76,6 +82,9 @@ class Fixtures(uigtk.widgets.Grid):
         self.treeview.append_column(treeviewcolumn)
 
     def on_view_toggled(self, radiobutton):
+        '''
+        Change visible view and repopulate shown data.
+        '''
         if radiobutton.view == 0:
             self.comboboxLeagues.set_sensitive(True)
             self.treeview.set_show_expanders(True)
@@ -112,10 +121,10 @@ class Fixtures(uigtk.widgets.Grid):
         self.populate_all_data()
 
     def populate_leagues(self):
-        self.comboboxLeagues.remove_all()
+        self.liststoreLeagues.clear()
 
         for leagueid, league in data.leagues.get_leagues():
-            self.comboboxLeagues.append(str(leagueid), league.name)
+            self.liststoreLeagues.append([str(leagueid), league.name])
 
         self.comboboxLeagues.set_active(0)
 
@@ -181,9 +190,9 @@ class FriendlyDialog(Gtk.Dialog):
     def __init__(self):
         Gtk.Dialog.__init__(self)
         self.set_transient_for(data.window)
-        self.set_title("Arrange Friendly")
         self.set_resizable(False)
         self.set_modal(True)
+        self.set_title("Arrange Friendly")
         self.add_button("_Cancel", Gtk.ResponseType.CANCEL)
         self.add_button("_Arrange", Gtk.ResponseType.OK)
         self.set_default_response(Gtk.ResponseType.CANCEL)

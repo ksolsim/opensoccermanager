@@ -12,6 +12,7 @@ class Sponsorship(Gtk.MessageDialog):
     def __init__(self):
         Gtk.MessageDialog.__init__(self)
         self.set_transient_for(data.window)
+        self.set_modal(True)
         self.set_title("Sponsorship")
 
 

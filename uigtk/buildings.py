@@ -170,6 +170,7 @@ class Totals(uigtk.widgets.CommonFrame):
 class ConfirmBuilding(Gtk.MessageDialog):
     def __init__(self):
         Gtk.MessageDialog.__init__(self)
+        self.set_modal(True)
         self.set_title("Confirm Building Upgrades")
         self.set_markup("<span size='12000'><b>Do you want to build the specified new shops?</b></span>")
         self.format_secondary_text("The cost to upgrade will be %s" % (cost))

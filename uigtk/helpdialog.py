@@ -11,8 +11,9 @@ class HelpDialog(Gtk.Dialog):
     def __init__(self):
         Gtk.Dialog.__init__(self)
         self.set_transient_for(data.window)
-        self.set_title("Help Content")
+        self.set_modal(True)
         self.set_default_size(480, 320)
+        self.set_title("Help Content")
         self.add_button("_Close", Gtk.ResponseType.CLOSE)
         self.connect("response", self.on_response)
 

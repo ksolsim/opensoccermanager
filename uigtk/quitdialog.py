@@ -12,6 +12,7 @@ class QuitDialog(Gtk.MessageDialog):
     def __init__(self):
         Gtk.MessageDialog.__init__(self)
         self.set_transient_for(data.window)
+        self.set_modal(True)
         self.set_title("Quit Game")
         self.set_property("message-type", Gtk.MessageType.QUESTION)
         self.set_markup("Do you want to quit the game?")
@@ -30,6 +31,7 @@ class UnsavedDialog(Gtk.MessageDialog):
     def __init__(self):
         Gtk.MessageDialog.__init__(self)
         self.set_transient_for(data.window)
+        self.set_modal(True)
         self.set_title("Quit Game")
         self.set_property("message-type", Gtk.MessageType.QUESTION)
         self.set_markup("<span size='12000'><b>The game currently has unsaved data.</b></span>")

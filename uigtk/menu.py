@@ -4,7 +4,7 @@ from gi.repository import Gtk
 from gi.repository import Gdk
 
 import data
-import uigtk.about
+import uigtk.aboutdialog
 import uigtk.comparison
 import uigtk.filedialog
 import uigtk.managername
@@ -245,12 +245,12 @@ class Menu(Gtk.MenuBar):
         menuitemContents.connect("activate", self.on_help_clicked)
         menu.append(menuitemContents)
         menuitemVersions = uigtk.widgets.MenuItem("_Versions")
-        menuitemVersions.connect("activate", uigtk.version.Dialog)
+        menuitemVersions.connect("activate", uigtk.version.VersionDialog)
         menu.append(menuitemVersions)
         separator = Gtk.SeparatorMenuItem()
         menu.append(separator)
         menuitemAbout = uigtk.widgets.MenuItem("_About")
-        menuitemAbout.connect("activate", uigtk.about.Dialog)
+        menuitemAbout.connect("activate", uigtk.aboutdialog.AboutDialog)
         menu.append(menuitemAbout)
 
     def on_new_clicked(self, *args):

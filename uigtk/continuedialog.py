@@ -8,11 +8,12 @@ import data
 
 class ContinueDialog(Gtk.Dialog):
     '''
-    Dialog displayed when moving between dates.
+    Dialog displayed when moving between dates in the game.
     '''
     def __init__(self):
         Gtk.Dialog.__init__(self)
         self.set_transient_for(data.window)
+        self.set_modal(True)
         self.set_title("Continue Game")
         self.set_default_size(200, -1)
         self.set_resizable(False)

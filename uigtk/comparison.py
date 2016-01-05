@@ -11,6 +11,7 @@ class ComparisonDialog(Gtk.Dialog):
     def __init__(self, *args):
         Gtk.Dialog.__init__(self)
         self.set_transient_for(data.window)
+        self.set_modal(True)
         self.set_resizable(False)
         self.set_title("Player Comparison")
         self.add_button("_Close", Gtk.ResponseType.CLOSE)
@@ -84,7 +85,7 @@ class ComparisonDialog(Gtk.Dialog):
 
 class ComparisonError(Gtk.MessageDialog):
     def __init__(self):
-        super().__init__()
+        Gtk.MessageDialog.__init__(self)
         self.set_transient_for(data.window)
         self.set_title("Player Comparison")
         self.set_property("message-type", Gtk.MessageType.ERROR)
