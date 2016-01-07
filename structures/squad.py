@@ -146,14 +146,14 @@ class TeamSelection:
 
         return team
 
-    def get_position_for_player(self, playerid):
-        '''
-        Get position string for given player id.
-        '''
-        pass
-
     def get_player_for_position(self, positionid):
         '''
         Get player id for given position id.
         '''
-        pass
+        return self.team[positionid]
+
+    def get_sub_player_for_position(self, positionid):
+        '''
+        Get substitute player id for given position id.
+        '''
+        return self.subs[positionid]

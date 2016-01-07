@@ -351,10 +351,10 @@ class FirstTeam(uigtk.widgets.Grid):
         Add player into squad at specified position.
         '''
         dialog = PlayerSelect()
-        status = dialog.show()
+        status = dialog.show(Squad.club.squad.teamselection.get_player_for_position(positionid))
 
         if status == -1:
-            Squad.club.squad.teamselection.remove_from_subs_by_position(positionid)
+            Squad.club.squad.teamselection.remove_from_team_by_position(positionid)
             Squad.populate_selection(Squad)
         elif status == 0:
             pass
@@ -434,7 +434,7 @@ class Substitutions(uigtk.widgets.Grid):
         Add player into substitutes at specified position.
         '''
         dialog = PlayerSelect()
-        status = dialog.show()
+        status = dialog.show(Squad.club.squad.teamselection.get_sub_player_for_position(positionid))
 
         if status == -1:
             Squad.club.squad.teamselection.remove_from_subs_by_position(positionid)
@@ -456,8 +456,6 @@ class Substitutions(uigtk.widgets.Grid):
 
 class PlayerSelect(Gtk.Dialog):
     def __init__(self, *args):
-        self.liststore = Gtk.ListStore(int, str)
-
         Gtk.Dialog.__init__(self)
         self.set_transient_for(data.window)
         self.set_modal(True)
@@ -475,17 +473,18 @@ class PlayerSelect(Gtk.Dialog):
         scrolledwindow = uigtk.widgets.ScrolledWindow()
         self.vbox.add(scrolledwindow)
 
+        self.liststore = Gtk.ListStore(int, str)
         self.treemodelfilter = self.liststore.filter_new()
         self.treemodelfilter.set_visible_func(self.on_filter_visible,
                                               data.players.get_players())
-        treemodelsort = Gtk.TreeModelSort(self.treemodelfilter)
-        treemodelsort.set_sort_column_id(1, Gtk.SortType.ASCENDING)
+        self.treemodelsort = Gtk.TreeModelSort(self.treemodelfilter)
+        self.treemodelsort.set_sort_column_id(1, Gtk.SortType.ASCENDING)
 
         self.treeview = uigtk.widgets.TreeView()
         self.treeview.set_vexpand(True)
         self.treeview.set_hexpand(True)
         self.treeview.set_headers_visible(False)
-        self.treeview.set_model(treemodelsort)
+        self.treeview.set_model(self.treemodelsort)
         self.treeview.connect("row-activated", self.on_row_activated)
         self.treeview.treeselection.connect("changed", self.on_treeselection_changed)
         scrolledwindow.add(self.treeview)
@@ -554,6 +553,16 @@ class PlayerSelect(Gtk.Dialog):
         else:
             self.set_response_sensitive(Gtk.ResponseType.OK, False)
 
+    def highlight_player(self, playerid):
+        '''
+        Find playerid in list and highlight row.
+        '''
+        for item in self.treemodelsort:
+            if playerid == item[0]:
+                self.treeview.treeselection.select_iter(item.iter)
+                treepath = self.treemodelsort.get_path(item.iter)
+                self.treeview.scroll_to_cell(treepath, None, False)
+
     def populate_data(self):
         self.liststore.clear()
 
@@ -563,7 +572,10 @@ class PlayerSelect(Gtk.Dialog):
             player = data.players.get_player_by_id(playerid)
             self.liststore.append([playerid, player.get_name()])
 
-    def show(self):
+    def show(self, playerid=None):
+        if playerid:
+            self.highlight_player(playerid)
+
         self.show_all()
 
         response = self.run()
