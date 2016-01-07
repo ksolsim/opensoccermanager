@@ -7,6 +7,8 @@ import uigtk.widgets
 
 
 class Charts(uigtk.widgets.Grid):
+    __name__ = "charts"
+
     def __init__(self):
         self.views = {0: Goalscorers(),
                       1: Assisters(),

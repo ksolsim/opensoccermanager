@@ -10,6 +10,8 @@ import uigtk.widgets
 
 
 class ClubSearch(uigtk.widgets.Grid):
+    __name__ = "clubsearch"
+
     treeselection = None
 
     def __init__(self):

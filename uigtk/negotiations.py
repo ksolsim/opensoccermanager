@@ -8,6 +8,8 @@ import uigtk.widgets
 
 
 class Negotiations(Gtk.Grid):
+    __name__ = "negotiations"
+
     class Negotiation(Gtk.Grid):
         def __init__(self, label):
             Gtk.Grid.__init__(self)

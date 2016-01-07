@@ -6,6 +6,8 @@ import uigtk.widgets
 
 
 class Evaluation(uigtk.widgets.Grid):
+    __name__ = "evaluation"
+
     def __init__(self):
         uigtk.widgets.Grid.__init__(self)
         self.set_hexpand(True)

@@ -9,6 +9,8 @@ import uigtk.widgets
 
 
 class ClubInformation(uigtk.widgets.Grid):
+    __name__ = "clubinformation"
+
     def __init__(self):
         uigtk.widgets.Grid.__init__(self)
 

@@ -16,6 +16,8 @@ import uigtk.widgets
 
 
 class PlayerSearch(uigtk.widgets.Grid):
+    __name__ = "playersearch"
+
     treeselection = None
 
     playerfilter = None

@@ -47,35 +47,40 @@ class Screen(Gtk.Grid):
         '''
         Screen object loading class.
         '''
-        self.accounts = uigtk.accounts.Accounts()
-        self.finances = uigtk.finances.Finances()
-        self.squad = uigtk.squad.Squad()
-        self.tactics = uigtk.tactics.Tactics()
-        self.staff = uigtk.staff.Staff()
-        self.playersearch = uigtk.playersearch.PlayerSearch()
-        self.clubsearch = uigtk.clubsearch.ClubSearch()
-        self.nationsearch = uigtk.nationsearch.NationSearch()
-        self.playerinformation = uigtk.playerinformation.PlayerInformation()
-        self.clubinformation = uigtk.clubinformation.ClubInformation()
-        self.news = uigtk.news.News()
-        self.shortlist = uigtk.shortlist.Shortlist()
-        self.negotiations = uigtk.negotiations.Negotiations()
-        self.charts = uigtk.charts.Charts()
-        self.evaluation = uigtk.evaluation.Evaluation()
-        self.tickets = uigtk.tickets.Tickets()
-        self.fixtures = uigtk.fixtures.Fixtures()
-        self.result = uigtk.result.Result()
-        self.advertising = uigtk.advertising.Advertising()
-        self.teamtraining = uigtk.teamtraining.TeamTraining()
-        self.individualtraining = uigtk.individualtraining.IndividualTraining()
-        self.trainingcamp = uigtk.trainingcamp.TrainingCamp()
-        self.merchandise = uigtk.merchandise.Merchandise()
-        self.catering = uigtk.catering.Catering()
-        self.standings = uigtk.standings.Standings()
-        self.stadium = uigtk.stadium.Stadium()
-        self.buildings = uigtk.buildings.Buildings()
-        self.unavailable = uigtk.unavailable.Unavailable()
-        self.match = uigtk.match.Match()
+        screens = (uigtk.accounts.Accounts(),
+                   uigtk.advertising.Advertising(),
+                   uigtk.buildings.Buildings(),
+                   uigtk.catering.Catering(),
+                   uigtk.charts.Charts(),
+                   uigtk.clubinformation.ClubInformation(),
+                   uigtk.clubsearch.ClubSearch(),
+                   uigtk.evaluation.Evaluation(),
+                   uigtk.finances.Finances(),
+                   uigtk.fixtures.Fixtures(),
+                   uigtk.individualtraining.IndividualTraining(),
+                   uigtk.match.Match(),
+                   uigtk.merchandise.Merchandise(),
+                   uigtk.nationsearch.NationSearch(),
+                   uigtk.negotiations.Negotiations(),
+                   uigtk.news.News(),
+                   uigtk.playerinformation.PlayerInformation(),
+                   uigtk.playersearch.PlayerSearch(),
+                   uigtk.result.Result(),
+                   uigtk.shortlist.Shortlist(),
+                   uigtk.staff.Staff(),
+                   uigtk.squad.Squad(),
+                   uigtk.stadium.Stadium(),
+                   uigtk.standings.Standings(),
+                   uigtk.tactics.Tactics(),
+                   uigtk.teamtraining.TeamTraining(),
+                   uigtk.tickets.Tickets(),
+                   uigtk.trainingcamp.TrainingCamp(),
+                   uigtk.unavailable.Unavailable())
+
+        self.screens = {}
+
+        for screen in screens:
+            self.screens[screen.__name__] = screen
 
     def change_visible_screen(self, name):
         '''
@@ -114,35 +119,5 @@ class Screen(Gtk.Grid):
 
     def run(self):
         self.screen_initialiser()
-
-        self.screens = {"accounts": self.accounts,
-                        "finances": self.finances,
-                        "squad": self.squad,
-                        "tactics": self.tactics,
-                        "staff": self.staff,
-                        "playersearch": self.playersearch,
-                        "clubsearch": self.clubsearch,
-                        "nationsearch": self.nationsearch,
-                        "playerinformation": self.playerinformation,
-                        "clubinformation": self.clubinformation,
-                        "news": self.news,
-                        "shortlist": self.shortlist,
-                        "negotiations": self.negotiations,
-                        "fixtures": self.fixtures,
-                        "result": self.result,
-                        "charts": self.charts,
-                        "evaluation": self.evaluation,
-                        "tickets": self.tickets,
-                        "advertising": self.advertising,
-                        "teamtraining": self.teamtraining,
-                        "individualtraining": self.individualtraining,
-                        "trainingcamp": self.trainingcamp,
-                        "merchandise": self.merchandise,
-                        "catering": self.catering,
-                        "standings": self.standings,
-                        "stadium": self.stadium,
-                        "buildings": self.buildings,
-                        "unavailable": self.unavailable,
-                        "match": self.match}
 
         self.show_all()

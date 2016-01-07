@@ -7,6 +7,8 @@ import uigtk.widgets
 
 
 class TrainingCamp(uigtk.widgets.Grid):
+    __name__ = "trainingcamp"
+
     def __init__(self):
         uigtk.widgets.Grid.__init__(self)
 

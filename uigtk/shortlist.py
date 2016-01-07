@@ -8,6 +8,8 @@ import uigtk.widgets
 
 
 class Shortlist(Gtk.Grid):
+    __name__ = "shortlist"
+
     def __init__(self):
         self.liststore = Gtk.ListStore(int, str, str, str, str, str, str, int,
                                        int, int, int, int, int, int, int, int)

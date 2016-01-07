@@ -7,6 +7,8 @@ import uigtk.widgets
 
 
 class Catering(uigtk.widgets.Grid):
+    __name__ = "catering"
+
     class Item:
         def __init__(self, product=""):
             self.labelProduct = uigtk.widgets.Label(product, leftalign=True)

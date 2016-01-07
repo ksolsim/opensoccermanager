@@ -8,6 +8,8 @@ import uigtk.widgets
 
 
 class TeamTraining(Gtk.Grid):
+    __name__ = "teamtraining"
+
     def __init__(self):
         Gtk.Grid.__init__(self)
         self.set_row_spacing(5)

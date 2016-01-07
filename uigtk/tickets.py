@@ -7,6 +7,8 @@ import uigtk.widgets
 
 
 class Tickets(uigtk.widgets.Grid):
+    __name__ = "tickets"
+
     def __init__(self):
         uigtk.widgets.Grid.__init__(self)
 

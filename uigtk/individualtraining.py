@@ -9,6 +9,8 @@ import uigtk.widgets
 
 
 class IndividualTraining(Gtk.Grid):
+    __name__ = "individualtraining"
+
     class AddTraining(Gtk.Dialog):
         def __init__(self, playerid=None):
             self.playerid = playerid

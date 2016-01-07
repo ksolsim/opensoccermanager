@@ -10,6 +10,8 @@ class Match(uigtk.widgets.Grid):
     '''
     Interface handling display of match related widgets.
     '''
+    __name__ = "match"
+
     def __init__(self):
         uigtk.widgets.Grid.__init__(self)
 

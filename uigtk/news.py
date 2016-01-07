@@ -10,6 +10,8 @@ import uigtk.widgets
 
 
 class News(uigtk.widgets.Grid):
+    __name__ = "news"
+
     def __init__(self):
         uigtk.widgets.Grid.__init__(self)
 

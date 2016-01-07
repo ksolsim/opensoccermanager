@@ -7,6 +7,8 @@ import uigtk.widgets
 
 
 class Finances(uigtk.widgets.Grid):
+    __name__ = "finances"
+
     def __init__(self):
         uigtk.widgets.Grid.__init__(self)
         self.set_column_homogeneous(True)

@@ -9,6 +9,8 @@ class Unavailable(uigtk.widgets.Grid):
     '''
     Listing of unavailable players in squad.
     '''
+    __name__ = "unavailable"
+
     def __init__(self):
         uigtk.widgets.Grid.__init__(self)
         self.set_column_homogeneous(True)

@@ -9,6 +9,8 @@ import uigtk.widgets
 
 
 class NationSearch(uigtk.widgets.Grid):
+    __name__ = "nationsearch"
+
     def __init__(self):
         uigtk.widgets.Grid.__init__(self)
 

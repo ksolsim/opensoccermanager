@@ -16,6 +16,8 @@ targets = [("MY_TREE_MODEL_ROW", Gtk.TargetFlags.SAME_APP, 0),
 
 
 class Squad(uigtk.widgets.Grid):
+    __name__ = "squad"
+
     club = None
 
     squadfilter = None

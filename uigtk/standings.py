@@ -7,6 +7,8 @@ import uigtk.widgets
 
 
 class Standings(Gtk.Grid):
+    __name__ = "standings"
+
     def __init__(self):
         self.liststoreLeagues = Gtk.ListStore(str, str)
 

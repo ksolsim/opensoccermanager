@@ -7,6 +7,8 @@ import uigtk.widgets
 
 
 class Fixtures(uigtk.widgets.Grid):
+    __name__ = "fixtures"
+
     def __init__(self):
         uigtk.widgets.Grid.__init__(self)
 

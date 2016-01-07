@@ -8,6 +8,8 @@ import uigtk.widgets
 
 
 class Tactics(uigtk.widgets.Grid):
+    __name__ = "tactics"
+
     club = None
 
     def __init__(self):

@@ -11,6 +11,8 @@ import uigtk.widgets
 
 
 class PlayerInformation(uigtk.widgets.Grid):
+    __name__ = "playerinformation"
+
     def __init__(self):
         uigtk.widgets.Grid.__init__(self)
 

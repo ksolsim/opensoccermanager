@@ -15,6 +15,8 @@ target = Gtk.TargetEntry.new("MY_TREE_MODEL_ROW", Gtk.TargetFlags.SAME_APP, 0)
 
 
 class Advertising(uigtk.widgets.Grid):
+    __name__ = "advertising"
+
     class AdvertType(uigtk.widgets.Grid):
         def __init__(self, label):
             uigtk.widgets.Grid.__init__(self)

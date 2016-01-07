@@ -10,6 +10,8 @@ class Result(uigtk.widgets.Grid):
     '''
     Screen displaying match results, statistics, and data.
     '''
+    __name__ = "result"
+
     def __init__(self):
         uigtk.widgets.Grid.__init__(self)
 

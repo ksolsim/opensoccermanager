@@ -6,6 +6,8 @@ import data
 
 
 class Stadium(Gtk.Grid):
+    __name__ = "stadium"
+
     def __init__(self):
         Gtk.Grid.__init__(self)
 

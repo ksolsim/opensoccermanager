@@ -8,6 +8,8 @@ import uigtk.widgets
 
 
 class Buildings(uigtk.widgets.Grid):
+    __name__ = "buildings"
+
     def __init__(self):
         uigtk.widgets.Grid.__init__(self)
 
