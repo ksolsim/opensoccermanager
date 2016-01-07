@@ -36,6 +36,7 @@ class ClubSearch(uigtk.widgets.Grid):
         grid.attach(label, 1, 0, 1, 1)
 
         self.filterbuttons = uigtk.shared.FilterButtons()
+        self.filterbuttons.buttonReset.connect("clicked", self.on_reset_clicked)
         grid.attach(self.filterbuttons, 2, 0, 1, 1)
 
         scrolledwindow = uigtk.widgets.ScrolledWindow()
@@ -101,6 +102,14 @@ class ClubSearch(uigtk.widgets.Grid):
                                event.button,
                                event.time)
 
+    def on_filter_clicked(self, *args):
+        pass
+
+    def on_reset_clicked(self, *args):
+        self.entrySearch.set_text("")
+
+        self.treemodelfilter.refilter()
+
     def on_row_activated(self, treeview, treepath, treeviewcolumn):
         '''
         Launch player information screen for selected player.
@@ -118,7 +127,7 @@ class ClubSearch(uigtk.widgets.Grid):
         if entry.get_text_length() > 0:
             self.treemodelfilter.refilter()
 
-            self.buttonReset.set_sensitive(True)
+            self.filterbuttons.buttonReset.set_sensitive(True)
 
     def on_search_pressed(self, entry, position, event):
         '''
@@ -128,7 +137,7 @@ class ClubSearch(uigtk.widgets.Grid):
             self.entrySearch.set_text("")
             self.treemodelfilter.refilter()
 
-            self.buttonReset.set_sensitive(False)
+            self.filterbuttons.buttonReset.set_sensitive(False)
 
     def on_search_changed(self, entry):
         '''
@@ -173,6 +182,8 @@ class ClubSearch(uigtk.widgets.Grid):
     def run(self):
         self.populate_data()
         self.show_all()
+
+        ClubSearch.treeselection.select_path(0)
 
 
 class ContextMenu(Gtk.Menu, ClubSearch):

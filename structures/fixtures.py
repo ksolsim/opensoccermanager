@@ -17,6 +17,22 @@ class Fixtures:
             self.attendance = 0
             self.refereeid = None
 
+        def get_home_name(self):
+            '''
+            Return name of home side for fixture.
+            '''
+            club = data.clubs.get_club_by_id(self.home)
+
+            return club.name
+
+        def get_away_name(self):
+            '''
+            Return name of away side for fixture.
+            '''
+            club = data.clubs.get_club_by_id(self.away)
+
+            return club.name
+
     def __init__(self):
         self.fixtures = {}
 

@@ -19,6 +19,7 @@ class Match(uigtk.widgets.Grid):
         self.attach(buttonbox, 0, 0, 1, 1)
 
         self.buttonStart = uigtk.widgets.Button("_Start Match")
+        self.buttonStart.connect("clicked", self.on_start_match_clicked)
         buttonbox.add(self.buttonStart)
 
         self.buttonHomeTactics = uigtk.widgets.Button()
@@ -35,26 +36,47 @@ class Match(uigtk.widgets.Grid):
         grid.attach(self.score, 0, 0, 1, 1)
 
         self.information = Information()
-        self.score.attach(self.information, 0, 1, 1, 1)
+        self.score.attach(self.information, 1, 1, 1, 1)
 
-    def update_match_details(self, fixtureid=0):
+    def update_match_details(self, fixtureid, fixture):
         '''
         Set match details for given fixture.
         '''
-        teams = ("Real Madrid", "Barcelona")
+        self.score.set_teams(fixtureid, fixture)
+        self.set_tactics_buttons(fixtureid, fixture)
 
-        self.score.set_teams(teams)
+        club = data.clubs.get_club_by_id(fixture.home)
+        stadium = data.stadiums.get_stadium_by_id(club.stadium)
+        self.information.set_information(stadium.name, "Test")
 
-        self.set_tactics_buttons(teams)
-
-    def set_tactics_buttons(self, teams):
+    def set_tactics_buttons(self, fixtureid, fixture):
         '''
         Update label on tactics buttons to display club names.
         '''
-        self.buttonHomeTactics.set_label("_%s\nTactics" % (teams[0]))
-        self.buttonAwayTactics.set_label("_%s\nTactics" % (teams[1]))
+        self.buttonHomeTactics.set_label("_%s\nTactics" % (fixture.get_home_name()))
+        self.buttonAwayTactics.set_label("_%s\nTactics" % (fixture.get_away_name()))
+
+    def on_start_match_clicked(self, button):
+        '''
+        Call match engine to generate result, then enable interface elements.
+        '''
+        print("Generate result here...")
+        button.set_sensitive(False)
+
+        data.window.mainscreen.menu.set_sensitive(True)
+        data.window.mainscreen.information.set_continue_game_button()
+        data.window.mainscreen.information.buttonContinue.set_sensitive(True)
+        data.window.mainscreen.information.buttonNews.set_sensitive(True)
 
     def run(self):
+        data.window.mainscreen.menu.set_sensitive(False)
+        data.window.mainscreen.information.buttonContinue.set_sensitive(False)
+        data.window.mainscreen.information.buttonNews.set_sensitive(False)
+        data.window.mainscreen.information.buttonNextMatch.set_label("")
+        data.window.mainscreen.information.buttonNextMatch.set_visible(False)
+
+        self.buttonStart.set_sensitive(True)
+
         self.show_all()
 
 
@@ -79,12 +101,12 @@ class Score(Gtk.Grid):
         self.labelAwayTeam.set_hexpand(True)
         self.attach(self.labelAwayTeam, 2, 0, 1, 1)
 
-    def set_teams(self, teams):
+    def set_teams(self, fixtureid, fixture):
         '''
         Set competing team names and 0-0 scoreline.
         '''
-        self.labelHomeTeam.set_markup("<span size='24000'><b>%s</b></span>" % (teams[0]))
-        self.labelAwayTeam.set_markup("<span size='24000'><b>%s</b></span>" % (teams[1]))
+        self.labelHomeTeam.set_markup("<span size='24000'><b>%s</b></span>" % (fixture.get_home_name()))
+        self.labelAwayTeam.set_markup("<span size='24000'><b>%s</b></span>" % (fixture.get_away_name()))
         self.set_score((0, 0))
 
     def set_score(self, score):
@@ -94,14 +116,12 @@ class Score(Gtk.Grid):
         self.labelScore.set_markup("<span size='24000'><b>%i - %i</b></span>" % (score))
 
 
-class Information(Gtk.Grid):
+class Information(uigtk.widgets.Grid):
     '''
     Information display of match venue and chosen referee.
     '''
     def __init__(self):
-        Gtk.Grid.__init__(self)
-        self.set_hexpand(True)
-        self.set_row_spacing(5)
+        uigtk.widgets.Grid.__init__(self)
 
         label = uigtk.widgets.Label("Stadium", leftalign=True)
         self.attach(label, 0, 0, 1, 1)

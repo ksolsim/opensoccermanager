@@ -24,36 +24,41 @@ class ContinueGame:
 
             if data.calendar.get_fixture():
                 data.calendar.get_user_fixture()
-
-                data.window.mainscreen.information.set_continue_to_match()
-
                 self.continue_allowed = 1
 
         if self.continue_allowed == 1:
             self.continue_allowed = 2
         elif self.continue_allowed == 2:
             opposition = data.calendar.get_user_opposition()
-            self.on_continue_to_match(opposition)
 
-    def on_continue_to_match(self, club):
+            if self.on_continue_to_match(opposition):
+                self.continue_allowed = 3
+        elif self.continue_allowed == 3:
+            data.window.screen.change_visible_screen("squad")
+            data.calendar.increment_event()
+            self.continue_allowed = 0
+
+    def on_continue_to_match(self, clubid):
         '''
         Determine whether match can continue or display error.
         '''
-        if not self.continuetomatch.state:
-            if self.continuetomatch.get_valid_squad():
-                dialog = uigtk.match.ProceedToMatch(club.name)
+        if self.continuetomatch.get_valid_squad():
+            club = data.clubs.get_club_by_id(clubid)
+            dialog = uigtk.match.ProceedToMatch(club.name)
 
-                if dialog.show():
-                    self.continuetomatch.get_selected_substitutes()
+            if dialog.show():
+                if self.continuetomatch.get_selected_substitutes():
+                    return True
+                else:
+                    return False
+        else:
+            return False
 
 
 class ContinueToMatch:
     '''
     Class to verify whether next match is able to be played.
     '''
-    def __init__(self):
-        self.state = False
-
     def get_valid_squad(self):
         '''
         Verify eleven selected players are eligible.
@@ -61,12 +66,10 @@ class ContinueToMatch:
         club = data.clubs.get_club_by_id(data.user.team)
         count = club.squad.teamselection.get_team_count()
 
-        if count < 11:
-            uigtk.match.NotEnoughPlayers(count)
+        state = count == 11
 
-            state = False
-        else:
-            state = True
+        if not state:
+            uigtk.match.NotEnoughPlayers(count)
 
         return state
 
@@ -77,9 +80,16 @@ class ContinueToMatch:
         club = data.clubs.get_club_by_id(data.user.team)
         count = club.squad.teamselection.get_subs_count()
 
+        state = True
+
         if count < 5:
             dialog = uigtk.match.NotEnoughSubs(count)
+            state = dialog.show()
 
-            if dialog.show():
-                data.window.screen.change_visible_screen("match")
-                data.window.screen.active.update_match_details()
+        if state:
+            fixtureid, fixture = data.calendar.get_user_fixture()
+
+            data.window.screen.change_visible_screen("match")
+            data.window.screen.active.update_match_details(fixtureid, fixture)
+
+        return state

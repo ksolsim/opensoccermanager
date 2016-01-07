@@ -44,24 +44,29 @@ class Calendar:
         fixtures = league.fixtures.get_fixtures_for_week(self.event)
 
         if data.date.get_date_for_event() == league.fixtures.events[self.event]:
-            for fixture in fixtures.values():
+            for fixtureid, fixture in fixtures.items():
                 if data.user.team in (fixture.home, fixture.away):
-                    club1 = data.clubs.get_club_by_id(fixture.home)
-                    club2 = data.clubs.get_club_by_id(fixture.away)
+                    club1 = fixture.get_home_name()
+                    club2 = fixture.get_away_name()
 
-                    data.window.mainscreen.information.set_show_next_match(club1.name, club2.name)
+                    data.window.mainscreen.information.set_show_next_match(club1, club2)
 
-        return club1, club2
+                    data.window.mainscreen.information.set_continue_to_match()
+
+                    return fixtureid, fixture
 
     def get_user_opposition(self):
         '''
         Return club id of opposition team.
         '''
-        club1, club2 = self.get_user_fixture()
+        fixtureid, fixture = self.get_user_fixture()
 
-        if club1 is data.clubs.get_club_by_id(data.user.team):
-            club = club2
+        if fixture.home == data.user.team:
+            club = fixture.away
         else:
-            club = club1
+            club = fixture.home
 
         return club
+
+    def increment_event(self):
+        self.event += 1

@@ -16,8 +16,8 @@ class MainScreen(Gtk.Grid):
     def __init__(self):
         Gtk.Grid.__init__(self)
 
-        menu = uigtk.menu.Menu()
-        self.attach(menu, 0, 0, 1, 1)
+        self.menu = uigtk.menu.Menu()
+        self.attach(self.menu, 0, 0, 1, 1)
 
         self.grid = uigtk.widgets.Grid()
         self.grid.set_vexpand(True)

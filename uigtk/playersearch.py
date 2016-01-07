@@ -392,7 +392,7 @@ class PlayerSearch(uigtk.widgets.Grid):
         self.populate_data()
         self.show_all()
 
-        self.treeselection.select_path(0)
+        PlayerSearch.treeselection.select_path(0)
 
 
 class Filter(Gtk.Dialog):
