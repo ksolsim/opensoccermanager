@@ -5,6 +5,14 @@ import data
 import structures.buildings
 
 
+class Names:
+    def __init__(self):
+        self.names = ("North", "East", "South", "West", "North East", "South East", "South West", "North West")
+
+    def get_names(self):
+        return self.names
+
+
 class Stadiums:
     class Stadium:
         def __init__(self):

@@ -27,8 +27,7 @@ class Window(Gtk.Window):
         if data.preferences.window_maximized:
             self.maximize()
         else:
-            xposition, yposition = data.preferences.window_position
-            self.move(xposition, yposition)
+            self.move(*data.preferences.window_position)
 
         self.set_default_size(*data.preferences.window_size)
 
@@ -40,8 +39,7 @@ class Window(Gtk.Window):
         Handle move to original position on unmaximize event.
         '''
         if self.is_maximized():
-            xposition, yposition = data.preferences.window_position
-            self.move(xposition, yposition)
+            self.move(*data.preferences.window_position)
 
     def on_quit_game(self, *args):
         '''
