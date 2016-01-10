@@ -1,5 +1,21 @@
 #!/usr/bin/env python3
 
+#  This file is part of OpenSoccerManager.
+#
+#  OpenSoccerManager is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by the
+#  Free Software Foundation, either version 3 of the License, or (at your
+#  option) any later version.
+#
+#  OpenSoccerManager is distributed in the hope that it will be useful, but
+#  WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+#  or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+#  more details.
+#
+#  You should have received a copy of the GNU General Public License along with
+#  OpenSoccerManager.  If not, see <http://www.gnu.org/licenses/>.
+
+
 from gi.repository import Gtk
 
 import data
@@ -10,16 +26,13 @@ class Standings(Gtk.Grid):
     __name__ = "standings"
 
     def __init__(self):
-        self.liststoreLeagues = Gtk.ListStore(str, str)
-
-        self.liststoreStandings = Gtk.ListStore(int, str, int, int, int, int, int, int, int, int, str)
-
         Gtk.Grid.__init__(self)
         self.set_row_spacing(5)
 
         grid = uigtk.widgets.Grid()
         self.attach(grid, 0, 0, 1, 1)
 
+        self.liststoreLeagues = Gtk.ListStore(str, str)
         treemodelsort = Gtk.TreeModelSort(self.liststoreLeagues)
         treemodelsort.set_sort_column_id(1, Gtk.SortType.ASCENDING)
 
@@ -34,6 +47,9 @@ class Standings(Gtk.Grid):
 
         scrolledwindow = uigtk.widgets.ScrolledWindow()
         self.attach(scrolledwindow, 0, 1, 1, 1)
+
+        self.liststoreStandings = Gtk.ListStore(int, str, int, int, int, int,
+                                                int, int, int, int, str)
 
         treeview = uigtk.widgets.TreeView()
         treeview.set_hexpand(True)
