@@ -42,16 +42,19 @@ class Stadium(Gtk.Grid):
 
             label = uigtk.widgets.Label("Condition", leftalign=True)
             self.grid.attach(label, 0, 2, 1, 1)
-            self.labelCapacity = uigtk.widgets.Label(leftalign=True)
-            self.grid.attach(self.labelCapacity, 1, 2, 1, 1)
+            self.labelCondition = uigtk.widgets.Label(leftalign=True)
+            self.grid.attach(self.labelCondition, 1, 2, 1, 1)
 
-        def set_details(self, name, capacity, condition):
+        def set_details(self, capacity=0, condition=100):
             '''
             Set stadium details.
             '''
-            self.labelName.set_label(name)
-            self.labelCapacity.set_label(capacity)
-            self.labelCondition.set_label(condition)
+            club = data.clubs.get_club_by_id(data.user.team)
+            stadium = data.stadiums.get_stadium_by_id(club.stadium)
+
+            self.labelName.set_label(stadium.name)
+            self.labelCapacity.set_label("%i" % (capacity))
+            self.labelCondition.set_label("%i%%" % (condition))
 
     def __init__(self):
         Gtk.Grid.__init__(self)
@@ -139,7 +142,6 @@ class Stadium(Gtk.Grid):
 
             checkbutton = Gtk.CheckButton("Roof")
             checkbutton.set_sensitive(False)
-            checkbutton.connect("toggled", stand.on_roof_changed)
             frame.grid.attach(checkbutton, 2, count + 4, 1, 1)
             stand.roof = checkbutton
 
@@ -158,6 +160,8 @@ class Stadium(Gtk.Grid):
             stand.corners.append(self.corner_stands[count - 1 % len(self.corner_stands)])
 
     def run(self):
+        self.details.set_details()
+
         self.show_all()
 
 
@@ -166,28 +170,50 @@ class MainStand:
         self.corners = []
 
     def add_adjacent_corner(self, stand):
+        '''
+        Add passed stand to corners list.
+        '''
         self.corners.append(stand)
 
     def on_capacity_changed(self, spinbutton):
+        '''
+        Update widgets on change of capacity.
+        '''
         sensitive = spinbutton.get_value_as_int() > 0
         self.roof.set_sensitive(sensitive)
         self.standing.set_sensitive(sensitive)
         self.seating.set_sensitive(sensitive)
 
+        if not sensitive:
+            self.roof.set_active(False)
+            self.standing.set_active(True)
+
         self.update_box_status()
         self.update_adjacent_status()
 
     def update_adjacent_status(self):
+        '''
+        Update adjacent stand status for capacity change.
+        '''
         for stand in self.corners:
             stand.check_adjacent_capacity()
 
     def on_roof_changed(self, *args):
+        '''
+        Update box status when roof widget is toggled.
+        '''
         self.update_box_status()
 
     def update_box_status(self):
+        '''
+        Update box widget based on capacity and roof status.
+        '''
         sensitive = self.capacity.get_value_as_int() >= 4000 and self.roof.get_active()
 
         if not self.roof.get_active():
+            self.box.set_value(0)
+
+        if self.capacity.get_value_as_int() < 4000:
             self.box.set_value(0)
 
         self.box.set_sensitive(sensitive)
@@ -205,19 +231,19 @@ class CornerStand:
             self.capacity.set_sensitive(False)
         else:
             self.capacity.set_sensitive(True)
-        '''
-        print(self.main)
-
-        for stand in self.main:
-            if stand.capacity.get_value_as_int() < 8000:
-                self.capacity.set_sensitive(False)
-        '''
 
     def on_capacity_changed(self, spinbutton):
-        pass
+        '''
+        Update sensitivity of widgets and roof/standing values.
+        '''
+        sensitive = spinbutton.get_value_as_int() > 0
+        self.roof.set_sensitive(sensitive)
+        self.standing.set_sensitive(sensitive)
+        self.seating.set_sensitive(sensitive)
 
-    def on_roof_changed(self, checkbutton):
-        pass
+        if not sensitive:
+            self.roof.set_active(False)
+            self.standing.set_active(True)
 
 
 class UpgradeStadium(Gtk.MessageDialog):
