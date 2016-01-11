@@ -24,8 +24,8 @@ class Buildings:
         def __init__(self):
             self.name = ""
             self.size = 0
-            self.cost = 0
             self.number = 0
+            self.cost = 0
             self.filename = ""
 
     def __init__(self):
@@ -52,8 +52,8 @@ class Buildings:
         '''
         plots = 0
 
-        for count, building in enumerate(self.buildings):
-            plots += building.size * count
+        for building in self.buildings:
+            plots += building.size * building.number
 
         return plots
 

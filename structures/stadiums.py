@@ -97,7 +97,7 @@ class Stadiums:
             box_capacity = item[13:17]
             roof = item[17:25]
             seating = item[25:33]
-            building = item[33:]
+            shops = item[33:]
 
             for count in range(0, 4):
                 stand = MainStand()
@@ -113,6 +113,11 @@ class Stadiums:
                 stand.roof = roof[count + 4]
                 stand.seating = seating[count + 4]
                 stadium.corner_stands.append(stand)
+
+            buildings = stadium.buildings.get_buildings()
+
+            for count, shop in enumerate(shops):
+                buildings[count].number = shop
 
 
 class MainStand:
