@@ -50,7 +50,7 @@ class Result(uigtk.widgets.Grid):
         Display result information for given fixture id in passed league.
         '''
         league = data.leagues.get_league_by_id(leagueid)
-        fixture = league.fixtures.get_fixture_for_id(fixtureid)
+        fixture = league.fixtures.get_fixture_by_id(fixtureid)
 
         home = data.clubs.get_club_by_id(fixture.home)
         away = data.clubs.get_club_by_id(fixture.away)

@@ -31,7 +31,7 @@ class Fixtures:
             self.result = None
 
             self.attendance = 0
-            self.refereeid = None
+            self.referee = None
 
         def get_home_name(self):
             '''
@@ -64,31 +64,34 @@ class Fixtures:
 
         return self.fixtureid
 
-    def generate_fixtures(self, clubs):
+    def generate_fixtures(self, league):
         '''
         Generate season fixture list for passed clubs argument.
         '''
-        random.shuffle(clubs)
-
+        self.league = league
+        clubs = league.clubs
         self.clubs = clubs
+
+        random.shuffle(clubs)
 
         rounds = len(self.clubs) - 1
         matches = int(len(self.clubs) * 0.5)
 
-        for round_count in range(0, rounds):
-            week = round_count
+        for week in range(0, rounds):
+            referees = self.get_referee_list()
 
-            for match_count in range(0, matches):
-                home = (round_count + match_count) % rounds
-                away = (len(self.clubs) - 1 - match_count + round_count) % rounds
+            for match in range(0, matches):
+                home = (week + match) % rounds
+                away = (len(self.clubs) - 1 - match + week) % rounds
 
-                if match_count == 0:
+                if match == 0:
                     away = rounds
 
                 fixture = self.Fixture()
                 fixture.week = week
+                fixture.referee = referees[match]
 
-                if round_count % 2 == 1:
+                if week % 2 == 1:
                     fixture.home = self.clubs[home]
                     fixture.away = self.clubs[away]
                 else:
@@ -98,16 +101,38 @@ class Fixtures:
                 fixtureid = self.get_fixtureid()
                 self.fixtures[fixtureid] = fixture
 
-        half_season = self.fixtures.copy()
+        for week in range(0, rounds):
+            referees = self.get_referee_list()
 
-        for item in half_season.values():
-            fixtureid = self.get_fixtureid()
+            for match in range(0, matches):
+                home = ((rounds + week) + match) % rounds
+                away = (len(self.clubs) - 1 - match + (rounds + week)) % rounds
 
-            fixture = self.Fixture()
-            fixture.week = round_count + item.week + 1
-            fixture.home = item.away
-            fixture.away = item.home
-            self.fixtures[fixtureid] = fixture
+                if match == 0:
+                    away = rounds
+
+                fixture = self.Fixture()
+                fixture.week = rounds + week
+                fixture.referee = referees[match]
+
+                if (rounds + week) % 2 == 1:
+                    fixture.home = self.clubs[home]
+                    fixture.away = self.clubs[away]
+                else:
+                    fixture.away = self.clubs[away]
+                    fixture.home = self.clubs[home]
+
+                fixtureid = self.get_fixtureid()
+                self.fixtures[fixtureid] = fixture
+
+    def get_referee_list(self):
+        '''
+        Return randomly ordered list of referees for assignment to fixture.
+        '''
+        referees = self.league.get_referees()
+        random.shuffle(referees)
+
+        return referees
 
     def get_fixtures(self):
         '''
@@ -115,7 +140,7 @@ class Fixtures:
         '''
         return self.fixtures
 
-    def get_fixture_for_id(self, fixtureid):
+    def get_fixture_by_id(self, fixtureid):
         '''
         Get fixture object for given fixture id.
         '''

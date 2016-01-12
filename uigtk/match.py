@@ -56,16 +56,34 @@ class Match(uigtk.widgets.Grid):
         self.information = Information()
         self.score.attach(self.information, 1, 1, 1, 1)
 
+        self.notebook = Gtk.Notebook()
+        self.attach(self.notebook, 1, 1, 1, 1)
+
+        self.teams = Teams()
+        self.notebook.append_page(self.teams, uigtk.widgets.Label("_Teams"))
+
+        self.statistics = Statistics()
+        self.statistics.set_visible(False)
+        self.notebook.append_page(self.statistics, uigtk.widgets.Label("_Statistics"))
+
     def update_match_details(self, fixtureid, fixture):
         '''
         Set match details for given fixture.
         '''
+        self.fixtureid = fixtureid
+        self.fixture = fixture
+
         self.score.set_teams(fixtureid, fixture)
         self.set_tactics_buttons(fixtureid, fixture)
 
-        club = data.clubs.get_club_by_id(fixture.home)
-        stadium = data.stadiums.get_stadium_by_id(club.stadium)
-        self.information.set_information(stadium.name, "Test")
+        home = data.clubs.get_club_by_id(fixture.home)
+        stadium = data.stadiums.get_stadium_by_id(home.stadium)
+        referee = data.referees.get_referee_by_id(fixture.referee)
+        self.information.set_information(stadium.name, referee.name)
+
+        away = data.clubs.get_club_by_id(fixture.away)
+
+        self.teams.set_teams_list(home, away)
 
     def set_tactics_buttons(self, fixtureid, fixture):
         '''
@@ -86,7 +104,13 @@ class Match(uigtk.widgets.Grid):
         data.window.mainscreen.information.buttonContinue.set_sensitive(True)
         data.window.mainscreen.information.buttonNews.set_sensitive(True)
 
+        self.notebook.set_current_page(1)
+        self.notebook.set_show_tabs(True)
+        self.statistics.set_visible(True)
+
     def run(self):
+        self.show_all()
+
         data.window.mainscreen.menu.set_sensitive(False)
         data.window.mainscreen.information.buttonContinue.set_sensitive(False)
         data.window.mainscreen.information.buttonNews.set_sensitive(False)
@@ -94,8 +118,10 @@ class Match(uigtk.widgets.Grid):
         data.window.mainscreen.information.buttonNextMatch.set_visible(False)
 
         self.buttonStart.set_sensitive(True)
-
-        self.show_all()
+        self.notebook.set_current_page(0)
+        self.notebook.set_show_tabs(False)
+        self.notebook.set_show_border(False)
+        self.statistics.set_visible(False)
 
 
 class Score(Gtk.Grid):
@@ -118,6 +144,12 @@ class Score(Gtk.Grid):
         self.labelAwayTeam = uigtk.widgets.Label()
         self.labelAwayTeam.set_hexpand(True)
         self.attach(self.labelAwayTeam, 2, 0, 1, 1)
+
+        self.eventsHomeTeam = Events()
+        self.attach(self.eventsHomeTeam, 0, 1, 1, 1)
+
+        self.eventsAwayTeam = Events()
+        self.attach(self.eventsAwayTeam, 2, 1, 1, 1)
 
     def set_teams(self, fixtureid, fixture):
         '''
@@ -161,6 +193,98 @@ class Information(uigtk.widgets.Grid):
         '''
         self.labelStadium.set_label(stadium)
         self.labelReferee.set_label(referee)
+
+
+class Events(uigtk.widgets.ScrolledWindow):
+    def __init__(self):
+        uigtk.widgets.ScrolledWindow.__init__(self)
+        self.set_hexpand(True)
+
+        self.viewport = Gtk.Viewport()
+        self.add(self.viewport)
+
+        self.grid = None
+
+    def add_event(self):
+        '''
+        Add event to list of in-game events.
+        '''
+
+    def clear_events(self):
+        '''
+        Remove and destroy listed events.
+        '''
+
+
+class Teams(uigtk.widgets.Grid):
+    def __init__(self):
+        uigtk.widgets.Grid.__init__(self)
+        self.set_border_width(5)
+        self.set_column_homogeneous(True)
+
+        self.teams = []
+
+        for count in range(0, 2):
+            liststore = Gtk.ListStore(int, str, str)
+            self.teams.append(liststore)
+
+            scrolledwindow = uigtk.widgets.ScrolledWindow()
+            scrolledwindow = Gtk.ScrolledWindow()
+            self.attach(scrolledwindow, count, 0, 1, 1)
+
+            self.treeview = uigtk.widgets.TreeView()
+            self.treeview.set_vexpand(True)
+            self.treeview.set_hexpand(True)
+            self.treeview.set_enable_search(False)
+            self.treeview.set_search_column(-1)
+            self.treeview.set_model(liststore)
+            self.treeview.treeselection.set_mode(Gtk.SelectionMode.NONE)
+            scrolledwindow.add(self.treeview)
+
+            treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Position",
+                                                          column=1)
+            self.treeview.append_column(treeviewcolumn)
+            treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Player",
+                                                          column=2)
+            self.treeview.append_column(treeviewcolumn)
+
+    def set_teams_list(self, home, away):
+        '''
+        Clear list model and set list of players.
+        '''
+        for count, team in enumerate((home,)): # Add away
+            self.teams[count].clear()
+
+            for playerid in team.squad.teamselection.get_team_selection():
+                if playerid:
+                    player = data.players.get_player_by_id(playerid)
+
+                    self.teams[count].append([playerid, "", player.get_name()])
+
+
+class Statistics(uigtk.widgets.Grid):
+    def __init__(self):
+        uigtk.widgets.Grid.__init__(self)
+        self.set_border_width(5)
+
+        label = uigtk.widgets.Label("Attendance", leftalign=True)
+        self.attach(label, 0, 0, 1, 1)
+        self.labelAttendance = uigtk.widgets.Label(leftalign=True)
+        self.attach(self.labelAttendance, 1, 0, 1, 1)
+
+        for count, category in enumerate(("Shots On Target",
+                                          "Shots Off Target",
+                                          "Free Kicks",
+                                          "Penalties",
+                                          "Corner Kicks",
+                                          "Throw-Ins",
+                                          "Fouls",
+                                          "Yellow Cards",
+                                          "Red Cards",
+                                          "Possession"),
+                                          start=1):
+            label = uigtk.widgets.Label(category, leftalign=True)
+            self.attach(label, 0, count, 1, 1)
 
 
 class ProceedToMatch(Gtk.MessageDialog):

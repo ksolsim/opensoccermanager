@@ -37,6 +37,12 @@ class Referees:
         '''
         return self.referees.items()
 
+    def get_referee_by_id(self, refereeid):
+        '''
+        Fetch referee for given referee id.
+        '''
+        return self.referees[refereeid]
+
     def populate_data(self):
         data.database.cursor.execute("SELECT * FROM referee \
                                      JOIN refereeattr \
