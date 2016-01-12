@@ -53,9 +53,12 @@ class ClubSearch(uigtk.widgets.Grid):
         label.set_hexpand(True)
         grid.attach(label, 1, 0, 1, 1)
 
-        self.filterbuttons = uigtk.shared.FilterButtons()
-        self.filterbuttons.buttonReset.connect("clicked", self.on_reset_clicked)
-        grid.attach(self.filterbuttons, 2, 0, 1, 1)
+        buttonbox = uigtk.widgets.ButtonBox()
+        grid.attach(buttonbox, 2, 0, 1, 1)
+
+        self.buttonReset = uigtk.widgets.Button("_Reset")
+        self.buttonReset.connect("clicked", self.on_reset_clicked)
+        buttonbox.add(self.buttonReset)
 
         scrolledwindow = uigtk.widgets.ScrolledWindow()
         self.attach(scrolledwindow, 0, 1, 1, 1)
@@ -68,16 +71,16 @@ class ClubSearch(uigtk.widgets.Grid):
         treemodelsort = Gtk.TreeModelSort(self.treemodelfilter)
         treemodelsort.set_sort_column_id(1, Gtk.SortType.ASCENDING)
 
-        treeview = uigtk.widgets.TreeView()
-        treeview.set_hexpand(True)
-        treeview.set_vexpand(True)
-        treeview.set_headers_clickable(True)
-        treeview.set_model(treemodelsort)
-        treeview.connect("row-activated", self.on_row_activated)
-        treeview.connect("button-release-event", self.on_button_release_event)
-        scrolledwindow.add(treeview)
+        self.treeview = uigtk.widgets.TreeView()
+        self.treeview.set_hexpand(True)
+        self.treeview.set_vexpand(True)
+        self.treeview.set_headers_clickable(True)
+        self.treeview.set_model(treemodelsort)
+        self.treeview.connect("row-activated", self.on_row_activated)
+        self.treeview.connect("button-release-event", self.on_button_release_event)
+        scrolledwindow.add(self.treeview)
 
-        ClubSearch.treeselection = treeview.treeselection
+        ClubSearch.treeselection = self.treeview.treeselection
 
         tree_columns = []
 
@@ -101,7 +104,7 @@ class ClubSearch(uigtk.widgets.Grid):
 
         for column in tree_columns:
             column.set_expand(True)
-            treeview.append_column(column)
+            self.treeview.append_column(column)
 
         self.contextmenu = ContextMenu()
 
@@ -120,13 +123,14 @@ class ClubSearch(uigtk.widgets.Grid):
                                event.button,
                                event.time)
 
-    def on_filter_clicked(self, *args):
-        pass
-
-    def on_reset_clicked(self, *args):
+    def on_reset_clicked(self, button):
+        '''
+        Clear search entry and reset view.
+        '''
         self.entrySearch.set_text("")
+        button.set_sensitive(False)
 
-        self.treemodelfilter.refilter()
+        self.reset_view()
 
     def on_row_activated(self, treeview, treepath, treeviewcolumn):
         '''
@@ -143,9 +147,9 @@ class ClubSearch(uigtk.widgets.Grid):
         Filter for entered name in players list.
         '''
         if entry.get_text_length() > 0:
-            self.treemodelfilter.refilter()
+            self.reset_view()
 
-            self.filterbuttons.buttonReset.set_sensitive(True)
+            self.buttonReset.set_sensitive(True)
 
     def on_search_pressed(self, entry, position, event):
         '''
@@ -153,16 +157,25 @@ class ClubSearch(uigtk.widgets.Grid):
         '''
         if position == Gtk.EntryIconPosition.SECONDARY:
             self.entrySearch.set_text("")
-            self.treemodelfilter.refilter()
+            self.reset_view()
 
-            self.filterbuttons.buttonReset.set_sensitive(False)
+            self.buttonReset.set_sensitive(False)
 
     def on_search_changed(self, entry):
         '''
         Clear filter if text length is zero.
         '''
         if entry.get_text_length() == 0:
-            self.treemodelfilter.refilter()
+            self.reset_view()
+
+    def reset_view(self):
+        '''
+        Refilter tree view and highlight top row.
+        '''
+        self.treemodelfilter.refilter()
+
+        self.treeview.scroll_to_cell(0)
+        self.treeselection.select_path(0)
 
     def filter_visible(self, model, treeiter, data):
         visible = True
@@ -202,6 +215,15 @@ class ClubSearch(uigtk.widgets.Grid):
         self.show_all()
 
         ClubSearch.treeselection.select_path(0)
+
+
+class Filter(Gtk.Dialog):
+    def __init__(self):
+        Gtk.Dialog.__init__(self)
+        self.set_transient_for(data.window)
+        self.set_modal(True)
+        self.set_resizable(False)
+        self.set_title("Filter Clubs")
 
 
 class ContextMenu(Gtk.Menu, ClubSearch):

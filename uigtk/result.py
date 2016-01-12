@@ -56,10 +56,15 @@ class Result(uigtk.widgets.Grid):
         away = data.clubs.get_club_by_id(fixture.away)
 
         self.labelHome.set_markup("<a href='club'><span size='24000'><b>%s</b></span></a>" % (home.name))
+        self.labelHome.clubid = fixture.home
         self.labelAway.set_markup("<a href='club'><span size='24000'><b>%s</b></span></a>" % (away.name))
+        self.labelAway.clubid = fixture.away
         #self.labelResult.set_markup("%i - %i" % (result))
 
-    def on_label_activated(self, *args):
+    def on_label_activated(self, label, uri):
+        data.window.screen.change_visible_screen("clubinformation")
+        data.window.screen.active.set_visible_club(label.clubid)
+
         return True
 
     def run(self):

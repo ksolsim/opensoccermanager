@@ -269,6 +269,8 @@ class PlayerSearch(uigtk.widgets.Grid):
         '''
         Clear filter settings and reset to default state.
         '''
+        self.entrySearch.set_text("")
+
         button.set_sensitive(False)
         PlayerSearch.playerfilter.reset_filter()
 
