@@ -57,6 +57,7 @@ class Clubs:
             self.tickets = structures.tickets.Tickets()
             self.team_training = structures.teamtraining.TeamTraining()
             self.individual_training = structures.individualtraining.IndividualTraining()
+            self.training_camp = structures.trainingcamp.TrainingCamp()
             self.merchandise = structures.merchandise.Merchandise()
             self.catering = structures.catering.Catering()
             self.sponsorship = structures.sponsorship.Sponsorship()

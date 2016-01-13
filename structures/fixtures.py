@@ -25,6 +25,7 @@ class Fixtures:
     class Fixture:
         def __init__(self):
             self.week = 0
+            self.played = False
 
             self.home = None
             self.away = None

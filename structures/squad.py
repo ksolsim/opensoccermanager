@@ -65,6 +65,20 @@ class Squad:
         '''
         return len(self.squad)
 
+    def get_reserves_count(self):
+        '''
+        Return list of players not in squad.
+        '''
+        count = 0
+
+        for playerid in self.squad:
+            if playerid not in self.teamselection.team:
+                count += 1
+
+        print(count)
+
+        return count
+
     def get_average_age(self):
         '''
         Return average age of players in squad.
@@ -197,7 +211,7 @@ class TeamGenerator:
 
     def generate_team_selection(self):
         '''
-        Generate eleven first team members.
+        Generate eleven first team members and assign to first team.
         '''
         formationid = self.generate_formation()
         formation = self.formation.get_formation_by_index(formationid)
@@ -236,5 +250,5 @@ class TeamGenerator:
 
     def generate_sub_selection(self):
         '''
-        Generate five substitution members.
+        Generate five substitution members and assign to substitutions.
         '''

@@ -19,6 +19,7 @@
 from gi.repository import Gtk
 
 import data
+import uigtk.match
 import uigtk.widgets
 
 
@@ -45,6 +46,12 @@ class Result(uigtk.widgets.Grid):
         self.labelAway.connect("activate-link", self.on_label_activated)
         grid.attach(self.labelAway, 2, 0, 1, 1)
 
+        self.information = uigtk.match.Information()
+        grid.attach(self.information, 1, 1, 1, 1)
+
+        self.labelNotPlayed = Gtk.Label("This fixture has not yet been played.")
+        self.attach(self.labelNotPlayed, 0, 1, 1, 1)
+
     def set_visible_result(self, leagueid, fixtureid):
         '''
         Display result information for given fixture id in passed league.
@@ -59,9 +66,19 @@ class Result(uigtk.widgets.Grid):
         self.labelHome.clubid = fixture.home
         self.labelAway.set_markup("<a href='club'><span size='24000'><b>%s</b></span></a>" % (away.name))
         self.labelAway.clubid = fixture.away
-        #self.labelResult.set_markup("%i - %i" % (result))
+
+        stadium = data.stadiums.get_stadium_by_id(home.stadium)
+        self.information.labelStadium.set_label(stadium.name)
+
+        self.labelNotPlayed.set_visible(not fixture.played)
+
+        if fixture.played:
+            self.labelResult.set_markup("%i - %i" % (0, 0))
 
     def on_label_activated(self, label, uri):
+        '''
+        Activate selected club and display information screen.
+        '''
         data.window.screen.change_visible_screen("clubinformation")
         data.window.screen.active.set_visible_club(label.clubid)
 
