@@ -41,6 +41,12 @@ class Formations:
         '''
         return self.formations
 
+    def get_formation_by_index(self, index):
+        '''
+        Return formation tuple of name and positions for given index.
+        '''
+        return self.formations[index]
+
     def get_name(self, formationid):
         '''
         Get name of formation in use for given formation id.

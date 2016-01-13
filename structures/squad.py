@@ -16,13 +16,20 @@
 #  OpenSoccerManager.  If not, see <http://www.gnu.org/licenses/>.
 
 
+import random
+
 import data
+import structures.formations
 
 
 class Squad:
     def __init__(self):
+        self.clubid = None
+
         self.squad = []
         self.teamselection = TeamSelection()
+
+        self.teamgenerator = TeamGenerator()
 
     def add_to_squad(self, playerid):
         '''
@@ -64,13 +71,22 @@ class Squad:
         '''
         age = 0
 
-        for count, playerid in enumerate(self.squad, start=1):
+        for playerid in self.squad:
             player = data.players.get_player_by_id(playerid)
             age += player.get_age()
 
-        age = age / count
+        age = age / self.get_squad_count()
 
         return age
+
+    def generate_squad(self):
+        '''
+        Initiate handler class to generate squad selection.
+        '''
+        self.teamgenerator.clubid = self.clubid
+        self.teamgenerator.squad = self.squad
+        self.teamgenerator.teamselection = self.teamselection
+        self.teamgenerator.generate_team_selection()
 
 
 class TeamSelection:
@@ -134,11 +150,7 @@ class TeamSelection:
         '''
         Return number of team players selected.
         '''
-        count = 0
-
-        for playerid in self.team:
-            if playerid:
-                count += 1
+        count = sum(1 for playerid in self.team if playerid)
 
         return count
 
@@ -146,11 +158,7 @@ class TeamSelection:
         '''
         Return number of substitutes selected.
         '''
-        count = 0
-
-        for playerid in self.subs:
-            if playerid:
-                count += 1
+        count = sum(1 for playerid in self.subs if playerid)
 
         return count
 
@@ -173,3 +181,60 @@ class TeamSelection:
         Get substitute player id for given position id.
         '''
         return self.subs[positionid]
+
+
+class TeamGenerator:
+    def __init__(self):
+        self.clubid = None
+
+        self.formation = structures.formations.Formations()
+
+    def generate_formation(self):
+        '''
+        Get formation for use by team.
+        '''
+        return random.randint(0, 6)
+
+    def generate_team_selection(self):
+        '''
+        Generate eleven first team members.
+        '''
+        formationid = self.generate_formation()
+        formation = self.formation.get_formation_by_index(formationid)
+
+        selection = []
+
+        for position in formation[1]:
+            scores = {}
+
+            for playerid in self.squad:
+                if playerid not in selection:
+                    player = data.players.get_player_by_id(playerid)
+
+                    skills = player.get_skills()
+                    score = sum(skills)
+
+                    if position == player.position:
+                        if position in ("GK"):
+                            score = player.keeping * 2.5
+                        elif position in ("DL", "DR", "DC", "D"):
+                            score = player.tackling * 2.5
+                        elif position in ("ML", "MR", "MC", "M"):
+                            score = player.passing * 2.5
+                        elif position in ("AS", "AF"):
+                            score = player.shooting * 2.5
+                    else:
+                        score *= 0.1
+
+                    scores[playerid] = score
+
+            sorted_scores = sorted(scores, key=lambda x: scores[x], reverse=True)
+            selection.append(sorted_scores[0])
+
+        for count, playerid in enumerate(selection):
+            self.teamselection.add_to_team(playerid, count)
+
+    def generate_sub_selection(self):
+        '''
+        Generate five substitution members.
+        '''

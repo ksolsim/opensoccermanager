@@ -156,7 +156,7 @@ class Clubs:
             club.stadium = item[9]
             club.reputation = item[10]
 
-            club.squad.team = clubid
+            club.squad.clubid = clubid
 
             league = data.leagues.get_league_by_id(club.league)
             league.add_club(clubid)

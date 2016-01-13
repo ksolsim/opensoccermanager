@@ -252,7 +252,7 @@ class Teams(uigtk.widgets.Grid):
         '''
         Clear list model and set list of players.
         '''
-        for count, team in enumerate((home,)): # Add away
+        for count, team in enumerate((home, away)):
             self.teams[count].clear()
 
             for playerid in team.squad.teamselection.get_team_selection():

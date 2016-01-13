@@ -105,7 +105,17 @@ class ContinueToMatch:
         if state:
             fixtureid, fixture = data.calendar.get_user_fixture()
 
+            self.match_preparations(fixture)
+
             data.window.screen.change_visible_screen("match")
             data.window.screen.active.update_match_details(fixtureid, fixture)
 
         return state
+
+    def match_preparations(self, fixture):
+        if fixture.home == data.user.team:
+            club = data.clubs.get_club_by_id(fixture.away)
+            club.squad.generate_squad()
+        elif fixture.away == data.user.team:
+            club = data.clubs.get_club_by_id(fixture.home)
+            club.squad.generate_squad()
