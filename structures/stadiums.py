@@ -33,6 +33,9 @@ class Names:
                       "North West")
 
     def get_names(self):
+        '''
+        Return tuple of stadium stand names.
+        '''
         return self.names
 
 
@@ -43,6 +46,7 @@ class Stadiums:
 
             self.main_stands = []
             self.corner_stands = []
+
             self.buildings = structures.buildings.Buildings()
 
         def get_capacity(self):
@@ -59,6 +63,61 @@ class Stadiums:
                 capacity += stand.box
 
             return capacity
+
+        def get_standing_uncovered(self):
+            '''
+            Return whether stadium has any uncovered standing areas.
+            '''
+            for stands in (self.main_stands, self.corner_stands):
+                for stand in stands:
+                    if stand.capacity > 0 and not stand.roof and not stand.seating:
+                        return True
+
+            return False
+
+        def get_standing_covered(self):
+            '''
+            Return whether stadium has any covered standing areas.
+            '''
+            for stands in (self.main_stands, self.corner_stands):
+                for stand in stands:
+                    if stand.capacity > 0 and stand.roof and not stand.seating:
+                        return True
+
+            return False
+
+        def get_seating_uncovered(self):
+            '''
+            Return whether stadium has any uncovered seating areas.
+            '''
+            for stands in (self.main_stands, self.corner_stands):
+                for stand in stands:
+                    if stand.capacity > 0 and not stand.roof and stand.seating:
+                        return True
+
+            return False
+
+        def get_seating_covered(self):
+            '''
+            Return whether stadium has any covered seating areas.
+            '''
+            for stands in (self.main_stands, self.corner_stands):
+                for stand in stands:
+                    if stand.capacity > 0 and stand.roof and stand.seating:
+                        return True
+
+            return False
+
+        def get_executive_box(self):
+            '''
+            Return whether the stadium has any executive boxes.
+            '''
+            for stands in (self.main_stands, self.corner_stands):
+                for stand in stands:
+                    if stand.box > 0:
+                        return True
+
+            return False
 
     def __init__(self, season):
         self.season = season

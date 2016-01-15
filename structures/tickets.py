@@ -21,10 +21,22 @@ import data
 
 class Tickets:
     def __init__(self):
-        self.tickets = None
+        self.tickets = TicketCategories()
+
         self.school_tickets = 0
+
         self.season_tickets = 0
         self.season_tickets_available = True
+
+    def set_initial_prices(self):
+        '''
+        Define initial ticket prices used at start of game.
+        '''
+        self.tickets.add_ticket_price(0, 1)
+        self.tickets.add_ticket_price(1, 2)
+        self.tickets.add_ticket_price(2, 3)
+        self.tickets.add_ticket_price(3, 4)
+        self.tickets.add_ticket_price(4, 30)
 
     def set_initial_school_tickets(self):
         '''
@@ -39,3 +51,31 @@ class Tickets:
         '''
         club = data.clubs.get_club_by_id(data.user.team)
         self.season_tickets = 40 + club.reputation
+
+
+class TicketCategories:
+    def __init__(self):
+        self.categories = [None] * 5
+
+    def add_ticket_price(self, ticket, multiplier):
+        '''
+        Add ticket price object for stadium category.
+        '''
+        self.categories[ticket] = TicketPrices(multiplier)
+
+    def remove_ticket_price(self, ticket):
+        '''
+        Remove passed ticket price category.
+        '''
+        self.categories[ticket] = None
+
+
+class TicketPrices:
+    def __init__(self, multiplier):
+        self.club = data.clubs.get_club_by_id(data.user.team)
+
+        self.prices = [multiplier + self.club.reputation,
+                       multiplier + self.club.reputation + (self.club.reputation * 0.25),
+                       (multiplier + self.club.reputation) * 15]
+
+        self.prices = list(map(int, self.prices))

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+any#!/usr/bin/env python3
 
 #  This file is part of OpenSoccerManager.
 #
@@ -49,7 +49,11 @@ class Tickets(uigtk.widgets.Grid):
         label = uigtk.widgets.Label("Executive Box", leftalign=True)
         frame.grid.attach(label, 0, 5, 1, 1)
 
+        self.tickets = []
+
         for vcount in range(1, 6):
+            self.tickets.append([])
+
             for hcount in range(1, 4):
                 scale = Gtk.Scale()
                 scale.set_hexpand(True)
@@ -58,6 +62,7 @@ class Tickets(uigtk.widgets.Grid):
                 scale.set_increments(1, 10)
                 scale.connect("format-value", self.format_tickets_amount)
                 frame.grid.attach(scale, hcount, vcount, 1, 1)
+                self.tickets[vcount - 1].append(scale)
 
         frame = uigtk.widgets.CommonFrame("Season Tickets")
         self.attach(frame, 0, 1, 1, 1)
@@ -112,9 +117,31 @@ class Tickets(uigtk.widgets.Grid):
 
         return True
 
+    def update_interface(self):
+        '''
+        Update whether ticket item interface elements are sensitive.
+        '''
+        stadium = data.stadiums.get_stadium_by_id(self.club.stadium)
+
+        for stand in self.tickets[0]:
+            stand.set_sensitive(stadium.get_standing_uncovered())
+
+        for stand in self.tickets[1]:
+            stand.set_sensitive(stadium.get_standing_covered())
+
+        for stand in self.tickets[2]:
+            stand.set_sensitive(stadium.get_seating_uncovered())
+
+        for stand in self.tickets[3]:
+            stand.set_sensitive(stadium.get_seating_covered())
+
+        for stand in self.tickets[4]:
+            stand.set_sensitive(stadium.get_executive_box())
+
     def run(self):
         self.club = data.clubs.get_club_by_id(data.user.team)
 
+        self.update_interface()
         self.spinbuttonSeasonTickets.set_value(self.club.tickets.season_tickets)
         self.spinbuttonSchoolTickets.set_value(self.club.tickets.school_tickets)
 

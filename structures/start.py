@@ -110,6 +110,7 @@ class Start:
         self.club.coaches.generate_initial_staff()
         self.club.scouts.generate_initial_staff()
 
+        self.club.tickets.set_initial_prices()
         self.club.tickets.set_initial_school_tickets()
         self.club.tickets.set_initial_season_tickets()
 
