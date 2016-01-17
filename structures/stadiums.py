@@ -43,6 +43,7 @@ class Stadiums:
     class Stadium:
         def __init__(self):
             self.name = ""
+            self.condition = 100
 
             self.main_stands = []
             self.corner_stands = []
@@ -118,6 +119,14 @@ class Stadiums:
                         return True
 
             return False
+
+        def get_maintenance_cost(self):
+            '''
+            Calculate cost of maintaining current stadium and buildings.
+            '''
+            cost = (self.condition * 0.01) * self.get_capacity() * 0.5
+
+            return cost
 
     def __init__(self, season):
         self.season = season

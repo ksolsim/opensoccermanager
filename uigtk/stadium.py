@@ -53,8 +53,44 @@ class Stadium(Gtk.Grid):
             stadium = data.stadiums.get_stadium_by_id(club.stadium)
 
             self.labelName.set_label(stadium.name)
-            self.labelCapacity.set_label("%i" % (capacity))
+            self.labelCapacity.set_label("%i" % (stadium.get_capacity()))
             self.labelCondition.set_label("%i%%" % (condition))
+
+    class Maintenance(uigtk.widgets.CommonFrame):
+        def __init__(self):
+            uigtk.widgets.CommonFrame.__init__(self, "Maintenance")
+
+            label = uigtk.widgets.Label("Estimated Maintenance Percentage", leftalign=True)
+            self.grid.attach(label, 0, 0, 1, 1)
+            spinbutton = Gtk.SpinButton()
+            spinbutton.set_range(0, 110)
+            spinbutton.set_increments(1, 10)
+            spinbutton.set_value(100)
+            spinbutton.set_snap_to_ticks(True)
+            spinbutton.connect("output", self.on_maintenance_output)
+            self.grid.attach(spinbutton, 1, 0, 1, 1)
+
+            label = uigtk.widgets.Label("Stadium Maintenance Cost", leftalign=True)
+            self.grid.attach(label, 0, 1, 1, 1)
+            self.labelCost = uigtk.widgets.Label(leftalign=True)
+            self.grid.attach(self.labelCost, 1, 1, 1, 1)
+
+        def set_maintenance_cost(self):
+            '''
+            Update display label for cost of maintaining stadium and buildings.
+            '''
+            club = data.clubs.get_club_by_id(data.user.team)
+            stadium = data.stadiums.get_stadium_by_id(club.stadium)
+
+            self.labelCost.set_label(data.currency.get_currency(stadium.get_maintenance_cost(), integer=True))
+
+        def on_maintenance_output(self, spinbutton):
+            '''
+            Format percentage sign into maintenance spinbutton output.
+            '''
+            spinbutton.set_text("%i%%" % (spinbutton.get_value_as_int()))
+
+            return True
 
     def __init__(self):
         Gtk.Grid.__init__(self)
@@ -78,44 +114,38 @@ class Stadium(Gtk.Grid):
             stand = MainStand()
             self.main_stands.append(stand)
 
-            spinbutton = Gtk.SpinButton()
-            spinbutton.set_range(0, 15000)
-            spinbutton.set_increments(1000, 1000)
-            spinbutton.set_value(0)
-            spinbutton.set_snap_to_ticks(True)
-            spinbutton.set_numeric(True)
-            spinbutton.connect("value-changed", stand.on_capacity_changed)
-            frame.grid.attach(spinbutton, 1, count, 1, 1)
-            stand.capacity = spinbutton
+            stand.capacity = Gtk.SpinButton()
+            stand.capacity.set_range(0, 15000)
+            stand.capacity.set_increments(1000, 1000)
+            stand.capacity.set_value(0)
+            stand.capacity.set_snap_to_ticks(True)
+            stand.capacity.set_numeric(True)
+            stand.capacity.connect("value-changed", stand.on_capacity_changed)
+            frame.grid.attach(stand.capacity, 1, count, 1, 1)
 
-            checkbutton = Gtk.CheckButton("Roof")
-            checkbutton.set_sensitive(False)
-            checkbutton.connect("toggled", stand.on_roof_changed)
-            frame.grid.attach(checkbutton, 2, count, 1, 1)
-            stand.roof = checkbutton
+            stand.roof = Gtk.CheckButton("Roof")
+            stand.roof.set_sensitive(False)
+            stand.roof.connect("toggled", stand.on_roof_changed)
+            frame.grid.attach(stand.roof, 2, count, 1, 1)
 
-            radiobuttonStanding = Gtk.RadioButton("Standing")
-            radiobuttonStanding.set_sensitive(False)
-            frame.grid.attach(radiobuttonStanding, 3, count, 1, 1)
-            stand.standing = radiobuttonStanding
-            radiobuttonSeating = Gtk.RadioButton("Seating")
-            radiobuttonSeating.set_sensitive(False)
-            radiobuttonSeating.join_group(radiobuttonStanding)
-            frame.grid.attach(radiobuttonSeating, 4, count, 1, 1)
-            stand.seating = radiobuttonSeating
+            stand.standing = Gtk.RadioButton("Standing")
+            stand.standing.set_sensitive(False)
+            frame.grid.attach(stand.standing, 3, count, 1, 1)
+            stand.seating = Gtk.RadioButton("Seating")
+            stand.seating.set_sensitive(False)
+            stand.seating.join_group(stand.standing)
+            frame.grid.attach(stand.seating, 4, count, 1, 1)
 
             label = uigtk.widgets.Label("Box", leftalign=True)
             frame.grid.attach(label, 5, count, 1, 1)
-
-            spinbutton = Gtk.SpinButton()
-            spinbutton.set_range(0, 500)
-            spinbutton.set_increments(250, 250)
-            spinbutton.set_value(0)
-            spinbutton.set_snap_to_ticks(True)
-            spinbutton.set_numeric(True)
-            spinbutton.set_sensitive(False)
-            frame.grid.attach(spinbutton, 6, count, 1, 1)
-            stand.box = spinbutton
+            stand.box = Gtk.SpinButton()
+            stand.box.set_range(0, 500)
+            stand.box.set_increments(250, 250)
+            stand.box.set_value(0)
+            stand.box.set_snap_to_ticks(True)
+            stand.box.set_numeric(True)
+            stand.box.set_sensitive(False)
+            frame.grid.attach(stand.box, 6, count, 1, 1)
 
         # Populate adjacent main stands for corner stands
         for count in range(0, 4):
@@ -129,38 +159,82 @@ class Stadium(Gtk.Grid):
             else:
                 stand.main.append(self.main_stands[count + 1])
 
-            spinbutton = Gtk.SpinButton()
-            spinbutton.set_range(0, 3000)
-            spinbutton.set_increments(1000, 1000)
-            spinbutton.set_value(0)
-            spinbutton.set_snap_to_ticks(True)
-            spinbutton.set_numeric(True)
-            spinbutton.set_sensitive(False)
-            spinbutton.connect("value-changed", stand.on_capacity_changed)
-            frame.grid.attach(spinbutton, 1, count + 4, 1, 1)
-            stand.capacity = spinbutton
+            stand.capacity = Gtk.SpinButton()
+            stand.capacity.set_range(0, 3000)
+            stand.capacity.set_increments(1000, 1000)
+            stand.capacity.set_value(0)
+            stand.capacity.set_snap_to_ticks(True)
+            stand.capacity.set_numeric(True)
+            stand.capacity.set_sensitive(False)
+            stand.capacity.connect("value-changed", stand.on_capacity_changed)
+            frame.grid.attach(stand.capacity, 1, count + 4, 1, 1)
 
-            checkbutton = Gtk.CheckButton("Roof")
-            checkbutton.set_sensitive(False)
-            frame.grid.attach(checkbutton, 2, count + 4, 1, 1)
-            stand.roof = checkbutton
+            stand.roof = Gtk.CheckButton("Roof")
+            stand.roof.set_sensitive(False)
+            frame.grid.attach(stand.roof, 2, count + 4, 1, 1)
 
-            radiobuttonStanding = Gtk.RadioButton("Standing")
-            radiobuttonStanding.set_sensitive(False)
-            frame.grid.attach(radiobuttonStanding, 3, count + 4, 1, 1)
-            stand.standing = radiobuttonStanding
-            radiobuttonSeating = Gtk.RadioButton("Seating")
-            radiobuttonSeating.set_sensitive(False)
-            radiobuttonSeating.join_group(radiobuttonStanding)
-            frame.grid.attach(radiobuttonSeating, 4, count + 4, 1, 1)
-            stand.seating = radiobuttonSeating
+            stand.standing = Gtk.RadioButton("Standing")
+            stand.standing.set_sensitive(False)
+            frame.grid.attach(stand.standing, 3, count + 4, 1, 1)
+            stand.seating = Gtk.RadioButton("Seating")
+            stand.seating.set_sensitive(False)
+            stand.seating.join_group(stand.standing)
+            frame.grid.attach(stand.seating, 4, count + 4, 1, 1)
 
         for count, stand in enumerate(self.main_stands):
             stand.corners.append(self.corner_stands[count])
             stand.corners.append(self.corner_stands[count - 1 % len(self.corner_stands)])
 
+        self.maintenance = self.Maintenance()
+        self.attach(self.maintenance, 0, 2, 1, 1)
+
+    def on_build_clicked(self):
+        '''
+        Store values and update interface when user clicks to build.
+        '''
+
+    def on_reset_clicked(self):
+        '''
+        Reset any changed values back to default.
+        '''
+
+    def populate_data(self):
+        club = data.clubs.get_club_by_id(data.user.team)
+        stadium = data.stadiums.get_stadium_by_id(club.stadium)
+
+        for count, item in enumerate(stadium.main_stands):
+            stand = self.main_stands[count]
+
+            stand.capacity.set_value(item.capacity)
+
+            if item.capacity > 0:
+                stand.roof.set_active(item.roof)
+
+            if item.seating:
+                if item.capacity > 0:
+                    stand.seating.set_active(True)
+            else:
+                stand.standing.set_active(True)
+
+            stand.box.set_value(item.box)
+
+        for count, item in enumerate(stadium.corner_stands):
+            stand = self.corner_stands[count]
+            stand.capacity.set_value(item.capacity)
+
+            if item.capacity > 0:
+                stand.roof.set_active(item.roof)
+
+            if item.seating:
+                if item.capacity > 0:
+                    stand.seating.set_active(True)
+            else:
+                stand.standing.set_active(True)
+
     def run(self):
         self.details.set_details()
+        self.maintenance.set_maintenance_cost()
+        self.populate_data()
 
         self.show_all()
 
