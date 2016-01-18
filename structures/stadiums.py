@@ -138,7 +138,7 @@ class Stadiums:
         '''
         Return full dictionary of stadiums.
         '''
-        return self.stadiums
+        return self.stadiums.items()
 
     def get_stadium_by_id(self, stadiumid):
         '''
@@ -170,9 +170,9 @@ class Stadiums:
             for count in range(0, 4):
                 stand = MainStand()
                 stand.capacity = main_capacity[count]
-                stand.box = box_capacity[count]
                 stand.roof = roof[count]
                 stand.seating = seating[count]
+                stand.box = box_capacity[count]
                 stadium.main_stands.append(stand)
 
             for count in range(0, 4):
@@ -182,10 +182,9 @@ class Stadiums:
                 stand.seating = seating[count + 4]
                 stadium.corner_stands.append(stand)
 
-            buildings = stadium.buildings.get_buildings()
-
             for count, shop in enumerate(shops):
-                buildings[count].number = shop
+                building = stadium.buildings.get_building_by_index(count)
+                building.number = shop
 
 
 class MainStand:

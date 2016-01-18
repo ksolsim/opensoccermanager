@@ -44,10 +44,10 @@ class Totals(uigtk.widgets.CommonFrame):
         self.labelAvailableGrant = uigtk.widgets.Label(leftalign=True)
         self.grid.attach(self.labelAvailableGrant, 1, 2, 1, 1)
 
-        label = uigtk.widgets.Label("Upgrade Cost", leftalign=True)
+        label = uigtk.widgets.Label("Construction Cost", leftalign=True)
         self.grid.attach(label, 0, 3, 1, 1)
-        self.labelUpgradeCost = uigtk.widgets.Label(leftalign=True)
-        self.grid.attach(self.labelUpgradeCost, 1, 3, 1, 1)
+        self.labelConstructionCost = uigtk.widgets.Label(leftalign=True)
+        self.grid.attach(self.labelConstructionCost, 1, 3, 1, 1)
 
         buttonbox = uigtk.widgets.ButtonBox()
         buttonbox.set_hexpand(True)
@@ -86,6 +86,18 @@ class Totals(uigtk.widgets.CommonFrame):
         if not club.finances.grant.get_grant_available():
             self.labelAvailableGrant.set_label("Grant unavailable")
 
+    def update_construction_cost(self):
+        '''
+        Update label displaying cost of construction work.
+        '''
+        cost = 0
+
+        for shop in Buildings.shops:
+            cost += shop.building.cost * (shop.spinbutton.get_value_as_int() - shop.building.number)
+
+        cost = data.currency.get_currency(cost, integer=True)
+        self.labelConstructionCost.set_label(cost)
+
     def on_apply_clicked(self, *args):
         '''
         Get plot size and ask to confirm upgrade.
@@ -108,6 +120,7 @@ class Totals(uigtk.widgets.CommonFrame):
 class Buildings(uigtk.widgets.Grid):
     __name__ = "buildings"
 
+    shops = None
     totals = None
 
     def __init__(self):
@@ -119,8 +132,8 @@ class Buildings(uigtk.widgets.Grid):
         grid.set_column_homogeneous(True)
         self.attach(grid, 0, 0, 1, 1)
 
-        self.shops = Shops()
-        self.attach(self.shops, 0, 0, 1, 1)
+        Buildings.shops = Shops()
+        self.attach(Buildings.shops, 0, 0, 1, 1)
 
         Buildings.totals = Totals(self.shops)
         self.attach(Buildings.totals, 1, 0, 1, 1)
@@ -128,10 +141,9 @@ class Buildings(uigtk.widgets.Grid):
     def run(self):
         self.shops.set_building_count()
 
-        self.totals.update_grant_status()
+        self.totals.update_used_plots()
         self.totals.update_maximum_plots()
-
-        Buildings.totals.update_used_plots()
+        self.totals.update_grant_status()
 
         self.show_all()
 
@@ -183,16 +195,19 @@ class Shop(uigtk.widgets.Grid):
     def __init__(self, index):
         uigtk.widgets.Grid.__init__(self)
 
-        building = data.buildings.get_building_by_index(index)
+        club = data.clubs.get_club_by_id(data.user.team)
+        stadium = data.stadiums.get_stadium_by_id(club.stadium)
 
-        self.labelName = uigtk.widgets.Label("<b>_%s</b>" % (building.name))
+        self.building = stadium.buildings.get_building_by_index(index)
+
+        self.labelName = uigtk.widgets.Label("<b>_%s</b>" % (self.building.name))
         self.attach(self.labelName, 0, 0, 2, 1)
-        self.labelSize = Gtk.Label("Size %i" % (building.size))
+        self.labelSize = Gtk.Label("Size %i" % (self.building.size))
         self.attach(self.labelSize, 0, 1, 1, 1)
-        self.labelCost = Gtk.Label("Cost %s" % (data.currency.get_currency(building.cost, integer=True)))
+        self.labelCost = Gtk.Label("Cost %s" % (data.currency.get_currency(self.building.cost, integer=True)))
         self.attach(self.labelCost, 1, 1, 1, 1)
 
-        filepath = os.path.join("resources", "%s.png" % (building.filename))
+        filepath = os.path.join("resources", "%s.png" % (self.building.filename))
         image = Gtk.Image.new_from_file(filepath)
         self.attach(image, 0, 2, 2, 1)
 
@@ -211,6 +226,13 @@ class Shop(uigtk.widgets.Grid):
         '''
         Buildings.totals.update_used_plots()
 
+        self.update_construction_cost(spinbutton)
+
+    def update_construction_cost(self, spinbutton):
+        #amount = self.building.cost * (amount - self.building.number)
+
+        Buildings.totals.update_construction_cost()
+
 
 class ConfirmBuilding(Gtk.MessageDialog):
     '''
@@ -218,12 +240,13 @@ class ConfirmBuilding(Gtk.MessageDialog):
     '''
     def __init__(self):
         Gtk.MessageDialog.__init__(self)
+        self.set_transient_for(data.window)
         self.set_modal(True)
-        self.set_title("Confirm Building Upgrades")
+        self.set_title("Confirm Building Construction")
         self.set_markup("<span size='12000'><b>Do you want to build the specified new shops?</b></span>")
-        self.format_secondary_text("The cost to upgrade will be %s" % (cost))
-        self.add_button("_Cancel Upgrade", Gtk.ResponseType.CANCEL)
-        self.add_button("Confirm _Upgrade", Gtk.ResponseType.OK)
+        self.format_secondary_text("The cost of construction will be %s" % (cost))
+        self.add_button("_Cancel Construction", Gtk.ResponseType.CANCEL)
+        self.add_button("C_onfirm Construction", Gtk.ResponseType.OK)
         self.set_default_response(Gtk.ResponseType.CANCEL)
 
     def show(self):
