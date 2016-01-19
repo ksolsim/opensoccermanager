@@ -67,6 +67,8 @@ class Stadium(Gtk.Grid):
             spinbutton.set_increments(1, 10)
             spinbutton.set_value(100)
             spinbutton.set_snap_to_ticks(True)
+            spinbutton.set_tooltip_text("Percentage amount of required budget to spend on maintenance.")
+            spinbutton.connect("value-changed", self.on_maintenance_changed)
             spinbutton.connect("output", self.on_maintenance_output)
             self.grid.attach(spinbutton, 1, 0, 1, 1)
 
@@ -83,6 +85,16 @@ class Stadium(Gtk.Grid):
             stadium = data.stadiums.get_stadium_by_id(club.stadium)
 
             self.labelCost.set_label(data.currency.get_currency(stadium.get_maintenance_cost(), integer=True))
+
+        def on_maintenance_changed(self, spinbutton):
+            '''
+            Store updated maintenance percentage value.
+            '''
+            club = data.clubs.get_club_by_id(data.user.team)
+            self.stadium = data.stadiums.get_stadium_by_id(club.stadium)
+            self.stadium.maintenance = spinbutton.get_value_as_int()
+
+            self.set_maintenance_cost()
 
         def on_maintenance_output(self, spinbutton):
             '''

@@ -53,6 +53,7 @@ class Totals(uigtk.widgets.CommonFrame):
         buttonbox.set_hexpand(True)
         buttonbox.set_layout(Gtk.ButtonBoxStyle.END)
         self.grid.attach(buttonbox, 0, 5, 2, 1)
+
         buttonReset = uigtk.widgets.Button("_Reset")
         buttonReset.set_sensitive(False)
         buttonReset.set_tooltip_text("Reset changes made to building configuration.")
