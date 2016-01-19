@@ -28,6 +28,12 @@ class Tickets:
         self.season_tickets = 0
         self.season_tickets_available = True
 
+    def get_ticket_prices(self):
+        '''
+        Return nested list of ticket prices.
+        '''
+        return self.tickets.categories
+
     def set_initial_prices(self):
         '''
         Define initial ticket prices used at start of game.
@@ -57,6 +63,9 @@ class TicketCategories:
     def __init__(self):
         self.categories = [None] * 5
 
+    def set_ticket_price(self, index1, index2, amount):
+        self.categories[index1].set_price(index2, amount)
+
     def add_ticket_price(self, ticket, multiplier):
         '''
         Add ticket price object for stadium category.
@@ -74,8 +83,14 @@ class TicketPrices:
     def __init__(self, multiplier):
         self.club = data.clubs.get_club_by_id(data.user.team)
 
+        self.set_initial_prices(multiplier)
+
+    def set_initial_prices(self, multiplier):
         self.prices = [multiplier + self.club.reputation,
                        multiplier + self.club.reputation + (self.club.reputation * 0.25),
                        (multiplier + self.club.reputation) * 15]
 
         self.prices = list(map(int, self.prices))
+
+    def set_price(self, index, amount):
+        self.prices[index] = amount

@@ -81,3 +81,13 @@ class Accounts:
 
         self.income += amount
         self.balance += amount
+
+    def reset_weekly(self):
+        '''
+        Clear weekly deposits and withdrawals.
+        '''
+        for item in self.incomes.values():
+            item.week = 0
+
+        for item in self.expenditures.values():
+            item.week = 0

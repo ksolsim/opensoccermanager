@@ -83,10 +83,7 @@ class Advertising:
         '''
         Return number of current advertisements.
         '''
-        count = 0
-
-        for advert in self.current.values():
-            count += advert.quantity
+        count = sum([advert.quantity for advert in self.current.values()])
 
         return count
 
@@ -98,5 +95,8 @@ class Advertising:
 
         if self.get_advert_count() + advert.quantity <= self.maximum:
             self.current[advertid] = advert
+
+            club = data.clubs.get_club_by_id(data.user.team)
+            club.accounts.deposit(advert.amount, "advertising")
 
             del self.available[advertid]

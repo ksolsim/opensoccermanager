@@ -113,6 +113,9 @@ class ContinueToMatch:
         return state
 
     def match_preparations(self, fixture):
+        '''
+        Generate squad for computer-run club.
+        '''
         if fixture.home == data.user.team:
             club = data.clubs.get_club_by_id(fixture.away)
             club.squad.generate_squad()

@@ -24,12 +24,19 @@ class Events:
         self.club = data.clubs.get_club_by_id(data.user.team)
 
     def process_daily_events(self):
+        '''
+        Events processed each day.
+        '''
         self.club.sponsorship.update_sponsorship()
-        data.injury.generate_injuries()
         data.injury.increment_fitness()
+        data.injury.generate_injuries()
         data.advertising.assistant_handled()
 
     def process_weekly_events(self):
+        '''
+        Events processed at the end of each week.
+        '''
+        self.club.accounts.reset_weekly()
         self.club.finances.loan.update_interest_rate()
         self.club.finances.overdraft.update_interest_rate()
         data.players.update_contracts()
@@ -41,7 +48,13 @@ class Events:
         data.advertising.refresh_advertising()
 
     def process_monthly_events(self):
+        '''
+        Events processed at the end of each month.
+        '''
         print("Monthly events")
 
     def process_end_of_season_events(self):
+        '''
+        Events processed at the end of each season.
+        '''
         pass

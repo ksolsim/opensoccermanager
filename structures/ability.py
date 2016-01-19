@@ -26,7 +26,7 @@ class Ability:
         '''
         Return full dictionary of abilities.
         '''
-        return self.abilities
+        return self.abilities.items()
 
     def get_ability_for_id(self, abilityid):
         '''

@@ -128,8 +128,8 @@ class Clubs:
         '''
         if clubid:
             return self.clubs[clubid]
-        else:
-            return None
+
+        return None
 
     def get_club_keys(self):
         '''
