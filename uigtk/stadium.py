@@ -185,42 +185,69 @@ class Stadium(Gtk.Grid):
             stand.corners.append(self.corner_stands[count])
             stand.corners.append(self.corner_stands[count - 1 % len(self.corner_stands)])
 
+        buttonbox = uigtk.widgets.ButtonBox()
+        buttonbox.set_layout(Gtk.ButtonBoxStyle.END)
+        frame.grid.attach(buttonbox, 0, 12, 7, 1)
+
+        buttonReset = uigtk.widgets.Button("_Reset")
+        buttonReset.set_tooltip_text("Reset any adjusted values to initial starting values.")
+        buttonReset.connect("clicked", self.on_reset_clicked)
+        buttonbox.add(buttonReset)
+        buttonConstruct = uigtk.widgets.Button("_Construct")
+        buttonConstruct.set_tooltip_text("Begin construction of stadium upgrades.")
+        buttonConstruct.connect("clicked", self.on_construct_clicked)
+        buttonbox.add(buttonConstruct)
+
         self.maintenance = self.Maintenance()
         self.attach(self.maintenance, 0, 2, 1, 1)
 
-    def on_build_clicked(self):
+    def on_construct_clicked(self, *args):
         '''
         Store values and update interface when user clicks to build.
         '''
+        dialog = UpgradeStadium(cost=0)
+        dialog.show()
 
-    def on_reset_clicked(self):
+    def on_reset_clicked(self, *args):
         '''
         Reset any changed values back to default.
         '''
+        self.populate_data()
 
     def populate_data(self):
         club = data.clubs.get_club_by_id(data.user.team)
         stadium = data.stadiums.get_stadium_by_id(club.stadium)
 
+        # Main stand data
         for count, item in enumerate(stadium.main_stands):
             stand = self.main_stands[count]
 
             stand.capacity.set_value(item.capacity)
+            stand.capacity.set_range(item.capacity, 15000)
 
             if item.capacity > 0:
                 stand.roof.set_active(item.roof)
 
+                if item.roof:
+                    stand.roof.set_sensitive(False)
+
             if item.seating:
                 if item.capacity > 0:
                     stand.seating.set_active(True)
+                    stand.seating.set_sensitive(False)
+                    stand.standing.set_sensitive(False)
             else:
                 stand.standing.set_active(True)
 
             stand.box.set_value(item.box)
+            stand.box.set_range(item.box, 500)
 
+        # Corner stand data
         for count, item in enumerate(stadium.corner_stands):
             stand = self.corner_stands[count]
+
             stand.capacity.set_value(item.capacity)
+            stand.capacity.set_range(item.capacity, 3000)
 
             if item.capacity > 0:
                 stand.roof.set_active(item.roof)
@@ -228,6 +255,8 @@ class Stadium(Gtk.Grid):
             if item.seating:
                 if item.capacity > 0:
                     stand.seating.set_active(True)
+                    stand.seating.set_sensitive(False)
+                    stand.standing.set_sensitive(False)
             else:
                 stand.standing.set_active(True)
 
@@ -254,9 +283,13 @@ class MainStand:
         Update widgets on change of capacity.
         '''
         sensitive = spinbutton.get_value_as_int() > 0
-        self.roof.set_sensitive(sensitive)
-        self.standing.set_sensitive(sensitive)
-        self.seating.set_sensitive(sensitive)
+
+        if not self.roof:
+            self.roof.set_sensitive(True)
+
+        if not self.seating:
+            self.standing.set_sensitive(True)
+            self.seating.set_sensitive(True)
 
         if not sensitive:
             self.roof.set_active(False)
@@ -330,11 +363,13 @@ class UpgradeStadium(Gtk.MessageDialog):
         self.set_modal(True)
         self.set_title("Upgrade Stadium")
         self.set_property("message-type", Gtk.MessageType.QUESTION)
-        self.set_markup("Begin the construction of upgrades to the stadium at cost of %s?" % (cost))
+        self.set_markup("Begin the construction of upgrades to the stadium at cost of %s?" % (data.currency.get_currency(cost, integer=True)))
         self.add_button("_Cancel", Gtk.ResponseType.CANCEL)
         self.add_button("_Upgrade", Gtk.ResponseType.OK)
         self.set_default_response(Gtk.ResponseType.CANCEL)
 
     def show(self):
-        self.run()
+        response = self.run() == Gtk.ResponseType.OK
         self.destroy()
+
+        return response
