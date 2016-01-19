@@ -25,6 +25,8 @@ import uigtk.widgets
 class Tickets(uigtk.widgets.Grid):
     __name__ = "tickets"
 
+    club = None
+
     def __init__(self):
         uigtk.widgets.Grid.__init__(self)
 
@@ -68,7 +70,7 @@ class Tickets(uigtk.widgets.Grid):
 
                 scale.set_increments(1, 10)
                 scale.connect("value-changed", self.on_ticket_changed)
-                scale.connect("format-value", self.format_tickets_amount)
+                scale.connect("format-value", self.format_ticket_amount)
                 frame.grid.attach(scale, hcount, vcount, 1, 1)
                 self.tickets[vcount - 1].append(scale)
 
@@ -80,32 +82,11 @@ class Tickets(uigtk.widgets.Grid):
         buttonDefault.set_tooltip_text("Reset ticket prices to suggested defaults.")
         buttonbox.add(buttonDefault)
 
-        frame = uigtk.widgets.CommonFrame("Season Tickets")
-        self.attach(frame, 0, 2, 1, 1)
+        self.season_tickets = SeasonTickets()
+        self.attach(self.season_tickets, 0, 2, 1, 1)
 
-        label = uigtk.widgets.Label("Capacity _Percentage Allocated For Season Tickets")
-        frame.grid.attach(label, 0, 0, 1, 1)
-        self.spinbuttonSeasonTickets = Gtk.SpinButton.new_with_range(0, 100, 1)
-        self.spinbuttonSeasonTickets.set_numeric(False)
-        self.spinbuttonSeasonTickets.set_tooltip_text("Specify the percentage of season tickets available.")
-        self.spinbuttonSeasonTickets.connect("output", self.on_season_tickets_output)
-        self.spinbuttonSeasonTickets.connect("value-changed", self.on_season_tickets_changed)
-        label.set_mnemonic_widget(self.spinbuttonSeasonTickets)
-        frame.grid.attach(self.spinbuttonSeasonTickets, 1, 0, 1, 1)
-
-        frame = uigtk.widgets.CommonFrame("School Tickets")
-        self.attach(frame, 0, 3, 1, 1)
-
-        label = uigtk.widgets.Label("Capacity Allocated For _Free School Ticket Programme")
-        frame.grid.attach(label, 0, 0, 1, 1)
-        self.spinbuttonSchoolTickets = Gtk.SpinButton.new_with_range(0, 74000, 100)
-        self.spinbuttonSchoolTickets.set_increments(100, 1000)
-        self.spinbuttonSchoolTickets.set_snap_to_ticks(True)
-        self.spinbuttonSchoolTickets.set_numeric(True)
-        self.spinbuttonSchoolTickets.set_tooltip_text("Specify in 100 blocks the number of free school tickets.")
-        self.spinbuttonSchoolTickets.connect("value-changed", self.on_school_tickets_changed)
-        label.set_mnemonic_widget(self.spinbuttonSchoolTickets)
-        frame.grid.attach(self.spinbuttonSchoolTickets, 1, 0, 1, 1)
+        self.school_tickets = SchoolTickets()
+        self.attach(self.school_tickets, 0, 3, 1, 1)
 
     def on_ticket_changed(self, scale):
         '''
@@ -115,31 +96,11 @@ class Tickets(uigtk.widgets.Grid):
                                                    scale.index[1],
                                                    scale.get_value())
 
-    def format_tickets_amount(self, scale, value):
+    def format_ticket_amount(self, scale, value):
         '''
         Format ticket value for display on scale.
         '''
         return data.currency.get_currency(value, integer=True)
-
-    def on_season_tickets_changed(self, spinbutton):
-        '''
-        Store season ticket value when changed.
-        '''
-        self.club.tickets.season_tickets = spinbutton.get_value_as_int()
-
-    def on_school_tickets_changed(self, spinbutton):
-        '''
-        Store school tickets value when changed.
-        '''
-        self.club.tickets.school_tickets = spinbutton.get_value_as_int()
-
-    def on_season_tickets_output(self, spinbutton):
-        '''
-        Format percentage sign into season ticket spinbutton output.
-        '''
-        spinbutton.set_text("%i%%" % (spinbutton.get_value_as_int()))
-
-        return True
 
     def update_interface(self):
         '''
@@ -169,12 +130,80 @@ class Tickets(uigtk.widgets.Grid):
             self.tickets[count][2].set_value(category.prices[2])
 
     def run(self):
-        self.club = data.clubs.get_club_by_id(data.user.team)
+        Tickets.club = data.clubs.get_club_by_id(data.user.team)
 
         self.update_interface()
 
-        self.populate_data()
-        self.spinbuttonSeasonTickets.set_value(self.club.tickets.season_tickets)
-        self.spinbuttonSchoolTickets.set_value(self.club.tickets.school_tickets)
-
         self.show_all()
+
+        self.populate_data()
+        self.season_tickets.populate_data()
+        self.school_tickets.populate_data()
+
+
+class SeasonTickets(uigtk.widgets.CommonFrame):
+    def __init__(self):
+        uigtk.widgets.CommonFrame.__init__(self, "Season Tickets")
+
+        label = uigtk.widgets.Label("Capacity _Percentage Allocated For Season Tickets")
+        self.grid.attach(label, 0, 0, 1, 1)
+
+        self.spinbuttonSeasonTickets = Gtk.SpinButton.new_with_range(0, 100, 1)
+        self.spinbuttonSeasonTickets.set_numeric(False)
+        self.spinbuttonSeasonTickets.set_tooltip_text("Specify the percentage of season tickets available.")
+        self.spinbuttonSeasonTickets.connect("output", self.format_ticket_output)
+        self.spinbuttonSeasonTickets.connect("value-changed", self.on_season_tickets_changed)
+        label.set_mnemonic_widget(self.spinbuttonSeasonTickets)
+        self.grid.attach(self.spinbuttonSeasonTickets, 1, 0, 1, 1)
+
+        self.labelStatus = uigtk.widgets.Label("Season tickets are not currently on sale.", leftalign=True)
+        self.grid.attach(self.labelStatus, 0, 1, 2, 1)
+
+    def on_season_tickets_changed(self, spinbutton):
+        '''
+        Store season ticket value when changed.
+        '''
+        Tickets.club.tickets.season_tickets = spinbutton.get_value_as_int()
+
+    def format_ticket_output(self, spinbutton):
+        '''
+        Format percentage sign into season ticket spinbutton output.
+        '''
+        spinbutton.set_text("%i%%" % (spinbutton.get_value_as_int()))
+
+        return True
+
+    def populate_data(self):
+        self.spinbuttonSeasonTickets.set_value(Tickets.club.tickets.season_tickets)
+
+        if not Tickets.club.tickets.season_tickets_available:
+            self.spinbuttonSeasonTickets.set_sensitive(False)
+            self.labelStatus.set_visible(True)
+        else:
+            self.labelStatus.set_visible(False)
+
+
+class SchoolTickets(uigtk.widgets.CommonFrame):
+    def __init__(self):
+        uigtk.widgets.CommonFrame.__init__(self, "School Tickets")
+
+        label = uigtk.widgets.Label("Capacity Allocated For _Free School Ticket Programme")
+        self.grid.attach(label, 0, 0, 1, 1)
+
+        self.spinbuttonSchoolTickets = Gtk.SpinButton.new_with_range(0, 74000, 100)
+        self.spinbuttonSchoolTickets.set_increments(100, 1000)
+        self.spinbuttonSchoolTickets.set_snap_to_ticks(True)
+        self.spinbuttonSchoolTickets.set_numeric(True)
+        self.spinbuttonSchoolTickets.set_tooltip_text("Specify in 100 blocks the number of free school tickets.")
+        self.spinbuttonSchoolTickets.connect("value-changed", self.on_school_tickets_changed)
+        label.set_mnemonic_widget(self.spinbuttonSchoolTickets)
+        self.grid.attach(self.spinbuttonSchoolTickets, 1, 0, 1, 1)
+
+    def on_school_tickets_changed(self, spinbutton):
+        '''
+        Store school tickets value when changed.
+        '''
+        Tickets.club.tickets.school_tickets = spinbutton.get_value_as_int()
+
+    def populate_data(self):
+        self.spinbuttonSchoolTickets.set_value(Tickets.club.tickets.school_tickets)

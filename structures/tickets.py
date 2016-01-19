@@ -58,6 +58,17 @@ class Tickets:
         club = data.clubs.get_club_by_id(data.user.team)
         self.season_tickets = 40 + club.reputation
 
+    def toggle_season_ticket_availability(self):
+        '''
+        Switch between season tickets available or not.
+        '''
+        self.season_tickets_available = not self.season_tickets_available
+
+    def check_season_ticket_availability(self):
+        if data.date.get_date_for_event() == (16, 8):
+            club = data.clubs.get_club_by_id(data.user.team)
+            club.tickets.toggle_season_ticket_availability()
+
 
 class TicketCategories:
     def __init__(self):

@@ -31,6 +31,7 @@ class Events:
         data.injury.increment_fitness()
         data.injury.generate_injuries()
         data.advertising.assistant_handled()
+        self.club.tickets.check_season_ticket_availability()
 
     def process_weekly_events(self):
         '''
@@ -57,4 +58,4 @@ class Events:
         '''
         Events processed at the end of each season.
         '''
-        pass
+        self.club.tickets.toggle_season_ticket_availability()
