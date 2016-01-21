@@ -29,6 +29,7 @@ class Stadium(Gtk.Grid):
     class Details(uigtk.widgets.CommonFrame):
         def __init__(self):
             uigtk.widgets.CommonFrame.__init__(self, "Details")
+            self.set_vexpand(False)
 
             label = uigtk.widgets.Label("Name", leftalign=True)
             self.grid.attach(label, 0, 0, 1, 1)
@@ -40,12 +41,7 @@ class Stadium(Gtk.Grid):
             self.labelCapacity = uigtk.widgets.Label(leftalign=True)
             self.grid.attach(self.labelCapacity, 1, 1, 1, 1)
 
-            label = uigtk.widgets.Label("Condition", leftalign=True)
-            self.grid.attach(label, 0, 2, 1, 1)
-            self.labelCondition = uigtk.widgets.Label(leftalign=True)
-            self.grid.attach(self.labelCondition, 1, 2, 1, 1)
-
-        def set_details(self, capacity=0, condition=100):
+        def set_details(self, capacity=0):
             '''
             Set stadium details.
             '''
@@ -54,14 +50,17 @@ class Stadium(Gtk.Grid):
 
             self.labelName.set_label(stadium.name)
             self.labelCapacity.set_label("%i" % (stadium.get_capacity()))
-            self.labelCondition.set_label("%i%%" % (condition))
 
     class Maintenance(uigtk.widgets.CommonFrame):
         def __init__(self):
             uigtk.widgets.CommonFrame.__init__(self, "Maintenance")
 
-            label = uigtk.widgets.Label("Estimated Maintenance Percentage", leftalign=True)
+            label = uigtk.widgets.Label("Current Stadium Condition", leftalign=True)
             self.grid.attach(label, 0, 0, 1, 1)
+            self.labelCondition = uigtk.widgets.Label(leftalign=True)
+
+            label = uigtk.widgets.Label("Estimated Maintenance Percentage", leftalign=True)
+            self.grid.attach(label, 0, 1, 1, 1)
             spinbutton = Gtk.SpinButton()
             spinbutton.set_range(0, 110)
             spinbutton.set_increments(1, 10)
@@ -70,12 +69,12 @@ class Stadium(Gtk.Grid):
             spinbutton.set_tooltip_text("Percentage amount of required budget to spend on maintenance.")
             spinbutton.connect("value-changed", self.on_maintenance_changed)
             spinbutton.connect("output", self.on_maintenance_output)
-            self.grid.attach(spinbutton, 1, 0, 1, 1)
+            self.grid.attach(spinbutton, 1, 1, 1, 1)
 
             label = uigtk.widgets.Label("Stadium Maintenance Cost", leftalign=True)
-            self.grid.attach(label, 0, 1, 1, 1)
+            self.grid.attach(label, 0, 2, 1, 1)
             self.labelCost = uigtk.widgets.Label(leftalign=True)
-            self.grid.attach(self.labelCost, 1, 1, 1, 1)
+            self.grid.attach(self.labelCost, 1, 2, 1, 1)
 
         def set_maintenance_cost(self):
             '''
@@ -104,14 +103,38 @@ class Stadium(Gtk.Grid):
 
             return True
 
+    class Upgrades(uigtk.widgets.CommonFrame):
+        def __init__(self):
+            uigtk.widgets.CommonFrame.__init__(self, "Upgrades")
+
+            label = uigtk.widgets.Label("Upgrade Cost", leftalign=True)
+            self.grid.attach(label, 0, 0, 1, 1)
+
+            label = uigtk.widgets.Label("Upgrade Capacity", leftalign=True)
+            self.grid.attach(label, 0, 1, 1, 1)
+
+    class Attendances(uigtk.widgets.CommonFrame):
+        def __init__(self):
+            uigtk.widgets.CommonFrame.__init__(self, "Attendances")
+            self.set_vexpand(True)
+
     def __init__(self):
         Gtk.Grid.__init__(self)
 
         self.details = self.Details()
         self.attach(self.details, 0, 0, 1, 1)
 
+        self.maintenance = self.Maintenance()
+        self.attach(self.maintenance, 0, 1, 1, 1)
+
+        self.attendances = self.Attendances()
+        self.attach(self.attendances, 0, 3, 2, 1)
+
+        self.upgrades = self.Upgrades()
+        self.attach(self.upgrades, 0, 2, 1, 1)
+
         frame = uigtk.widgets.CommonFrame("Stands")
-        self.attach(frame, 0, 1, 1, 1)
+        self.attach(frame, 1, 0, 1, 3)
 
         names = structures.stadiums.Names()
 
@@ -148,7 +171,7 @@ class Stadium(Gtk.Grid):
             stand.seating.join_group(stand.standing)
             frame.grid.attach(stand.seating, 4, count, 1, 1)
 
-            label = uigtk.widgets.Label("Box", leftalign=True)
+            label = uigtk.widgets.Label("Executive Box", leftalign=True)
             frame.grid.attach(label, 5, count, 1, 1)
             stand.box = Gtk.SpinButton()
             stand.box.set_range(0, 500)
@@ -209,9 +232,6 @@ class Stadium(Gtk.Grid):
         buttonConstruct.set_tooltip_text("Begin construction of stadium upgrades.")
         buttonConstruct.connect("clicked", self.on_construct_clicked)
         buttonbox.add(buttonConstruct)
-
-        self.maintenance = self.Maintenance()
-        self.attach(self.maintenance, 0, 2, 1, 1)
 
     def on_construct_clicked(self, *args):
         '''
