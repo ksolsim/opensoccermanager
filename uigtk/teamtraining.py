@@ -40,9 +40,7 @@ class TeamTraining(Gtk.Grid):
             label = uigtk.widgets.Label("%s" % (hour))
             grid.attach(label, count, 0, 1, 1)
 
-        days = ("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
-
-        for count, day in enumerate(days, start=1):
+        for count, day in enumerate(data.calendar.get_days(), start=1):
             label = uigtk.widgets.Label("%s" % (day), leftalign=True)
             grid.attach(label, 0, count, 1, 1)
 
@@ -84,7 +82,7 @@ class TeamTraining(Gtk.Grid):
         '''
         Update schedule with selected categories.
         '''
-        self.club.team_training[combobox.value] = int(combobox.get_active_id())
+        self.club.team_training.set_training(combobox.value, int(combobox.get_active_id()))
 
     def on_assistant_clicked(self, *args):
         '''
@@ -95,7 +93,7 @@ class TeamTraining(Gtk.Grid):
         self.populate_data()
 
     def populate_data(self):
-        for count, trainingid in enumerate(self.club.team_training):
+        for count, trainingid in enumerate(self.club.team_training.get_training()):
             self.comboboxes[count].set_active(trainingid)
 
     def run(self):

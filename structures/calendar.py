@@ -25,7 +25,21 @@ class Calendar:
                          5: 31, 6: 30, 7: 31, 8: 31,
                          9: 30, 10: 31, 11: 30, 12: 31}
 
+        self.days = ("Monday",
+                     "Tuesday",
+                     "Wednesday",
+                     "Thursday",
+                     "Friday",
+                     "Saturday",
+                     "Sunday")
+
         self.event = 0
+
+    def get_days(self):
+        '''
+        Return tuple of day names.
+        '''
+        return self.days
 
     def get_maximum_days(self, month):
         '''
@@ -85,4 +99,7 @@ class Calendar:
         return club
 
     def increment_event(self):
+        '''
+        Increment event index value.
+        '''
         self.event += 1

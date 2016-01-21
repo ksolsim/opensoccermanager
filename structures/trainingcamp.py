@@ -35,6 +35,24 @@ class TrainingCamp:
 
         return cost
 
+    def get_first_team_cost(self):
+        '''
+        Return cost of training camp for first team.
+        '''
+        cost = self.get_player_cost() * 16
+
+        return cost
+
+    def get_reserve_team_cost(self):
+        '''
+        Return cost of training camp for reserve team.
+        '''
+        club = data.clubs.get_club_by_id(data.user.team)
+
+        cost = self.get_player_cost() * club.squad.get_reserves_count()
+
+        return cost
+
     def get_total_cost(self):
         '''
         Return total training camp cost for selected team members.

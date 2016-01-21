@@ -19,14 +19,23 @@
 import random
 
 
-class TeamTraining(list):
+class TeamTraining:
     def __init__(self):
-        self.team_training = []
-
-        for count in range(0, 42):
-            self.append(0)
+        self.team_training = [0] * 42
 
         self.timeout = random.randint(8, 12)
+
+    def get_training(self):
+        '''
+        Get list of team training index values.
+        '''
+        return self.team_training
+
+    def set_training(self, index, value):
+        '''
+        Set team training value for given index in list.
+        '''
+        self.team_training[index] = value
 
     def get_random_schedule(self):
         '''
@@ -36,12 +45,12 @@ class TeamTraining(list):
         random.shuffle(values)
 
         for count in range(0, 6):
-            self[count * 6] = values[count * 2]
-            self[count * 6 + 1] = values[count * 2 + 1]
-            self[count * 6 + 2] = 1
-            self[count * 6 + 3] = 0
-            self[count * 6 + 4] = 0
-            self[count * 6 + 5] = 0
+            self.team_training[count * 6] = values[count * 2]
+            self.team_training[count * 6 + 1] = values[count * 2 + 1]
+            self.team_training[count * 6 + 2] = 1
+            self.team_training[count * 6 + 3] = 0
+            self.team_training[count * 6 + 4] = 0
+            self.team_training[count * 6 + 5] = 0
 
     def get_sunday_training(self):
         '''
@@ -49,7 +58,7 @@ class TeamTraining(list):
         '''
         sunday = False
 
-        for trainingid in self[36:42]:
+        for trainingid in self.team_training[36:42]:
             if trainingid != 0:
                 sunday = True
 
@@ -61,7 +70,7 @@ class TeamTraining(list):
         '''
         count = 0
 
-        for trainingid in self:
+        for trainingid in self.team_training:
             if trainingid != 0:
                 count += 1
 
@@ -73,7 +82,7 @@ class TeamTraining(list):
         '''
         Return whether a schedule has been set.
         '''
-        state = self != [0] * 42
+        state = self.team_training != [0] * 42
 
         return state
 
@@ -81,9 +90,7 @@ class TeamTraining(list):
         '''
         Return whether individual training has been assigned.
         '''
-        state = 1 in self
-
-        return state
+        return 1 in self.team_training
 
     def update_schedule(self):
         '''

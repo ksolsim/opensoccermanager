@@ -35,17 +35,17 @@ class TrainingCamp(uigtk.widgets.Grid):
 
         label = uigtk.widgets.Label("_Days", leftalign=True)
         frame.grid.attach(label, 0, 0, 1, 1)
-        comboboxDays = Gtk.ComboBoxText()
-        comboboxDays.append("1", "1 Day")
-        comboboxDays.append("2", "2 Days")
-        comboboxDays.append("3", "3 Days")
-        comboboxDays.append("4", "4 Days")
-        comboboxDays.append("5", "5 Days")
-        comboboxDays.set_active(0)
-        comboboxDays.set_tooltip_text("Number of days to run training camp.")
-        comboboxDays.connect("changed", self.on_days_changed)
-        label.set_mnemonic_widget(comboboxDays)
-        frame.grid.attach(comboboxDays, 1, 0, 1, 1)
+        self.comboboxDays = Gtk.ComboBoxText()
+        self.comboboxDays.append("1", "1 Day")
+        self.comboboxDays.append("2", "2 Days")
+        self.comboboxDays.append("3", "3 Days")
+        self.comboboxDays.append("4", "4 Days")
+        self.comboboxDays.append("5", "5 Days")
+        self.comboboxDays.set_active(0)
+        self.comboboxDays.set_tooltip_text("Number of days to run training camp.")
+        self.comboboxDays.connect("changed", self.on_days_changed)
+        label.set_mnemonic_widget(self.comboboxDays)
+        frame.grid.attach(self.comboboxDays, 1, 0, 1, 1)
 
         label = uigtk.widgets.Label("Quality", leftalign=True)
         frame.grid.attach(label, 0, 1, 1, 1)
@@ -83,16 +83,25 @@ class TrainingCamp(uigtk.widgets.Grid):
         radiobuttonLeisure.purpose = 0
         radiobuttonLeisure.connect("toggled", self.on_purpose_toggled)
         frame.grid.attach(radiobuttonLeisure, 1, 3, 1, 1)
-        radiobuttonSchedule = uigtk.widgets.RadioButton("_Schedule")
-        radiobuttonSchedule.purpose = 1
-        radiobuttonSchedule.join_group(radiobuttonLeisure)
-        radiobuttonSchedule.connect("toggled", self.on_purpose_toggled)
-        frame.grid.attach(radiobuttonSchedule, 2, 3, 1, 1)
+        self.radiobuttonSchedule = uigtk.widgets.RadioButton("_Schedule")
+        self.radiobuttonSchedule.purpose = 1
+        self.radiobuttonSchedule.join_group(radiobuttonLeisure)
+        self.radiobuttonSchedule.connect("toggled", self.on_purpose_toggled)
+        frame.grid.attach(self.radiobuttonSchedule, 2, 3, 1, 1)
         radiobuttonIntense = uigtk.widgets.RadioButton("_Intense")
         radiobuttonIntense.purpose = 2
         radiobuttonIntense.join_group(radiobuttonLeisure)
         radiobuttonIntense.connect("toggled", self.on_purpose_toggled)
         frame.grid.attach(radiobuttonIntense, 3, 3, 1, 1)
+
+        image = Gtk.Image()
+        image.set_from_icon_name("gtk-dialog-warning", Gtk.IconSize.BUTTON)
+        self.buttonScheduleWarning = Gtk.Button()
+        self.buttonScheduleWarning.set_visible(False)
+        self.buttonScheduleWarning.set_image(image)
+        self.buttonScheduleWarning.set_relief(Gtk.ReliefStyle.NONE)
+        self.buttonScheduleWarning.connect("clicked", self.on_schedule_warning_clicked)
+        frame.grid.attach(self.buttonScheduleWarning, 4, 3, 1, 1)
 
         label = uigtk.widgets.Label("Team", leftalign=True)
         frame.grid.attach(label, 0, 4, 1, 1)
@@ -100,36 +109,56 @@ class TrainingCamp(uigtk.widgets.Grid):
         radiobuttonAllPlayers.squad = 0
         radiobuttonAllPlayers.connect("toggled", self.on_team_toggled)
         frame.grid.attach(radiobuttonAllPlayers, 1, 4, 1, 1)
-        radiobuttonFirstTeam = uigtk.widgets.RadioButton("_First Team Only")
-        radiobuttonFirstTeam.squad = 1
-        radiobuttonFirstTeam.join_group(radiobuttonAllPlayers)
-        radiobuttonFirstTeam.connect("toggled", self.on_team_toggled)
-        frame.grid.attach(radiobuttonFirstTeam, 2, 4, 1, 1)
+        self.radiobuttonFirstTeam = uigtk.widgets.RadioButton("_First Team Only")
+        self.radiobuttonFirstTeam.squad = 1
+        self.radiobuttonFirstTeam.join_group(radiobuttonAllPlayers)
+        self.radiobuttonFirstTeam.connect("toggled", self.on_team_toggled)
+        frame.grid.attach(self.radiobuttonFirstTeam, 2, 4, 1, 1)
         radiobuttonReserves = uigtk.widgets.RadioButton("_Reserves Only")
         radiobuttonReserves.squad = 2
         radiobuttonReserves.join_group(radiobuttonAllPlayers)
         radiobuttonReserves.connect("toggled", self.on_team_toggled)
         frame.grid.attach(radiobuttonReserves, 3, 4, 1, 1)
 
+        image = Gtk.Image()
+        image.set_from_icon_name("gtk-dialog-warning", Gtk.IconSize.BUTTON)
+        self.buttonSquadWarning = Gtk.Button()
+        self.buttonSquadWarning.set_visible(False)
+        self.buttonSquadWarning.set_image(image)
+        self.buttonSquadWarning.set_relief(Gtk.ReliefStyle.NONE)
+        self.buttonSquadWarning.connect("clicked", self.on_squad_warning_clicked)
+        frame.grid.attach(self.buttonSquadWarning, 4, 4, 1, 1)
+
         frame = uigtk.widgets.CommonFrame("Cost")
         self.attach(frame, 0, 1, 1, 1)
 
-        label = uigtk.widgets.Label("Player Cost", leftalign=True)
+        label = uigtk.widgets.Label("Single Player Cost", leftalign=True)
         frame.grid.attach(label, 0, 0, 1, 1)
         self.labelPlayerCost = uigtk.widgets.Label(leftalign=True)
         frame.grid.attach(self.labelPlayerCost, 1, 0, 1, 1)
 
-        label = uigtk.widgets.Label("Total Cost", leftalign=True)
+        label = uigtk.widgets.Label("First Team Cost", leftalign=True)
         frame.grid.attach(label, 0, 1, 1, 1)
+        self.labelFirstTeamCost = uigtk.widgets.Label(leftalign=True)
+        frame.grid.attach(self.labelFirstTeamCost, 1, 1, 1, 1)
+
+        label = uigtk.widgets.Label("Reserve Team Cost", leftalign=True)
+        frame.grid.attach(label, 0, 2, 1, 1)
+        self.labelReserveTeamCost = uigtk.widgets.Label(leftalign=True)
+        frame.grid.attach(self.labelReserveTeamCost, 1, 2, 1, 1)
+
+        label = uigtk.widgets.Label("Total Cost", leftalign=True)
+        frame.grid.attach(label, 0, 3, 1, 1)
         self.labelTotalCost = uigtk.widgets.Label(leftalign=True)
-        frame.grid.attach(self.labelTotalCost, 1, 1, 1, 1)
+        frame.grid.attach(self.labelTotalCost, 1, 3, 1, 1)
 
         buttonbox = uigtk.widgets.ButtonBox()
         buttonbox.set_layout(Gtk.ButtonBoxStyle.END)
-        self.attach(buttonbox, 0, 2, 1, 1)
+        self.attach(buttonbox, 0, 5, 1, 1)
 
         buttonReset = uigtk.widgets.Button("_Reset")
         buttonReset.set_tooltip_text("Reset training camp options to default.")
+        buttonReset.connect("clicked", self.on_reset_clicked)
         buttonbox.add(buttonReset)
         buttonArrange = uigtk.widgets.Button("_Arrange")
         buttonArrange.set_tooltip_text("Arrange training camp with set options.")
@@ -167,6 +196,8 @@ class TrainingCamp(uigtk.widgets.Grid):
             self.club.training_camp.options.purpose = radiobutton.purpose
             self.update_cost()
 
+        self.update_warning_status()
+
     def on_team_toggled(self, radiobutton):
         '''
         Update cost when team members attending is changed.
@@ -175,35 +206,77 @@ class TrainingCamp(uigtk.widgets.Grid):
             self.club.training_camp.options.squad = radiobutton.squad
             self.update_cost()
 
+        self.update_warning_status()
+
     def update_cost(self):
         '''
         Update costing labels.
         '''
         cost = self.club.training_camp.get_player_cost()
-        self.labelPlayerCost.set_label("%i" % (cost))
+        self.labelPlayerCost.set_label("%s" % (data.currency.get_currency(cost, integer=True)))
+
+        cost = self.club.training_camp.get_first_team_cost()
+        self.labelFirstTeamCost.set_label("%s" % (data.currency.get_currency(cost, integer=True)))
+
+        cost = self.club.training_camp.get_reserve_team_cost()
+        self.labelReserveTeamCost.set_label("%s" % (data.currency.get_currency(cost, integer=True)))
 
         cost = self.club.training_camp.get_total_cost()
-        self.labelTotalCost.set_label("%i" % (cost))
+        self.labelTotalCost.set_label("%s" % (data.currency.get_currency(cost, integer=True)))
 
     def on_reset_clicked(self, *args):
         '''
         Reset training camp settings to default.
         '''
+        self.comboboxDays.set_active(0)
 
     def on_arrange_clicked(self, *args):
         '''
         Setup training camp with selected details.
         '''
         cost = self.club.training_camp.get_total_cost()
-        dialog = ConfirmTraining(cost)
+        dialog = ConfirmTraining(data.currency.get_currency(cost, integer=True))
 
         if dialog.show():
             self.club.training_camp.apply_options()
+
+    def on_squad_warning_clicked(self, *args):
+        '''
+        Display warning that not enough squad members have been selected.
+        '''
+        SquadWarning()
+
+    def on_schedule_warning_clicked(self, *args):
+        '''
+        Display warning that no team training schedule has been devised.
+        '''
+        ScheduleWarning()
+
+    def update_warning_status(self):
+        '''
+        Toggle whether warning icons are displayed.
+        '''
+        self.buttonScheduleWarning.set_visible(False)
+
+        if self.radiobuttonSchedule.get_active():
+            if not self.club.team_training.get_schedule_set():
+                self.buttonScheduleWarning.set_visible(True)
+        else:
+            self.buttonScheduleWarning.set_visible(False)
+
+        if self.radiobuttonFirstTeam.get_active():
+            if self.club.squad.teamselection.get_team_count() + self.club.squad.teamselection.get_subs_count() < 16:
+                self.buttonSquadWarning.set_visible(True)
+        else:
+            self.buttonSquadWarning.set_visible(False)
 
     def run(self):
         self.club = data.clubs.get_club_by_id(data.user.team)
 
         self.show_all()
+
+        self.update_warning_status()
+        self.update_cost()
 
 
 class ConfirmTraining(Gtk.MessageDialog):
@@ -226,3 +299,36 @@ class ConfirmTraining(Gtk.MessageDialog):
 
         return state
 
+
+class SquadWarning(Gtk.MessageDialog):
+    def __init__(self):
+        Gtk.MessageDialog.__init__(self)
+        self.set_transient_for(data.window)
+        self.set_modal(True)
+        self.set_title("Squad Selection Warning")
+        self.set_property("message-type", Gtk.MessageType.WARNING)
+        self.set_markup("There is not a full selection of first team and substitute players selected. The training camp can still be booked for the listed players at the cost of all sixteen.")
+        self.add_button("_Close", Gtk.ResponseType.CLOSE)
+        self.connect("response", self.on_response)
+
+        self.show()
+
+    def on_response(self, *args):
+        self.destroy()
+
+
+class ScheduleWarning(Gtk.MessageDialog):
+    def __init__(self):
+        Gtk.MessageDialog.__init__(self)
+        self.set_transient_for(data.window)
+        self.set_modal(True)
+        self.set_title("Training Schedule Warning")
+        self.set_property("message-type", Gtk.MessageType.WARNING)
+        self.set_markup("There is currently no training schedule setup. The training camp can still be booked, however the players will not achieve the most out of the session.")
+        self.add_button("_Close", Gtk.ResponseType.CLOSE)
+        self.connect("response", self.on_response)
+
+        self.show()
+
+    def on_response(self, *args):
+        self.destroy()

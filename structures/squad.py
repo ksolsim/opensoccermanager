@@ -75,8 +75,6 @@ class Squad:
             if playerid not in self.teamselection.team:
                 count += 1
 
-        print(count)
-
         return count
 
     def get_average_age(self):
