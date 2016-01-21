@@ -31,10 +31,10 @@ class Currency:
         '''
         value = (amount * self.currency[data.preferences.currency][2])
 
-        if not integer:
-            amount = "%s%.2f" % (self.currency[data.preferences.currency][1], value)
-        else:
+        if integer:
             amount = "%s%i" % (self.currency[data.preferences.currency][1], value)
+        else:
+            amount = "%s%.2f" % (self.currency[data.preferences.currency][1], value)
 
         return amount
 

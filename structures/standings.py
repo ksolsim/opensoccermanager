@@ -45,7 +45,9 @@ class Standings:
 
             standings.append(item)
 
-        standings = sorted(standings, key=operator.itemgetter(8, 7, 5, 6), reverse=True)
+        standings = sorted(standings,
+                           key=operator.itemgetter(8, 7, 5, 6),
+                           reverse=True)
 
         return standings
 
@@ -62,6 +64,12 @@ class Standings:
         clubid = standings[0]
 
         return clubid
+
+    def clear_standings(self):
+        '''
+        Completely empty standings list.
+        '''
+        self.standings.clear()
 
 
 class Standing:

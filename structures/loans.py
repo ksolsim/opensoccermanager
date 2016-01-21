@@ -37,7 +37,7 @@ class Loans:
         End the loan contract and return player to parent club.
         '''
 
-    def on_update(self):
+    def update_loans(self):
         '''
         Update loan object and return any players at end of their loan spell.
         '''

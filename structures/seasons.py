@@ -26,6 +26,9 @@ class Seasons:
         self.populate_data()
 
     def get_seasons(self):
+        '''
+        Return list of season values.
+        '''
         return self.seasons
 
     def populate_data(self):

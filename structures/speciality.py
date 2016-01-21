@@ -48,6 +48,9 @@ class Categories:
                            5: ("All",)}
 
     def get_category_label(self, index):
+        '''
+        Get category labels for display in individual training dialog.
+        '''
         categories = self.speciality[index]
 
         if len(categories) > 1:

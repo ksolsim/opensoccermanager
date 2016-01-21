@@ -49,7 +49,7 @@ class IndividualTraining:
         training.coachid = coachid
         training.skill = skill
         training.intensity = intensity
-        training.start_value = player.get_skills()[skill]
+        training.start_value = player.get_skill_by_index(skill)
         self.individual_training[playerid] = training
 
     def remove_from_training(self, playerid):

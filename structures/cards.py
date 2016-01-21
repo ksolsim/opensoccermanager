@@ -20,6 +20,20 @@ class Cards:
     def __init__(self):
         self.cards = {}
 
+    def add_player(self, playerid, card):
+        '''
+        Add player to card list with points total.
+        '''
+        if card == 0:
+            points = 1
+        else:
+            points = 3
+
+        if playerid not in self.cards.keys():
+            self.cards[playerid] = points
+        else:
+            self.cards[playerid] += points
+
     def get_sorted_cards(self):
         '''
         Return list of player with most card points.

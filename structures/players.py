@@ -129,6 +129,9 @@ class Players:
             return skills
 
         def get_skill_by_index(self, index):
+            '''
+            Return single skill value for given index.
+            '''
             skills = self.get_skills()
 
             return skills[index]

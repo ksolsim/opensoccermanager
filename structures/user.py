@@ -89,7 +89,7 @@ class Names:
         '''
         Empty loaded names list.
         '''
-        self.names = []
+        self.names.clear()
 
     def populate_names(self):
         with open(self.names_path, "r") as fp:

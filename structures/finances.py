@@ -21,7 +21,7 @@ import random
 import data
 
 
-class FinanceCategories:
+class Categories:
     def __init__(self):
         self.categories = {0: (20000000, "Grandmother"),
                            1: (10000000, "Very Easy"),

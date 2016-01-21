@@ -104,7 +104,7 @@ class Details(uigtk.widgets.Grid):
             self.radiobuttonCategorised.connect("toggled", self.on_finances_toggled)
             buttonbox.add(self.radiobuttonCategorised)
 
-            self.finances = structures.finances.FinanceCategories()
+            self.finances = structures.finances.Categories()
 
         def populate_names(self):
             '''

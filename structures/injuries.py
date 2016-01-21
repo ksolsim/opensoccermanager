@@ -32,6 +32,9 @@ class Injuries:
         self.populate_data()
 
     def get_injury_by_id(self, injuryid):
+        '''
+        Return injury object for given injury id.
+        '''
         return self.injuries[injuryid]
 
     def populate_data(self):

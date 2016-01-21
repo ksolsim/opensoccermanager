@@ -97,6 +97,9 @@ class TicketPrices:
         self.set_initial_prices(multiplier)
 
     def set_initial_prices(self, multiplier):
+        '''
+        Set initial ticket prices for league, cup, and season tickets.
+        '''
         self.prices = [multiplier + self.club.reputation,
                        multiplier + self.club.reputation + (self.club.reputation * 0.25),
                        (multiplier + self.club.reputation) * 15]
@@ -104,4 +107,7 @@ class TicketPrices:
         self.prices = list(map(int, self.prices))
 
     def set_price(self, index, amount):
+        '''
+        Set amount as price for given index.
+        '''
         self.prices[index] = amount

@@ -148,8 +148,14 @@ class Categories:
                            7: "Advertising",
                            8: "Awards"}
 
-    def get_category_for_id(self, categoryid):
-        return self.categories[categoryid]
-
     def get_categories(self):
+        '''
+        Return complete dictionary of news categories.
+        '''
         return self.categories.items()
+
+    def get_category_for_id(self, categoryid):
+        '''
+        Return category name for given category id.
+        '''
+        return self.categories[categoryid]

@@ -25,7 +25,7 @@ class Shortlist:
 
     def get_shortlist(self):
         '''
-        Return complete list of shortlisted players.
+        Return complete set of shortlisted players.
         '''
         return self.shortlist
 

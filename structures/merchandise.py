@@ -26,6 +26,9 @@ class Merchandise:
         self.populate_data()
 
     def get_merchandise(self):
+        '''
+        Return list of merchandise items.
+        '''
         return self.merchandise
 
     def populate_data(self):

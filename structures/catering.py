@@ -26,6 +26,9 @@ class Catering:
         self.populate_data()
 
     def get_catering(self):
+        '''
+        Return list of catering items.
+        '''
         return self.catering
 
     def populate_data(self):

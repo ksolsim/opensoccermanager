@@ -18,13 +18,25 @@
 
 class Form:
     '''
-    Club form object
+    Club form object used to store characters for wins, losses, and draws.
     '''
     def __init__(self):
         self.form = []
 
+    def add_form(self, form):
+        '''
+        Insert form character to list.
+        '''
+        self.form.insert(0, form)
+
     def get_form(self):
         '''
-        Return complete list of form.
+        Return complete list of form strings.
         '''
         return self.form
+
+    def get_form_for_length(self, length):
+        '''
+        Return form list for given required length.
+        '''
+        return self.form[:length]

@@ -61,6 +61,7 @@ class TeamTraining:
         for trainingid in self.team_training[36:42]:
             if trainingid != 0:
                 sunday = True
+                break
 
         return sunday
 
