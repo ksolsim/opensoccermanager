@@ -43,6 +43,7 @@ class Tactics(uigtk.widgets.Grid):
     def populate_data(self):
         self.formations.set_formation()
         self.responsibilities.set_responsibilities()
+        self.styles.set_styles()
 
     def run(self):
         Tactics.club = data.clubs.get_club_by_id(data.user.team)
@@ -61,6 +62,7 @@ class Formations(uigtk.widgets.CommonFrame):
         self.grid.attach(label, 0, 0, 1, 1)
 
         self.comboboxFormation = Gtk.ComboBoxText()
+        self.comboboxFormation.set_tooltip_text("Set formation that the team will play.")
         self.comboboxFormation.connect("changed", self.on_formation_changed)
         label.set_mnemonic_widget(self.comboboxFormation)
         self.grid.attach(self.comboboxFormation, 1, 0, 1, 1)
@@ -84,78 +86,124 @@ class Styles(uigtk.widgets.CommonFrame):
     def __init__(self):
         uigtk.widgets.CommonFrame.__init__(self, "Style")
 
-        checkbuttonOffsideTrap = uigtk.widgets.CheckButton("Play _Offside Trap")
-        checkbuttonOffsideTrap.set_tooltip_text("Attempt to subdue attacks by playing opposition offside.")
-        checkbuttonOffsideTrap.connect("toggled", self.on_offside_trap_changed)
-        self.grid.attach(checkbuttonOffsideTrap, 0, 0, 2, 1)
+        self.checkbuttonOffsideTrap = uigtk.widgets.CheckButton("Play _Offside Trap")
+        self.checkbuttonOffsideTrap.set_tooltip_text("Attempt to subdue attacks by playing opposition offside.")
+        self.checkbuttonOffsideTrap.connect("toggled", self.on_offside_trap_changed)
+        self.grid.attach(self.checkbuttonOffsideTrap, 0, 0, 2, 1)
 
         label = uigtk.widgets.Label("_Tackling Style", leftalign=True)
         self.grid.attach(label, 0, 1, 1, 1)
 
         radiobuttonSoftTackling = uigtk.widgets.RadioButton("Soft Tackling")
         radiobuttonSoftTackling.style = 0
+        radiobuttonSoftTackling.set_tooltip_text("Utilise soft tackling to reduce fouls.")
+        radiobuttonSoftTackling.connect("toggled", self.on_tackling_style_changed)
         label.set_mnemonic_widget(radiobuttonSoftTackling)
         self.grid.attach(radiobuttonSoftTackling, 1, 1, 1, 1)
         radiobuttonNormalTackling = uigtk.widgets.RadioButton("Normal Tackling")
         radiobuttonNormalTackling.join_group(radiobuttonSoftTackling)
         radiobuttonNormalTackling.set_active(True)
         radiobuttonNormalTackling.style = 1
+        radiobuttonNormalTackling.set_tooltip_text("Utilise normal tackling to balance successful tackles with fouls.")
+        radiobuttonNormalTackling.connect("toggled", self.on_tackling_style_changed)
         self.grid.attach(radiobuttonNormalTackling, 2, 1, 1, 1)
         radiobuttonHardTackling = uigtk.widgets.RadioButton("Hard Tackling")
         radiobuttonHardTackling.join_group(radiobuttonSoftTackling)
         radiobuttonHardTackling.style = 2
+        radiobuttonHardTackling.set_tooltip_text("Utilise hard tackling to increase number of successful tackles.")
+        radiobuttonHardTackling.connect("toggled", self.on_tackling_style_changed)
         self.grid.attach(radiobuttonHardTackling, 3, 1, 1, 1)
+
+        self.tackling = (radiobuttonSoftTackling,
+                         radiobuttonNormalTackling,
+                         radiobuttonHardTackling)
 
         label = uigtk.widgets.Label("Pa_ssing Style", leftalign=True)
         self.grid.attach(label, 0, 2, 1, 1)
 
         radiobuttonDirectPassing = uigtk.widgets.RadioButton("Direct Passing")
         radiobuttonDirectPassing.style = 0
+        radiobuttonDirectPassing.set_tooltip_text("Aim to pass balls forward at an early opportunity.")
+        radiobuttonDirectPassing.connect("toggled", self.on_passing_style_changed)
         label.set_mnemonic_widget(radiobuttonDirectPassing)
         self.grid.attach(radiobuttonDirectPassing, 1, 2, 1, 1)
         radiobuttonLongBallPassing = uigtk.widgets.RadioButton("Long Ball Passing")
         radiobuttonLongBallPassing.join_group(radiobuttonDirectPassing)
         radiobuttonLongBallPassing.style = 1
+        radiobuttonLongBallPassing.set_tooltip_text("Aim to loft balls high up the field.")
+        radiobuttonLongBallPassing.connect("toggled", self.on_passing_style_changed)
         self.grid.attach(radiobuttonLongBallPassing, 2, 2, 1, 1)
         radiobuttonShortPassing = uigtk.widgets.RadioButton("Short Passing")
         radiobuttonShortPassing.join_group(radiobuttonDirectPassing)
         radiobuttonShortPassing.style = 2
+        radiobuttonShortPassing.set_tooltip_text("Aim to play short passes to nearby team-mates.")
+        radiobuttonShortPassing.connect("toggled", self.on_passing_style_changed)
         self.grid.attach(radiobuttonShortPassing, 3, 2, 1, 1)
+
+        self.passing = (radiobuttonDirectPassing,
+                        radiobuttonLongBallPassing,
+                        radiobuttonShortPassing)
 
         label = uigtk.widgets.Label("_Playing Style", leftalign=True)
         self.grid.attach(label, 0, 3, 1, 1)
 
         radiobuttonDefensivePlay = uigtk.widgets.RadioButton("Defensive")
         radiobuttonDefensivePlay.style = 0
+        radiobuttonDefensivePlay.set_tooltip_text("Sit back defensively allowing opposition team to bring ball forward.")
+        radiobuttonDefensivePlay.connect("toggled", self.on_playing_style_changed)
         label.set_mnemonic_widget(radiobuttonDefensivePlay)
         self.grid.attach(radiobuttonDefensivePlay, 1, 3, 1, 1)
         radiobuttonNormalPlay = uigtk.widgets.RadioButton("Normal")
         radiobuttonNormalPlay.join_group(radiobuttonDefensivePlay)
         radiobuttonNormalPlay.set_active(True)
         radiobuttonNormalPlay.style = 1
+        radiobuttonNormalPlay.set_tooltip_text("Try to find balance between defensive and attacking play.")
+        radiobuttonNormalPlay.connect("toggled", self.on_playing_style_changed)
         self.grid.attach(radiobuttonNormalPlay, 2, 3, 1, 1)
         radiobuttonAttackingPlay = uigtk.widgets.RadioButton("Attacking")
         radiobuttonAttackingPlay.join_group(radiobuttonDefensivePlay)
         radiobuttonAttackingPlay.style = 2
+        radiobuttonAttackingPlay.set_tooltip_text("Attack opposition team at every opportunity.")
+        radiobuttonAttackingPlay.connect("toggled", self.on_playing_style_changed)
         self.grid.attach(radiobuttonAttackingPlay, 3, 3, 1, 1)
 
+        self.playing = (radiobuttonDefensivePlay,
+                        radiobuttonNormalPlay,
+                        radiobuttonAttackingPlay)
+
     def on_offside_trap_changed(self, checkbutton):
+        '''
+        Update option to play offside trap.
+        '''
         Tactics.club.tactics.offside_trap = checkbutton.get_active()
 
     def on_tackling_style_changed(self, radiobutton):
+        '''
+        Update tackling style used by team.
+        '''
         if radiobutton.get_active():
             Tactics.club.tactics.tackling_style = radiobutton.style
 
     def on_passing_style_changed(self, radiobutton):
+        '''
+        Update passing style used by team.
+        '''
         if radiobutton.get_active():
             Tactics.club.tactics.passing_style = radiobutton.style
 
     def on_playing_style_changed(self, radiobutton):
+        '''
+        Update playing style used by team.
+        '''
         if radiobutton.get_active():
             Tactics.club.tactics.playing_style = radiobutton.style
 
-    def set_style(self):
+    def set_styles(self):
         self.checkbuttonOffsideTrap.set_active(Tactics.club.tactics.offside_trap)
+
+        self.tackling[Tactics.club.tactics.tackling_style].set_active(True)
+        self.passing[Tactics.club.tactics.passing_style].set_active(True)
+        self.playing[Tactics.club.tactics.playing_style].set_active(True)
 
 
 class Responsibilities(uigtk.widgets.CommonFrame):
@@ -254,17 +302,13 @@ class Responsibilities(uigtk.widgets.CommonFrame):
             Tactics.club.tactics.corner_taker = None
 
 
-class Selector(Gtk.ComboBox):
+class Selector(uigtk.widgets.ComboBox):
     def __init__(self):
         self.liststore = Gtk.ListStore(str, str)
 
-        cellrenderertext = Gtk.CellRendererText()
-
-        Gtk.ComboBox.__init__(self)
+        uigtk.widgets.ComboBox.__init__(self, column=1)
         self.set_model(self.liststore)
         self.set_id_column(0)
-        self.pack_start(cellrenderertext, True)
-        self.add_attribute(cellrenderertext, "text", 1)
 
     def populate_items(self):
         club = data.clubs.get_club_by_id(data.user.team)
