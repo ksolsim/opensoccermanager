@@ -59,7 +59,7 @@ class Players:
             self.suspension = Suspension()
             self.training_value = 0
             self.training_points = 0
-            self.history = structures.history.History()
+            self.history = None
             self.retiring = False
 
         def get_name(self, mode=0):
@@ -393,6 +393,9 @@ class Players:
                 nation = data.nations.get_nation_by_id(player.nationality)
                 nation.add_to_nation(playerid)
 
+                # Add history object
+                player.history = structures.history.History(playerid)
+
 
 class Rating:
     def __init__(self):
@@ -422,9 +425,15 @@ class Injury:
         self.injury_period = 0
 
     def get_injured(self):
+        '''
+        Return whether player is currently injured.
+        '''
         return self.injury_type is not None
 
     def get_injury_type(self):
+        '''
+        Get type of injury player has received.
+        '''
         if self.injury_type:
             injury = data.injuries.get_injury_by_id(self.injury_type)
 
@@ -439,9 +448,15 @@ class Suspension:
         self.suspension_period = 0
 
     def get_suspended(self):
+        '''
+        Return whether player is currently suspended.
+        '''
         return self.suspension_type is not None
 
     def get_suspension_type(self):
+        '''
+        Get type of suspension player has received.
+        '''
         if self.suspension_type:
             suspension = data.suspension.get_suspension_by_id(self.suspension_type)
 

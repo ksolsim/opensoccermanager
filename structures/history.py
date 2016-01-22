@@ -20,14 +20,34 @@ import data
 
 
 class History:
-    def __init__(self):
+    def __init__(self, playerid):
         self.history = []
 
-    def add_season(self):
+        self.playerid = playerid
+
+    def get_current_season(self):
         '''
-        Add season to history list.
+        Return tuple of current season history data.
         '''
-        self.history.append([])
+        player = data.players.get_player_by_id(self.playerid)
+        club = data.clubs.get_club_by_id(player.squad)
+
+        current = (data.date.get_season(),
+                   club.name,
+                   "",
+                   player.appearances,
+                   player.goals,
+                   player.assists,
+                   "%i/%i" % (player.yellow_cards, player.red_cards),
+                   player.man_of_the_match)
+
+        return current
+
+    def add_season(self, season):
+        '''
+        Add season data to history list.
+        '''
+        self.history.append(season)
 
     def get_history(self):
         '''

@@ -210,6 +210,7 @@ class IndividualTraining(Gtk.Grid):
         self.treeview.set_vexpand(True)
         self.treeview.set_sensitive(False)
         self.treeview.set_model(treemodelsort)
+        self.treeview.connect("row-activated", self.on_row_activated)
         self.treeview.treeselection.connect("changed", self.on_selection_changed)
         self.overlay.add(self.treeview)
 
@@ -286,6 +287,12 @@ class IndividualTraining(Gtk.Grid):
 
             self.populate_data()
 
+    def on_row_activated(self, *args):
+        '''
+        Handle double-click on row in treeview.
+        '''
+        self.on_edit_clicked()
+
     def on_selection_changed(self, treeselection):
         '''
         Update button sensitivity on row change.
@@ -325,8 +332,8 @@ class IndividualTraining(Gtk.Grid):
         self.populate_data()
         self.show_all()
 
-        if self.club.team_training.get_individual_set():
-            self.infobar.hide()
+        individual = self.club.team_training.get_individual_set()
+        self.infobar.set_visible(not individual)
 
         state = self.club.coaches.get_staff_count() > 0
         self.buttonAddTraining.set_sensitive(state)

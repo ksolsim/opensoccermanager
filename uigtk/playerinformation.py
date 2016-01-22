@@ -121,6 +121,8 @@ class PlayerInformation(uigtk.widgets.Grid):
         self.contract.labelGoalBonus.set_label(player.contract.get_bonus(3))
         self.contract.labelContract.set_label(player.contract.get_contract())
 
+        self.history.update_history(player)
+
         self.training.set_fitness_value(player.fitness)
 
         if player.squad == data.user.team:
@@ -291,7 +293,7 @@ class History(uigtk.widgets.CommonFrame):
         scrolledwindow = uigtk.widgets.ScrolledWindow()
         self.grid.attach(scrolledwindow, 0, 0, 1, 1)
 
-        self.liststore = Gtk.ListStore()
+        self.liststore = Gtk.ListStore(str, str, str, int, int, int, str, int)
 
         treeview = uigtk.widgets.TreeView()
         treeview.set_hexpand(True)
@@ -299,20 +301,20 @@ class History(uigtk.widgets.CommonFrame):
         treeview.set_model(self.liststore)
         scrolledwindow.add(treeview)
 
-        treeviewcolumn = Gtk.TreeViewColumn(title="Season")
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Season", column=0)
         treeview.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn(title="Club")
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Club", column=1)
         treeviewcolumn.set_expand(True)
         treeview.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn(title="Transfer")
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Transfer", column=2)
         treeview.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn(title="Appearances")
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Appearances", column=3)
         treeview.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn(title="Goals")
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Goals", column=4)
         treeview.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn(title="Assists")
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Assists", column=5)
         treeview.append_column(treeviewcolumn)
-        treeviewcolumn = Gtk.TreeViewColumn(title="Cards")
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Cards", column=6)
         treeview.append_column(treeviewcolumn)
         label = Gtk.Label("MOTM")
         label.set_tooltip_text("Man of the Match")
@@ -320,6 +322,17 @@ class History(uigtk.widgets.CommonFrame):
         treeviewcolumn = Gtk.TreeViewColumn()
         treeviewcolumn.set_widget(label)
         treeview.append_column(treeviewcolumn)
+
+    def update_history(self, player):
+        '''
+        Update history treeview with current and previous seasons.
+        '''
+        self.liststore.clear()
+
+        self.liststore.append(player.history.get_current_season())
+
+        for item in player.history.get_history():
+            self.liststore.append(["", "", "", 0, 0, 0, "", 0])
 
 
 class Morale(uigtk.widgets.CommonFrame):
@@ -336,7 +349,6 @@ class Morale(uigtk.widgets.CommonFrame):
         self.grid.attach(label, 0, 1, 1, 1)
         self.labelDescription = uigtk.widgets.Label(leftalign=True)
         self.labelDescription.set_line_wrap(True)
-        self.labelDescription.set_label("A world class player. Has excellent shooting ability. A natural leader who is looked up to in the team.")
         self.grid.attach(self.labelDescription, 1, 1, 1, 1)
 
 

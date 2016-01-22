@@ -99,6 +99,7 @@ class Match(uigtk.widgets.Grid):
         Call match engine to generate result, then enable interface elements.
         '''
         print("Generate result here...")
+
         button.set_sensitive(False)
         self.buttonHomeTactics.set_sensitive(False)
         self.buttonAwayTactics.set_sensitive(False)
