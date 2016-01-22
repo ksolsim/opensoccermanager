@@ -90,7 +90,9 @@ class Match(uigtk.widgets.Grid):
         Update label on tactics buttons to display club names.
         '''
         self.buttonHomeTactics.set_label("_%s\nTactics" % (fixture.get_home_name()))
+        self.buttonHomeTactics.set_sensitive(True)
         self.buttonAwayTactics.set_label("_%s\nTactics" % (fixture.get_away_name()))
+        self.buttonAwayTactics.set_sensitive(True)
 
     def on_start_match_clicked(self, button):
         '''
@@ -98,15 +100,17 @@ class Match(uigtk.widgets.Grid):
         '''
         print("Generate result here...")
         button.set_sensitive(False)
+        self.buttonHomeTactics.set_sensitive(False)
+        self.buttonAwayTactics.set_sensitive(False)
 
         data.window.mainscreen.menu.set_sensitive(True)
         data.window.mainscreen.information.set_continue_game_button()
         data.window.mainscreen.information.buttonContinue.set_sensitive(True)
         data.window.mainscreen.information.buttonNews.set_sensitive(True)
 
-        self.notebook.set_current_page(1)
-        self.notebook.set_show_tabs(True)
         self.statistics.set_visible(True)
+        self.notebook.set_show_tabs(True)
+        self.notebook.set_current_page(1)
 
     def run(self):
         self.show_all()
@@ -255,11 +259,22 @@ class Teams(uigtk.widgets.Grid):
         for count, team in enumerate((home, away)):
             self.teams[count].clear()
 
-            for playerid in team.squad.teamselection.get_team_selection():
+            for number, playerid in enumerate(team.squad.teamselection.get_team_selection()):
+                if playerid:
+                    position = team.tactics.get_formation_positions()[number]
+                    player = data.players.get_player_by_id(playerid)
+
+                    self.teams[count].append([playerid,
+                                              position,
+                                              player.get_name()])
+
+            for number, playerid in enumerate(team.squad.teamselection.get_subs_selection(), start=1):
                 if playerid:
                     player = data.players.get_player_by_id(playerid)
 
-                    self.teams[count].append([playerid, "", player.get_name()])
+                    self.teams[count].append([playerid,
+                                              "Sub %i" % (number),
+                                              player.get_name()])
 
 
 class Statistics(uigtk.widgets.Grid):
@@ -294,12 +309,14 @@ class ProceedToMatch(Gtk.MessageDialog):
     def __init__(self, opposition):
         Gtk.MessageDialog.__init__(self)
         self.set_transient_for(data.window)
+        self.set_modal(True)
         self.set_title("Proceed To Match")
-        self.set_markup("Proceed to match against %s?" % (opposition))
+        self.set_markup("<span size='12000'><b>Proceed to match against %s?</b></span>" % (opposition))
+        self.format_secondary_text("Once proceeded to the game screen, the match must be played.")
         self.set_property("message-type", Gtk.MessageType.QUESTION)
-        self.add_button("_Cancel", Gtk.ResponseType.CANCEL)
+        self.add_button("_Do Not Proceed", Gtk.ResponseType.CANCEL)
         self.add_button("_Proceed", Gtk.ResponseType.OK)
-        self.set_default_response(Gtk.ResponseType.OK)
+        self.set_default_response(Gtk.ResponseType.CANCEL)
 
     def show(self):
         state = self.run() == Gtk.ResponseType.OK
@@ -313,23 +330,21 @@ class NotEnoughPlayers(Gtk.MessageDialog):
     Error dialog displayed when there aren't enough selected players.
     '''
     def __init__(self, count):
-        Gtk.MessageDialog.__init__(self)
-        self.set_transient_for(data.window)
-        self.set_modal(True)
-        self.set_title("Not Enough Players")
-
         if count == 0:
             message = "No players have been selected for this match."
         else:
             message = "You have selected only %i of the required 11 players." % (count)
 
-        self.set_markup(message)
+        Gtk.MessageDialog.__init__(self)
+        self.set_transient_for(data.window)
+        self.set_modal(True)
+        self.set_title("Not Enough Players")
         self.set_property("message-type", Gtk.MessageType.ERROR)
-        self.add_button("_Close", Gtk.ResponseType.CANCEL)
-        self.set_default_response(Gtk.ResponseType.CANCEL)
+        self.set_markup(message)
+        self.add_button("_Close", Gtk.ResponseType.CLOSE)
         self.connect("response", self.on_response)
 
-        self.run()
+        self.show()
 
     def on_response(self, *args):
         self.destroy()
@@ -340,16 +355,15 @@ class NotEnoughSubs(Gtk.MessageDialog):
     Confirmation dialog on whether to proceed with less than five substitutes.
     '''
     def __init__(self, count):
-        Gtk.MessageDialog.__init__(self)
-        self.set_transient_for(data.window)
-        self.set_modal(True)
-        self.set_title("Not Enough Substitutes")
-
         if count == 0:
             message = "No substitutes have been selected for this match."
         else:
             message = "You have selected only %i of 5 substitutes." % (count)
 
+        Gtk.MessageDialog.__init__(self)
+        self.set_transient_for(data.window)
+        self.set_modal(True)
+        self.set_title("Not Enough Substitutes")
         self.set_markup("<span size='12000'><b>%s</b></span>" % (message))
         self.format_secondary_text("Do you wish to proceed to the game anyway?")
         self.set_property("message-type", Gtk.MessageType.WARNING)
