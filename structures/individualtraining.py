@@ -63,3 +63,9 @@ class IndividualTraining:
         Return whether passed player id is individual training.
         '''
         return playerid in self.individual_training
+
+    def get_individual_training_by_playerid(self, playerid):
+        '''
+        Return individual training object for given player id.
+        '''
+        return self.individual_training[playerid]

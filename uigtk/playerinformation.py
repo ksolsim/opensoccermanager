@@ -29,6 +29,8 @@ import uigtk.widgets
 class PlayerInformation(uigtk.widgets.Grid):
     __name__ = "playerinformation"
 
+    playerid = None
+
     def __init__(self):
         uigtk.widgets.Grid.__init__(self)
 
@@ -64,7 +66,10 @@ class PlayerInformation(uigtk.widgets.Grid):
         box.pack_start(self.skills, False, False, 0)
 
         self.morale = Morale()
-        box.pack_start(self.morale, True, True, 0)
+        box.pack_start(self.morale, False, False, 0)
+
+        self.transfer = Transfer()
+        box.pack_start(self.transfer, True, True, 0)
 
         # History
         self.history = History()
@@ -98,6 +103,8 @@ class PlayerInformation(uigtk.widgets.Grid):
         '''
         Update the display with the visible player for given id.
         '''
+        PlayerInformation.playerid = playerid
+
         player = data.players.get_player_by_id(playerid)
 
         self.personal.club = player.squad
@@ -113,7 +120,10 @@ class PlayerInformation(uigtk.widgets.Grid):
         for count, skill in enumerate(player.get_skills()):
             self.skills.labelAttributes[count].set_label("%s" % (skill))
 
-        self.contract.labelValue.set_label(player.get_value_as_string())
+        self.transfer.labelValue.set_label(player.get_value_as_string())
+        self.transfer.set_purchase_status()
+        self.transfer.set_loan_status()
+
         self.contract.labelWage.set_label(player.contract.get_wage())
         self.contract.labelLeagueChampBonus.set_label(player.contract.get_bonus(0))
         self.contract.labelLeagueRunnerUpBonus.set_label(player.contract.get_bonus(1))
@@ -121,9 +131,12 @@ class PlayerInformation(uigtk.widgets.Grid):
         self.contract.labelGoalBonus.set_label(player.contract.get_bonus(3))
         self.contract.labelContract.set_label(player.contract.get_contract())
 
-        self.history.update_history(player)
+        self.history.update_history()
+
+        self.morale.set_morale()
 
         self.training.set_fitness_value(player.fitness)
+        self.training.set_training_status()
 
         if player.squad == data.user.team:
             actionmenu = ContextMenu1()
@@ -192,39 +205,72 @@ class Skills(uigtk.widgets.CommonFrame):
             self.labelAttributes.append(label)
 
 
-class Contract(uigtk.widgets.CommonFrame):
+class Transfer(uigtk.widgets.CommonFrame):
     def __init__(self):
-        uigtk.widgets.CommonFrame.__init__(self, "Contract")
+        uigtk.widgets.CommonFrame.__init__(self, "Transfer")
 
         label = uigtk.widgets.Label("Value", leftalign=True)
         self.grid.attach(label, 0, 0, 1, 1)
         self.labelValue = uigtk.widgets.Label(leftalign=True)
         self.grid.attach(self.labelValue, 1, 0, 1, 1)
+
+        self.labelPurchaseList = uigtk.widgets.Label(leftalign=True)
+        self.grid.attach(self.labelPurchaseList, 0, 1, 2, 1)
+        self.labelLoanList = uigtk.widgets.Label(leftalign=True)
+        self.grid.attach(self.labelLoanList, 0, 2, 2, 1)
+
+    def set_purchase_status(self):
+        '''
+        Set message for purchase listed status.
+        '''
+        player = data.players.get_player_by_id(PlayerInformation.playerid)
+
+        if player.transfer[0]:
+            self.labelPurchaseList.set_label("Currently added on purchase list.")
+        else:
+            self.labelPurchaseList.set_label("Not listed as available for purchase.")
+
+    def set_loan_status(self):
+        '''
+        Set message for loan listed status.
+        '''
+        player = data.players.get_player_by_id(PlayerInformation.playerid)
+
+        if player.transfer[1]:
+            self.labelLoanList.set_label("Currently added on loan list.")
+        else:
+            self.labelLoanList.set_label("Not listed as available for loan.")
+
+
+class Contract(uigtk.widgets.CommonFrame):
+    def __init__(self):
+        uigtk.widgets.CommonFrame.__init__(self, "Contract")
+
         label = uigtk.widgets.Label("Wage", leftalign=True)
-        self.grid.attach(label, 0, 1, 1, 1)
+        self.grid.attach(label, 0, 0, 1, 1)
         self.labelWage = uigtk.widgets.Label(leftalign=True)
-        self.grid.attach(self.labelWage, 1, 1, 1, 1)
+        self.grid.attach(self.labelWage, 1, 0, 1, 1)
         label = uigtk.widgets.Label("Contract", leftalign=True)
-        self.grid.attach(label, 0, 2, 1, 1)
+        self.grid.attach(label, 0, 1, 1, 1)
         self.labelContract = uigtk.widgets.Label(leftalign=True)
-        self.grid.attach(self.labelContract, 1, 2, 1, 1)
+        self.grid.attach(self.labelContract, 1, 1, 1, 1)
 
         label = uigtk.widgets.Label("League Champions Bonus", leftalign=True)
-        self.grid.attach(label, 0, 3, 1, 1)
+        self.grid.attach(label, 0, 2, 1, 1)
         self.labelLeagueChampBonus = uigtk.widgets.Label(leftalign=True)
-        self.grid.attach(self.labelLeagueChampBonus, 1, 3, 1, 1)
+        self.grid.attach(self.labelLeagueChampBonus, 1, 2, 1, 1)
         label = uigtk.widgets.Label("League Runner Up Bonus", leftalign=True)
-        self.grid.attach(label, 0, 4, 1, 1)
+        self.grid.attach(label, 0, 3, 1, 1)
         self.labelLeagueRunnerUpBonus = uigtk.widgets.Label(leftalign=True)
-        self.grid.attach(self.labelLeagueRunnerUpBonus, 1, 4, 1, 1)
+        self.grid.attach(self.labelLeagueRunnerUpBonus, 1, 3, 1, 1)
         label = uigtk.widgets.Label("Win Bonus", leftalign=True)
-        self.grid.attach(label, 0, 5, 1, 1)
+        self.grid.attach(label, 0, 4, 1, 1)
         self.labelWinBonus = uigtk.widgets.Label(leftalign=True)
-        self.grid.attach(self.labelWinBonus, 1, 5, 1, 1)
+        self.grid.attach(self.labelWinBonus, 1, 4, 1, 1)
         label = uigtk.widgets.Label("Goal Bonus", leftalign=True)
-        self.grid.attach(label, 0, 6, 1, 1)
+        self.grid.attach(label, 0, 5, 1, 1)
         self.labelGoalBonus = uigtk.widgets.Label(leftalign=True)
-        self.grid.attach(self.labelGoalBonus, 1, 6, 1, 1)
+        self.grid.attach(self.labelGoalBonus, 1, 5, 1, 1)
 
 
 class Injuries(uigtk.widgets.CommonFrame):
@@ -270,20 +316,32 @@ class Training(uigtk.widgets.CommonFrame):
         self.labelTraining.set_line_wrap(True)
         self.grid.attach(self.labelTraining, 0, 1, 2, 1)
 
-        self.set_training_status(0)
-
-    def set_training_status(self, status):
-        '''
-        Set the training status string.
-        '''
-        message = "Not currently participating in individual training."
-        self.labelTraining.set_label(message)
+        self.skills = structures.skills.Skills()
 
     def set_fitness_value(self, value):
         '''
         Set the fitness value.
         '''
         self.labelFitness.set_label("%i%%" % (value))
+
+    def set_training_status(self):
+        '''
+        Set the training status string.
+        '''
+        player = data.players.get_player_by_id(PlayerInformation.playerid)
+        club = data.clubs.get_club_by_id(player.squad)
+
+        if club.individual_training.get_player_in_training(PlayerInformation.playerid):
+            item = club.individual_training.get_individual_training_by_playerid(PlayerInformation.playerid)
+
+            coach = club.coaches.get_coach_by_id(item.coachid)
+            skill = self.skills.get_skill_name(item.skill)
+
+            message = "Currently working on %s with coach %s." % (skill, coach.name)
+        else:
+            message = "Not currently participating in individual training."
+
+        self.labelTraining.set_label(message)
 
 
 class History(uigtk.widgets.CommonFrame):
@@ -323,10 +381,12 @@ class History(uigtk.widgets.CommonFrame):
         treeviewcolumn.set_widget(label)
         treeview.append_column(treeviewcolumn)
 
-    def update_history(self, player):
+    def update_history(self):
         '''
         Update history treeview with current and previous seasons.
         '''
+        player = data.players.get_player_by_id(PlayerInformation.playerid)
+
         self.liststore.clear()
 
         self.liststore.append(player.history.get_current_season())
@@ -350,6 +410,17 @@ class Morale(uigtk.widgets.CommonFrame):
         self.labelDescription = uigtk.widgets.Label(leftalign=True)
         self.labelDescription.set_line_wrap(True)
         self.grid.attach(self.labelDescription, 1, 1, 1, 1)
+
+        self.morale = structures.morale.PlayerMorale()
+
+    def set_morale(self):
+        '''
+        Display morale string for player.
+        '''
+        player = data.players.get_player_by_id(PlayerInformation.playerid)
+        morale = self.morale.get_morale(player.morale)
+
+        self.labelMorale.set_label(morale)
 
 
 class ContextMenu1(Gtk.Menu):
@@ -392,12 +463,16 @@ class ContextMenu1(Gtk.Menu):
         self.player.transfer[0] = not self.player.transfer[0]
         self.update_sensitivity()
 
+        data.window.screen.refresh_visible_screen()
+
     def on_loan_list_clicked(self, *args):
         '''
         Add player to the transfer list for loan.
         '''
         self.player.transfer[1] = not self.player.transfer[1]
         self.update_sensitivity()
+
+        data.window.screen.refresh_visible_screen()
 
     def on_renew_contract_clicked(self, *args):
         '''
@@ -469,7 +544,7 @@ class ContextMenu2(Gtk.Menu):
         dialog = uigtk.negotiations.PurchaseApproach()
 
         player = data.players.get_player_by_id(self.playerid)
-        club = data.clubs[player.squad]
+        club = data.clubs.get_club_by_id(player.squad)
 
         if dialog.show(club, player) == 1:
             data.negotiations.initialise_purchase(self.playerid)
@@ -481,7 +556,7 @@ class ContextMenu2(Gtk.Menu):
         dialog = uigtk.negotiations.LoanApproach()
 
         player = data.players.get_player_by_id(self.playerid)
-        club = data.clubs[player.squad]
+        club = data.clubs.get_club_by_id(player.squad)
 
         if dialog.show(club, player) == 1:
             data.negotiations.initialise_loan(self.playerid)
