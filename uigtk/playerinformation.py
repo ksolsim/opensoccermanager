@@ -120,11 +120,11 @@ class PlayerInformation(uigtk.widgets.Grid):
         for count, skill in enumerate(player.get_skills()):
             self.skills.labelAttributes[count].set_label("%s" % (skill))
 
-        self.transfer.labelValue.set_label(player.get_value_as_string())
+        self.transfer.labelValue.set_label(player.value.get_value_as_string())
         self.transfer.set_purchase_status()
         self.transfer.set_loan_status()
 
-        self.contract.labelWage.set_label(player.contract.get_wage())
+        self.contract.labelWage.set_label(player.wage.get_wage_as_string())
         self.contract.labelLeagueChampBonus.set_label(player.contract.get_bonus(0))
         self.contract.labelLeagueRunnerUpBonus.set_label(player.contract.get_bonus(1))
         self.contract.labelWinBonus.set_label(player.contract.get_bonus(2))

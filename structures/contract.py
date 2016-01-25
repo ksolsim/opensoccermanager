@@ -20,8 +20,8 @@ import random
 
 
 class Contract:
-    def __init__(self):
-        self.wage = 0
+    def __init__(self, player):
+        self.player = player
 
         self.leaguechamp = 0
         self.leaguerunnerup = 0
@@ -30,27 +30,16 @@ class Contract:
 
         self.contract = random.randint(24, 260)
 
-    def set_initial_wage(self, wage):
+        self.set_initial_wage()
+
+    def set_initial_wage(self):
         '''
         Set initial wage values at beginning of the game.
         '''
-        self.wage = wage
-
-        self.leaguechamp = wage * 10
-        self.leaguerunnerup = wage * 2
-        self.goalbonus = wage * 0.1
-        self.winbonus = wage * 0.1
-
-    def get_wage(self):
-        '''
-        Fetch the player wage and return with appropriate currency.
-        '''
-        if self.wage >= 1000:
-            wage = "£%.1fK" % (self.wage / 1000)
-        elif self.wage >= 100:
-            wage = "£%i" % (self.wage)
-
-        return wage
+        self.leaguechamp = self.player.wage.get_wage() * 10
+        self.leaguerunnerup = self.player.wage.get_wage() * 2
+        self.goalbonus = self.player.wage.get_wage() * 0.1
+        self.winbonus = self.player.wage.get_wage() * 0.1
 
     def get_bonus(self, index):
         '''

@@ -22,6 +22,8 @@ import data
 import structures.contract
 import structures.history
 import structures.morale
+import structures.value
+import structures.wage
 
 
 class Players:
@@ -45,7 +47,9 @@ class Players:
             self.set_pieces = 0
             self.ball_control = 0
             self.fitness = 100
-            self.contract = structures.contract.Contract()
+            self.value = None
+            self.wage = None
+            self.contract = None
             self.transfer = [False, False]
             self.appearances = 0
             self.substitute = 0
@@ -136,25 +140,6 @@ class Players:
 
             return skills[index]
 
-        def get_value(self):
-            '''
-            Return current market value of player.
-            '''
-            return self.calculate_value()
-
-        def get_value_as_string(self):
-            '''
-            Retrieve the player value formatted with currency.
-            '''
-            value = self.calculate_value()
-
-            if value >= 1000000:
-                value = "£%.1fM" % (value / 1000000)
-            elif value >= 1000:
-                value = "£%iK" % (value / 1000)
-
-            return value
-
         def get_morale(self):
             '''
             Return the string indicating the players morale value.
@@ -181,147 +166,6 @@ class Players:
             Display the average player rating.
             '''
             return ""
-
-        def calculate_value(self):
-            age = self.get_age()
-            skills = self.get_skills()
-
-            if self.position in ("GK"):
-                primary = skills[0]
-            elif self.position in ("DL", "DR", "DC", "D"):
-                primary = skills[1]
-            elif self.position in ("ML", "MR", "MC", "M"):
-                primary = skills[2]
-            elif self.position in ("AS", "AF"):
-                primary = skills[3]
-
-            average = sum(skills[0:6]) + (skills[8] * 1.5) + (skills[5] * 0.2) + (skills[6] * 0.2) + (skills[7] * 1.5)
-            average += primary * 2
-            average = average / 9
-
-            if primary > 95:
-                value_multiplier = 5.25
-            elif primary >= 90:
-                value_multiplier = 3.5
-            elif primary > 85:
-                value_multiplier = 2.5
-            elif primary > 80:
-                value_multiplier = 1.8
-            elif primary > 75:
-                value_multiplier = 1.5
-            elif primary > 70:
-                value_multiplier = 1.25
-            elif primary > 60:
-                value_multiplier = 0.9
-            elif primary > 50:
-                value_multiplier = 0.55
-            elif primary > 40:
-                value_multiplier = 0.25
-            else:
-                value_multiplier = 0.12
-
-            # Age modifier
-            if age >= 37:
-                age_multiplier = 0.1
-            elif age >= 34:
-                age_multiplier = 0.25
-            elif age >= 32:
-                age_multiplier = 0.5
-            elif age >= 30:
-                age_multiplier = 0.75
-            elif age == 29:
-                age_multiplier = 0.9
-            elif age >= 26:
-                age_multiplier = 1
-            elif age >= 24:
-                age_multiplier = 0.9
-            elif age >= 21:
-                age_multiplier = 0.8
-            elif age >= 18:
-                age_multiplier = 0.7
-            else:
-                age_multiplier = 0.5
-
-            value = ((average * 1000) * average) * value_multiplier * 0.25
-            value = value * age_multiplier
-            value = self.value_rounder(value)
-
-            return value
-
-        def value_rounder(self, value):
-            if value >= 1000000:
-                divisor = 100000
-            elif value >= 10000:
-                divisor = 1000
-
-            value = int(value - (value % divisor))
-
-            return value
-
-        def calculate_wage(self):
-            skills = self.get_skills()
-
-            value = self.calculate_value()
-
-            if self.position in ("GK"):
-                primary = skills[0]
-            elif self.position in ("DL", "DR", "DC", "D"):
-                primary = skills[1]
-            elif self.position in ("ML", "MR", "MC", "M"):
-                primary = skills[2]
-            elif self.position in ("AS", "AF"):
-                primary = skills[3]
-
-            average = sum(skills[0:6]) + (skills[8] * 1.5) + (skills[5] * 0.2) + (skills[6] * 0.2) + (skills[7] * 1.5)
-            average += primary
-            average = average / 9
-
-            if primary >= 95:
-                wage_divider = 390
-                value_multiplier = 5
-            elif primary >= 90:
-                wage_divider = 310
-                value_multiplier = 3.25
-            elif primary >= 85:
-                wage_divider = 255
-                value_multiplier = 2
-            elif primary >= 80:
-                wage_divider = 225
-                value_multiplier = 1.25
-            elif primary >= 75:
-                wage_divider = 195
-                value_multiplier = 1
-            elif primary >= 70:
-                wage_divider = 165
-                value_multiplier = 0.75
-            elif primary >= 60:
-                wage_divider = 140
-                value_multiplier = 0.55
-            elif primary >= 50:
-                wage_divider = 120
-                value_multiplier = 0.35
-            elif primary >= 40:
-                wage_divider = 100
-                value_multiplier = 0.22
-            else:
-                wage_divider = 100
-                value_multiplier = 0.12
-
-            value = (((average * 1000) * average) * value_multiplier) * 0.25
-            wage = value / wage_divider
-            wage = self.wage_rounder(wage)
-
-            return wage
-
-        def wage_rounder(self, wage):
-            if wage >= 10000:
-                divisor = 100
-            else:
-                divisor = 10
-
-            wage = int(wage - (wage % divisor))
-
-            return wage
 
     def __init__(self, season):
         self.players = {}
@@ -381,10 +225,6 @@ class Players:
                 player.set_pieces = item[19]
                 player.training_value = item[20]
 
-                # Set wage and bonus values
-                wage = player.calculate_wage()
-                player.contract.set_initial_wage(wage)
-
                 # Add player to squad
                 club = data.clubs.get_club_by_id(player.squad)
                 club.squad.add_to_squad(playerid)
@@ -395,6 +235,11 @@ class Players:
 
                 # Add history object
                 player.history = structures.history.History(playerid)
+
+                # Set value, wage and contract values
+                player.value = structures.value.Value(player)
+                player.wage = structures.wage.Wage(player)
+                player.contract = structures.contract.Contract(player)
 
 
 class Rating:
