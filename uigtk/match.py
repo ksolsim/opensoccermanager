@@ -19,6 +19,7 @@
 from gi.repository import Gtk
 
 import data
+import structures.match
 import uigtk.widgets
 
 
@@ -98,7 +99,9 @@ class Match(uigtk.widgets.Grid):
         '''
         Call match engine to generate result, then enable interface elements.
         '''
-        print("Generate result here...")
+        structures.match.Score(self.fixture)
+        print(self.fixture.result)
+        self.score.set_result(self.fixture.result)
 
         button.set_sensitive(False)
         self.buttonHomeTactics.set_sensitive(False)
@@ -142,9 +145,8 @@ class Score(Gtk.Grid):
         self.labelHomeTeam.set_hexpand(True)
         self.attach(self.labelHomeTeam, 0, 0, 1, 1)
 
-        self.labelScore = uigtk.widgets.Label()
-        self.labelScore.set_hexpand(True)
-        self.attach(self.labelScore, 1, 0, 1, 1)
+        self.labelResult = uigtk.widgets.Label()
+        self.attach(self.labelResult, 1, 0, 1, 1)
 
         self.labelAwayTeam = uigtk.widgets.Label()
         self.labelAwayTeam.set_hexpand(True)
@@ -160,15 +162,15 @@ class Score(Gtk.Grid):
         '''
         Set competing team names and 0-0 scoreline.
         '''
-        self.labelHomeTeam.set_markup("<span size='24000'><b>%s</b></span>" % (fixture.get_home_name()))
-        self.labelAwayTeam.set_markup("<span size='24000'><b>%s</b></span>" % (fixture.get_away_name()))
-        self.set_score((0, 0))
+        self.labelHomeTeam.set_markup("<span size='18000'><b>%s</b></span>" % (fixture.get_home_name()))
+        self.labelAwayTeam.set_markup("<span size='18000'><b>%s</b></span>" % (fixture.get_away_name()))
+        self.set_result((0, 0))
 
-    def set_score(self, score):
+    def set_result(self, result):
         '''
-        Set current score on label.
+        Set current result on label.
         '''
-        self.labelScore.set_markup("<span size='24000'><b>%i - %i</b></span>" % (score))
+        self.labelResult.set_markup("<span size='18000'><b>%i - %i</b></span>" % (result))
 
 
 class Information(uigtk.widgets.Grid):
