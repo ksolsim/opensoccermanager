@@ -153,9 +153,9 @@ class Fixtures(uigtk.widgets.Grid):
             leagueid = int(self.comboboxLeagues.get_active_id())
             league = data.leagues.get_league_by_id(leagueid)
 
-            round_count = league.fixtures.get_number_of_rounds()
+            rounds = league.fixtures.get_number_of_rounds()
 
-            for week in range(0, round_count):
+            for week in range(0, rounds):
                 title = "Round %i" % (week + 1)
                 parent = self.treestore.append(None, [None, title, "", "", "", 700])
 
@@ -166,19 +166,23 @@ class Fixtures(uigtk.widgets.Grid):
                     away = data.clubs.get_club_by_id(fixture.away)
                     stadium = data.stadiums.get_stadium_by_id(home.stadium)
 
-                    self.treestore.append(parent, [fixtureid, home.name, "", away.name, stadium.name, 400])
+                    if fixture.result:
+                        result = "%i - %i" % (fixture.result)
+                    else:
+                        result = ""
 
-        self.treeview.expand_all()
+                    self.treestore.append(parent, [fixtureid, home.name, result, away.name, stadium.name, 400])
+
+            self.treeview.expand_all()
 
     def populate_club_data(self):
         self.treestore.clear()
 
-        club = data.clubs.get_club_by_id(data.user.team)
-        league = data.leagues.get_league_by_id(club.league)
+        league = data.leagues.get_league_by_id(self.club.league)
 
-        round_count = league.fixtures.get_number_of_rounds()
+        rounds = league.fixtures.get_number_of_rounds()
 
-        for week in range(0, round_count):
+        for week in range(0, rounds):
             fixtures = league.fixtures.get_fixtures_for_week(week)
 
             for fixtureid, fixture in fixtures.items():
@@ -187,7 +191,12 @@ class Fixtures(uigtk.widgets.Grid):
                     away = data.clubs.get_club_by_id(fixture.away)
                     stadium = data.stadiums.get_stadium_by_id(home.stadium)
 
-                    self.treestore.append(None, [fixtureid, home.name, "", away.name, stadium.name, 400])
+                    if fixture.result:
+                        result = "%i - %i" % (fixture.result)
+                    else:
+                        result = ""
+
+                    self.treestore.append(None, [fixtureid, home.name, result, away.name, stadium.name, 400])
 
     def run(self):
         self.populate_leagues()
@@ -195,8 +204,8 @@ class Fixtures(uigtk.widgets.Grid):
 
         self.radiobuttonAllFixtures.set_active(True)
 
-        club = data.clubs.get_club_by_id(data.user.team)
-        self.radiobuttonClubFixtures.set_label("%s _Fixtures" % (club.name))
+        self.club = data.clubs.get_club_by_id(data.user.team)
+        self.radiobuttonClubFixtures.set_label("%s _Fixtures" % (self.club.name))
 
         self.show_all()
 

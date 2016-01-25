@@ -62,7 +62,7 @@ class Score:
             elif item == "L":
                 points -= 1
 
-        return 5
+        return points
 
     def calculate_percentages(self):
         '''
