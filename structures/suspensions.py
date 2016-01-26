@@ -30,11 +30,23 @@ class Suspensions:
 
         self.messages = SuspensionMessage()
 
-    def get_suspensions(self):
+    def get_suspension_by_id(self, suspensionid):
         '''
-        Return full dictionary of suspension objects.
+        Return object for given suspension id.
         '''
-        return self.suspensions
+        return self.suspensions[suspensionid]
+
+    def populate_data(self):
+        data.database.cursor.execute("SELECT * FROM suspension")
+
+        for item in data.database.cursor.fetchall():
+            print(item)
+            '''
+            suspension = self.Suspension()
+            suspension.name = item[1]
+            suspension.period = (item[2], item[3])
+            suspension.impact = (item[4], item[5])
+            self.suspensions[item[0]] = suspension'''
 
 
 class SuspensionMessage:

@@ -43,15 +43,43 @@ class Squad:
         '''
         self.squad.remove(playerid)
 
-    def get_available_players(self):
+    def get_player_available(self, playerid):
         '''
-        Return a tuple of all players which are available to play.
+        Get whether passed player is available to play.
         '''
+        player = data.players.get_player_by_id(playerid)
 
-    def get_unavailable_players(self):
+        available = not player.injury.get_injured() and not player.suspension.get_suspended()
+
+        return available
+
+    def get_injured_players(self):
         '''
-        Return tuple of all players which are injured, suspended or out on loan.
+        Return list of injured players from squad.
         '''
+        injured = []
+
+        for playerid in self.squad:
+            player = data.players.get_player_by_id(playerid)
+
+            if player.injury.get_injured():
+                injured.append(playerid)
+
+        return injured
+
+    def get_suspended_players(self):
+        '''
+        Return list of suspended players from squad.
+        '''
+        suspended = []
+
+        for playerid in self.squad:
+            player = data.players.get_player_by_id(playerid)
+
+            if player.suspension.get_suspended():
+                suspended.append(playerid)
+
+        return suspended
 
     def get_squad(self):
         '''

@@ -38,9 +38,9 @@ class Unavailable(uigtk.widgets.Grid):
         self.attach(self.suspensions, 1, 0, 1, 1)
 
     def run(self):
+        self.show_all()
         self.injuries.run()
         self.suspensions.run()
-        self.show_all()
 
 
 class Injuries(uigtk.widgets.CommonFrame):
@@ -53,17 +53,17 @@ class Injuries(uigtk.widgets.CommonFrame):
         self.labelNoInjuries = Gtk.Label("No players are currently injured.")
         overlay.add_overlay(self.labelNoInjuries)
 
-        scrolledwindow = uigtk.widgets.ScrolledWindow()
-        scrolledwindow.set_sensitive(False)
-        overlay.add(scrolledwindow)
+        self.scrolledwindow = uigtk.widgets.ScrolledWindow()
+        self.scrolledwindow.set_sensitive(False)
+        overlay.add(self.scrolledwindow)
 
-        self.liststore = Gtk.ListStore(int, str, str, str, int)
+        self.liststore = Gtk.ListStore(int, str, str, str, str)
 
         treeview = uigtk.widgets.TreeView()
         treeview.set_vexpand(True)
         treeview.set_hexpand(True)
         treeview.set_model(self.liststore)
-        scrolledwindow.add(treeview)
+        self.scrolledwindow.add(treeview)
 
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Name", column=1)
         treeviewcolumn.set_expand(True)
@@ -75,13 +75,27 @@ class Injuries(uigtk.widgets.CommonFrame):
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Fitness", column=4)
         treeview.append_column(treeviewcolumn)
 
-    def run(self):
+    def populate_data(self):
         self.liststore.clear()
 
-        club = data.clubs.get_club_by_id(data.user.team)
+        for playerid in self.club.squad.get_injured_players():
+            player = data.players.get_player_by_id(playerid)
 
-        for playerid in club.squad.get_squad():
-            pass
+            self.liststore.append([playerid,
+                                   player.get_name(),
+                                   player.injury.get_injury_type(),
+                                   player.injury.get_injury_period(),
+                                   "%s%%" % (player.fitness)])
+
+    def run(self):
+        self.club = data.clubs.get_club_by_id(data.user.team)
+        self.populate_data()
+
+        self.show_all()
+
+        state = len(self.club.squad.get_injured_players()) > 0
+        self.scrolledwindow.set_sensitive(state)
+        self.labelNoInjuries.set_visible(not state)
 
 
 class Suspensions(uigtk.widgets.CommonFrame):
@@ -94,9 +108,9 @@ class Suspensions(uigtk.widgets.CommonFrame):
         self.labelNoSuspensions = Gtk.Label("No players are currently suspended.")
         overlay.add_overlay(self.labelNoSuspensions)
 
-        scrolledwindow = uigtk.widgets.ScrolledWindow()
-        scrolledwindow.set_sensitive(False)
-        overlay.add(scrolledwindow)
+        self.scrolledwindow = uigtk.widgets.ScrolledWindow()
+        self.scrolledwindow.set_sensitive(False)
+        overlay.add(self.scrolledwindow)
 
         self.liststore = Gtk.ListStore(int, str, str, str)
 
@@ -104,7 +118,7 @@ class Suspensions(uigtk.widgets.CommonFrame):
         treeview.set_vexpand(True)
         treeview.set_hexpand(True)
         treeview.set_model(self.liststore)
-        scrolledwindow.add(treeview)
+        self.scrolledwindow.add(treeview)
 
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Name", column=1)
         treeviewcolumn.set_expand(True)
@@ -114,5 +128,25 @@ class Suspensions(uigtk.widgets.CommonFrame):
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Period", column=3)
         treeview.append_column(treeviewcolumn)
 
-    def run(self):
+    def populate_data(self):
         self.liststore.clear()
+
+        club = data.clubs.get_club_by_id(data.user.team)
+
+        for playerid in club.squad.get_suspended_players():
+            player = data.players.get_player_by_id(playerid)
+
+            self.liststore.append([playerid,
+                                   player.get_name(),
+                                   player.suspension.get_suspension_type(),
+                                   player.get_suspension_period()])
+
+    def run(self):
+        self.club = data.clubs.get_club_by_id(data.user.team)
+        self.populate_data()
+
+        self.show_all()
+
+        state = len(self.club.squad.get_injured_players()) > 0
+        self.scrolledwindow.set_sensitive(state)
+        self.labelNoSuspensions.set_visible(not state)

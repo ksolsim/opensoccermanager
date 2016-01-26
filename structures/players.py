@@ -266,45 +266,57 @@ class Rating:
 
 class Injury:
     def __init__(self):
-        self.injury_type = None
-        self.injury_period = 0
+        self.injuryid = None
+        self.period = 0
 
     def get_injured(self):
         '''
         Return whether player is currently injured.
         '''
-        return self.injury_type is not None
+        return self.injuryid is not None
 
     def get_injury_type(self):
         '''
         Get type of injury player has received.
         '''
-        if self.injury_type:
-            injury = data.injuries.get_injury_by_id(self.injury_type)
+        if self.injuryid:
+            injury = data.injuries.get_injury_by_id(self.injuryid)
 
             return injury.name
-        else:
-            return "None"
+
+        return "None"
+
+    def get_injury_period(self):
+        '''
+        Return injury period with weeks string affix.
+        '''
+        return "%i Weeks" % (self.period)
 
 
 class Suspension:
     def __init__(self):
-        self.suspension_type = None
-        self.suspension_period = 0
+        self.suspensionid = None
+        self.period = 0
 
     def get_suspended(self):
         '''
         Return whether player is currently suspended.
         '''
-        return self.suspension_type is not None
+        return self.suspensionid is not None
 
     def get_suspension_type(self):
         '''
         Get type of suspension player has received.
         '''
-        if self.suspension_type:
-            suspension = data.suspension.get_suspension_by_id(self.suspension_type)
+        if self.suspensionid:
+            suspension = data.suspensions.get_suspension_by_id(self.suspensionid)
 
             return suspension.name
-        else:
-            return "None"
+
+        return "None"
+
+    def suspension_period(self):
+        '''
+        Return suspension period with matches string affix.
+        '''
+        return "%i Matches" % (self.period)

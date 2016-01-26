@@ -274,7 +274,7 @@ class SquadList(Gtk.ListStore):
         self.set_column_types([int, str, str, int, int, int, int,
                                int, int, int, int, int, int, str,
                                str, str, str, str, str, int, int,
-                               str, int, str, int, int])
+                               str, int, str, str, str])
 
     def update(self):
         self.clear()
@@ -306,8 +306,8 @@ class SquadList(Gtk.ListStore):
                          player.get_cards(),
                          player.man_of_the_match,
                          player.get_rating(),
-                         player.injury.injury_type,
-                         player.suspension.suspension_type])
+                         player.injury.get_injury_type(),
+                         player.suspension.get_suspension_type()])
 
 
 class FirstTeam(uigtk.widgets.Grid):
