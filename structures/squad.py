@@ -26,22 +26,22 @@ class Squad:
     def __init__(self):
         self.clubid = None
 
-        self.squad = []
+        self.squad = {}
         self.teamselection = TeamSelection()
 
         self.teamgenerator = TeamGenerator()
 
-    def add_to_squad(self, playerid):
+    def add_to_squad(self, playerid, player):
         '''
         Add player id to squad list.
         '''
-        self.squad.append(playerid)
+        self.squad[playerid] = player
 
     def remove_from_squad(self, playerid):
         '''
         Remove passed player id from squad list.
         '''
-        self.squad.remove(playerid)
+        del self.squad[playerid]
 
     def get_player_available(self, playerid):
         '''
@@ -85,7 +85,7 @@ class Squad:
         '''
         Return list of players in squad.
         '''
-        return self.squad
+        return self.squad.items()
 
     def get_squad_count(self):
         '''

@@ -279,9 +279,7 @@ class SquadList(Gtk.ListStore):
     def update(self):
         self.clear()
 
-        for playerid in Squad.club.squad.get_squad():
-            player = data.players.get_player_by_id(playerid)
-
+        for playerid, player in Squad.club.squad.get_squad():
             self.append([playerid,
                          player.get_name(),
                          player.position,
@@ -582,10 +580,7 @@ class PlayerSelect(Gtk.Dialog):
     def populate_data(self):
         self.liststore.clear()
 
-        club = data.clubs.get_club_by_id(data.user.team)
-
-        for playerid in club.squad.get_squad():
-            player = data.players.get_player_by_id(playerid)
+        for playerid, player in Squad.club.squad.get_squad():
             self.liststore.append([playerid, player.get_name()])
 
     def show(self, playerid=None):
@@ -710,8 +705,7 @@ class ContextMenu(Gtk.Menu):
         '''
         Remove player from team if found in team selection.
         '''
-        club = data.clubs.get_club_by_id(data.user.team)
-        club.squad.teamselection.remove_from_team(ContextMenu.playerid)
+        Squad.club.squad.teamselection.remove_from_team(ContextMenu.playerid)
 
         Squad.populate_selection(Squad)
 
@@ -788,24 +782,22 @@ class PositionMenu(Gtk.Menu):
     def __init__(self):
         Gtk.Menu.__init__(self)
 
-        self.club = data.clubs.get_club_by_id(data.user.team)
-
     def on_add_team_clicked(self, menuitem, event, positionid):
         '''
         Add player id to passed position id.
         '''
-        self.club.squad.teamselection.add_to_team(ContextMenu.playerid, positionid)
+        Squad.club.squad.teamselection.add_to_team(ContextMenu.playerid, positionid)
         Squad.populate_selection(Squad)
 
     def on_add_subs_clicked(self, menuitem, event, subid):
         '''
         Add player id to passed position (substitution) id.
         '''
-        self.club.squad.teamselection.add_to_subs(ContextMenu.playerid, subid)
+        Squad.club.squad.teamselection.add_to_subs(ContextMenu.playerid, subid)
         Squad.populate_selection(Squad)
 
     def show(self):
-        for count, position in enumerate(self.club.tactics.get_formation_positions()):
+        for count, position in enumerate(Squad.club.tactics.get_formation_positions()):
             menuitem = uigtk.widgets.MenuItem("_%s" % (position))
             menuitem.connect("button-release-event", self.on_add_team_clicked, count)
             self.append(menuitem)

@@ -58,9 +58,8 @@ class IndividualTraining(Gtk.Grid):
                 treemodelsort = Gtk.TreeModelSort(liststore)
                 treemodelsort.set_sort_column_id(1, Gtk.SortType.ASCENDING)
 
-                for playerid in self.club.squad.get_squad():
+                for playerid, player in self.club.squad.get_squad():
                     if not self.club.individual_training.get_player_in_training(playerid):
-                        player = data.players.get_player_by_id(playerid)
                         liststore.append([playerid, player.get_name(mode=1)])
 
                 self.comboboxPlayer = uigtk.widgets.ComboBox(column=1)

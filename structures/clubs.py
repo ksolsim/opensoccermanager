@@ -75,8 +75,7 @@ class Clubs:
             '''
             value = 0
 
-            for playerid in self.squad.get_squad():
-                player = data.players.get_player_by_id(playerid)
+            for playerid, player in self.squad.get_squad():
                 value += player.value.get_value()
 
             return value
@@ -87,8 +86,7 @@ class Clubs:
             '''
             wage = 0
 
-            for playerid in self.squad.get_squad():
-                player = data.players.get_player_by_id(playerid)
+            for playerid, player in self.squad.get_squad():
                 wage += player.wage.get_wage()
 
             return wage

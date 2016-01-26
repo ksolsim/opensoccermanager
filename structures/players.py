@@ -227,7 +227,7 @@ class Players:
 
                 # Add player to squad
                 club = data.clubs.get_club_by_id(player.squad)
-                club.squad.add_to_squad(playerid)
+                club.squad.add_to_squad(playerid, player)
 
                 # Add player to nation
                 nation = data.nations.get_nation_by_id(player.nationality)
