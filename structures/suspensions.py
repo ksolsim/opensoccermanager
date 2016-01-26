@@ -22,13 +22,13 @@ import data
 class Suspensions:
     class Suspension:
         def __init__(self):
-            self.suspension = None
-            self.period = 0
+            self.name = None
+            self.period = None
 
     def __init__(self):
         self.suspensions = {}
 
-        self.messages = SuspensionMessage()
+        self.populate_data()
 
     def get_suspension_by_id(self, suspensionid):
         '''
@@ -40,23 +40,7 @@ class Suspensions:
         data.database.cursor.execute("SELECT * FROM suspension")
 
         for item in data.database.cursor.fetchall():
-            print(item)
-            '''
             suspension = self.Suspension()
             suspension.name = item[1]
             suspension.period = (item[2], item[3])
-            suspension.impact = (item[4], item[5])
-            self.suspensions[item[0]] = suspension'''
-
-
-class SuspensionMessage:
-    def __init__(self):
-        self.messages = {}
-
-        self.populate_data()
-
-    def populate_data(self):
-        data.database.cursor.execute("SELECT * FROM suspension")
-
-        for item in data.database.cursor.fetchall():
-            self.messages[item[0]] = item[1:4]
+            self.suspensions[item[0]] = suspension

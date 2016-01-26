@@ -381,9 +381,7 @@ class FirstTeam(uigtk.widgets.Grid):
             Squad.populate_selection(Squad)
 
     def populate_team(self):
-        club = data.clubs.get_club_by_id(data.user.team)
-
-        for count, position in enumerate(club.tactics.get_formation_positions()):
+        for count, position in enumerate(Squad.club.tactics.get_formation_positions()):
             label = self.labels[count]
             label.set_label("_%s" % (position))
 

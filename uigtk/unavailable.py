@@ -139,7 +139,7 @@ class Suspensions(uigtk.widgets.CommonFrame):
             self.liststore.append([playerid,
                                    player.get_name(),
                                    player.suspension.get_suspension_type(),
-                                   player.get_suspension_period()])
+                                   player.suspension.get_suspension_period()])
 
     def run(self):
         self.club = data.clubs.get_club_by_id(data.user.team)
@@ -147,6 +147,6 @@ class Suspensions(uigtk.widgets.CommonFrame):
 
         self.show_all()
 
-        state = len(self.club.squad.get_injured_players()) > 0
+        state = len(self.club.squad.get_suspended_players()) > 0
         self.scrolledwindow.set_sensitive(state)
         self.labelNoSuspensions.set_visible(not state)

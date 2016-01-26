@@ -315,7 +315,7 @@ class Suspension:
 
         return "None"
 
-    def suspension_period(self):
+    def get_suspension_period(self):
         '''
         Return suspension period with matches string affix.
         '''
