@@ -100,8 +100,9 @@ class Match(uigtk.widgets.Grid):
         Call match engine to generate result, then enable interface elements.
         '''
         structures.match.Score(self.fixture)
-        print(self.fixture.result)
         self.score.set_result(self.fixture.result)
+        league = data.leagues.get_league_by_id(self.fixture.leagueid)
+        league.standings.update_standing(self.fixture)
 
         button.set_sensitive(False)
         self.buttonHomeTactics.set_sensitive(False)

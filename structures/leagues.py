@@ -80,8 +80,8 @@ class Leagues:
         '''
         Generate fixtures for each of the leagues.
         '''
-        for league in self.leagues.values():
-            league.fixtures.generate_fixtures(league)
+        for leagueid, league in self.leagues.items():
+            league.fixtures.generate_fixtures(leagueid, league)
 
     def populate_data(self):
         data.database.cursor.execute("SELECT * FROM league \

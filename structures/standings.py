@@ -16,8 +16,6 @@
 #  OpenSoccerManager.  If not, see <http://www.gnu.org/licenses/>.
 
 
-import operator
-
 import data
 
 
@@ -45,9 +43,13 @@ class Standings:
 
             standings.append(item)
 
-        standings = sorted(standings,
-                           key=operator.itemgetter(8, 7, 5, 6),
-                           reverse=True)
+        if data.calendar.event == 0:
+            standings = sorted(standings,
+                               key=lambda item: data.clubs.get_club_by_id(item[0]).name)
+        else:
+            standings = sorted(standings,
+                               key=lambda item: (item[8], item[7], item[5], item[6]),
+                               reverse=True)
 
         return standings
 
@@ -60,10 +62,51 @@ class Standings:
         '''
         Return the clubid for the given position.
         '''
-        standings = self.get_data()
-        clubid = standings[0]
+        clubid = self.standings[position - 1]
 
         return clubid
+
+    def update_standing(self, fixture):
+        '''
+        Update standings for given fixture object.
+        '''
+        home = self.standings[fixture.home]
+        away = self.standings[fixture.away]
+
+        home.played += 1
+        away.played += 1
+
+        if fixture.result[0] > fixture.result[1]:
+            home.wins += 1
+            away.losses += 1
+            home.goals_for += fixture.result[0]
+            home.goals_against += fixture.result[1]
+            away.goals_for += fixture.result[1]
+            away.goals_against += fixture.result[0]
+            home.goal_difference = home.goals_for - home.goals_against
+            away.goal_difference = away.goals_for - away.goals_against
+            home.points += 3
+        elif fixture.result[0] < fixture.result[1]:
+            away.wins += 1
+            home.losses += 1
+            home.goals_for += fixture.result[0]
+            home.goals_against += fixture.result[1]
+            away.goals_for += fixture.result[1]
+            away.goals_against += fixture.result[0]
+            home.goal_difference = home.goals_for - home.goals_against
+            away.goal_difference = away.goals_for - away.goals_against
+            away.points += 3
+        else:
+            home.draws += 1
+            away.draws += 1
+            home.goals_for += fixture.result[0]
+            home.goals_against += fixture.resul[1]
+            away.goals_for += fixture.result[1]
+            away.goals_against += fixture.result[0]
+            home.goal_difference = home.goals_for - home.goals_against
+            away.goal_difference = away.goals_for - away.goals_against
+            home.points += 1
+            away.points += 1
 
     def clear_standings(self):
         '''
