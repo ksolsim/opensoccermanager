@@ -57,12 +57,16 @@ class Standings:
         '''
         Return the position for the given clubid.
         '''
+        for position, standing in enumerate(self.get_data(), start=1):
+            if clubid == standing[0]:
+                return position
 
     def get_club_for_position(self, position):
         '''
         Return the clubid for the given position.
         '''
-        clubid = self.standings[position - 1]
+        standings = self.get_data()
+        clubid = standings[position - 1]
 
         return clubid
 
@@ -100,7 +104,7 @@ class Standings:
             home.draws += 1
             away.draws += 1
             home.goals_for += fixture.result[0]
-            home.goals_against += fixture.resul[1]
+            home.goals_against += fixture.result[1]
             away.goals_for += fixture.result[1]
             away.goals_against += fixture.result[0]
             home.goal_difference = home.goals_for - home.goals_against

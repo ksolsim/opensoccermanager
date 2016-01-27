@@ -59,11 +59,6 @@ class Calendar:
 
         return state
 
-    def get_other_fixtures(self):
-        '''
-        Return fixtures for all other teams.
-        '''
-
     def get_user_fixture(self):
         '''
         Return fixture for user operated club.
@@ -79,11 +74,27 @@ class Calendar:
                     club1 = fixture.get_home_name()
                     club2 = fixture.get_away_name()
 
+                    data.window.mainscreen.information.leagueid = club.league
+                    data.window.mainscreen.information.fixtureid = fixtureid
                     data.window.mainscreen.information.set_show_next_match(club1, club2)
 
                     data.window.mainscreen.information.set_continue_to_match()
 
                     return fixtureid, fixture
+
+    def get_other_fixtures(self, leagueid):
+        '''
+        Return fixtures for all other teams.
+        '''
+        fixtures = []
+
+        league = data.leagues.get_league_by_id(leagueid)
+
+        for fixtureid, fixture in league.fixtures.get_fixtures_for_week(self.event).items():
+            if data.user.team not in (fixture.home, fixture.away):
+                fixtures.append(fixtureid)
+
+        return fixtures
 
     def get_user_opposition(self):
         '''

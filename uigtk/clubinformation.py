@@ -19,6 +19,7 @@
 from gi.repository import Gtk
 
 import data
+import structures.number
 import structures.skills
 import uigtk.playersearch
 import uigtk.widgets
@@ -189,6 +190,8 @@ class ClubInformation(uigtk.widgets.Grid):
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Points")
         treeviewForm.append_column(treeviewcolumn)
 
+        self.number = structures.number.Number()
+
         self.contextmenu1 = uigtk.playersearch.ContextMenu1()
         self.contextmenu2 = uigtk.playersearch.ContextMenu2()
 
@@ -232,6 +235,8 @@ class ClubInformation(uigtk.widgets.Grid):
         stadium = data.stadiums.get_stadium_by_id(club.stadium)
         league = data.leagues.get_league_by_id(club.league)
 
+        position = league.standings.get_position_for_club(clubid)
+
         self.labelName.set_label("<span size='24000'><b>%s</b></span>" % (club.name))
         self.labelNickname.set_label(club.nickname)
         self.labelManager.set_label(club.manager)
@@ -239,7 +244,7 @@ class ClubInformation(uigtk.widgets.Grid):
         self.labelStadiumName.set_label(stadium.name)
         self.labelStadiumCapacity.set_label("%i" % (stadium.get_capacity()))
         self.labelLeagueName.set_label(league.name)
-        self.labelLeaguePosition.set_label("")
+        self.labelLeaguePosition.set_label("%s" % (self.number.get_ordinal_number(position)))
         self.labelPlayerCount.set_label("%i" % (club.squad.get_squad_count()))
         self.labelAverageAge.set_label("%.1f" % (club.squad.get_average_age()))
         self.labelSquadValue.set_label(data.currency.get_rounded_amount(club.get_total_value()))
@@ -247,9 +252,7 @@ class ClubInformation(uigtk.widgets.Grid):
 
         self.liststore.clear()
 
-        for playerid in club.squad.get_squad():
-            player = data.players.get_player_by_id(playerid)
-
+        for playerid, player in club.squad.get_squad():
             self.liststore.append([playerid,
                                    player.get_name(),
                                    player.position,

@@ -165,9 +165,7 @@ class Fixtures:
         '''
         Return the number of rounds in the season.
         '''
-        total = len(self.clubs) * 2 - 2
-
-        return total
+        return len(self.clubs) * 2 - 2
 
     def get_initial_fixtures(self):
         '''

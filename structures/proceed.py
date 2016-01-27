@@ -82,7 +82,7 @@ class ContinueToMatch:
         club = data.clubs.get_club_by_id(data.user.team)
         count = club.squad.teamselection.get_team_count()
 
-        state = count == 11
+        state = count == 1
 
         if not state:
             uigtk.match.NotEnoughPlayers(count)

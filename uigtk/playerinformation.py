@@ -404,12 +404,12 @@ class Morale(uigtk.widgets.CommonFrame):
         self.labelMorale = uigtk.widgets.Label(leftalign=True)
         self.grid.attach(self.labelMorale, 1, 0, 1, 1)
 
-        label = uigtk.widgets.Label("Description", leftalign=True)
+        label = uigtk.widgets.Label("Actions", leftalign=True)
         label.set_yalign(0)
         self.grid.attach(label, 0, 1, 1, 1)
-        self.labelDescription = uigtk.widgets.Label(leftalign=True)
-        self.labelDescription.set_line_wrap(True)
-        self.grid.attach(self.labelDescription, 1, 1, 1, 1)
+        self.labelActions = uigtk.widgets.Label(leftalign=True)
+        self.labelActions.set_line_wrap(True)
+        self.grid.attach(self.labelActions, 1, 1, 1, 1)
 
         self.morale = structures.morale.PlayerMorale()
 

@@ -59,9 +59,7 @@ class Squad:
         '''
         injured = []
 
-        for playerid in self.squad:
-            player = data.players.get_player_by_id(playerid)
-
+        for playerid, player in self.squad.items():
             if player.injury.get_injured():
                 injured.append(playerid)
 
@@ -73,9 +71,7 @@ class Squad:
         '''
         suspended = []
 
-        for playerid in self.squad:
-            player = data.players.get_player_by_id(playerid)
-
+        for playerid, player in self.squad.items():
             if player.suspension.get_suspended():
                 suspended.append(playerid)
 
@@ -97,11 +93,7 @@ class Squad:
         '''
         Return list of players not in squad.
         '''
-        count = 0
-
-        for playerid in self.squad:
-            if playerid not in self.teamselection.team:
-                count += 1
+        count = sum(1 for playerid in self.squad.keys() if playerid not in self.teamselection.team)
 
         return count
 
@@ -111,8 +103,7 @@ class Squad:
         '''
         age = 0
 
-        for playerid in self.squad:
-            player = data.players.get_player_by_id(playerid)
+        for player in self.squad.values():
             age += player.get_age()
 
         age = age / self.get_squad_count()

@@ -104,6 +104,18 @@ class Match(uigtk.widgets.Grid):
         league = data.leagues.get_league_by_id(self.fixture.leagueid)
         league.standings.update_standing(self.fixture)
 
+        self.fixture.played = True
+
+        for leagueid, league in data.leagues.get_leagues():
+            for fixtureid in data.calendar.get_other_fixtures(leagueid):
+                fixture = league.fixtures.get_fixture_by_id(fixtureid)
+
+                if data.user.team not in (fixture.home, fixture.away):
+                    structures.match.Score(fixture)
+                    league.standings.update_standing(fixture)
+
+                    fixture.played = True
+
         button.set_sensitive(False)
         self.buttonHomeTactics.set_sensitive(False)
         self.buttonAwayTactics.set_sensitive(False)
@@ -217,11 +229,21 @@ class Events(uigtk.widgets.ScrolledWindow):
         '''
         Add event to list of in-game events.
         '''
+        self.grid = Gtk.Grid()
+        self.viewport.add(self.grid)
+
+        for count, playerid in enumerate(scorers):
+            player = data.players.get_player_by_id(playerid)
+
+            label = uigtk.widgets.Label(player.get_name(mode=1), leftalign=True)
+            self.grid.attach(label, 0, count, 1, 1)
 
     def clear_events(self):
         '''
         Remove and destroy listed events.
         '''
+        if self.grid:
+            self.grid.destroy()
 
 
 class Teams(uigtk.widgets.Grid):

@@ -63,6 +63,7 @@ class Injuries(uigtk.widgets.CommonFrame):
         treeview.set_vexpand(True)
         treeview.set_hexpand(True)
         treeview.set_model(self.liststore)
+        treeview.connect("row-activated", self.on_row_activated)
         self.scrolledwindow.add(treeview)
 
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Name", column=1)
@@ -74,6 +75,15 @@ class Injuries(uigtk.widgets.CommonFrame):
         treeview.append_column(treeviewcolumn)
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Fitness", column=4)
         treeview.append_column(treeviewcolumn)
+
+    def on_row_activated(self, treeview, treepath, treeviewcolumn):
+        '''
+        Handle row activation for listed player.
+        '''
+        playerid = self.liststore[treepath][0]
+
+        data.window.screen.change_visible_screen("playerinformation")
+        data.window.screen.active.set_visible_player(playerid)
 
     def populate_data(self):
         self.liststore.clear()
@@ -118,6 +128,7 @@ class Suspensions(uigtk.widgets.CommonFrame):
         treeview.set_vexpand(True)
         treeview.set_hexpand(True)
         treeview.set_model(self.liststore)
+        treeview.connect("row-activated", self.on_row_activated)
         self.scrolledwindow.add(treeview)
 
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Name", column=1)
@@ -127,6 +138,15 @@ class Suspensions(uigtk.widgets.CommonFrame):
         treeview.append_column(treeviewcolumn)
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Period", column=3)
         treeview.append_column(treeviewcolumn)
+
+    def on_row_activated(self, treeview, treepath, treeviewcolumn):
+        '''
+        Handle row activation for listed player.
+        '''
+        playerid = self.liststore[treepath][0]
+
+        data.window.screen.change_visible_screen("playerinformation")
+        data.window.screen.active.set_visible_player(playerid)
 
     def populate_data(self):
         self.liststore.clear()

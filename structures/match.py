@@ -31,7 +31,7 @@ class Score:
         '''
         Calculate player scores for team selection from skill attributes.
         '''
-        self.weights = [0, 0]
+        self.weights = [1, 1] #0, 0
 
         for count, club in enumerate((data.clubs.get_club_by_id(self.fixture.home),
                                       data.clubs.get_club_by_id(self.fixture.away))):

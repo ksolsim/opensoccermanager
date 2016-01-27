@@ -57,6 +57,9 @@ class Information(Gtk.Grid):
 
         self.infotip = uigtk.infotip.InfoTip()
 
+        self.leagueid = None
+        self.fixtureid = None
+
     def on_tooltip_queried(self, widget, x, y, mode, tooltip):
         '''
         Display latest overview information in tooltip.
@@ -77,6 +80,7 @@ class Information(Gtk.Grid):
         Display result screen for next match
         '''
         data.window.screen.change_visible_screen("result")
+        data.window.screen.active.set_visible_result(self.leagueid, self.fixtureid)
 
     def on_continue_clicked(self, *args):
         '''
