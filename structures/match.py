@@ -33,8 +33,8 @@ class Score:
         '''
         self.weights = [1, 1] #0, 0
 
-        for count, club in enumerate((data.clubs.get_club_by_id(self.fixture.home),
-                                      data.clubs.get_club_by_id(self.fixture.away))):
+        for count, club in enumerate((data.clubs.get_club_by_id(self.fixture.home.clubid),
+                                      data.clubs.get_club_by_id(self.fixture.away.clubid))):
             for playerid in club.squad.teamselection.team:
                 if playerid:
                     player = data.players.get_player_by_id(playerid)
@@ -50,7 +50,7 @@ class Score:
         '''
         Determine home advantage score based on form and fan morale.
         '''
-        club = data.clubs.get_club_by_id(self.fixture.home)
+        club = data.clubs.get_club_by_id(self.fixture.home.clubid)
 
         points = 0
 
@@ -68,13 +68,13 @@ class Score:
         '''
         Determine percentage chance of win, loss, and draw for each team.
         '''
-        club = data.clubs.get_club_by_id(self.fixture.home)
+        club = data.clubs.get_club_by_id(self.fixture.home.clubid)
 
         percent1 = ((self.weights[0] / self.total) + self.home_advantage()) * 100
         percent1 = (percent1 * 0.05) * club.reputation
         self.percent1 = round(percent1)
 
-        club = data.clubs.get_club_by_id(self.fixture.away)
+        club = data.clubs.get_club_by_id(self.fixture.away.clubid)
 
         percent2 = (self.weights[0] / self.total) * 100
         percent2 = (percent2 * 0.05) * club.reputation
@@ -119,7 +119,7 @@ class Score:
         '''
         score1 = 1
 
-        club = data.clubs.get_club_by_id(self.fixture.home)
+        club = data.clubs.get_club_by_id(self.fixture.home.clubid)
 
         if club.tactics.playing_style == 0:
             start = 35

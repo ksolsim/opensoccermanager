@@ -162,8 +162,8 @@ class Fixtures(uigtk.widgets.Grid):
                 fixtures = league.fixtures.get_fixtures_for_week(week)
 
                 for fixtureid, fixture in fixtures.items():
-                    home = data.clubs.get_club_by_id(fixture.home)
-                    away = data.clubs.get_club_by_id(fixture.away)
+                    home = data.clubs.get_club_by_id(fixture.home.clubid)
+                    away = data.clubs.get_club_by_id(fixture.away.clubid)
                     stadium = data.stadiums.get_stadium_by_id(home.stadium)
 
                     if fixture.result:
@@ -186,9 +186,9 @@ class Fixtures(uigtk.widgets.Grid):
             fixtures = league.fixtures.get_fixtures_for_week(week)
 
             for fixtureid, fixture in fixtures.items():
-                if data.user.team in (fixture.home, fixture.away):
-                    home = data.clubs.get_club_by_id(fixture.home)
-                    away = data.clubs.get_club_by_id(fixture.away)
+                if data.user.team in (fixture.home.clubid, fixture.away.clubid):
+                    home = data.clubs.get_club_by_id(fixture.home.clubid)
+                    away = data.clubs.get_club_by_id(fixture.away.clubid)
                     stadium = data.stadiums.get_stadium_by_id(home.stadium)
 
                     if fixture.result:

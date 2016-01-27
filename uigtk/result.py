@@ -59,13 +59,13 @@ class Result(uigtk.widgets.Grid):
         league = data.leagues.get_league_by_id(leagueid)
         fixture = league.fixtures.get_fixture_by_id(fixtureid)
 
-        home = data.clubs.get_club_by_id(fixture.home)
-        away = data.clubs.get_club_by_id(fixture.away)
+        home = data.clubs.get_club_by_id(fixture.home.clubid)
+        away = data.clubs.get_club_by_id(fixture.away.clubid)
 
         self.labelHome.set_markup("<a href='club'><span size='18000'><b>%s</b></span></a>" % (home.name))
-        self.labelHome.clubid = fixture.home
+        self.labelHome.clubid = fixture.home.clubid
         self.labelAway.set_markup("<a href='club'><span size='18000'><b>%s</b></span></a>" % (away.name))
-        self.labelAway.clubid = fixture.away
+        self.labelAway.clubid = fixture.away.clubid
 
         stadium = data.stadiums.get_stadium_by_id(home.stadium)
         self.information.labelStadium.set_label(stadium.name)

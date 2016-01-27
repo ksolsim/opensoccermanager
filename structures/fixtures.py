@@ -22,38 +22,8 @@ import data
 
 
 class Fixtures:
-    class Fixture:
-        def __init__(self):
-            self.week = 0
-            self.played = False
-
-            self.home = None
-            self.away = None
-            self.result = None
-
-            self.attendance = 0
-            self.referee = None
-            self.leagueid = None
-
-        def get_home_name(self):
-            '''
-            Return name of home side for fixture.
-            '''
-            club = data.clubs.get_club_by_id(self.home)
-
-            return club.name
-
-        def get_away_name(self):
-            '''
-            Return name of away side for fixture.
-            '''
-            club = data.clubs.get_club_by_id(self.away)
-
-            return club.name
-
     def __init__(self):
         self.fixtures = {}
-
         self.fixtureid = 0
 
         self.events = (16, 8), (23, 8), (30, 8), (13, 9), (20, 9), (27, 9), (4, 10), (18, 10), (25, 10), (1, 11), (8, 11), (22, 11), (29, 11), (2, 12), (6, 12), (13, 12), (20, 12), (26, 12), (28, 12), (1, 1), (10, 1), (17, 1), (31, 1), (7, 2), (10, 2), (21, 2), (28, 2), (3, 3), (14, 3), (21, 3), (4, 4), (11, 4), (18, 4), (25, 4), (2, 5), (9, 5), (16, 5), (24, 5),
@@ -89,17 +59,17 @@ class Fixtures:
                 if match == 0:
                     away = rounds
 
-                fixture = self.Fixture()
+                fixture = Fixture()
                 fixture.leagueid = leagueid
                 fixture.week = week
                 fixture.referee = referees[match]
 
                 if week % 2 == 1:
-                    fixture.home = self.clubs[home]
-                    fixture.away = self.clubs[away]
+                    fixture.home.clubid = self.clubs[home]
+                    fixture.away.clubid = self.clubs[away]
                 else:
-                    fixture.home = self.clubs[away]
-                    fixture.away = self.clubs[home]
+                    fixture.home.clubid = self.clubs[away]
+                    fixture.away.clubid = self.clubs[home]
 
                 fixtureid = self.get_fixtureid()
                 self.fixtures[fixtureid] = fixture
@@ -114,16 +84,16 @@ class Fixtures:
                 if match == 0:
                     away = rounds
 
-                fixture = self.Fixture()
+                fixture = Fixture()
                 fixture.week = rounds + week
                 fixture.referee = referees[match]
 
                 if (rounds + week) % 2 == 1:
-                    fixture.home = self.clubs[home]
-                    fixture.away = self.clubs[away]
+                    fixture.home.clubid = self.clubs[home]
+                    fixture.away.clubid = self.clubs[away]
                 else:
-                    fixture.away = self.clubs[away]
-                    fixture.home = self.clubs[home]
+                    fixture.away.clubid = self.clubs[away]
+                    fixture.home.clubid = self.clubs[home]
 
                 fixtureid = self.get_fixtureid()
                 self.fixtures[fixtureid] = fixture
@@ -176,8 +146,8 @@ class Fixtures:
 
         for fixture in self.fixtures.values():
             if fixture.week in (0, 1, 2):
-                if data.user.team in (fixture.home, fixture.away):
-                    fixtures.append([fixture.home, fixture.away])
+                if data.user.team in (fixture.home.clubid, fixture.away.clubid):
+                    fixtures.append([fixture.home.clubid, fixture.away.clubid])
 
         for teams in fixtures:
             for count, team in enumerate(teams):
@@ -189,3 +159,44 @@ class Fixtures:
                     initial.append(fixture)
 
         return initial
+
+
+class Fixture:
+    def __init__(self):
+        self.week = 0
+        self.played = False
+
+        self.home = FixtureTeam()
+        self.away = FixtureTeam()
+        self.result = None
+
+        self.attendance = 0
+        self.referee = None
+        self.leagueid = None
+
+    def get_home_name(self):
+        '''
+        Return name of home side for fixture.
+        '''
+        club = data.clubs.get_club_by_id(self.home.clubid)
+
+        return club.name
+
+    def get_away_name(self):
+        '''
+        Return name of away side for fixture.
+        '''
+        club = data.clubs.get_club_by_id(self.away.clubid)
+
+        return club.name
+
+
+class FixtureTeam:
+    '''
+    Fixture team object storing squad, events, match statistics, and more.
+    '''
+    def __init__(self):
+        self.clubid = None
+
+        self.team = []
+        self.subs = []

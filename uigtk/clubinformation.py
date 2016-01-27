@@ -244,7 +244,7 @@ class ClubInformation(uigtk.widgets.Grid):
         self.labelStadiumName.set_label(stadium.name)
         self.labelStadiumCapacity.set_label("%i" % (stadium.get_capacity()))
         self.labelLeagueName.set_label(league.name)
-        self.labelLeaguePosition.set_label("%s" % (self.number.get_ordinal_number(position)))
+        self.labelLeaguePosition.set_label(self.number.get_ordinal_number(position))
         self.labelPlayerCount.set_label("%i" % (club.squad.get_squad_count()))
         self.labelAverageAge.set_label("%.1f" % (club.squad.get_average_age()))
         self.labelSquadValue.set_label(data.currency.get_rounded_amount(club.get_total_value()))

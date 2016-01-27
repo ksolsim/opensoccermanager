@@ -70,7 +70,7 @@ class Calendar:
 
         if data.date.get_date_for_event() == league.fixtures.events[self.event]:
             for fixtureid, fixture in fixtures.items():
-                if data.user.team in (fixture.home, fixture.away):
+                if data.user.team in (fixture.home.clubid, fixture.away.clubid):
                     club1 = fixture.get_home_name()
                     club2 = fixture.get_away_name()
 
@@ -91,7 +91,7 @@ class Calendar:
         league = data.leagues.get_league_by_id(leagueid)
 
         for fixtureid, fixture in league.fixtures.get_fixtures_for_week(self.event).items():
-            if data.user.team not in (fixture.home, fixture.away):
+            if data.user.team not in (fixture.home.clubid, fixture.away.clubid):
                 fixtures.append(fixtureid)
 
         return fixtures
@@ -102,10 +102,10 @@ class Calendar:
         '''
         fixtureid, fixture = self.get_user_fixture()
 
-        if fixture.home == data.user.team:
-            club = fixture.away
+        if fixture.home.clubid == data.user.team:
+            club = fixture.away.clubid
         else:
-            club = fixture.home
+            club = fixture.home.clubid
 
         return club
 

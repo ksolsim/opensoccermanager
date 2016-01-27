@@ -77,12 +77,12 @@ class Match(uigtk.widgets.Grid):
         self.score.set_teams(fixtureid, fixture)
         self.set_tactics_buttons(fixtureid, fixture)
 
-        home = data.clubs.get_club_by_id(fixture.home)
+        home = data.clubs.get_club_by_id(fixture.home.clubid)
         stadium = data.stadiums.get_stadium_by_id(home.stadium)
         referee = data.referees.get_referee_by_id(fixture.referee)
         self.information.set_information(stadium.name, referee.name)
 
-        away = data.clubs.get_club_by_id(fixture.away)
+        away = data.clubs.get_club_by_id(fixture.away.clubid)
 
         self.teams.set_teams_list(home, away)
 
@@ -110,7 +110,7 @@ class Match(uigtk.widgets.Grid):
             for fixtureid in data.calendar.get_other_fixtures(leagueid):
                 fixture = league.fixtures.get_fixture_by_id(fixtureid)
 
-                if data.user.team not in (fixture.home, fixture.away):
+                if data.user.team not in (fixture.home.clubid, fixture.away.clubid):
                     structures.match.Score(fixture)
                     league.standings.update_standing(fixture)
 

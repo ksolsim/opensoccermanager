@@ -74,8 +74,8 @@ class Standings:
         '''
         Update standings for given fixture object.
         '''
-        home = self.standings[fixture.home]
-        away = self.standings[fixture.away]
+        home = self.standings[fixture.home.clubid]
+        away = self.standings[fixture.away.clubid]
 
         home.played += 1
         away.played += 1
