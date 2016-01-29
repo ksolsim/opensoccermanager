@@ -104,7 +104,6 @@ class PlayerInformation(uigtk.widgets.Grid):
         Update the display with the visible player for given id.
         '''
         PlayerInformation.playerid = playerid
-
         player = data.players.get_player_by_id(playerid)
 
         self.personal.club = player.squad
@@ -137,6 +136,9 @@ class PlayerInformation(uigtk.widgets.Grid):
 
         self.training.set_fitness_value(player.fitness)
         self.training.set_training_status()
+
+        self.injuries.set_injury_status()
+        self.suspensions.set_suspension_status()
 
         if player.squad == data.user.team:
             actionmenu = ContextMenu1()
@@ -226,7 +228,7 @@ class Transfer(uigtk.widgets.CommonFrame):
         player = data.players.get_player_by_id(PlayerInformation.playerid)
 
         if player.transfer[0]:
-            self.labelPurchaseList.set_label("Currently added on purchase list.")
+            self.labelPurchaseList.set_label("Currently added to purchase list.")
         else:
             self.labelPurchaseList.set_label("Not listed as available for purchase.")
 
@@ -237,7 +239,7 @@ class Transfer(uigtk.widgets.CommonFrame):
         player = data.players.get_player_by_id(PlayerInformation.playerid)
 
         if player.transfer[1]:
-            self.labelLoanList.set_label("Currently added on loan list.")
+            self.labelLoanList.set_label("Currently added to loan list.")
         else:
             self.labelLoanList.set_label("Not listed as available for loan.")
 
@@ -281,10 +283,17 @@ class Injuries(uigtk.widgets.CommonFrame):
         self.labelInjuries.set_line_wrap(True)
         self.grid.attach(self.labelInjuries, 0, 0, 1, 1)
 
-        self.set_injury_status()
-
     def set_injury_status(self):
-        message = "Not currently injured."
+        '''
+        Set message for current injury status.
+        '''
+        player = data.players.get_player_by_id(PlayerInformation.playerid)
+
+        if not player.injury.get_injured():
+            message = "Not currently injured."
+        else:
+            message = "Out for %s with a %s." % (player.injury.get_injury_period(), player.injury.get_injury_type())
+
         self.labelInjuries.set_label(message)
 
 
@@ -296,10 +305,17 @@ class Suspensions(uigtk.widgets.CommonFrame):
         self.labelSuspensions.set_line_wrap(True)
         self.grid.attach(self.labelSuspensions, 0, 0, 1, 1)
 
-        self.set_suspension_status()
-
     def set_suspension_status(self):
-        message = "Not currently suspended."
+        '''
+        Set message for current injury status.
+        '''
+        player = data.players.get_player_by_id(PlayerInformation.playerid)
+
+        if not player.suspension.get_suspended():
+            message = "Not currently suspended."
+        else:
+            message = "Out for %s due to a %s." % (player.suspension.get_suspension_period(), player.suspension.get_suspension_type())
+
         self.labelSuspensions.set_label(message)
 
 
