@@ -18,6 +18,8 @@
 
 import random
 
+import data
+
 
 class Contract:
     def __init__(self, player):
@@ -30,11 +32,11 @@ class Contract:
 
         self.contract = random.randint(24, 260)
 
-        self.set_initial_wage()
+        self.set_initial_bonus()
 
-    def set_initial_wage(self):
+    def set_initial_bonus(self):
         '''
-        Set initial wage values at beginning of the game.
+        Set initial bonus amounts based on starting player wage.
         '''
         self.leaguechamp = self.player.wage.get_wage() * 10
         self.leaguerunnerup = self.player.wage.get_wage() * 2
@@ -69,24 +71,41 @@ class Contract:
 
         return contract
 
-    def set_contract(self, length):
-        self.contract = 0
+    def set_contract_length(self, length):
+        '''
+        Define length of contract in weeks, from passed year value.
+        '''
+        self.contract = length * 52
 
     def get_contract_renewal(self):
         '''
         Grab details for renewal of contract.
         '''
-        # Calculate new expected wage for player
-        # If new wage is <10% of old wage, ask for 10% rise
-        # Determine contract length based on age/morale
 
     def get_termination_payout(self):
         '''
         Get the amount the player is owed if his contract is terminated.
         '''
-        return self.contract * self.wage
+        return self.contract * self.player.wage.get_wage()
+
+    def terminate_contract(self):
+        '''
+        Run calls to terminate contract of player and cleanup actions.
+        '''
+        self.contract = 0
+
+        club = data.clubs.get_club_by_id(self.player.squad)
+        club.squad.remove_from_squad(self.player.playerid)
+        club.individual_training.remove_from_training(self.player.playerid)
+
+        self.player.squad = None
+
+        self.player.transfer = [False, False]
 
     def decrement_contract_period(self):
+        '''
+        Decrease number of weeks remaining on contract.
+        '''
         self.contract -= 1
 
         if self.contract == 0:

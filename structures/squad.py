@@ -43,6 +43,12 @@ class Squad:
         '''
         del self.squad[playerid]
 
+    def get_player_in_squad(self, playerid):
+        '''
+        Return whether player id is in squad listing.
+        '''
+        return playerid in self.squad
+
     def get_player_available(self, playerid):
         '''
         Get whether passed player is available to play.

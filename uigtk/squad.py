@@ -303,7 +303,7 @@ class SquadList(Gtk.ListStore):
                          player.assists,
                          player.get_cards(),
                          player.man_of_the_match,
-                         player.get_rating(),
+                         player.rating.get_average_rating(),
                          player.injury.get_injury_type(),
                          player.suspension.get_suspension_type()])
 
@@ -738,11 +738,7 @@ class ContextMenu(Gtk.Menu):
 
         if dialog.show() == 1:
             player = data.players.get_player_by_id(self.playerid)
-            club = data.clubs.get_club_by_id(player.squad)
-
-            club.squad.remove_from_squad(self.playerid)
-            player.squad = None
-            player.contract.set_contract(0)
+            player.contract.terminate_contract()
 
             Squad.squadlist.update()
 

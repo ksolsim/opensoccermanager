@@ -56,7 +56,8 @@ class IndividualTraining:
         '''
         Remove passed player id from individual training.
         '''
-        del self.individual_training[playerid]
+        if playerid in self.individual_training:
+            del self.individual_training[playerid]
 
     def get_player_in_training(self, playerid):
         '''

@@ -503,11 +503,10 @@ class ContextMenu1(Gtk.Menu):
         '''
         Query user to terminate contract of selected player.
         '''
-        dialog = uigtk.squad.TerminateContract()
+        dialog = uigtk.squad.TerminateContract(self.playerid)
 
         if dialog.show() == 1:
-            self.player.squad = None
-            self.player.contract = 0
+            self.player.contract.terminate_contract()
 
     def on_comparison_clicked(self, *args):
         '''

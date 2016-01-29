@@ -61,8 +61,7 @@ class Players:
             self.rating = Rating()
             self.injury = Injury()
             self.suspension = Suspension()
-            self.training_value = 0
-            self.training_points = 0
+            self.training = Training()
             self.history = None
             self.retiring = False
 
@@ -161,12 +160,6 @@ class Players:
             '''
             return "%i/%i" % (self.yellow_cards, self.red_cards)
 
-        def get_rating(self):
-            '''
-            Display the average player rating.
-            '''
-            return ""
-
     def __init__(self, season):
         self.players = {}
         self.season = season
@@ -258,10 +251,21 @@ class Rating:
         '''
         return self.rating[:number]
 
-    def get_average_rating(self, number):
+    def get_average_rating(self, number=-1):
         '''
         Return average rating for last passed games amount.
         '''
+        if len(self.rating) == 0:
+            return "0.0"
+
+        if number != -1:
+            average = sum(self.rating) / len(self.rating)
+        else:
+            average = sum(self.rating[:number]) / number
+
+        average = "%.1f" % (average)
+
+        return average
 
 
 class Injury:
@@ -320,3 +324,9 @@ class Suspension:
         Return suspension period with matches string affix.
         '''
         return "%i Matches" % (self.period)
+
+
+class Training:
+    def __init__(self):
+        self.rate = 1
+        self.points = 0

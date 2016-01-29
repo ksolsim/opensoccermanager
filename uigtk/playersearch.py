@@ -200,7 +200,7 @@ class PlayerSearch(uigtk.widgets.Grid):
         model, treeiter = self.treeselection.get_selected()
         playerid = model[treeiter][0]
 
-        if playerid in club.squad.get_squad():
+        if club.squad.get_player_in_squad(playerid):
             contextmenu = self.contextmenu1
         else:
             contextmenu = self.contextmenu2
@@ -406,7 +406,7 @@ class PlayerSearch(uigtk.widgets.Grid):
                                           player.assists,
                                           player.get_cards(),
                                           player.man_of_the_match,
-                                          player.get_rating()])
+                                          player.rating.get_average_rating()])
 
     def run(self):
         self.populate_data()
