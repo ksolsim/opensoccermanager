@@ -18,11 +18,14 @@
 
 from gi.repository import Gtk
 from gi.repository import Gdk
+import os
+import subprocess
 
 import data
 import uigtk.aboutdialog
 import uigtk.deletedialog
 import uigtk.details
+import uigtk.editor
 import uigtk.filedialog
 import uigtk.preferences
 import uigtk.widgets
@@ -94,6 +97,7 @@ class Welcome(Gtk.Grid):
 
         buttonEditor = uigtk.widgets.Button("Data _Editor")
         buttonEditor.set_tooltip_text("Edit the game data.")
+        buttonEditor.connect("clicked", self.on_editor_clicked)
         buttonbox.add(buttonEditor)
 
         buttonQuit = uigtk.widgets.Button("_Quit Game")
@@ -139,6 +143,16 @@ class Welcome(Gtk.Grid):
         Launch dialog to find previously saved game.
         '''
         uigtk.filedialog.LoadDialog()
+
+    def on_editor_clicked(self, *args):
+        '''
+        Attempt to open data editor, or fail if not available.
+        '''
+        try:
+            filepath = os.path.join("editor", "editor")
+            subprocess.Popen(filepath, shell=False)
+        except FileNotFoundError:
+            uigtk.editor.EditorNotFound()
 
     def on_quit_game(self, *args):
         '''
