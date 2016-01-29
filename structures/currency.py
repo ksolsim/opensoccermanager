@@ -59,10 +59,10 @@ class Currency:
         Round passed amount for displaying.
         '''
         if amount >= 1000000:
-            amount = "£%.1fM" % (amount / 1000000)
+            amount = "%s%.1fM" % (self.get_currency_symbol(), amount / 1000000)
         elif amount >= 1000:
-            amount = "£%iK" % (amount / 1000)
+            amount = "%s%.1fK" % (self.get_currency_symbol(), amount / 1000)
         else:
-            amount = "£%i" % (amount)
+            amount = "%s%i" % (self.get_currency_symbol(), amount)
 
         return amount

@@ -44,7 +44,7 @@ class Sponsorship:
         club = data.clubs.get_club_by_id(data.user.team)
 
         self.status = 1
-        self.timeout = random.randint(6, 10)
+        self.timeout = random.randint(28, 45)
 
         self.offer = self.Offer()
         self.offer.company = random.choice(data.companies.get_companies())

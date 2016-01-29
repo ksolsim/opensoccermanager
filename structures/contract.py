@@ -48,13 +48,7 @@ class Contract:
         Return player bonus value for given bonus index.
         '''
         bonuses = (self.leaguechamp, self.leaguerunnerup, self.goalbonus, self.winbonus)
-
-        value = bonuses[index]
-
-        if value >= 1000:
-            bonus = "£%.1fK" % (value / 1000)
-        elif value >= 100:
-            bonus = "£%i" % (value)
+        bonus = data.currency.get_rounded_amount(bonuses[index])
 
         return bonus
 
@@ -109,4 +103,4 @@ class Contract:
         self.contract -= 1
 
         if self.contract == 0:
-            print("Out of contract")
+            club.news.publish("PC01", player=self.player.get_name(mode=1))

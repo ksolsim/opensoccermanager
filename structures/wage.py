@@ -16,6 +16,9 @@
 #  OpenSoccerManager.  If not, see <http://www.gnu.org/licenses/>.
 
 
+import data
+
+
 class Wage:
     def __init__(self, player):
         self.player = player
@@ -89,12 +92,7 @@ class Wage:
         '''
         Return player wage with set currency as string.
         '''
-        if self.wage >= 1000:
-            wage = "£%.1fK" % (self.wage / 1000)
-        elif self.wage >= 100:
-            wage = "£%i" % (self.wage)
-
-        return wage
+        return data.currency.get_rounded_amount(self.wage)
 
     def wage_rounder(self, wage):
         '''

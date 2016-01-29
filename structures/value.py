@@ -16,6 +16,9 @@
 #  OpenSoccerManager.  If not, see <http://www.gnu.org/licenses/>.
 
 
+import data
+
+
 class Value:
     def __init__(self, player):
         self.player = player
@@ -93,14 +96,7 @@ class Value:
         '''
         Return player value with set currency as string.
         '''
-        value = self.get_value()
-
-        if value >= 1000000:
-            value = "£%.1fM" % (value / 1000000)
-        elif value >= 1000:
-            value = "£%iK" % (value / 1000)
-
-        return value
+        return data.currency.get_rounded_amount(self.get_value())
 
     def value_rounder(self, value):
         '''
@@ -111,7 +107,6 @@ class Value:
         elif value >= 10000:
             divisor = 1000
 
-        value = value - (value % divisor)
-        value = int(value)
+        value = int(value - (value % divisor))
 
         return value
