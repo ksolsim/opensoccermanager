@@ -171,8 +171,8 @@ class PlayerSearch(uigtk.widgets.Grid):
         '''
         index = int(combobox.get_active_id())
 
-        for count, column_list in enumerate(self.tree_columns):
-            for column in column_list:
+        for count, columns in enumerate(self.tree_columns):
+            for column in columns:
                 column.set_visible(count == index)
 
     def on_key_press_event(self, widget, event):

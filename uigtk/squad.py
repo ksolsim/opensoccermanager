@@ -90,27 +90,29 @@ class Squad(uigtk.widgets.Grid):
 
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Name", column=1)
         treeview.append_column(treeviewcolumn)
-        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Position", column=2)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Position", column=3)
         treeview.append_column(treeviewcolumn)
 
         self.tree_columns = ([], [], [])
 
         # Personal
-        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Nationality", column=13)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Age", column=2)
         self.tree_columns[0].append(treeviewcolumn)
-        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Value", column=14)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Nationality", column=14)
         self.tree_columns[0].append(treeviewcolumn)
-        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Wage", column=15)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Value", column=15)
         self.tree_columns[0].append(treeviewcolumn)
-        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Contract", column=16)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Wage", column=16)
         self.tree_columns[0].append(treeviewcolumn)
-        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Morale", column=17)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Contract", column=17)
+        self.tree_columns[0].append(treeviewcolumn)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Morale", column=18)
         self.tree_columns[0].append(treeviewcolumn)
 
         # Skills
         skills = structures.skills.Skills()
 
-        for count, skill in enumerate(skills.get_skills(), start=3):
+        for count, skill in enumerate(skills.get_skills(), start=4):
             label = Gtk.Label("%s" % (skill[0]))
             label.set_tooltip_text(skill[1])
             label.show()
@@ -120,22 +122,22 @@ class Squad(uigtk.widgets.Grid):
             treeview.append_column(treeviewcolumn)
             self.tree_columns[1].append(treeviewcolumn)
 
-        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Fitness", column=12)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Fitness", column=13)
         treeview.append_column(treeviewcolumn)
         self.tree_columns[1].append(treeviewcolumn)
 
         # Form
-        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Games", column=18)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Games", column=19)
         self.tree_columns[2].append(treeviewcolumn)
-        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Goals", column=19)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Goals", column=20)
         self.tree_columns[2].append(treeviewcolumn)
-        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Assists", column=20)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Assists", column=21)
         self.tree_columns[2].append(treeviewcolumn)
-        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Cards", column=21)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Cards", column=22)
         self.tree_columns[2].append(treeviewcolumn)
-        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="MOTM", column=22)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="MOTM", column=23)
         self.tree_columns[2].append(treeviewcolumn)
-        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Rating", column=23)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Rating", column=24)
         self.tree_columns[2].append(treeviewcolumn)
 
         for columns in (self.tree_columns[0], self.tree_columns[2]):
@@ -205,8 +207,8 @@ class Squad(uigtk.widgets.Grid):
         '''
         index = int(combobox.get_active_id())
 
-        for count, column_list in enumerate(self.tree_columns):
-            for column in column_list:
+        for count, columns in enumerate(self.tree_columns):
+            for column in columns:
                 column.set_visible(count == index)
 
     def on_filter_clicked(self, button):
@@ -271,10 +273,9 @@ class SquadList(Gtk.ListStore):
     '''
     def __init__(self):
         Gtk.ListStore.__init__(self)
-        self.set_column_types([int, str, str, int, int, int, int,
-                               int, int, int, int, int, int, str,
-                               str, str, str, str, str, int, int,
-                               str, int, str, str, str])
+        self.set_column_types([int, str, int, str, int, int, int, int, int, int,
+                               int, int, int, int, str, str, str, str, str, str,
+                               int, int, str, int, str, str, str])
 
     def update(self):
         self.clear()
@@ -282,6 +283,7 @@ class SquadList(Gtk.ListStore):
         for playerid, player in Squad.club.squad.get_squad():
             self.append([playerid,
                          player.get_name(),
+                         player.get_age(),
                          player.position,
                          player.keeping,
                          player.tackling,

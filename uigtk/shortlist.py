@@ -26,9 +26,12 @@ import uigtk.widgets
 class Shortlist(Gtk.Grid):
     __name__ = "shortlist"
 
+    treeselection = None
+
     def __init__(self):
-        self.liststore = Gtk.ListStore(int, str, str, str, str, str, str, int,
-                                       int, int, int, int, int, int, int, int)
+        self.liststore = Gtk.ListStore(int, str, int, str, str, str, str, str,
+                                       int, int, int, int, int, int, int, int,
+                                       int)
 
         Gtk.Grid.__init__(self)
         self.set_row_spacing(5)
@@ -41,26 +44,32 @@ class Shortlist(Gtk.Grid):
         self.treeview.set_hexpand(True)
         self.treeview.set_model(self.liststore)
         self.treeview.connect("row-activated", self.on_row_activated)
+        self.treeview.connect("button-release-event", self.on_button_release_event)
+        self.treeview.connect("key-press-event", self.on_key_press_event)
         self.treeview.treeselection.connect("changed", self.on_treeselection_changed)
         scrolledwindow.add(self.treeview)
+
+        Shortlist.treeselection = self.treeview.get_selection()
 
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Name", column=1)
         treeviewcolumn.set_expand(True)
         self.treeview.append_column(treeviewcolumn)
-        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Position", column=2)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Age", column=2)
         self.treeview.append_column(treeviewcolumn)
-        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Club", column=3)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Position", column=3)
         self.treeview.append_column(treeviewcolumn)
-        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Nationality", column=4)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Club", column=4)
         self.treeview.append_column(treeviewcolumn)
-        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Value", column=5)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Nationality", column=5)
         self.treeview.append_column(treeviewcolumn)
-        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Wage", column=6)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Value", column=6)
+        self.treeview.append_column(treeviewcolumn)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Wage", column=7)
         self.treeview.append_column(treeviewcolumn)
 
         skills = structures.skills.Skills()
 
-        for count, skill in enumerate(skills.get_skills(), start=7):
+        for count, skill in enumerate(skills.get_skills(), start=8):
             label = Gtk.Label(skill[0])
             label.set_tooltip_text(skill[1])
             label.show()
@@ -92,6 +101,8 @@ class Shortlist(Gtk.Grid):
         self.buttonScout.set_tooltip_text("Request report from scouting team on player.")
         self.buttonScout.connect("clicked", self.on_scout_report_clicked)
         buttonbox.add(self.buttonScout)
+
+        self.contextmenu = ContextMenu()
 
     def on_treeselection_changed(self, treeselection):
         '''
@@ -163,6 +174,27 @@ class Shortlist(Gtk.Grid):
 
         ScoutReport()
 
+    def on_key_press_event(self, widget, event):
+        if Gdk.keyval_name(event.keyval) == "Menu":
+            self.on_context_menu_event(event)
+
+    def on_button_release_event(self, widget, event):
+        self.on_context_menu_event(event)
+
+    def on_context_menu_event(self, event):
+        if event.button == 3:
+            model, treeiter = Shortlist.treeselection.get_selected()
+            playerid = model[treeiter][0]
+
+            self.contextmenu.playerid = playerid
+            self.contextmenu.show()
+            self.contextmenu.popup(None,
+                                   None,
+                                   None,
+                                   None,
+                                   event.button,
+                                   event.time)
+
     def populate_data(self):
         self.liststore.clear()
 
@@ -171,6 +203,7 @@ class Shortlist(Gtk.Grid):
 
             self.liststore.append([playerid,
                                    player.get_name(),
+                                   player.get_age(),
                                    player.position,
                                    player.get_club_name(),
                                    player.get_nationality_name(),
@@ -191,6 +224,71 @@ class Shortlist(Gtk.Grid):
         self.populate_data()
 
         self.show_all()
+
+
+class ContextMenu(Gtk.Menu):
+    def __init__(self):
+        Gtk.Menu.__init__(self)
+
+        menuitem = uigtk.widgets.MenuItem("_Approach for Purchase")
+        menuitem.connect("activate", self.on_purchase_clicked)
+        self.append(menuitem)
+        menuitem = uigtk.widgets.MenuItem("_Approach for Loan")
+        self.append(menuitem)
+        menuitem = uigtk.widgets.MenuItem("_Remove Player")
+        self.append(menuitem)
+        self.menuitemScoutReport = uigtk.widgets.MenuItem("_Scout Report")
+        self.menuitemScoutReport.set_sensitive(False)
+        self.append(self.menuitemScoutReport)
+
+    def on_purchase_clicked(self, *args):
+        '''
+        Confirm purchase approach for player and setup negotiation.
+        '''
+        model, treeiter = Shortlist.treeselection.get_selected()
+        playerid = model[treeiter][0]
+
+        data.negotiations.initialise_purchase(playerid)
+
+    def on_loan_clicked(self, *args):
+        '''
+        Confirm loan approach for player and setup negotiation.
+        '''
+        model, treeiter = Shortlist.treeselection.get_selected()
+        playerid = model[treeiter][0]
+
+        data.negotiations.initialise_loan(playerid)
+
+    def on_remove_clicked(self, *args):
+        '''
+        Ask to remove selected player from shortlist.
+        '''
+        model, treeiter = Shortlist.treeselection.get_selected()
+        playerid = model[treeiter][0]
+
+        dialog = RemoveShortlist()
+
+        if dialog.show(playerid) == 1:
+            self.club.shortlist.remove_from_shortlist(playerid)
+
+            self.populate_data()
+
+    def on_scout_report_clicked(self, *args):
+        '''
+        Provide a scout report for the selected player.
+        '''
+        model, treeiter = Shortlist.treeselection.get_selected()
+        playerid = model[treeiter][0]
+
+        ScoutReport()
+
+    def show(self):
+        self.club = data.clubs.get_club_by_id(data.user.team)
+
+        self.show_all()
+
+        sensitive = self.club.scouts.get_staff_count() > 0
+        self.menuitemScoutReport.set_sensitive(sensitive)
 
 
 class RemoveShortlist(Gtk.MessageDialog):
@@ -230,8 +328,9 @@ class ScoutReport(Gtk.MessageDialog):
     def __init__(self):
         Gtk.MessageDialog.__init__(self)
         self.set_transient_for(data.window)
-        self.set_title("Scout Report")
+        self.set_modal(True)
         self.set_resizable(False)
+        self.set_title("Scout Report")
         self.add_button("_Close", Gtk.ResponseType.CLOSE)
         self.connect("response", self.on_response)
 
