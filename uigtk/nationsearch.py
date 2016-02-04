@@ -68,24 +68,30 @@ class NationSearch(uigtk.widgets.Grid):
 
         # Squad
         grid = uigtk.widgets.Grid()
-        grid.set_vexpand(True)
         grid.set_hexpand(True)
         self.attach(grid, 1, 0, 1, 1)
 
         self.labelName = uigtk.widgets.Label()
         grid.attach(self.labelName, 0, 0, 2, 1)
 
-        position = Position("Goalkeepers")
-        grid.attach(position, 0, 1, 1, 1)
+        gridPositions = uigtk.widgets.Grid()
+        gridPositions.set_hexpand(True)
+        gridPositions.set_vexpand(True)
+        gridPositions.set_row_homogeneous(True)
+        gridPositions.set_column_homogeneous(True)
+        grid.attach(gridPositions, 0, 1, 2, 1)
 
-        position = Position("Defenders")
-        grid.attach(position, 0, 2, 1, 1)
+        self.goalkeepers = Position("Goalkeepers")
+        gridPositions.attach(self.goalkeepers, 0, 1, 1, 1)
 
-        position = Position("Midfielders")
-        grid.attach(position, 1, 1, 1, 1)
+        self.defenders = Position("Defenders")
+        gridPositions.attach(self.defenders, 0, 2, 1, 1)
 
-        position = Position("Attackers")
-        grid.attach(position, 1, 2, 1, 1)
+        self.midfielders = Position("Midfielders")
+        gridPositions.attach(self.midfielders, 1, 1, 1, 1)
+
+        self.attackers = Position("Attackers")
+        gridPositions.attach(self.attackers, 1, 2, 1, 1)
 
     def set_visible_nation(self, nationid):
         '''
@@ -101,6 +107,53 @@ class NationSearch(uigtk.widgets.Grid):
         self.treeviewSearch.treeselection.select_path(treepath)
         self.treeviewSearch.scroll_to_cell(treepath, self.treeviewcolumn, True, False, False)
 
+    def set_national_team(self, nation):
+        '''
+        Display players selected as part of the national team.
+        '''
+        self.goalkeepers.liststore.clear()
+        self.defenders.liststore.clear()
+        self.midfielders.liststore.clear()
+        self.attackers.liststore.clear()
+
+        positions = nation.get_national_team()
+
+        for playerid in positions[0]:
+            player = data.players.get_player_by_id(playerid)
+            club = data.clubs.get_club_by_id(player.squad)
+
+            self.goalkeepers.liststore.append([playerid,
+                                               player.get_name(mode=1),
+                                               player.position,
+                                               club.name])
+
+        for playerid in positions[1]:
+            player = data.players.get_player_by_id(playerid)
+            club = data.clubs.get_club_by_id(player.squad)
+
+            self.defenders.liststore.append([playerid,
+                                             player.get_name(mode=1),
+                                             player.position,
+                                             club.name])
+
+        for playerid in positions[2]:
+            player = data.players.get_player_by_id(playerid)
+            club = data.clubs.get_club_by_id(player.squad)
+
+            self.midfielders.liststore.append([playerid,
+                                               player.get_name(mode=1),
+                                               player.position,
+                                               club.name])
+
+        for playerid in positions[3]:
+            player = data.players.get_player_by_id(playerid)
+            club = data.clubs.get_club_by_id(player.squad)
+
+            self.attackers.liststore.append([playerid,
+                                             player.get_name(mode=1),
+                                             player.position,
+                                             club.name])
+
     def on_selection_changed(self, treeselection):
         '''
         Update the display with the visible nation for given id.
@@ -112,7 +165,9 @@ class NationSearch(uigtk.widgets.Grid):
             nation = data.nations.get_nation_by_id(nationid)
 
             name = nation.name.replace('&', '&amp;')
-            self.labelName.set_markup("<span size='24000'><b>%s</b></span>" % (name))
+            self.labelName.set_markup("<span size='18000'><b>%s</b></span>" % (name))
+
+            self.set_national_team(nation)
 
     def on_search_activated(self, entry):
         '''
@@ -166,15 +221,28 @@ class Position(uigtk.widgets.CommonFrame):
         scrolledwindow = uigtk.widgets.ScrolledWindow()
         self.grid.attach(scrolledwindow, 0, 0, 1, 1)
 
+        self.liststore = Gtk.ListStore(int, str, str, str)
+
         treeview = uigtk.widgets.TreeView()
         treeview.set_vexpand(True)
         treeview.set_hexpand(True)
+        treeview.set_model(self.liststore)
+        treeview.connect("row-activated", self.on_row_activated)
         scrolledwindow.add(treeview)
 
-        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Name")
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Name", column=1)
         treeviewcolumn.set_expand(True)
         treeview.append_column(treeviewcolumn)
-        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Position")
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Position", column=2)
         treeview.append_column(treeviewcolumn)
-        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Club")
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Club", column=3)
         treeview.append_column(treeviewcolumn)
+
+    def on_row_activated(self, treeview, treepath, treeviewcolumn):
+        '''
+        Display player information screen when row activated.
+        '''
+        playerid = self.liststore[treepath][0]
+
+        data.window.screen.change_visible_screen("playerinformation")
+        data.window.screen.active.set_visible_player(playerid)

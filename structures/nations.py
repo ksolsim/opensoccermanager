@@ -35,8 +35,31 @@ class Nations:
 
         def get_national_team(self):
             '''
-            Return tuple of players to display in national team.
+            Return nested list of players to display in national team.
             '''
+            goalkeepers = []
+            defenders = []
+            midfielders = []
+            attackers = []
+
+            for count, playerid in enumerate(self.players):
+                player = data.players.get_player_by_id(playerid)
+
+                if player.position == "GK":
+                    goalkeepers.append(playerid)
+
+                if player.position in ("DL", "DR", "DC", "D"):
+                    defenders.append(playerid)
+
+                if player.position in ("ML", "MR", "MC", "M"):
+                    midfielders.append(playerid)
+
+                if player.position in ("AF", "AS"):
+                    attackers.append(playerid)
+
+            players = (goalkeepers, defenders, midfielders, attackers)
+
+            return players
 
         def get_players(self):
             '''
