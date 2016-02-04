@@ -127,10 +127,9 @@ class ClubInformation(uigtk.widgets.Grid):
         scrolledwindow = uigtk.widgets.ScrolledWindow()
         frame.grid.attach(scrolledwindow, 0, 0, 1, 1)
 
-        self.liststore = Gtk.ListStore(int, str, str, str, str, int, int, int,
+        self.liststoreSquad = Gtk.ListStore(int, str, str, str, str, int, int, int,
                                        int, int, int, int, int, int)
-
-        treemodelsort = Gtk.TreeModelSort(self.liststore)
+        treemodelsort = Gtk.TreeModelSort(self.liststoreSquad)
         treemodelsort.set_sort_column_id(1, Gtk.SortType.ASCENDING)
 
         treeview = uigtk.widgets.TreeView()
@@ -161,36 +160,45 @@ class ClubInformation(uigtk.widgets.Grid):
             treeviewcolumn.set_expand(True)
             treeview.append_column(treeviewcolumn)
 
-        frame = uigtk.widgets.CommonFrame("Form")
+        frame = uigtk.widgets.CommonFrame("History")
         self.attach(frame, 1, 2, 1, 1)
 
         scrolledwindow = uigtk.widgets.ScrolledWindow()
         frame.grid.attach(scrolledwindow, 0, 0, 1, 1)
 
-        treeviewForm = uigtk.widgets.TreeView()
-        treeviewForm.set_hexpand(True)
-        scrolledwindow.add(treeviewForm)
+        self.liststoreHistory = Gtk.ListStore(str, str, int, int, int, int, int, int, int)
 
-        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Season")
-        treeviewForm.append_column(treeviewcolumn)
-        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Position")
-        treeviewForm.append_column(treeviewcolumn)
-        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Wins")
-        treeviewForm.append_column(treeviewcolumn)
-        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Draws")
-        treeviewForm.append_column(treeviewcolumn)
-        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Losses")
-        treeviewForm.append_column(treeviewcolumn)
-        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="GF")
-        treeviewForm.append_column(treeviewcolumn)
-        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="GA")
-        treeviewForm.append_column(treeviewcolumn)
-        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="GD")
-        treeviewForm.append_column(treeviewcolumn)
-        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Points")
-        treeviewForm.append_column(treeviewcolumn)
+        treeviewHistory = uigtk.widgets.TreeView()
+        treeviewHistory.set_hexpand(True)
+        treeviewHistory.set_model(self.liststoreHistory)
+        scrolledwindow.add(treeviewHistory)
 
-        self.number = structures.number.Number()
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Season", column=0)
+        treeviewHistory.append_column(treeviewcolumn)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Position", column=1)
+        treeviewcolumn.set_fixed_width(75)
+        treeviewHistory.append_column(treeviewcolumn)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Wins", column=2)
+        treeviewcolumn.set_fixed_width(50)
+        treeviewHistory.append_column(treeviewcolumn)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Draws", column=3)
+        treeviewcolumn.set_fixed_width(50)
+        treeviewHistory.append_column(treeviewcolumn)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Losses", column=4)
+        treeviewcolumn.set_fixed_width(50)
+        treeviewHistory.append_column(treeviewcolumn)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="GF", column=5)
+        treeviewcolumn.set_fixed_width(50)
+        treeviewHistory.append_column(treeviewcolumn)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="GA", column=6)
+        treeviewcolumn.set_fixed_width(50)
+        treeviewHistory.append_column(treeviewcolumn)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="GD", column=7)
+        treeviewcolumn.set_fixed_width(50)
+        treeviewHistory.append_column(treeviewcolumn)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Points", column=8)
+        treeviewcolumn.set_fixed_width(50)
+        treeviewHistory.append_column(treeviewcolumn)
 
         self.contextmenu1 = uigtk.playersearch.ContextMenu1()
         self.contextmenu2 = uigtk.playersearch.ContextMenu2()
@@ -235,8 +243,6 @@ class ClubInformation(uigtk.widgets.Grid):
         stadium = data.stadiums.get_stadium_by_id(club.stadium)
         league = data.leagues.get_league_by_id(club.league)
 
-        position = league.standings.get_position_for_club(clubid)
-
         self.labelName.set_label("<span size='24000'><b>%s</b></span>" % (club.name))
         self.labelNickname.set_label(club.nickname)
         self.labelManager.set_label(club.manager)
@@ -244,29 +250,33 @@ class ClubInformation(uigtk.widgets.Grid):
         self.labelStadiumName.set_label(stadium.name)
         self.labelStadiumCapacity.set_label("%i" % (stadium.get_capacity()))
         self.labelLeagueName.set_label(league.name)
-        self.labelLeaguePosition.set_label(self.number.get_ordinal_number(position))
+        self.labelLeaguePosition.set_label(league.standings.get_position_for_club(clubid))
         self.labelPlayerCount.set_label("%i" % (club.squad.get_squad_count()))
         self.labelAverageAge.set_label("%.1f" % (club.squad.get_average_age()))
         self.labelSquadValue.set_label(data.currency.get_rounded_amount(club.get_total_value()))
         self.labelWeeklyWage.set_label(data.currency.get_rounded_amount(club.get_total_wage()))
 
-        self.liststore.clear()
+        self.liststoreSquad.clear()
 
         for playerid, player in club.squad.get_squad():
-            self.liststore.append([playerid,
-                                   player.get_name(),
-                                   player.position,
-                                   player.value.get_value_as_string(),
-                                   player.wage.get_wage_as_string(),
-                                   player.keeping,
-                                   player.tackling,
-                                   player.passing,
-                                   player.shooting,
-                                   player.heading,
-                                   player.pace,
-                                   player.stamina,
-                                   player.ball_control,
-                                   player.set_pieces])
+            self.liststoreSquad.append([playerid,
+                                        player.get_name(),
+                                        player.position,
+                                        player.value.get_value_as_string(),
+                                        player.wage.get_wage_as_string(),
+                                        player.keeping,
+                                        player.tackling,
+                                        player.passing,
+                                        player.shooting,
+                                        player.heading,
+                                        player.pace,
+                                        player.stamina,
+                                        player.ball_control,
+                                        player.set_pieces])
+
+        self.liststoreHistory.clear()
+
+        self.liststoreHistory.insert(0, club.history.get_current_history())
 
     def run(self):
         self.show_all()

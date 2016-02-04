@@ -17,11 +17,14 @@
 
 
 import data
+import structures.number
 
 
 class Standings:
     def __init__(self):
         self.standings = {}
+
+        self.number = structures.number.Number()
 
     def add_club(self, clubid):
         '''
@@ -53,13 +56,21 @@ class Standings:
 
         return standings
 
+    def get_standing_for_club(self, clubid):
+        '''
+        Get standing data list for given club id.
+        '''
+        for standing in self.get_data():
+            if clubid == standing[0]:
+                return standing[1:8]
+
     def get_position_for_club(self, clubid):
         '''
-        Return the position for the given clubid.
+        Return the position for the given club id.
         '''
         for position, standing in enumerate(self.get_data(), start=1):
             if clubid == standing[0]:
-                return position
+                return self.number.get_ordinal_number(position)
 
     def get_club_for_position(self, position):
         '''

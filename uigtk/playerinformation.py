@@ -152,6 +152,9 @@ class PlayerInformation(uigtk.widgets.Grid):
     def run(self):
         self.show_all()
 
+        if PlayerInformation.playerid:
+            self.set_visible_player(PlayerInformation.playerid)
+
 
 class Personal(uigtk.widgets.Grid):
     def __init__(self):
@@ -507,6 +510,7 @@ class ContextMenu1(Gtk.Menu):
 
         if dialog.show() == 1:
             self.player.contract.terminate_contract()
+            data.window.screen.refresh_visible_screen()
 
     def on_comparison_clicked(self, *args):
         '''

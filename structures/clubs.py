@@ -41,7 +41,8 @@ import structures.training
 
 class Clubs:
     class Club:
-        def __init__(self):
+        def __init__(self, clubid):
+            self.clubid = clubid
             self.name = ""
             self.nickname = ""
             self.manager = ""
@@ -68,6 +69,7 @@ class Clubs:
             self.shortlist = structures.shortlist.Shortlist()
             self.form = structures.form.Form()
             self.expectation = structures.expectation.Expectation()
+            self.history = History(self)
 
         def get_total_value(self):
             '''
@@ -143,8 +145,8 @@ class Clubs:
                                      (self.season,))
 
         for item in data.database.cursor.fetchall():
-            club = self.Club()
             clubid = item[0]
+            club = self.Club(clubid)
             self.clubs[clubid] = club
 
             club.name = item[1]
@@ -170,3 +172,32 @@ class Clubs:
             else:
                 finances = structures.finances.FinanceCategories()
                 club.accounts.balance = finances.get_value_by_index(option)
+
+
+class History:
+    def __init__(self, club):
+        self.history = []
+        self.club = club
+
+    def add_history(self):
+        '''
+        Add current history tuple to previous history list.
+        '''
+        self.history.insert(0, self.get_current_history())
+
+    def get_history(self):
+        '''
+        Return list of history items.
+        '''
+        return self.history
+
+    def get_current_history(self):
+        '''
+        Return tuple for current season history.
+        '''
+        league = data.leagues.get_league_by_id(self.club.league)
+
+        history = [data.date.get_season(), league.standings.get_position_for_club(self.club.clubid)]
+        history.extend(league.standings.get_standing_for_club(self.club.clubid))
+
+        return history
