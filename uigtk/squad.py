@@ -318,6 +318,8 @@ class FirstTeam(uigtk.widgets.Grid):
         uigtk.widgets.Grid.__init__(self)
         self.set_border_width(5)
 
+        self.contextmenu = ContextMenu2(squad=0)
+
         self.labels = []
         self.buttons = []
 
@@ -335,6 +337,7 @@ class FirstTeam(uigtk.widgets.Grid):
             button.connect("drag-data-get", self.on_drag_data_get, count)
             button.connect("drag-data-received", self.on_drag_data_received, count)
             button.connect("clicked", self.on_player_select_clicked, count)
+            button.connect("button-press-event", self.on_button_press_event, count)
             label.set_mnemonic_widget(button)
             self.attach(button, 1, count, 1, 1)
             self.buttons.append(button)
@@ -383,6 +386,16 @@ class FirstTeam(uigtk.widgets.Grid):
             Squad.club.squad.teamselection.add_to_team(status, positionid)
             Squad.populate_selection(Squad)
 
+    def on_button_press_event(self, button, event, positionid):
+        if event.button == 3:
+            self.contextmenu.show(positionid)
+            self.contextmenu.popup(None,
+                                   None,
+                                   None,
+                                   None,
+                                   event.button,
+                                   event.time)
+
     def populate_team(self):
         for count, position in enumerate(Squad.club.tactics.get_formation_positions()):
             label = self.labels[count]
@@ -401,6 +414,8 @@ class Substitutions(uigtk.widgets.Grid):
         uigtk.widgets.Grid.__init__(self)
         self.set_border_width(5)
 
+        self.contextmenu = ContextMenu2(squad=1)
+
         self.buttons = []
 
         for count in range(0, 5):
@@ -416,6 +431,7 @@ class Substitutions(uigtk.widgets.Grid):
             button.connect("drag-data-get", self.on_drag_data_get, count)
             button.connect("drag-data-received", self.on_drag_data_received, count)
             button.connect("clicked", self.on_player_select_clicked, count)
+            button.connect("button-press-event", self.on_button_press_event, count)
             label.set_mnemonic_widget(button)
             self.attach(button, 1, count, 1, 1)
             self.buttons.append(button)
@@ -463,6 +479,16 @@ class Substitutions(uigtk.widgets.Grid):
         else:
             Squad.club.squad.teamselection.add_to_subs(status, positionid)
             Squad.populate_selection(Squad)
+
+    def on_button_press_event(self, button, event, positionid):
+        if event.button == 3:
+            self.contextmenu.show(positionid)
+            self.contextmenu.popup(None,
+                                   None,
+                                   None,
+                                   None,
+                                   event.button,
+                                   event.time)
 
     def populate_subs(self):
         for count, playerid in enumerate(Squad.club.squad.teamselection.get_subs_selection()):
@@ -671,25 +697,25 @@ class ContextMenu(Gtk.Menu):
         separator = Gtk.SeparatorMenuItem()
         self.append(separator)
 
-        self.menuitemAddTeam = uigtk.widgets.MenuItem("_Add To Team")
+        self.menuitemAddTeam = uigtk.widgets.MenuItem("_Add to Team")
         self.append(self.menuitemAddTeam)
-        menuitem = uigtk.widgets.MenuItem("_Remove From Team")
+        menuitem = uigtk.widgets.MenuItem("_Remove from Team")
         menuitem.connect("activate", self.on_remove_from_team_clicked)
         self.append(menuitem)
 
         separator = Gtk.SeparatorMenuItem()
         self.append(separator)
 
-        self.menuitemAddPurchase = uigtk.widgets.MenuItem("_Add To Purchase List")
+        self.menuitemAddPurchase = uigtk.widgets.MenuItem("_Add to Purchase List")
         self.menuitemAddPurchase.connect("activate", self.on_purchase_list_clicked)
         self.append(self.menuitemAddPurchase)
-        self.menuitemRemovePurchase = uigtk.widgets.MenuItem("_Remove From Purchase List")
+        self.menuitemRemovePurchase = uigtk.widgets.MenuItem("_Remove from Purchase List")
         self.menuitemRemovePurchase.connect("activate", self.on_purchase_list_clicked)
         self.append(self.menuitemRemovePurchase)
-        self.menuitemAddLoan = uigtk.widgets.MenuItem("_Add To Loan List")
+        self.menuitemAddLoan = uigtk.widgets.MenuItem("_Add to Loan List")
         self.menuitemAddLoan.connect("activate", self.on_loan_list_clicked)
         self.append(self.menuitemAddLoan)
-        self.menuitemRemoveLoan = uigtk.widgets.MenuItem("_Remove From Loan List")
+        self.menuitemRemoveLoan = uigtk.widgets.MenuItem("_Remove from Loan List")
         self.menuitemRemoveLoan.connect("activate", self.on_loan_list_clicked)
         self.append(self.menuitemRemoveLoan)
         menuitem = uigtk.widgets.MenuItem("_Renew Contract")
@@ -702,7 +728,7 @@ class ContextMenu(Gtk.Menu):
         separator = Gtk.SeparatorMenuItem()
         self.append(separator)
 
-        menuitem = uigtk.widgets.MenuItem("Add To _Comparison")
+        menuitem = uigtk.widgets.MenuItem("Add to _Comparison")
         menuitem.connect("activate", self.on_comparison_clicked)
         self.append(menuitem)
 
@@ -807,6 +833,35 @@ class PositionMenu(Gtk.Menu):
             menuitem = uigtk.widgets.MenuItem("Sub _%i" % (count + 1))
             menuitem.connect("button-release-event", self.on_add_subs_clicked, count)
             self.append(menuitem)
+
+
+class ContextMenu2(Gtk.Menu):
+    '''
+    Context menu for display when right-clicking first team or sub buttons.
+    '''
+    def __init__(self, squad):
+        Gtk.Menu.__init__(self)
+
+        if squad == 0:
+            menuitemRemoveTeam = uigtk.widgets.MenuItem("_Remove from Team")
+            menuitemRemoveTeam.connect("activate", self.on_remove_from_team_clicked)
+            self.append(menuitemRemoveTeam)
+        else:
+            menuitemRemoveSubs = uigtk.widgets.MenuItem("_Remove from Subs")
+            menuitemRemoveSubs.connect("activate", self.on_remove_from_subs_clicked)
+            self.append(menuitemRemoveSubs)
+
+    def on_remove_from_team_clicked(self, *args):
+        Squad.club.squad.teamselection.remove_from_team_by_position(self.positionid)
+        Squad.populate_selection(Squad)
+
+    def on_remove_from_subs_clicked(self, *args):
+        Squad.club.squad.teamselection.remove_from_subs_by_position(self.positionid)
+        Squad.populate_selection(Squad)
+
+    def show(self, positionid):
+        self.positionid = positionid
+        self.show_all()
 
 
 class RenewContract(Gtk.Dialog):
