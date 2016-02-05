@@ -180,6 +180,7 @@ class PlayerSearch(uigtk.widgets.Grid):
         Key event when right-click menu is pressed on keyboard.
         '''
         if Gdk.keyval_name(event.keyval) == "Menu":
+            event.button = 3
             self.on_context_menu_event(event)
 
     def on_button_release_event(self, treeview, event):
@@ -193,21 +194,21 @@ class PlayerSearch(uigtk.widgets.Grid):
         '''
         Display appropriate context menu for selected player.
         '''
-        event.button = 3
-
         club = data.clubs.get_club_by_id(data.user.team)
 
         model, treeiter = self.treeselection.get_selected()
-        playerid = model[treeiter][0]
 
-        if club.squad.get_player_in_squad(playerid):
-            contextmenu = self.contextmenu1
-        else:
-            contextmenu = self.contextmenu2
+        if treeiter:
+            playerid = model[treeiter][0]
 
-        contextmenu.playerid = playerid
-        contextmenu.show()
-        contextmenu.popup(None, None, None, None, event.button, event.time)
+            if club.squad.get_player_in_squad(playerid):
+                contextmenu = self.contextmenu1
+            else:
+                contextmenu = self.contextmenu2
+
+            contextmenu.playerid = playerid
+            contextmenu.show()
+            contextmenu.popup(None, None, None, None, event.button, event.time)
 
     def on_search_activated(self, entry):
         '''

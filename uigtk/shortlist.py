@@ -17,6 +17,7 @@
 
 
 from gi.repository import Gtk
+from gi.repository import Gdk
 
 import data
 import structures.skills
@@ -176,14 +177,17 @@ class Shortlist(Gtk.Grid):
 
     def on_key_press_event(self, widget, event):
         if Gdk.keyval_name(event.keyval) == "Menu":
+            event.button = 3
             self.on_context_menu_event(event)
 
     def on_button_release_event(self, widget, event):
-        self.on_context_menu_event(event)
+        if event.button == 3:
+            self.on_context_menu_event(event)
 
     def on_context_menu_event(self, event):
-        if event.button == 3:
-            model, treeiter = Shortlist.treeselection.get_selected()
+        model, treeiter = Shortlist.treeselection.get_selected()
+
+        if treeiter:
             playerid = model[treeiter][0]
 
             self.contextmenu.playerid = playerid
@@ -230,15 +234,18 @@ class ContextMenu(Gtk.Menu):
     def __init__(self):
         Gtk.Menu.__init__(self)
 
-        menuitem = uigtk.widgets.MenuItem("_Approach for Purchase")
+        menuitem = uigtk.widgets.MenuItem("Approach for _Purchase")
         menuitem.connect("activate", self.on_purchase_clicked)
         self.append(menuitem)
-        menuitem = uigtk.widgets.MenuItem("_Approach for Loan")
+        menuitem = uigtk.widgets.MenuItem("Approach for _Loan")
+        menuitem.connect("activate", self.on_loan_clicked)
         self.append(menuitem)
         menuitem = uigtk.widgets.MenuItem("_Remove Player")
+        menuitem.connect("activate", self.on_remove_clicked)
         self.append(menuitem)
         self.menuitemScoutReport = uigtk.widgets.MenuItem("_Scout Report")
         self.menuitemScoutReport.set_sensitive(False)
+        self.menuitemScoutReport.connect("activate", self.on_scout_report_clicked)
         self.append(self.menuitemScoutReport)
 
     def on_purchase_clicked(self, *args):
@@ -270,8 +277,6 @@ class ContextMenu(Gtk.Menu):
 
         if dialog.show(playerid) == 1:
             self.club.shortlist.remove_from_shortlist(playerid)
-
-            self.populate_data()
 
     def on_scout_report_clicked(self, *args):
         '''

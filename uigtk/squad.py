@@ -172,14 +172,17 @@ class Squad(uigtk.widgets.Grid):
 
     def on_key_press_event(self, widget, event):
         if Gdk.keyval_name(event.keyval) == "Menu":
+            event.button = 3
             self.on_context_menu_event(event)
 
     def on_button_release_event(self, widget, event):
-        self.on_context_menu_event(event)
+        if event.button == 3:
+            self.on_context_menu_event(event)
 
     def on_context_menu_event(self, event):
-        if event.button == 3:
-            model, treeiter = Squad.treeselection.get_selected()
+        model, treeiter = Squad.treeselection.get_selected()
+
+        if treeiter:
             playerid = model[treeiter][0]
 
             self.contextmenu.playerid = playerid
