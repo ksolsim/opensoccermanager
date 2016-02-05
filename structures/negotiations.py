@@ -65,13 +65,52 @@ class Negotiations:
             self.offer_date = data.date.get_date_as_string()
             self.statusid = 0
             self.status = TransferStatus()
-            self.timeout = random.randint(1, 4)
+
+            self.update_timeout()
+
+        def set_status(self, statusid):
+            '''
+            Set status id and update timeout.
+            '''
+            self.statusid = statusid
+            self.update_timeout()
 
         def get_status_message(self):
             '''
             Retrieve current transfer status message for given status id.
             '''
-            return self.status.get_inbound_status(self.statusid)
+            if self.clubid == data.user.team:
+                return self.status.get_inbound_status(self.statusid)
+            else:
+                return self.status.get_outbound_status(self.statusid)
+
+        def update_timeout(self):
+            '''
+            Set new timeout counter.
+            '''
+            self.timeout = random.randint(3, 8)
+
+        def respond_to_negotiation(self):
+            '''
+            Handle user wanting a response to negotiation.
+            '''
+            player = data.players.get_player_by_id(self.playerid)
+            club = data.clubs.get_club_by_id(player.squad)
+
+            if self.statusid in (1, 4, 7):
+                uigtk.negotiations.NegotiationRejected()
+            elif self.statusid == 0:
+                uigtk.negotiations.AwaitingResponse(player, club)
+            elif self.statusid == 2:
+                dialog = uigtk.negotiations.TransferOffer(player, club)
+                dialog.show()
+
+        def consider_enquiry(self):
+            '''
+            Determine whether parent club wishes to negotiate.
+            '''
+            print("Enquiry determination...")
+            return random.choice((True, False))
 
     def __init__(self):
         self.negotiations = {}
@@ -86,7 +125,7 @@ class Negotiations:
 
         return self.negotiationid
 
-    def get_negotiation(self, negotiationid):
+    def get_negotiation_by_id(self, negotiationid):
         '''
         Return negotiation object for given negotiation id.
         '''
@@ -112,6 +151,17 @@ class Negotiations:
         '''
         for negotiation in self.negotiations.values():
             negotiation.timeout -= 1
+
+            if negotiation.timeout == 0:
+                if negotiation.statusid == 0:
+                    if negotiation.consider_enquiry():
+                        negotiation.statusid = 2
+                    else:
+                        negotiation.statusid = 1
+                elif negotiation.statusid == 3:
+                    print("Consider offer...")
+                elif negotiation.statusid == 6:
+                    print("Consider contract...")
 
     def initialise_purchase(self, playerid):
         '''
@@ -170,7 +220,7 @@ class Negotiations:
             if negotiation.clubid == data.user.team:
                 incoming[negotiationid] = negotiation
 
-        return incoming
+        return incoming.items()
 
     def get_user_outgoing(self):
         '''
@@ -178,4 +228,8 @@ class Negotiations:
         '''
         outgoing = {}
 
-        return outgoing
+        for negotiationid, negotiation in self.negotiations.items():
+            if negotiation.clubid != data.user.team:
+                outgoing[negotationid] = negotation
+
+        return outgoing.items()

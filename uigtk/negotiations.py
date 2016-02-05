@@ -64,23 +64,34 @@ class Negotiations(Gtk.Grid):
                                                           column=6)
             self.treeview.append_column(treeviewcolumn)
 
-            buttonbox = Gtk.ButtonBox()
+            buttonbox = uigtk.widgets.ButtonBox()
             buttonbox.set_layout(Gtk.ButtonBoxStyle.END)
             self.attach(buttonbox, 0, 2, 1, 1)
-            self.buttonEnd = uigtk.widgets.Button("End Negotiations")
+            self.buttonRespond = uigtk.widgets.Button("_Respond")
+            self.buttonRespond.set_sensitive(False)
+            self.buttonRespond.set_tooltip_text("Respond to negotiations for selected player.")
+            buttonbox.add(self.buttonRespond)
+            self.buttonEnd = uigtk.widgets.Button("_End")
             self.buttonEnd.set_sensitive(False)
             self.buttonEnd.set_tooltip_text("End transfer negotiations for selected player.")
-            self.buttonEnd.connect("clicked", self.on_end_transfer)
+            self.buttonEnd.connect("clicked", self.on_end_clicked)
             buttonbox.add(self.buttonEnd)
 
-        def on_end_transfer(self, *args):
+        def on_response_clicked(self, *args):
             '''
-            Ask to end transfer for selected players.
+            Respond to negotiations for selected player.
             '''
             model, treeiter = self.treeview.treeselection.get_selected()
-
             negotiationid = model[treeiter][0]
-            negotiation = data.negotiations.get_negotiation(negotiationid)
+            negotiation = data.negotiations.get_negotiation_by_id(negotiationid)
+
+        def on_end_clicked(self, *args):
+            '''
+            Cancel negotiations for selected player.
+            '''
+            model, treeiter = self.treeview.treeselection.get_selected()
+            negotiationid = model[treeiter][0]
+            negotiation = data.negotiations.get_negotiation_by_id(negotiationid)
             player = data.players.get_player_by_id(negotiation.playerid)
 
             dialog = EndTransfer(player.get_name(mode=1))
@@ -93,12 +104,9 @@ class Negotiations(Gtk.Grid):
             '''
             Display visible player information screen.
             '''
-            model = treeview.get_model()
-
-            playerid = model[treepath][1]
-
-            data.window.screen.change_visible_screen("playerinformation")
-            data.window.screen.active.set_visible_player(playerid)
+            negotiationid = self.liststore[treepath][0]
+            negotiation = data.negotiations.get_negotiation_by_id(negotiationid)
+            negotiation.respond_to_negotiation()
 
         def on_selection_changed(self, treeselection):
             '''
@@ -107,14 +115,16 @@ class Negotiations(Gtk.Grid):
             model, treeiter = treeselection.get_selected()
 
             if treeiter:
+                self.buttonRespond.set_sensitive(True)
                 self.buttonEnd.set_sensitive(True)
             else:
+                self.buttonRespond.set_sensitive(False)
                 self.buttonEnd.set_sensitive(False)
 
         def populate_data(self, negotiations):
             self.liststore.clear()
 
-            for negotiationid, negotiation in negotiations.items():
+            for negotiationid, negotiation in negotiations:
                 player = data.players.get_player_by_id(negotiation.playerid)
                 transfer_type = ("Purchase", "Loan")[negotiation.transfer_type]
                 club = data.clubs.get_club_by_id(player.squad)
@@ -134,30 +144,12 @@ class Negotiations(Gtk.Grid):
 
         self.inbound = self.Negotiation(label="Inbound Transfers")
         self.attach(self.inbound, 0, 0, 1, 1)
-
         self.outbound = self.Negotiation(label="Outbound Transfers")
         self.attach(self.outbound, 0, 1, 1, 1)
 
-    def populate_outgoing_data(self):
-        self.negotiationOutbound.liststore.clear()
-
-        outgoing = data.negotiations.get_user_outgoing()
-
-        for negotiationid, negotiation in outgoing.items():
-            player = data.players.get_player_by_id(negotiation.playerid)
-            transfer_type = ("Purchase", "Loan")[negotiation.transfer_type]
-            club = data.clubs[negotiation.clubid]
-
-            self.negotiationOutbound.liststore.append([negotiationid,
-                                                       player.get_name(mode=1),
-                                                       "%i/%i/%i" % (negotiation.offer_date),
-                                                       transfer_type,
-                                                       club.name,
-                                                       ""])
-
     def run(self):
         self.inbound.populate_data(data.negotiations.get_user_incoming())
-        #self.populate_outgoing_data()
+        self.outbound.populate_data(data.negotiations.get_user_outgoing())
         self.show_all()
 
 
@@ -244,7 +236,7 @@ class EndTransfer(Gtk.MessageDialog):
         self.set_markup("Do you want to end the transfer negotiations for %s?" % (name))
         self.set_property("message-type", Gtk.MessageType.WARNING)
         self.add_button("_Do Not End", Gtk.ResponseType.CANCEL)
-        self.add_button("_End Transfer", Gtk.ResponseType.OK)
+        self.add_button("_End Negotiation", Gtk.ResponseType.OK)
         self.set_default_response(Gtk.ResponseType.CANCEL)
 
     def show(self):
@@ -252,6 +244,71 @@ class EndTransfer(Gtk.MessageDialog):
         self.destroy()
 
         return state
+
+
+class TransferOffer(Gtk.Dialog):
+    def __init__(self, player, club):
+        Gtk.Dialog.__init__(self)
+        self.set_transient_for(data.window)
+        self.set_modal(True)
+        self.set_title("Enquiry Accepted")
+        self.add_button("_Withdraw", Gtk.ResponseType.REJECT)
+        self.add_button("_Offer", Gtk.ResponseType.ACCEPT)
+        self.set_default_response(Gtk.ResponseType.ACCEPT)
+        self.vbox.set_border_width(5)
+
+        grid = uigtk.widgets.Grid()
+        self.vbox.add(grid)
+
+        label = uigtk.widgets.Label("The offer for %s has been accepted.\n%s would like to negotiate a fee for the transfer." % (player.get_name(mode=1), club.name))
+        grid.attach(label, 0, 0, 2, 1)
+        label = uigtk.widgets.Label("Enter the amount to offer for the player:")
+        grid.attach(label, 0, 1, 1, 1)
+        spinbuttonAmount = Gtk.SpinButton.new_with_range(0, 999999999, 100000)
+        #spinbuttonAmount.set_value(player.value * 1.10)
+        grid.attach(spinbuttonAmount, 1, 1, 1, 1)
+
+    def show(self):
+        self.show_all()
+
+        if self.run() == Gtk.ResponseType.ACCEPT:
+            print("Offer")
+        else:
+            print("Withdraw")
+
+        self.destroy()
+
+
+class AwaitingResponse(Gtk.MessageDialog):
+    def __init__(self, player, club):
+        Gtk.MessageDialog.__init__(self)
+        self.set_transient_for(data.window)
+        self.set_title("Awaiting Response")
+        self.set_property("message-type", Gtk.MessageType.INFO)
+        self.set_markup("We are currently awaiting a response from %s for %s." % (club.name, player.get_name(mode=1)))
+        self.add_button("_Close", Gtk.ResponseType.CLOSE)
+        self.connect("response", self.on_response)
+
+        self.show()
+
+    def on_response(self, *args):
+        self.destroy()
+
+
+class NegotiationRejected(Gtk.MessageDialog):
+    def __init__(self):
+        Gtk.MessageDialog.__init__(self)
+        self.set_transient_for(data.window)
+        self.set_modal(True)
+        self.set_title("Transfer Rejected")
+        self.set_property("message-type", Gtk.MessageType.INFO)
+        self.add_button("_Close", Gtk.ResponseType.CLOSE)
+        self.connect("response", self.on_response)
+
+        self.show()
+
+    def on_response(self, *args):
+        self.destroy()
 
 
 class InProgress(Gtk.MessageDialog):

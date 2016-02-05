@@ -32,6 +32,7 @@ class Events:
         data.injury.generate_injuries()
         data.advertising.assistant_handled()
         self.club.tickets.check_season_ticket_availability()
+        data.negotiations.update_negotiations()
 
     def process_weekly_events(self):
         '''
