@@ -57,61 +57,6 @@ class TransferStatus:
 
 
 class Negotiations:
-    class Negotiation:
-        def __init__(self, playerid):
-            self.playerid = playerid
-            self.clubid = None
-            self.transfer_type = 0
-            self.offer_date = data.date.get_date_as_string()
-            self.statusid = 0
-            self.status = TransferStatus()
-
-            self.update_timeout()
-
-        def set_status(self, statusid):
-            '''
-            Set status id and update timeout.
-            '''
-            self.statusid = statusid
-            self.update_timeout()
-
-        def get_status_message(self):
-            '''
-            Retrieve current transfer status message for given status id.
-            '''
-            if self.clubid == data.user.team:
-                return self.status.get_inbound_status(self.statusid)
-            else:
-                return self.status.get_outbound_status(self.statusid)
-
-        def update_timeout(self):
-            '''
-            Set new timeout counter.
-            '''
-            self.timeout = random.randint(3, 8)
-
-        def respond_to_negotiation(self):
-            '''
-            Handle user wanting a response to negotiation.
-            '''
-            player = data.players.get_player_by_id(self.playerid)
-            club = data.clubs.get_club_by_id(player.squad)
-
-            if self.statusid in (1, 4, 7):
-                uigtk.negotiations.NegotiationRejected()
-            elif self.statusid == 0:
-                uigtk.negotiations.AwaitingResponse(player, club)
-            elif self.statusid == 2:
-                dialog = uigtk.negotiations.TransferOffer(player, club)
-                dialog.show()
-
-        def consider_enquiry(self):
-            '''
-            Determine whether parent club wishes to negotiate.
-            '''
-            print("Enquiry determination...")
-            return random.choice((True, False))
-
     def __init__(self):
         self.negotiations = {}
 
@@ -159,9 +104,15 @@ class Negotiations:
                     else:
                         negotiation.statusid = 1
                 elif negotiation.statusid == 3:
-                    print("Consider offer...")
+                    if negotiation.consider_offer():
+                        negotiation.statusid = 5
+                    else:
+                        negotiation.statusid = 4
                 elif negotiation.statusid == 6:
-                    print("Consider contract...")
+                    if negotiation.consider_contract():
+                        negotiation.statusid = 8
+                    else:
+                        negotiation.statusid = 7
 
     def initialise_purchase(self, playerid):
         '''
@@ -176,7 +127,7 @@ class Negotiations:
             if dialog.show(club, player) == 1:
                 negotiationid = self.get_negotiationid()
 
-                negotiation = self.Negotiation(playerid)
+                negotiation = Negotiation(negotiationid, playerid)
                 negotiation.clubid = data.user.team
                 self.negotiations[negotiationid] = negotiation
 
@@ -196,7 +147,7 @@ class Negotiations:
             if dialog.show(club, player) == 1:
                 negotiationid = self.get_negotiationid()
 
-                negotiation = self.Negotiation(playerid)
+                negotiation = Negotiation(negotiationid, playerid)
                 negotiation.clubid = data.user.team
                 negotiation.transfer_type = 1
                 self.negotiations[negotiationid] = negotiation
@@ -233,3 +184,83 @@ class Negotiations:
                 outgoing[negotationid] = negotation
 
         return outgoing.items()
+
+
+class Negotiation:
+    def __init__(self, negotiationid, playerid):
+        self.negotiationid = negotiationid
+        self.playerid = playerid
+        self.clubid = None
+        self.transfer_type = 0
+        self.offer_date = data.date.get_date_as_string()
+        self.statusid = 0
+        self.status = TransferStatus()
+
+        self.update_timeout()
+
+    def set_status(self, statusid):
+        '''
+        Set status id and update timeout.
+        '''
+        self.statusid = statusid
+        self.update_timeout()
+
+    def get_status_message(self):
+        '''
+        Retrieve current transfer status message for given status id.
+        '''
+        if self.clubid == data.user.team:
+            return self.status.get_inbound_status(self.statusid)
+        else:
+            return self.status.get_outbound_status(self.statusid)
+
+    def update_timeout(self):
+        '''
+        Set new timeout counter.
+        '''
+        self.timeout = random.randint(3, 8)
+
+    def respond_to_negotiation(self):
+        '''
+        Handle user wanting a response to negotiation.
+        '''
+        player = data.players.get_player_by_id(self.playerid)
+        club = data.clubs.get_club_by_id(player.squad)
+
+        if self.statusid in (1, 4, 7):
+            uigtk.negotiations.NegotiationRejected()
+        elif self.statusid in (0, 3, 6):
+            uigtk.negotiations.AwaitingResponse(player, club)
+        elif self.statusid == 2:
+            dialog = uigtk.negotiations.TransferOffer(player, club)
+
+            if dialog.show():
+                self.set_status(3)
+                Negotiations.inbound.populate_data(data.negotiations.get_user_incoming())
+            else:
+                data.negotiations.end_negotiation(self.negotiationid)
+        elif self.statusid == 5:
+            dialog = uigtk.negotiations.ContractNegotiation(self.playerid)
+
+            if dialog.show() == 1:
+                self.set_status(6)
+            else:
+                data.negotiations.end_negotiation(self.negotiationid)
+
+    def consider_enquiry(self):
+        '''
+        Determine whether parent club wishes to negotiate for player.
+        '''
+        return random.choice((True, False))
+
+    def consider_offer(self):
+        '''
+        Determine whether parent club wishes to agree to the offer.
+        '''
+        return random.choice((True, False))
+
+    def consider_contract(self):
+        '''
+        Determine whether player wishes to move clubs.
+        '''
+        return random.choice((True, False))

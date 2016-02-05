@@ -864,79 +864,15 @@ class ContextMenu2(Gtk.Menu):
         self.show_all()
 
 
-class RenewContract(Gtk.Dialog):
-    '''
-    Dialog to arrange details for renewing specified players contract.
-    '''
+class RenewContract(uigtk.shared.ContractNegotiation):
     def __init__(self, playerid):
         player = data.players.get_player_by_id(playerid)
 
-        Gtk.MessageDialog.__init__(self)
-        self.set_transient_for(data.window)
-        self.set_modal(True)
-        self.set_resizable(False)
+        uigtk.shared.ContractNegotiation.__init__(self)
         self.set_title("Renew Contract")
-        self.add_button("_Cancel", Gtk.ResponseType.CANCEL)
         self.add_button("_Renew", Gtk.ResponseType.OK)
-        self.set_default_response(Gtk.ResponseType.CANCEL)
-        self.vbox.set_border_width(5)
-        self.vbox.set_spacing(5)
 
-        label = uigtk.widgets.Label("Contract renewal details for %s." % (player.get_name(mode=1)), leftalign=True)
-        self.vbox.add(label)
-
-        frame = uigtk.widgets.CommonFrame("Details")
-        self.vbox.add(frame)
-
-        label = uigtk.widgets.Label("_Weekly Wage", leftalign=True)
-        frame.grid.attach(label, 0, 0, 1, 1)
-        spinbuttonWage = uigtk.widgets.SpinButton(maximum=100000)
-        label.set_mnemonic_widget(spinbuttonWage)
-        #spinbuttonWage.set_value(wage)
-        frame.grid.attach(spinbuttonWage, 1, 0, 1, 1)
-        label = uigtk.widgets.Label("League _Champions Bonus", leftalign=True)
-        frame.grid.attach(label, 0, 1, 1, 1)
-        spinbuttonLeagueChampions = uigtk.widgets.SpinButton(maximum=200000)
-        label.set_mnemonic_widget(spinbuttonLeagueChampions)
-        #spinbuttonLeagueChampions.set_value(leaguewin)
-        frame.grid.attach(spinbuttonLeagueChampions, 1, 1, 1, 1)
-        label = uigtk.widgets.Label("League _Runner Up Bonus", leftalign=True)
-        frame.grid.attach(label, 0, 2, 1, 1)
-        spinbuttonLeagueRunnerUp = uigtk.widgets.SpinButton(maximum=200000)
-        label.set_mnemonic_widget(spinbuttonLeagueRunnerUp)
-        #spinbuttonLeagueRunnerUp.set_value(leaguerunnerup)
-        frame.grid.attach(spinbuttonLeagueRunnerUp, 1, 2, 1, 1)
-        label = uigtk.widgets.Label("_Win Bonus", leftalign=True)
-        frame.grid.attach(label, 0, 3, 1, 1)
-        spinbuttonWinBonus = uigtk.widgets.SpinButton(maximum=10000)
-        label.set_mnemonic_widget(spinbuttonWinBonus)
-        #spinbuttonWinBonus.set_value(winbonus)
-        frame.grid.attach(spinbuttonWinBonus, 1, 3, 1, 1)
-        label = uigtk.widgets.Label("_Goal Bonus", leftalign=True)
-        frame.grid.attach(label, 0, 4, 1, 1)
-        spinbuttonGoalBonus = uigtk.widgets.SpinButton(maximum=10000)
-        label.set_mnemonic_widget(spinbuttonGoalBonus)
-        #spinbuttonGoalBonus.set_value(goalbonus)
-        frame.grid.attach(spinbuttonGoalBonus, 1, 4, 1, 1)
-        label = uigtk.widgets.Label("_Contract Length", leftalign=True)
-        frame.grid.attach(label, 0, 5, 1, 1)
-        spinbuttonContract = Gtk.SpinButton.new_with_range(1, 5, 1)
-        label.set_mnemonic_widget(spinbuttonContract)
-        #spinbuttonContract.set_value(contract)
-        frame.grid.attach(spinbuttonContract, 1, 5, 1, 1)
-
-    def show(self, *args):
-        self.show_all()
-
-        state = 0
-
-        if self.run() == Gtk.ResponseType.OK:
-            print("Made offer to player...")
-            state = 1
-
-        self.destroy()
-
-        return state
+        self.labelContract.set_label("Contract renewal details for %s." % (player.get_name(mode=1)))
 
 
 class TerminateContract(Gtk.MessageDialog):

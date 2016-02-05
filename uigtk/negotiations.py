@@ -20,6 +20,7 @@ from gi.repository import Gtk
 
 import data
 import structures.negotiations
+import uigtk.shared
 import uigtk.widgets
 
 
@@ -44,7 +45,7 @@ class Negotiations(Gtk.Grid):
             self.treeview.set_hexpand(True)
             self.treeview.set_model(self.liststore)
             self.treeview.connect("row-activated", self.on_row_activated)
-            self.treeview.treeselection.connect("changed", self.on_selection_changed)
+            self.treeview.treeselection.connect("changed", self.on_treeselection_changed)
             scrolledwindow.add(self.treeview)
 
             treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Name",
@@ -77,7 +78,7 @@ class Negotiations(Gtk.Grid):
             self.buttonEnd.connect("clicked", self.on_end_clicked)
             buttonbox.add(self.buttonEnd)
 
-        def on_response_clicked(self, *args):
+        def on_respond_clicked(self, *args):
             '''
             Respond to negotiations for selected player.
             '''
@@ -108,7 +109,7 @@ class Negotiations(Gtk.Grid):
             negotiation = data.negotiations.get_negotiation_by_id(negotiationid)
             negotiation.respond_to_negotiation()
 
-        def on_selection_changed(self, treeselection):
+        def on_treeselection_changed(self, treeselection):
             '''
             Update end transfer button sensitivity when item is selected.
             '''
@@ -153,26 +154,12 @@ class Negotiations(Gtk.Grid):
         self.show_all()
 
 
-class TransferApproach(Gtk.MessageDialog):
-    '''
-    Message dialog base class confirming whether to approach for a player.
-    '''
-    def __init__(self):
-        Gtk.MessageDialog.__init__(self)
-        self.set_transient_for(data.window)
-        self.set_title("Transfer Offer")
-        self.set_property("message-type", Gtk.MessageType.QUESTION)
-        self.add_button("_Cancel", Gtk.ResponseType.CANCEL)
-        self.add_button("_Approach", Gtk.ResponseType.OK)
-        self.set_default_response(Gtk.ResponseType.CANCEL)
-
-
-class PurchaseApproach(TransferApproach):
+class PurchaseApproach(uigtk.shared.TransferApproach):
     '''
     Dialog displayed on approaching player for a purchase.
     '''
     def __init__(self):
-        TransferApproach.__init__(self)
+        uigtk.shared.TransferApproach.__init__(self)
 
     def show(self, club, player):
         self.set_markup("Approach %s for the purchase of %s?" % (club.name, player.get_name(mode=1)))
@@ -187,12 +174,12 @@ class PurchaseApproach(TransferApproach):
         return state
 
 
-class LoanApproach(TransferApproach):
+class LoanApproach(uigtk.shared.TransferApproach):
     '''
     Dialog displayed on approaching player for a loan.
     '''
     def __init__(self):
-        TransferApproach.__init__(self)
+        uigtk.shared.TransferApproach.__init__(self)
 
     def show(self, club, player):
         self.set_markup("Approach %s for the loan of %s?" % (club.name, player.get_name(mode=1)))
@@ -207,12 +194,12 @@ class LoanApproach(TransferApproach):
         return state
 
 
-class FreeApproach(TransferApproach):
+class FreeApproach(uigtk.shared.TransferApproach):
     '''
     Dialog displayed on approaching player who is out of contract.
     '''
     def __init__(self):
-        TransferApproach.__init__(self)
+        uigtk.shared.TransferApproach.__init__(self)
 
     def show(self, player):
         self.set_markup("Approach %s to join on a free transfer?" % (player.get_name(mode=1)))
@@ -271,12 +258,10 @@ class TransferOffer(Gtk.Dialog):
     def show(self):
         self.show_all()
 
-        if self.run() == Gtk.ResponseType.ACCEPT:
-            print("Offer")
-        else:
-            print("Withdraw")
-
+        state = self.run() == Gtk.ResponseType.ACCEPT
         self.destroy()
+
+        return state
 
 
 class AwaitingResponse(Gtk.MessageDialog):
@@ -310,6 +295,34 @@ class NegotiationRejected(Gtk.MessageDialog):
     def on_response(self, *args):
         self.destroy()
 
+
+class ContractNegotiation(uigtk.shared.ContractNegotiation):
+    def __init__(self, playerid):
+        player = data.players.get_player_by_id(playerid)
+
+        uigtk.shared.ContractNegotiation.__init__(self)
+        self.set_title("Contract Negotiation")
+        self.add_button("_Negotiate", Gtk.ResponseType.OK)
+
+        self.labelContract.set_label("Contract negotiation details for %s." % (player.get_name(mode=1)))
+
+
+class CompleteTransfer(Gtk.MessageDialog):
+    def __init__(self):
+        Gtk.MessageDialog.__init__(self)
+        self.set_transient_for(data.window)
+        self.set_modal(True)
+        self.set_title("Complete Transfer")
+        self.add_button("_Cancel Transfer", Gtk.ResponseType.CANCEL)
+        self.add_button("Complete _Transfer", Gtk.ResponseType.OK)
+        self.set_default_response(Gtk.ResponseType.OK)
+        self.set_property("message-type", Gtk.MessageType.QUESTION)
+        self.set_markup("<span size='12000'><b>Complete transfer of %s to %s?</b></span>")
+        self.format_secondary_text("The transfer can be delayed for a short time if necessary.")
+
+    def show(self):
+        response = self.run()
+        self.destroy()
 
 class InProgress(Gtk.MessageDialog):
     '''
