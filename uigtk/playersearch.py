@@ -34,23 +34,18 @@ import uigtk.widgets
 class PlayerSearch(uigtk.widgets.Grid):
     __name__ = "playersearch"
 
-    treeselection = None
-
     playerfilter = None
+
+    playerlist = None
+    treeselection = None
 
     def __init__(self):
         uigtk.widgets.Grid.__init__(self)
 
-        self.liststorePlayers = Gtk.ListStore(int, str, int, int, str, str,
-                                              str, int, int, int, int, int,
-                                              int, int, int, int, int, str,
-                                              int, str, int, str, bool, bool,
-                                              str, int, int, str, int, str,)
-
-        self.liststoreSearch = Gtk.ListStore(str)
-
         grid = uigtk.widgets.Grid()
         self.attach(grid, 0, 0, 1, 1)
+
+        self.liststoreSearch = Gtk.ListStore(str)
 
         self.completionSearch = Gtk.EntryCompletion()
         self.completionSearch.set_model(self.liststoreSearch)
@@ -86,7 +81,9 @@ class PlayerSearch(uigtk.widgets.Grid):
         scrolledwindow = uigtk.widgets.ScrolledWindow()
         self.attach(scrolledwindow, 0, 1, 1, 1)
 
-        self.treemodelfilter = self.liststorePlayers.filter_new()
+        PlayerSearch.playerlist = PlayerList()
+
+        self.treemodelfilter = PlayerSearch.playerlist.filter_new()
         self.treemodelfilter.set_visible_func(self.filter_visible, data.players.get_players())
         self.treemodelsort = Gtk.TreeModelSort(self.treemodelfilter)
         self.treemodelsort.set_sort_column_id(16, Gtk.SortType.DESCENDING)
@@ -101,7 +98,7 @@ class PlayerSearch(uigtk.widgets.Grid):
         self.treeview.connect("key-press-event", self.on_key_press_event)
         scrolledwindow.add(self.treeview)
 
-        PlayerSearch.treeselection = self.treeview.treeselection
+        PlayerSearch.treeselection = self.treeview.get_selection()
 
         self.tree_columns = ([], [], [])
 
@@ -375,45 +372,57 @@ class PlayerSearch(uigtk.widgets.Grid):
         return visible
 
     def populate_data(self):
-        self.liststorePlayers.clear()
-
-        for playerid, player in data.players.get_players():
-            self.liststorePlayers.append([playerid,
-                                          player.get_name(),
-                                          player.get_age(),
-                                          player.squad,
-                                          player.get_club_name(),
-                                          player.get_nationality_name(),
-                                          player.position,
-                                          player.keeping,
-                                          player.tackling,
-                                          player.passing,
-                                          player.shooting,
-                                          player.heading,
-                                          player.pace,
-                                          player.stamina,
-                                          player.ball_control,
-                                          player.set_pieces,
-                                          player.value.get_value(),
-                                          player.value.get_value_as_string(),
-                                          player.wage.get_wage(),
-                                          player.wage.get_wage_as_string(),
-                                          player.contract.contract,
-                                          player.contract.get_contract(),
-                                          player.transfer[0],
-                                          player.transfer[1],
-                                          player.get_appearances(),
-                                          player.goals,
-                                          player.assists,
-                                          player.get_cards(),
-                                          player.man_of_the_match,
-                                          player.rating.get_average_rating()])
+        PlayerSearch.playerlist.update()
 
     def run(self):
         self.populate_data()
         self.show_all()
 
         PlayerSearch.treeselection.select_path(0)
+
+
+class PlayerList(Gtk.ListStore):
+    def __init__(self):
+        Gtk.ListStore.__init__(self)
+        self.set_column_types([int, str, int, int, str, str, str, int, int, int,
+                               int, int, int, int, int, int, int, str,int, str,
+                               int, str, bool, bool, str, int, int, str, int,
+                               str])
+
+    def update(self):
+        self.clear()
+
+        for playerid, player in data.players.get_players():
+            self.append([playerid,
+                         player.get_name(),
+                         player.get_age(),
+                         player.squad,
+                         player.get_club_name(),
+                         player.get_nationality_name(),
+                         player.position,
+                         player.keeping,
+                         player.tackling,
+                         player.passing,
+                         player.shooting,
+                         player.heading,
+                         player.pace,
+                         player.stamina,
+                         player.ball_control,
+                         player.set_pieces,
+                         player.value.get_value(),
+                         player.value.get_value_as_string(),
+                         player.wage.get_wage(),
+                         player.wage.get_wage_as_string(),
+                         player.contract.contract,
+                         player.contract.get_contract(),
+                         player.transfer[0],
+                         player.transfer[1],
+                         player.get_appearances(),
+                         player.goals,
+                         player.assists,
+                         player.get_cards(),
+                         player.man_of_the_match,
+                         player.rating.get_average_rating()])
 
 
 class Filter(Gtk.Dialog):
