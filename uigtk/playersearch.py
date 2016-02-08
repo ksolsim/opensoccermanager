@@ -467,6 +467,7 @@ class Filter(Gtk.Dialog):
     def __init__(self, *args):
         Gtk.Dialog.__init__(self)
         self.set_transient_for(data.window)
+        self.set_modal(True)
         self.set_resizable(False)
         self.set_title("Filter Players")
         self.add_button("_Cancel", Gtk.ResponseType.CANCEL)
@@ -646,7 +647,7 @@ class ContextMenu1(Gtk.Menu):
         self.append(menuitem)
         separator = Gtk.SeparatorMenuItem()
         self.append(separator)
-        menuitem = uigtk.widgets.MenuItem("Add To _Comparison")
+        menuitem = uigtk.widgets.MenuItem("Add to _Comparison")
         menuitem.connect("activate", self.on_comparison_clicked)
         self.append(menuitem)
 
@@ -676,16 +677,16 @@ class ContextMenu2(ContextMenu1):
 
         separator = Gtk.SeparatorMenuItem()
         self.insert(separator, 1)
-        menuitem = uigtk.widgets.MenuItem("Make Offer To _Purchase")
+        menuitem = uigtk.widgets.MenuItem("Make Offer to _Purchase")
         menuitem.connect("activate", self.on_purchase_offer_clicked)
         self.insert(menuitem, 2)
-        menuitem = uigtk.widgets.MenuItem("Make Offer To _Loan")
+        menuitem = uigtk.widgets.MenuItem("Make Offer to _Loan")
         menuitem.connect("activate", self.on_loan_offer_clicked)
         self.insert(menuitem, 3)
-        self.menuitemAddShortlist = uigtk.widgets.MenuItem("_Add To Shortlist")
+        self.menuitemAddShortlist = uigtk.widgets.MenuItem("_Add to Shortlist")
         self.menuitemAddShortlist.connect("activate", self.on_add_to_shortlist_clicked)
         self.insert(self.menuitemAddShortlist, 4)
-        self.menuitemRemoveShortlist = uigtk.widgets.MenuItem("_Remove From Shortlist")
+        self.menuitemRemoveShortlist = uigtk.widgets.MenuItem("_Remove from Shortlist")
         self.menuitemRemoveShortlist.connect("activate", self.on_remove_from_shortlist_clicked)
         self.insert(self.menuitemRemoveShortlist, 5)
 

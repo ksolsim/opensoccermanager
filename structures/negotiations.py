@@ -242,11 +242,8 @@ class Negotiation:
         '''
         Handle user wanting a response to negotiation.
         '''
-        player = data.players.get_player_by_id(self.playerid)
-        club = data.clubs.get_club_by_id(player.squad)
-
         if self.transfer_type == 0:
-            self.response_to_purchase()
+            self.respond_to_purchase()
         elif self.transfer_type == 1:
             self.respond_to_loan()
         elif self.transfer_type == 2:
@@ -256,12 +253,18 @@ class Negotiation:
         '''
         Handle response for purchase transfer types.
         '''
+        player = data.players.get_player_by_id(self.playerid)
+        club = data.clubs.get_club_by_id(player.squad)
+
         if self.statusid == 1:
-            uigtk.negotiations.EnquiryRejection()
+            uigtk.negotiations.EnquiryRejection(player, club)
+            data.negotiations.end_negotiation(self.negotiationid)
         elif self.statusid == 4:
             uigtk.negotiations.OfferRejection()
+            data.negotiations.end_negotiation(self.negotiationid)
         elif self.statusid == 7:
             uigtk.negotiations.ContractRejection()
+            data.negotiations.end_negotiation(self.negotiationid)
         elif self.statusid in (0, 3, 6):
             uigtk.negotiations.AwaitingResponse(player, club)
         elif self.statusid == 2:
@@ -292,7 +295,7 @@ class Negotiation:
         club = data.clubs.get_club_by_id(player.squad)
 
         if self.statusid == 1:
-            uigtk.negotiations.EnquiryRejection()
+            uigtk.negotiations.EnquiryRejection(player, club)
         elif self.statusid == 4:
             uigtk.negotiations.OfferRejection()
         elif self.statusid in (0, 3):
