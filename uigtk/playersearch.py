@@ -280,8 +280,9 @@ class PlayerSearch(uigtk.widgets.Grid):
         '''
         self.treemodelfilter.refilter()
 
-        self.treeview.scroll_to_cell(0)
-        self.treeselection.select_path(0)
+        if len(self.treemodelfilter) > 0:
+            self.treeview.scroll_to_cell(0)
+            self.treeselection.select_path(0)
 
     def filter_visible(self, model, treeiter, values):
         visible = True

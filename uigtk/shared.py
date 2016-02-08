@@ -59,7 +59,7 @@ class ColumnViews(uigtk.widgets.Grid):
         self.attach(self.comboboxView, 3, 0, 1, 1)
 
 
-class TransferApproach(Gtk.MessageDialog):
+class TransferEnquiry(Gtk.MessageDialog):
     '''
     Message dialog base class confirming whether to approach for a player.
     '''

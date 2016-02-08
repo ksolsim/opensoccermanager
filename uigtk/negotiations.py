@@ -45,6 +45,8 @@ class Negotiations(Gtk.Grid):
             self.treeview.set_hexpand(True)
             self.treeview.set_model(self.liststore)
             self.treeview.connect("row-activated", self.on_row_activated)
+            self.treeview.connect("button-press-event", self.on_button_press_event)
+            self.treeview.connect("key-press-event", self.on_key_press_event)
             self.treeview.treeselection.connect("changed", self.on_treeselection_changed)
             scrolledwindow.add(self.treeview)
 
@@ -68,15 +70,38 @@ class Negotiations(Gtk.Grid):
             buttonbox = uigtk.widgets.ButtonBox()
             buttonbox.set_layout(Gtk.ButtonBoxStyle.END)
             self.attach(buttonbox, 0, 2, 1, 1)
+
             self.buttonRespond = uigtk.widgets.Button("_Respond")
             self.buttonRespond.set_sensitive(False)
             self.buttonRespond.set_tooltip_text("Respond to negotiations for selected player.")
+            self.buttonRespond.connect("clicked", self.on_respond_clicked)
             buttonbox.add(self.buttonRespond)
             self.buttonEnd = uigtk.widgets.Button("_End")
             self.buttonEnd.set_sensitive(False)
             self.buttonEnd.set_tooltip_text("End transfer negotiations for selected player.")
             self.buttonEnd.connect("clicked", self.on_end_clicked)
             buttonbox.add(self.buttonEnd)
+
+            self.contextmenu = ContextMenu()
+
+        def on_key_press_event(self, treeview, event):
+            '''
+            Key event when right-click menu is pressed on keyboard.
+            '''
+            if Gdk.keyval_name(event.keyval) == "Menu":
+                event.button = 3
+                self.on_context_menu_event(event)
+
+        def on_button_press_event(self, treeview, event):
+            '''
+            Button event when right-click on mouse is made.
+            '''
+            model, treeiter = self.treeview.treeselection.get_selected()
+
+            if treeiter:
+                if event.button == 3:
+                    self.contextmenu.show_all()
+                    self.contextmenu.popup(None, None, None, None, event.button, event.time)
 
         def on_respond_clicked(self, *args):
             '''
@@ -85,6 +110,7 @@ class Negotiations(Gtk.Grid):
             model, treeiter = self.treeview.treeselection.get_selected()
             negotiationid = model[treeiter][0]
             negotiation = data.negotiations.get_negotiation_by_id(negotiationid)
+            negotiation.respond_to_negotiation()
 
         def on_end_clicked(self, *args):
             '''
@@ -154,12 +180,24 @@ class Negotiations(Gtk.Grid):
         self.show_all()
 
 
-class PurchaseApproach(uigtk.shared.TransferApproach):
+class ContextMenu(Gtk.Menu):
+    def __init__(self):
+        Gtk.Menu.__init__(self)
+
+        menuitem = uigtk.widgets.MenuItem("_End Transfer")
+        self.append(menuitem)
+        separator = Gtk.SeparatorMenuItem()
+        self.append(separator)
+        menuitem = uigtk.widgets.MenuItem("_Player Information")
+        self.append(menuitem)
+
+
+class PurchaseEnquiry(uigtk.shared.TransferEnquiry):
     '''
     Dialog displayed on approaching player for a purchase.
     '''
     def __init__(self):
-        uigtk.shared.TransferApproach.__init__(self)
+        uigtk.shared.TransferEnquiry.__init__(self)
 
     def show(self, club, player):
         self.set_markup("Approach %s for the purchase of %s?" % (club.name, player.get_name(mode=1)))
@@ -174,12 +212,12 @@ class PurchaseApproach(uigtk.shared.TransferApproach):
         return state
 
 
-class LoanApproach(uigtk.shared.TransferApproach):
+class LoanEnquiry(uigtk.shared.TransferEnquiry):
     '''
     Dialog displayed on approaching player for a loan.
     '''
     def __init__(self):
-        uigtk.shared.TransferApproach.__init__(self)
+        uigtk.shared.TransferEnquiry.__init__(self)
 
     def show(self, club, player):
         self.set_markup("Approach %s for the loan of %s?" % (club.name, player.get_name(mode=1)))
@@ -194,12 +232,12 @@ class LoanApproach(uigtk.shared.TransferApproach):
         return state
 
 
-class FreeApproach(uigtk.shared.TransferApproach):
+class FreeEnquiry(uigtk.shared.TransferEnquiry):
     '''
     Dialog displayed on approaching player who is out of contract.
     '''
     def __init__(self):
-        uigtk.shared.TransferApproach.__init__(self)
+        uigtk.shared.TransferEnquiry.__init__(self)
 
     def show(self, player):
         self.set_markup("Approach %s to join on a free transfer?" % (player.get_name(mode=1)))
@@ -284,22 +322,25 @@ class LoanOffer(Gtk.Dialog):
         grid = uigtk.widgets.Grid()
         self.vbox.add(grid)
 
-        label = uigtk.widgets.Label("The offer for %s has been accepted.\n%s would like to negotiate a loan period for the player." % (player.get_name(mode=1), club.name))
-        grid.attach(label, 0, 0, 2, 1)
-        label = uigtk.widgets.Label("Loan Period")
+        label = uigtk.widgets.Label("The loan offer for %s has been accepted. %s would like to negotiate a loan period for the player." % (player.get_name(mode=1), club.name))
+        label.set_lines(3)
+        label.set_line_wrap(True)
+        grid.attach(label, 0, 0, 3, 1)
+        label = uigtk.widgets.Label("Loan Period in Weeks")
         grid.attach(label, 0, 1, 1, 1)
         self.spinbuttonPeriod = Gtk.SpinButton.new_with_range(0, 48, 1)
         grid.attach(self.spinbuttonPeriod, 1, 1, 1, 1)
         checkbuttonSeason = uigtk.widgets.CheckButton("_Loan player until end of season")
+        checkbuttonSeason.set_hexpand(True)
         checkbuttonSeason.connect("toggled", self.on_season_loan_toggled)
-        grid.attach(checkbuttonSeason, 0, 2, 2, 1)
+        grid.attach(checkbuttonSeason, 2, 1, 1, 1)
 
     def on_season_loan_toggled(self, checkbutton):
         '''
         Update spin button sensitivity when season-long loan toggled on.
         '''
         active = checkbutton.get_active()
-        self.spinbuttonPeriod.set_sensitive(active)
+        self.spinbuttonPeriod.set_sensitive(not active)
 
     def show(self):
         self.show_all()
@@ -310,23 +351,7 @@ class LoanOffer(Gtk.Dialog):
         return state
 
 
-class AwaitingResponse(Gtk.MessageDialog):
-    def __init__(self, player, club):
-        Gtk.MessageDialog.__init__(self)
-        self.set_transient_for(data.window)
-        self.set_title("Awaiting Response")
-        self.set_property("message-type", Gtk.MessageType.INFO)
-        self.set_markup("We are currently awaiting a response from %s for %s." % (club.name, player.get_name(mode=1)))
-        self.add_button("_Close", Gtk.ResponseType.CLOSE)
-        self.connect("response", self.on_response)
-
-        self.show()
-
-    def on_response(self, *args):
-        self.destroy()
-
-
-class NegotiationRejected(Gtk.MessageDialog):
+class EnquiryRejection(Gtk.MessageDialog):
     def __init__(self):
         Gtk.MessageDialog.__init__(self)
         self.set_transient_for(data.window)
@@ -340,6 +365,14 @@ class NegotiationRejected(Gtk.MessageDialog):
 
     def on_response(self, *args):
         self.destroy()
+
+
+class OfferRejection(Gtk.MessageDialog):
+    pass
+
+
+class ContractRejection(Gtk.MessageDialog):
+    pass
 
 
 class ContractNegotiation(uigtk.shared.ContractNegotiation):
@@ -381,6 +414,22 @@ class InProgress(Gtk.MessageDialog):
         self.set_title("Transfer Status")
         self.set_markup("Transfer negotiations for this player are already in progress.")
         self.set_property("message-type", Gtk.MessageType.ERROR)
+        self.add_button("_Close", Gtk.ResponseType.CLOSE)
+        self.connect("response", self.on_response)
+
+        self.show()
+
+    def on_response(self, *args):
+        self.destroy()
+
+
+class AwaitingResponse(Gtk.MessageDialog):
+    def __init__(self, player, club):
+        Gtk.MessageDialog.__init__(self)
+        self.set_transient_for(data.window)
+        self.set_title("Awaiting Response")
+        self.set_property("message-type", Gtk.MessageType.INFO)
+        self.set_markup("We are currently awaiting a response from %s for %s." % (club.name, player.get_name(mode=1)))
         self.add_button("_Close", Gtk.ResponseType.CLOSE)
         self.connect("response", self.on_response)
 
