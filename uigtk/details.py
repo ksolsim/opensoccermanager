@@ -33,6 +33,55 @@ class Details(uigtk.widgets.Grid):
         '''
         User details collection interface.
         '''
+        class Finances(uigtk.widgets.Grid):
+            def __init__(self):
+                uigtk.widgets.Grid.__init__(self)
+
+                label = uigtk.widgets.Label("Finances", leftalign=True)
+                Details.sizegroupLabel.add_widget(label)
+                self.attach(label, 0, 0, 1, 1)
+
+                buttonbox = uigtk.widgets.ButtonBox()
+                buttonbox.set_layout(Gtk.ButtonBoxStyle.START)
+                self.attach(buttonbox, 1, 0, 1, 1)
+
+                self.radiobuttonReputational = uigtk.widgets.RadioButton("_Reputational")
+                self.radiobuttonReputational.finances = 0
+                self.radiobuttonReputational.set_tooltip_text("Initial bank balance based on club reputation.")
+                self.radiobuttonReputational.connect("toggled", self.on_finances_toggled)
+                buttonbox.add(self.radiobuttonReputational)
+                self.radiobuttonCategorised = uigtk.widgets.RadioButton("C_ategorised")
+                self.radiobuttonCategorised.join_group(self.radiobuttonReputational)
+                self.radiobuttonCategorised.finances = 1
+                self.radiobuttonCategorised.set_tooltip_text("Initial bank balance based on set value.")
+                self.radiobuttonCategorised.connect("toggled", self.on_finances_toggled)
+                buttonbox.add(self.radiobuttonCategorised)
+
+                self.comboboxCategorisedAmount = Gtk.ComboBoxText()
+                self.comboboxCategorisedAmount.set_sensitive(False)
+                self.comboboxCategorisedAmount.set_tooltip_text("Starting balance for categorised finances.")
+                self.attach(self.comboboxCategorisedAmount, 1, 1, 2, 1)
+
+                self.finances = structures.finances.Categories()
+
+            def on_finances_toggled(self, radiobutton):
+                '''
+                Enable category-based finances dropdown menu.
+                '''
+                if radiobutton.finances == 1:
+                    state = radiobutton.get_active()
+                    self.comboboxCategorisedAmount.set_sensitive(state)
+
+            def populate_finances(self):
+                self.comboboxCategorisedAmount.remove_all()
+
+                for key, value in self.finances.get_categories():
+                    amount = data.currency.get_currency(value[0], integer=True)
+                    category = "%s (%s)" % (value[1], amount)
+                    self.comboboxCategorisedAmount.append(str(key), category)
+
+                self.comboboxCategorisedAmount.set_active(0)
+
         def __init__(self):
             uigtk.widgets.Grid.__init__(self)
 
@@ -44,9 +93,9 @@ class Details(uigtk.widgets.Grid):
             frame.grid.attach(label, 0, 0, 1, 1)
             self.comboboxName = Gtk.ComboBoxText.new_with_entry()
             self.comboboxName.set_hexpand(True)
+            self.comboboxName.set_tooltip_text("Managerial name of user to be used in-game.")
             self.entryName = self.comboboxName.get_child()
             self.entryName.set_input_purpose(Gtk.InputPurpose.NAME)
-            self.entryName.set_tooltip_text("Managerial name of user to be used in-game.")
             label.set_mnemonic_widget(self.comboboxName);
             frame.grid.attach(self.comboboxName, 1, 0, 1, 1)
 
@@ -57,7 +106,8 @@ class Details(uigtk.widgets.Grid):
             Details.sizegroupLabel.add_widget(label)
             frame.grid.attach(label, 0, 0, 1, 1)
             self.comboboxSeason = Gtk.ComboBoxText()
-            self.comboboxSeason.set_tooltip_text("Specify starting season of the game and the data to load.")
+            self.comboboxSeason.set_hexpand(False)
+            self.comboboxSeason.set_tooltip_text("Specify starting season of the game.")
             self.comboboxSeason.connect("changed", self.on_season_changed)
             label.set_mnemonic_widget(self.comboboxSeason)
             frame.grid.attach(self.comboboxSeason, 1, 0, 1, 1)
@@ -66,45 +116,24 @@ class Details(uigtk.widgets.Grid):
             Details.sizegroupLabel.add_widget(label)
             frame.grid.attach(label, 0, 1, 1, 1)
             self.comboboxLeague = Gtk.ComboBoxText()
-            self.comboboxLeague.set_tooltip_text("League in which the preferred club to manage is located.")
+            self.comboboxLeague.set_hexpand(True)
+            self.comboboxLeague.set_tooltip_text("League in which the club to manage is located.")
             self.comboboxLeague.connect("changed", self.on_league_changed)
             label.set_mnemonic_widget(self.comboboxLeague)
-            frame.grid.attach(self.comboboxLeague, 1, 1, 2, 1)
+            frame.grid.attach(self.comboboxLeague, 1, 1, 1, 1)
 
             label = uigtk.widgets.Label("_Club", leftalign=True)
             Details.sizegroupLabel.add_widget(label)
             frame.grid.attach(label, 0, 2, 1, 1)
             self.comboboxClub = Gtk.ComboBoxText()
-            self.comboboxClub.set_tooltip_text("Club which the user is going to be managing.")
+            self.comboboxClub.set_hexpand(True)
+            self.comboboxClub.set_tooltip_text("Club which the user will take charge of.")
             label.set_mnemonic_widget(self.comboboxClub)
-            frame.grid.attach(self.comboboxClub, 1, 2, 2, 1)
+            frame.grid.attach(self.comboboxClub, 1, 2, 1, 1)
 
             # Finances
-            self.comboboxCategorisedAmount = Gtk.ComboBoxText()
-            self.comboboxCategorisedAmount.set_sensitive(False)
-            frame.grid.attach(self.comboboxCategorisedAmount, 1, 4, 2, 1)
-
-            label = uigtk.widgets.Label("Finances", leftalign=True)
-            Details.sizegroupLabel.add_widget(label)
-            frame.grid.attach(label, 0, 3, 2, 1)
-
-            buttonbox = uigtk.widgets.ButtonBox()
-            buttonbox.set_layout(Gtk.ButtonBoxStyle.START)
-            frame.grid.attach(buttonbox, 1, 3, 2, 1)
-
-            self.radiobuttonReputational = uigtk.widgets.RadioButton("_Reputational")
-            self.radiobuttonReputational.finances = 0
-            self.radiobuttonReputational.set_tooltip_text("Initial bank balance based on club reputation.")
-            self.radiobuttonReputational.connect("toggled", self.on_finances_toggled)
-            buttonbox.add(self.radiobuttonReputational)
-            self.radiobuttonCategorised = uigtk.widgets.RadioButton("C_ategorised")
-            self.radiobuttonCategorised.join_group(self.radiobuttonReputational)
-            self.radiobuttonCategorised.finances = 1
-            self.radiobuttonCategorised.set_tooltip_text("Initial bank balance based on set value.")
-            self.radiobuttonCategorised.connect("toggled", self.on_finances_toggled)
-            buttonbox.add(self.radiobuttonCategorised)
-
-            self.finances = structures.finances.Categories()
+            self.finances = self.Finances()
+            frame.grid.attach(self.finances, 0, 3, 2, 1)
 
         def populate_names(self):
             '''
@@ -183,24 +212,6 @@ class Details(uigtk.widgets.Grid):
                 self.comboboxClub.append(str(club[0]), club[1])
 
             self.comboboxClub.set_active(0)
-
-        def on_finances_toggled(self, radiobutton):
-            '''
-            Enable category-based finances dropdown menu.
-            '''
-            if radiobutton.finances == 1:
-                state = radiobutton.get_active()
-                self.comboboxCategorisedAmount.set_sensitive(state)
-
-        def populate_finances(self):
-            self.comboboxCategorisedAmount.remove_all()
-
-            for key, value in self.finances.get_categories():
-                amount = data.currency.get_currency(value[0], integer=True)
-                category = "%s (%s)" % (value[1], amount)
-                self.comboboxCategorisedAmount.append(str(key), category)
-
-            self.comboboxCategorisedAmount.set_active(0)
 
     class Buttons(uigtk.widgets.ButtonBox):
         '''
@@ -326,10 +337,10 @@ class Details(uigtk.widgets.Grid):
         '''
         Call initial balance generation based on option.
         '''
-        if self.user.radiobuttonReputational.get_active():
+        if self.user.finances.radiobuttonReputational.get_active():
             option = -1
         else:
-            option = int(self.user.comboboxCategorisedAmount.get_active_id())
+            option = int(self.user.finances.comboboxCategorisedAmount.get_active_id())
 
         data.clubs.set_initial_balance(option)
 
@@ -346,8 +357,8 @@ class Details(uigtk.widgets.Grid):
             if len(data.names.get_names()) > 0:
                 self.user.entryName.set_text(data.names.get_first_name())
 
-            self.user.populate_finances()
+            self.user.finances.populate_finances()
 
-        self.user.radiobuttonReputational.set_active(True)
+        self.user.finances.radiobuttonReputational.set_active(True)
 
         self.show_all()

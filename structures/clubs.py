@@ -170,7 +170,7 @@ class Clubs:
             if option == -1:
                 club.accounts.balance = club.reputation ** 3 * random.randint(985, 1025) * 3
             else:
-                finances = structures.finances.FinanceCategories()
+                finances = structures.finances.Categories()
                 club.accounts.balance = finances.get_value_by_index(option)
 
 

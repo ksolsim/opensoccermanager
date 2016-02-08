@@ -232,7 +232,7 @@ class Negotiation:
         elif self.statusid in (0, 3, 6):
             uigtk.negotiations.AwaitingResponse(player, club)
         elif self.statusid == 2:
-            dialog = uigtk.negotiations.TransferOffer(player, club)
+            dialog = uigtk.negotiations.PurchaseOffer(player, club)
 
             if dialog.show():
                 self.set_status(3)

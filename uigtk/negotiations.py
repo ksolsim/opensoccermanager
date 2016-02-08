@@ -233,12 +233,15 @@ class EndTransfer(Gtk.MessageDialog):
         return state
 
 
-class TransferOffer(Gtk.Dialog):
+class PurchaseOffer(Gtk.Dialog):
+    '''
+    Dialog to request offer amount for player when purchasing.
+    '''
     def __init__(self, player, club):
         Gtk.Dialog.__init__(self)
         self.set_transient_for(data.window)
         self.set_modal(True)
-        self.set_title("Enquiry Accepted")
+        self.set_title("Purchase Offer")
         self.add_button("_Withdraw", Gtk.ResponseType.REJECT)
         self.add_button("_Offer", Gtk.ResponseType.ACCEPT)
         self.set_default_response(Gtk.ResponseType.ACCEPT)
@@ -254,6 +257,49 @@ class TransferOffer(Gtk.Dialog):
         spinbuttonAmount = Gtk.SpinButton.new_with_range(0, 999999999, 100000)
         #spinbuttonAmount.set_value(player.value * 1.10)
         grid.attach(spinbuttonAmount, 1, 1, 1, 1)
+
+    def show(self):
+        self.show_all()
+
+        state = self.run() == Gtk.ResponseType.ACCEPT
+        self.destroy()
+
+        return state
+
+
+class LoanOffer(Gtk.Dialog):
+    '''
+    Dialog to request period for player when loaning.
+    '''
+    def __init__(self, player, club):
+        Gtk.Dialog.__init__(self)
+        self.set_transient_for(data.window)
+        self.set_modal(True)
+        self.set_title("Loan Offer")
+        self.add_button("_Withdraw", Gtk.ResponseType.REJECT)
+        self.add_button("_Offer", Gtk.ResponseType.ACCEPT)
+        self.set_default_response(Gtk.ResponseType.ACCEPT)
+        self.vbox.set_border_width(5)
+
+        grid = uigtk.widgets.Grid()
+        self.vbox.add(grid)
+
+        label = uigtk.widgets.Label("The offer for %s has been accepted.\n%s would like to negotiate a loan period for the player." % (player.get_name(mode=1), club.name))
+        grid.attach(label, 0, 0, 2, 1)
+        label = uigtk.widgets.Label("Loan Period")
+        grid.attach(label, 0, 1, 1, 1)
+        self.spinbuttonPeriod = Gtk.SpinButton.new_with_range(0, 48, 1)
+        grid.attach(self.spinbuttonPeriod, 1, 1, 1, 1)
+        checkbuttonSeason = uigtk.widgets.CheckButton("_Loan player until end of season")
+        checkbuttonSeason.connect("toggled", self.on_season_loan_toggled)
+        grid.attach(checkbuttonSeason, 0, 2, 2, 1)
+
+    def on_season_loan_toggled(self, checkbutton):
+        '''
+        Update spin button sensitivity when season-long loan toggled on.
+        '''
+        active = checkbutton.get_active()
+        self.spinbuttonPeriod.set_sensitive(active)
 
     def show(self):
         self.show_all()
@@ -323,6 +369,7 @@ class CompleteTransfer(Gtk.MessageDialog):
     def show(self):
         response = self.run()
         self.destroy()
+
 
 class InProgress(Gtk.MessageDialog):
     '''
