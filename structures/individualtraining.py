@@ -70,3 +70,18 @@ class IndividualTraining:
         Return individual training object for given player id.
         '''
         return self.individual_training[playerid]
+
+
+class Status:
+    def __init__(self):
+        self.status = {0: "Just started training.",
+                       1: "Improving slowly.",
+                       2: "Making good progress.",
+                       3: "Quickly developing.",
+                       4: "No longer progressing."}
+
+    def get_status(self, index):
+        '''
+        Get status string for given index.
+        '''
+        return self.status[index]

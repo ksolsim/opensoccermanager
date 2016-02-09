@@ -17,6 +17,7 @@
 
 
 from gi.repository import Gtk
+from gi.repository import Gdk
 
 import data
 import structures.number
@@ -127,27 +128,28 @@ class ClubInformation(uigtk.widgets.Grid):
         scrolledwindow = uigtk.widgets.ScrolledWindow()
         frame.grid.attach(scrolledwindow, 0, 0, 1, 1)
 
-        self.liststoreSquad = Gtk.ListStore(int, str, str, str, str, int, int, int,
-                                       int, int, int, int, int, int)
+        self.liststoreSquad = Gtk.ListStore(int, str, str, str, str, int, int,
+                                            int, int, int, int, int, int, int)
         treemodelsort = Gtk.TreeModelSort(self.liststoreSquad)
         treemodelsort.set_sort_column_id(1, Gtk.SortType.ASCENDING)
 
-        treeview = uigtk.widgets.TreeView()
-        treeview.set_vexpand(True)
-        treeview.set_hexpand(True)
-        treeview.set_model(treemodelsort)
-        treeview.connect("row-activated", self.on_row_activated)
-        treeview.connect("button-release-event", self.on_button_release_event)
-        scrolledwindow.add(treeview)
+        self.treeview = uigtk.widgets.TreeView()
+        self.treeview.set_vexpand(True)
+        self.treeview.set_hexpand(True)
+        self.treeview.set_model(treemodelsort)
+        self.treeview.connect("row-activated", self.on_row_activated)
+        self.treeview.connect("button-release-event", self.on_button_release_event)
+        self.treeview.connect("key-press-event", self.on_key_press_event)
+        scrolledwindow.add(self.treeview)
 
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Name", column=1)
-        treeview.append_column(treeviewcolumn)
+        self.treeview.append_column(treeviewcolumn)
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Position", column=2)
-        treeview.append_column(treeviewcolumn)
+        self.treeview.append_column(treeviewcolumn)
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Value", column=3)
-        treeview.append_column(treeviewcolumn)
+        self.treeview.append_column(treeviewcolumn)
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Wage", column=4)
-        treeview.append_column(treeviewcolumn)
+        self.treeview.append_column(treeviewcolumn)
 
         skills = structures.skills.Skills()
 
@@ -158,7 +160,7 @@ class ClubInformation(uigtk.widgets.Grid):
             treeviewcolumn = uigtk.widgets.TreeViewColumn(column=count)
             treeviewcolumn.set_widget(label)
             treeviewcolumn.set_expand(True)
-            treeview.append_column(treeviewcolumn)
+            self.treeview.append_column(treeviewcolumn)
 
         frame = uigtk.widgets.CommonFrame("History")
         self.attach(frame, 1, 2, 1, 1)
@@ -220,9 +222,29 @@ class ClubInformation(uigtk.widgets.Grid):
         data.window.screen.active.set_visible_player(playerid)
 
     def on_button_release_event(self, treeview, event):
+        '''
+        Handle right-clicking on the treeview.
+        '''
         if event.button == 3:
-            model, treeiter = treeview.treeselection.get_selected()
+            self.on_context_menu_event(event)
+
+    def on_key_press_event(self, treeview, event):
+        '''
+        Handle button clicks on the treeview.
+        '''
+        if Gdk.keyval_name(event.keyval) == "Menu":
+            event.button = 3
+            self.on_context_menu_event(event)
+
+    def on_context_menu_event(self, event):
+        '''
+        Display context menu for selected player id.
+        '''
+        model, treeiter = self.treeview.treeselection.get_selected()
+
+        if treeiter:
             playerid = model[treeiter][0]
+
             player = data.players.get_player_by_id(playerid)
             club = data.clubs.get_club_by_id(data.user.team)
 

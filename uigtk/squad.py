@@ -337,7 +337,7 @@ class FirstTeam(uigtk.widgets.Grid):
             button.connect("drag-data-get", self.on_drag_data_get, count)
             button.connect("drag-data-received", self.on_drag_data_received, count)
             button.connect("clicked", self.on_player_select_clicked, count)
-            button.connect("button-press-event", self.on_button_press_event, count)
+            button.connect("button-release-event", self.on_button_release_event, count)
             label.set_mnemonic_widget(button)
             self.attach(button, 1, count, 1, 1)
             self.buttons.append(button)
@@ -386,7 +386,7 @@ class FirstTeam(uigtk.widgets.Grid):
             Squad.club.squad.teamselection.add_to_team(status, positionid)
             Squad.populate_selection(Squad)
 
-    def on_button_press_event(self, button, event, positionid):
+    def on_button_release_event(self, button, event, positionid):
         if event.button == 3:
             self.contextmenu.show(positionid)
             self.contextmenu.popup(None,
@@ -424,6 +424,7 @@ class Substitutions(uigtk.widgets.Grid):
 
             button = Gtk.Button("")
             button.set_hexpand(True)
+            button.set_can_focus(True)
             button.drag_source_set(Gdk.ModifierType.BUTTON1_MASK, None, Gdk.DragAction.COPY)
             button.drag_source_add_text_targets()
             button.drag_dest_set(Gtk.DestDefaults.ALL, [], Gdk.DragAction.COPY)
@@ -431,7 +432,7 @@ class Substitutions(uigtk.widgets.Grid):
             button.connect("drag-data-get", self.on_drag_data_get, count)
             button.connect("drag-data-received", self.on_drag_data_received, count)
             button.connect("clicked", self.on_player_select_clicked, count)
-            button.connect("button-press-event", self.on_button_press_event, count)
+            button.connect("button-release-event", self.on_button_release_event, count)
             label.set_mnemonic_widget(button)
             self.attach(button, 1, count, 1, 1)
             self.buttons.append(button)
@@ -480,7 +481,10 @@ class Substitutions(uigtk.widgets.Grid):
             Squad.club.squad.teamselection.add_to_subs(status, positionid)
             Squad.populate_selection(Squad)
 
-    def on_button_press_event(self, button, event, positionid):
+    def on_button_release_event(self, button, event, positionid):
+        '''
+        Handle right-click to display context menu on squad button.
+        '''
         if event.button == 3:
             self.contextmenu.show(positionid)
             self.contextmenu.popup(None,

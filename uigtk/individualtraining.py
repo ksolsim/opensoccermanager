@@ -17,6 +17,7 @@
 
 
 from gi.repository import Gtk
+from gi.repository import Gdk
 
 import data
 import structures.intensity
@@ -210,6 +211,8 @@ class IndividualTraining(Gtk.Grid):
         self.treeview.set_sensitive(False)
         self.treeview.set_model(treemodelsort)
         self.treeview.connect("row-activated", self.on_row_activated)
+        self.treeview.connect("button-release-event", self.on_button_release_event)
+        self.treeview.connect("key-press-event", self.on_key_press_event)
         self.treeview.treeselection.connect("changed", self.on_selection_changed)
         self.overlay.add(self.treeview)
 
@@ -248,6 +251,8 @@ class IndividualTraining(Gtk.Grid):
         self.buttonRemoveTraining.set_tooltip_text("Remove selected player from individual training.")
         self.buttonRemoveTraining.connect("clicked", self.on_remove_clicked)
         buttonbox.add(self.buttonRemoveTraining)
+
+        self.contextmenu = ContextMenu()
 
     def on_add_clicked(self, *args):
         '''
@@ -292,6 +297,41 @@ class IndividualTraining(Gtk.Grid):
         '''
         self.on_edit_clicked()
 
+    def on_button_release_event(self, treeview, event):
+        '''
+        Handle right-clicking on the treeview.
+        '''
+        if event.button == 3:
+            self.on_context_menu_event(event)
+
+    def on_key_press_event(self, treeview, event):
+        '''
+        Handle button clicks on the treeview.
+        '''
+        if Gdk.keyval_name(event.keyval) == "Menu":
+            event.button = 3
+            self.on_context_menu_event(event)
+        elif Gdk.keyval_name(event.keyval) == "Delete":
+            self.on_remove_clicked()
+
+    def on_context_menu_event(self, event):
+        '''
+        Display context menu for selected player id.
+        '''
+        model, treeiter = self.treeview.treeselection.get_selected()
+
+        if treeiter:
+            playerid = model[treeiter][0]
+
+            self.contextmenu.playerid = playerid
+            self.contextmenu.show()
+            self.contextmenu.popup(None,
+                                   None,
+                                   None,
+                                   None,
+                                   event.button,
+                                   event.time)
+
     def on_selection_changed(self, treeselection):
         '''
         Update button sensitivity on row change.
@@ -308,7 +348,7 @@ class IndividualTraining(Gtk.Grid):
     def populate_data(self):
         skills = structures.skills.Skills()
         intensity = structures.intensity.Intensity()
-        status = Status()
+        status = structures.individualtraining.Status()
 
         self.liststore.clear()
 
@@ -340,16 +380,24 @@ class IndividualTraining(Gtk.Grid):
         self.labelNoStaff.set_visible(not state)
 
 
-class Status:
+class ContextMenu(Gtk.Menu):
     def __init__(self):
-        self.status = {0: "Just started training.",
-                       1: "Improving slowly.",
-                       2: "Making good progress.",
-                       3: "Quickly developing.",
-                       4: "No longer progressing."}
+        Gtk.Menu.__init__(self)
 
-    def get_status(self, index):
-        '''
-        Get status string for given index.
-        '''
-        return self.status[index]
+        menuitem = uigtk.widgets.MenuItem("_Edit Player")
+        menuitem.connect("activate", self.on_edit_clicked)
+        self.append(menuitem)
+        menuitem = uigtk.widgets.MenuItem("_Remove Player")
+        menuitem.connect("activate", self.on_remove_clicked)
+        self.append(menuitem)
+
+    def on_edit_clicked(self, *args):
+        dialog = self.AddTraining(self.playerid)
+        dialog.show()
+
+    def on_remove_clicked(self, *args):
+        club = data.clubs.get_club_by_id(data.user.team)
+        club.individual_training.remove_from_training(self.playerid)
+
+    def show(self):
+        self.show_all()

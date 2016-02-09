@@ -103,9 +103,12 @@ class Contract:
         if self.contract > 0:
             self.contract -= 1
 
-            if self.contract == 0:
-                club = data.clubs.get_club_by_id(data.user.team)
+            club = data.clubs.get_club_by_id(data.user.team)
 
+            if self.contract in (4, 8, 12):
+                if self.player.squad == data.user.team:
+                    club.news.publish("PC02", player=self.player.get_name(mode=1), weeks=self.contract)
+            elif self.contract == 0:
                 if self.player.squad == data.user.team:
                     club.news.publish("PC01", player=self.player.get_name(mode=1))
                 elif club.shortlist.get_player_in_shortlist(self.player.playerid):

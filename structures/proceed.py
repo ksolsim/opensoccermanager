@@ -26,7 +26,7 @@ class ContinueGame:
     Class handling proceeding with the game to the next event.
     '''
     def __init__(self):
-        self.continuetomatch = ContinueToMatch()
+        self.continue_to_match = ContinueToMatch()
         self.continue_allowed = 0
 
     def on_continue_game(self):
@@ -58,12 +58,12 @@ class ContinueGame:
         '''
         Determine whether match can continue or display error.
         '''
-        if self.continuetomatch.get_valid_squad():
+        if self.continue_to_match.get_valid_squad():
             club = data.clubs.get_club_by_id(clubid)
             dialog = uigtk.match.ProceedToMatch(club.name)
 
             if dialog.show():
-                if self.continuetomatch.get_selected_substitutes():
+                if self.continue_to_match.get_selected_substitutes():
                     return True
                 else:
                     return False

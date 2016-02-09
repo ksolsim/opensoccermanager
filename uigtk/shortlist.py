@@ -176,15 +176,26 @@ class Shortlist(Gtk.Grid):
         ScoutReport()
 
     def on_key_press_event(self, widget, event):
+        '''
+        Handle button clicks on the treeview.
+        '''
         if Gdk.keyval_name(event.keyval) == "Menu":
             event.button = 3
             self.on_context_menu_event(event)
+        elif Gdk.keyval_name(event.keyval) == "Delete":
+            self.on_remove_clicked()
 
     def on_button_release_event(self, widget, event):
+        '''
+        Handle right-clicking on the treeview.
+        '''
         if event.button == 3:
             self.on_context_menu_event(event)
 
     def on_context_menu_event(self, event):
+        '''
+        Display context menu for selected player id.
+        '''
         model, treeiter = Shortlist.treeselection.get_selected()
 
         if treeiter:

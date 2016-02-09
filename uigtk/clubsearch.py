@@ -65,7 +65,6 @@ class ClubSearch(uigtk.widgets.Grid):
 
         self.liststore = Gtk.ListStore(int, str, str, str, str, str, int, str,
                                        str)
-
         self.treemodelfilter = self.liststore.filter_new()
         self.treemodelfilter.set_visible_func(self.filter_visible, data.clubs)
         treemodelsort = Gtk.TreeModelSort(self.treemodelfilter)
@@ -78,6 +77,7 @@ class ClubSearch(uigtk.widgets.Grid):
         self.treeview.set_model(treemodelsort)
         self.treeview.connect("row-activated", self.on_row_activated)
         self.treeview.connect("button-release-event", self.on_button_release_event)
+        self.treeview.connect("key-press-event", self.on_key_press_event)
         scrolledwindow.add(self.treeview)
 
         ClubSearch.treeselection = self.treeview.treeselection
@@ -108,13 +108,22 @@ class ClubSearch(uigtk.widgets.Grid):
 
         self.contextmenu = ContextMenu()
 
-    def on_button_release_event(self, widget, event):
+    def on_button_release_event(self, treeview, event):
+        '''
+        Handle right-clicking on the treeview.
+        '''
         if event.button == 3:
             self.on_context_menu_event(event)
 
-    def on_context_menu_event(self, event):
-        event.button = 3
+    def on_key_press_event(self, treeview, event):
+        '''
+        Handle button clicks on the treeview.
+        '''
+        if Gdk.keyval_name(event.keyval) == "Menu":
+            event.button = 3
+            self.on_context_menu_event(event)
 
+    def on_context_menu_event(self, event):
         self.contextmenu.show()
         self.contextmenu.popup(None,
                                None,

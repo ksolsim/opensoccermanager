@@ -46,7 +46,7 @@ class Negotiations(Gtk.Grid):
             self.treeview.set_hexpand(True)
             self.treeview.set_model(self.liststore)
             self.treeview.connect("row-activated", self.on_row_activated)
-            self.treeview.connect("button-press-event", self.on_button_press_event)
+            self.treeview.connect("button-release-event", self.on_button_release_event)
             self.treeview.connect("key-press-event", self.on_key_press_event)
             self.treeview.treeselection.connect("changed", self.on_treeselection_changed)
             scrolledwindow.add(self.treeview)
@@ -87,33 +87,36 @@ class Negotiations(Gtk.Grid):
 
         def on_key_press_event(self, treeview, event):
             '''
-            Key event when right-click menu is pressed on keyboard.
+            Handle button clicks on the treeview.
             '''
             if Gdk.keyval_name(event.keyval) == "Menu":
                 event.button = 3
                 self.on_context_menu_event(event)
 
-        def on_button_press_event(self, treeview, event):
+        def on_button_release_event(self, treeview, event):
             '''
-            Button event when right-click on mouse is made.
+            Handle right-clicking on the treeview.
+            '''
+            if event.button == 3:
+                self.on_context_menu_event(event)
+
+        def on_context_menu_event(self, event):
+            '''
+            Display context menu for selected player id.
             '''
             model, treeiter = self.treeview.treeselection.get_selected()
 
             if treeiter:
-                if event.button == 3:
-                    self.on_context_menu_event(event)
+                negotiationid = model[treeiter][0]
 
-        def on_context_menu_event(self, event):
-            model, treeiter = self.treeview.treeselection.get_selected()
-
-            self.contextmenu.negotiationid = model[treeiter][0]
-            self.contextmenu.show_all()
-            self.contextmenu.popup(None,
-                                   None,
-                                   None,
-                                   None,
-                                   event.button,
-                                   event.time)
+                self.contextmenu.negotiationid = negotiationid
+                self.contextmenu.show_all()
+                self.contextmenu.popup(None,
+                                       None,
+                                       None,
+                                       None,
+                                       event.button,
+                                       event.time)
 
         def on_respond_clicked(self, *args):
             '''
