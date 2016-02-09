@@ -44,16 +44,15 @@ class Date:
             data.events.process_weekly_events()
 
         if self.day == maximum:
-            self.month += 1
-            self.day = 1
+            if self.month == 12:
+                self.set_end_of_year()
+            else:
+                self.month += 1
+                self.day = 1
         else:
             self.day += 1
 
             data.events.process_daily_events()
-
-        if self.month == 12:
-            self.year += 1
-            self.month = 1
 
         dialog = uigtk.continuedialog.ContinueDialog()
         dialog.show()

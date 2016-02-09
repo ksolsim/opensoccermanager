@@ -146,7 +146,12 @@ class Categories:
                            5: "Contracts",
                            6: "Fixtures",
                            7: "Advertising",
-                           8: "Awards"}
+                           8: "Awards",
+                           9: "Announcements",
+                           10: "Injuries",
+                           11: "Suspensions",
+                           12: "Shortlist",
+                           13: "Finances"}
 
     def get_categories(self):
         '''
@@ -154,7 +159,7 @@ class Categories:
         '''
         return self.categories.items()
 
-    def get_category_for_id(self, categoryid):
+    def get_category_by_id(self, categoryid):
         '''
         Return category name for given category id.
         '''

@@ -98,6 +98,11 @@ class Score:
         ranges[1] = [ranges[0][1], self.percent1 + draw]
         ranges[2] = [ranges[1][1], ranges[1][1] + self.percent2]
 
+        if ranges == [[0, 0], [0, 0], [0, 0]]:
+            ranges = [[1, 2], [3, 4], [5, 6]]
+
+        print(ranges)
+
         [list(map(int, item)) for item in ranges]
 
         choice = random.randrange(0, int(ranges[2][1]))

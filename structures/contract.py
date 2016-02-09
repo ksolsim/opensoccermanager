@@ -100,7 +100,13 @@ class Contract:
         '''
         Decrease number of weeks remaining on contract.
         '''
-        self.contract -= 1
+        if self.contract > 0:
+            self.contract -= 1
 
-        if self.contract == 0:
-            club.news.publish("PC01", player=self.player.get_name(mode=1))
+            if self.contract == 0:
+                club = data.clubs.get_club_by_id(data.user.team)
+
+                if self.player.squad == data.user.team:
+                    club.news.publish("PC01", player=self.player.get_name(mode=1))
+                elif club.shortlist.get_player_in_shortlist(self.player.playerid):
+                    club.news.publish("SH01", player=self.player.get_name(mode=1))

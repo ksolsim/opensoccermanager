@@ -85,6 +85,7 @@ class Fixtures:
                     away = rounds
 
                 fixture = Fixture()
+                fixture.leagueid = leagueid
                 fixture.week = rounds + week
                 fixture.referee = referees[match]
 

@@ -54,7 +54,10 @@ class News(uigtk.widgets.Grid):
 
         self.categories = structures.news.Categories()
 
-        for categoryid, category in self.categories.get_categories():
+        categories = sorted(self.categories.categories, key=self.categories.categories.get)
+
+        for categoryid in categories:
+            category = self.categories.get_category_by_id(categoryid)
             self.comboboxFilter.append(str(categoryid), category)
 
         self.comboboxFilter.set_active(0)
@@ -73,9 +76,7 @@ class News(uigtk.widgets.Grid):
         scrolledwindow = uigtk.widgets.ScrolledWindow()
         paned.add1(scrolledwindow)
 
-        self.liststoreNews = Gtk.ListStore(int, str, str, str,
-                                           int, str, bool, int)
-
+        self.liststoreNews = Gtk.ListStore(int, str, str, str, int, str, bool, int)
         self.treemodelfilter = self.liststoreNews.filter_new()
         self.treemodelfilter.set_visible_func(self.filter_visible, data.clubs.get_club_by_id(data.user.team).news)
         treemodelsort = Gtk.TreeModelSort(self.treemodelfilter)
@@ -213,7 +214,7 @@ class News(uigtk.widgets.Grid):
                                        article.title,
                                        article.message,
                                        article.category,
-                                       self.categories.get_category_for_id(article.category),
+                                       self.categories.get_category_by_id(article.category),
                                        article.unread,
                                        weight])
 

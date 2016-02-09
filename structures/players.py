@@ -28,7 +28,8 @@ import structures.wage
 
 class Players:
     class Player:
-        def __init__(self):
+        def __init__(self, playerid):
+            self.playerid = playerid
             self.first_name = ""
             self.second_name = ""
             self.common_name = None
@@ -191,11 +192,10 @@ class Players:
 
         for item in data.database.cursor.fetchall():
             if item[9] in data.clubs.get_club_keys():
-                player = self.Player()
                 playerid = item[0]
+                player = self.Player(playerid)
                 self.players[playerid] = player
 
-                player.playerid = playerid
                 player.first_name = item[1]
                 player.second_name = item[2]
 
