@@ -30,13 +30,17 @@ class User:
 
 
 class Names:
+    '''
+    Class handling user names entered on details screen.
+    '''
     def __init__(self):
         self.names = []
 
-        self.names_path = "/home/andrew/.config/opensoccermanager/users.txt"
+        home = os.path.expanduser("~")
+        self.filepath = os.path.join(home, ".config", "opensoccermanager", "users.txt")
 
-        if not os.path.exists(self.names_path):
-            open(self.names_path, "w").close()
+        if not os.path.exists(self.filepath):
+            open(self.filepath, "w").close()
 
         self.populate_names()
 
@@ -81,9 +85,9 @@ class Names:
         '''
         Update names file with latest names.
         '''
-        with open(self.names_path, "w") as fp:
+        with open(self.filepath, "w") as names:
             for name in self.names:
-                fp.write("%s\n" % (name))
+                names.write("%s\n" % (name))
 
     def clear_names(self):
         '''
@@ -92,8 +96,8 @@ class Names:
         self.names.clear()
 
     def populate_names(self):
-        with open(self.names_path, "r") as fp:
-            names = fp.readlines()
+        with open(self.filepath, "r") as names:
+            names = names.readlines()
 
             for name in names:
                 self.names.append(name.rstrip("\n"))
