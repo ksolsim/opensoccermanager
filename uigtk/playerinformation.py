@@ -388,16 +388,18 @@ class History(uigtk.widgets.CommonFrame):
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Appearances", column=3)
         treeview.append_column(treeviewcolumn)
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Goals", column=4)
+        treeviewcolumn.set_fixed_width(50)
         treeview.append_column(treeviewcolumn)
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Assists", column=5)
+        treeviewcolumn.set_fixed_width(50)
         treeview.append_column(treeviewcolumn)
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Cards", column=6)
+        treeviewcolumn.set_fixed_width(50)
         treeview.append_column(treeviewcolumn)
-        label = Gtk.Label("MOTM")
-        label.set_tooltip_text("Man of the Match")
-        label.show()
-        treeviewcolumn = Gtk.TreeViewColumn()
-        treeviewcolumn.set_widget(label)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="MOTM",
+                                                      tooltip="Man of the Match",
+                                                      column=7)
+        treeviewcolumn.set_fixed_width(50)
         treeview.append_column(treeviewcolumn)
 
     def update_history(self):
@@ -409,9 +411,6 @@ class History(uigtk.widgets.CommonFrame):
         self.liststore.clear()
 
         self.liststore.append(player.history.get_current_season())
-
-        for item in player.history.get_history():
-            self.liststore.append(["", "", "", 0, 0, 0, "", 0])
 
 
 class Morale(uigtk.widgets.CommonFrame):

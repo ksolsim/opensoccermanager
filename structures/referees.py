@@ -25,6 +25,16 @@ class Referees:
             self.name = ""
             self.league = None
 
+            self.games = 0
+            self.yellow_cards = 0
+            self.red_cards = 0
+
+        def get_points(self):
+            '''
+            Calculate points for cards issued by referee.
+            '''
+            return (self.yellow_cards * 1) + (self.red_cards * 3)
+
     def __init__(self, season):
         self.referees = {}
         self.season = season
@@ -42,6 +52,31 @@ class Referees:
         Fetch referee for given referee id.
         '''
         return self.referees[refereeid]
+
+    def get_referee_data(self):
+        '''
+        Return sorted list of referee data.
+        '''
+        referees = []
+
+        for refereeid, referee in self.get_referees():
+            referees.append([refereeid,
+                             referee.name,
+                             referee.league,
+                             referee.games,
+                             referee.yellow_cards,
+                             referee.red_cards,
+                             referee.get_points()])
+
+        if data.calendar.event == 0:
+            referees = sorted(referees,
+                               key=lambda item: data.referees.get_referee_by_id(item[0]).name)
+        else:
+            referees = sorted(referees,
+                               key=lambda item: (item[5], item[4], item[3], item[2]),
+                               reverse=True)
+
+        return referees
 
     def populate_data(self):
         data.database.cursor.execute("SELECT * FROM referee \

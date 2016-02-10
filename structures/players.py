@@ -20,7 +20,6 @@ import random
 
 import data
 import structures.contract
-import structures.history
 import structures.morale
 import structures.value
 import structures.wage
@@ -227,7 +226,7 @@ class Players:
                 nation.add_to_nation(playerid)
 
                 # Add history object
-                player.history = structures.history.History(playerid)
+                player.history = History(playerid)
 
                 # Set value, wage and contract values
                 player.value = structures.value.Value(player)
@@ -330,3 +329,40 @@ class Training:
     def __init__(self):
         self.rate = 1
         self.points = 0
+
+
+class History:
+    def __init__(self, playerid):
+        self.history = []
+
+        self.playerid = playerid
+
+    def get_current_season(self):
+        '''
+        Return tuple of current season history data.
+        '''
+        player = data.players.get_player_by_id(self.playerid)
+        club = data.clubs.get_club_by_id(player.squad)
+
+        current = (data.date.get_season(),
+                   club.name,
+                   "",
+                   player.appearances,
+                   player.goals,
+                   player.assists,
+                   "%i/%i" % (player.yellow_cards, player.red_cards),
+                   player.man_of_the_match)
+
+        return current
+
+    def add_season(self, season):
+        '''
+        Add season data to history list.
+        '''
+        self.history.append(season)
+
+    def get_history(self):
+        '''
+        Return history in descending order by season.
+        '''
+        return sorted(self.history, reverse=True)

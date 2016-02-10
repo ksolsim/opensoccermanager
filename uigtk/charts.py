@@ -230,7 +230,7 @@ class Referees(uigtk.widgets.Grid):
         scrolledwindow = uigtk.widgets.ScrolledWindow()
         self.attach(scrolledwindow, 0, 0, 1, 1)
 
-        self.liststore = Gtk.ListStore(int, str, str, int, int, int)
+        self.liststore = Gtk.ListStore(int, str, str, int, int, int, int)
 
         treeview = Gtk.TreeView()
         treeview.set_vexpand(True)
@@ -238,23 +238,36 @@ class Referees(uigtk.widgets.Grid):
         treeview.set_model(self.liststore)
         scrolledwindow.add(treeview)
 
-        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Referees", column=1)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Referee", column=1)
         treeview.append_column(treeviewcolumn)
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="League", column=2)
         treeview.append_column(treeviewcolumn)
-        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Yellow Cards", column=3)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Games", column=3)
+        treeviewcolumn.set_fixed_width(80)
         treeview.append_column(treeviewcolumn)
-        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Red Cards", column=4)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Yellow Cards", column=4)
+        treeviewcolumn.set_fixed_width(80)
         treeview.append_column(treeviewcolumn)
-        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Card Points", column=5)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Red Cards", column=5)
+        treeviewcolumn.set_fixed_width(80)
+        treeview.append_column(treeviewcolumn)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Card Points", column=6)
+        treeviewcolumn.set_fixed_width(80)
         treeview.append_column(treeviewcolumn)
 
     def populate_data(self):
         self.liststore.clear()
 
-        for refereeid, referee in data.referees.get_referees():
-            league = data.leagues.get_league_by_id(referee.league)
-            self.liststore.append([refereeid, referee.name, league.name, 0, 0, 0])
+        for referee in data.referees.get_referee_data():
+            league = data.leagues.get_league_by_id(referee[2])
+
+            self.liststore.append([referee[0],
+                                   referee[1],
+                                   league.name,
+                                   referee[3],
+                                   referee[4],
+                                   referee[5],
+                                   referee[6]])
 
     def run(self):
         self.populate_data()
