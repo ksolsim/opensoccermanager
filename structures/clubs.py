@@ -198,6 +198,8 @@ class History:
         league = data.leagues.get_league_by_id(self.club.league)
 
         history = [data.date.get_season(), league.standings.get_position_for_club(self.club.clubid)]
-        history.extend(league.standings.get_standing_for_club(self.club.clubid))
+
+        standing = league.standings.get_standing_for_club(self.club.clubid)
+        history.extend(standing[2:])
 
         return history

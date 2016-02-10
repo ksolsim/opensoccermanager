@@ -30,7 +30,7 @@ class Standings:
         '''
         Adds passed clubid to standing with new object.
         '''
-        self.standings[clubid] = Standing()
+        self.standings[clubid] = Standing(clubid)
 
     def get_data(self):
         '''
@@ -41,9 +41,6 @@ class Standings:
         for clubid, standing in self.standings.items():
             club = data.clubs.get_club_by_id(clubid)
             item = standing.get_standing_data()
-
-            item.insert(0, clubid)
-
             standings.append(item)
 
         if data.calendar.event == 0:
@@ -62,7 +59,7 @@ class Standings:
         '''
         for standing in self.get_data():
             if clubid == standing[0]:
-                return standing[1:8]
+                return standing
 
     def get_position_for_club(self, clubid):
         '''
@@ -131,7 +128,8 @@ class Standings:
 
 
 class Standing:
-    def __init__(self):
+    def __init__(self, clubid):
+        self.clubid = clubid
         self.played = 0
         self.wins = 0
         self.draws = 0
@@ -145,7 +143,8 @@ class Standing:
         '''
         Return the standing data as a list.
         '''
-        data = [self.played,
+        data = [self.clubid,
+                self.played,
                 self.wins,
                 self.draws,
                 self.losses,

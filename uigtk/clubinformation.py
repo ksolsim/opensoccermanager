@@ -166,6 +166,7 @@ class ClubInformation(uigtk.widgets.Grid):
         self.attach(frame, 1, 2, 1, 1)
 
         scrolledwindow = uigtk.widgets.ScrolledWindow()
+        scrolledwindow.set_size_request(-1, 75)
         frame.grid.attach(scrolledwindow, 0, 0, 1, 1)
 
         self.liststoreHistory = Gtk.ListStore(str, str, int, int, int, int, int, int, int)
@@ -189,13 +190,19 @@ class ClubInformation(uigtk.widgets.Grid):
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Losses", column=4)
         treeviewcolumn.set_fixed_width(50)
         treeviewHistory.append_column(treeviewcolumn)
-        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="GF", column=5)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="GF",
+                                                      tooltip="Goals For",
+                                                      column=5)
         treeviewcolumn.set_fixed_width(50)
         treeviewHistory.append_column(treeviewcolumn)
-        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="GA", column=6)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="GA",
+                                                      tooltip="Goals Against",
+                                                      column=6)
         treeviewcolumn.set_fixed_width(50)
         treeviewHistory.append_column(treeviewcolumn)
-        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="GD", column=7)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="GD",
+                                                      tooltip="Goal Difference",
+                                                      column=7)
         treeviewcolumn.set_fixed_width(50)
         treeviewHistory.append_column(treeviewcolumn)
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Points", column=8)

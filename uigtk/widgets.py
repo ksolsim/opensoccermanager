@@ -145,10 +145,16 @@ class TreeView(Gtk.TreeView):
 
 
 class TreeViewColumn(Gtk.TreeViewColumn):
-    def __init__(self, title=None, column=0):
+    def __init__(self, column, title=None, tooltip=None):
         Gtk.TreeViewColumn.__init__(self)
 
-        if title:
+        if tooltip:
+            label = Gtk.Label()
+            label.set_label(title)
+            label.set_tooltip_text(tooltip)
+            label.show()
+            self.set_widget(label)
+        elif title:
             self.set_title(title)
 
         cellrenderertext = Gtk.CellRendererText()

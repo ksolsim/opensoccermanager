@@ -101,8 +101,6 @@ class Score:
         if ranges == [[0, 0], [0, 0], [0, 0]]:
             ranges = [[1, 2], [3, 4], [5, 6]]
 
-        print(ranges)
-
         [list(map(int, item)) for item in ranges]
 
         choice = random.randrange(0, int(ranges[2][1]))

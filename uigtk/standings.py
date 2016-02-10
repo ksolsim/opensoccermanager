@@ -73,13 +73,19 @@ class Standings(Gtk.Grid):
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Losses", column=5)
         treeviewcolumn.set_fixed_width(50)
         treeview.append_column(treeviewcolumn)
-        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="GF", column=6)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="GF",
+                                                      tooltip="Goals For",
+                                                      column=6)
         treeviewcolumn.set_fixed_width(50)
         treeview.append_column(treeviewcolumn)
-        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="GA", column=7)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="GA",
+                                                      tooltip="Goals Against",
+                                                      column=7)
         treeviewcolumn.set_fixed_width(50)
         treeview.append_column(treeviewcolumn)
-        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="GD", column=8)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="GD",
+                                                      tooltip="Goal Difference",
+                                                      column=8)
         treeviewcolumn.set_fixed_width(50)
         treeview.append_column(treeviewcolumn)
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Points", column=9)
