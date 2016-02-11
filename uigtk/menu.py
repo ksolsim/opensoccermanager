@@ -25,6 +25,7 @@ import uigtk.comparison
 import uigtk.filedialog
 import uigtk.managername
 import uigtk.playersearch
+import uigtk.printdialog
 import uigtk.quitdialog
 import uigtk.screen
 import uigtk.version
@@ -67,6 +68,16 @@ class Menu(Gtk.MenuBar):
         menuitemDelete = uigtk.widgets.MenuItem("_Delete Game...")
         menuitemDelete.connect("activate", uigtk.deletedialog.DeleteDialog)
         menu.append(menuitemDelete)
+        separator = Gtk.SeparatorMenuItem()
+        menu.append(separator)
+        menuitemPrint = uigtk.widgets.MenuItem("_Print...")
+        menuitemPrint.add_accelerator("activate",
+                                      data.window.accelgroup,
+                                      Gtk.accelerator_parse("P")[0],
+                                      Gdk.ModifierType.CONTROL_MASK,
+                                      Gtk.AccelFlags.VISIBLE)
+        menuitemPrint.connect("activate", self.on_print_clicked)
+        menu.append(menuitemPrint)
         separator = Gtk.SeparatorMenuItem()
         menu.append(separator)
         menuitemQuit = uigtk.widgets.MenuItem("_Quit Game")
@@ -282,6 +293,13 @@ class Menu(Gtk.MenuBar):
             data.window.welcome.set_show_welcome_screen()
 
         dialog.destroy()
+
+    def on_print_clicked(self, *args):
+        '''
+        Display print dialog allowing user to select print output.
+        '''
+        dialog = uigtk.printdialog.PrintDialog()
+        dialog.show()
 
     def on_sponsorship_clicked(self, *args):
         '''
