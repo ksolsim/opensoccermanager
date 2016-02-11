@@ -25,11 +25,17 @@ class Currency:
                          1: ("US Dollar", "$", 1.6),
                          2: ("Euro", "€", 1.25)}
 
+    def get_amount(self, amount):
+        '''
+        Return converted amount to currency preference value.
+        '''
+        return amount * self.currency[data.preferences.currency][2]
+
     def get_currency(self, amount, integer=False):
         '''
         Return amount argument in converted currency.
         '''
-        value = (amount * self.currency[data.preferences.currency][2])
+        value = self.get_amount(amount)
 
         if integer:
             amount = "%s%i" % (self.currency[data.preferences.currency][1], value)
@@ -40,7 +46,7 @@ class Currency:
 
     def get_currency_names(self):
         '''
-        Return the name of the currency.
+        Return the names of the currencies supported.
         '''
         names = [(key, item[0]) for key, item in self.currency.items()]
 
@@ -50,9 +56,7 @@ class Currency:
         '''
         Return the symbol for the given currency index.
         '''
-        index = data.preferences.currency
-
-        return self.currency[index][1]
+        return self.currency[data.preferences.currency][1]
 
     def get_rounded_amount(self, amount):
         '''
@@ -66,3 +70,9 @@ class Currency:
             amount = "%s%i" % (self.get_currency_symbol(), amount)
 
         return amount
+
+    def get_comma_value(self, amount):
+        '''
+        Return value formatted with commas.
+        '''
+        return "{:,}".format(amount)

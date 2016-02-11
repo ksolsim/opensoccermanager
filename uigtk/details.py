@@ -76,8 +76,9 @@ class Details(uigtk.widgets.Grid):
                 self.comboboxCategorisedAmount.remove_all()
 
                 for key, value in self.finances.get_categories():
-                    amount = data.currency.get_currency(value[0], integer=True)
-                    category = "%s (%s)" % (value[1], amount)
+                    amount = data.currency.get_amount(value[0])
+                    amount = data.currency.get_comma_value(amount)
+                    category = "%s (%s)" % (value[1], "%s%s" % (data.currency.get_currency_symbol(), amount))
                     self.comboboxCategorisedAmount.append(str(key), category)
 
                 self.comboboxCategorisedAmount.set_active(0)

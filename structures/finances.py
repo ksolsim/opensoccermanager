@@ -43,14 +43,6 @@ class Categories:
         '''
         return self.categories[index][0]
 
-    def get_comma_value(self, index):
-        '''
-        Return value formatted with commas.
-        '''
-        value = "{:,}".format(self.categories[index][0])
-
-        return value
-
 
 class Finances:
     class Loan:
@@ -59,11 +51,18 @@ class Finances:
         '''
         def __init__(self):
             self.amount = 0
+            self.period = 0
 
             self.interest = random.randint(3, 15)
             self.timeout = random.randint(12, 20)
 
             self.update_interest_rate()
+
+        def get_loan_active(self):
+            '''
+            Return if club currently has an active loan.
+            '''
+            return self.amount > 0
 
         def get_maximum_loan(self):
             '''
@@ -71,9 +70,7 @@ class Finances:
             '''
             club = data.clubs.get_club_by_id(data.user.team)
 
-            maximum = club.reputation ** 2 * 10000
-
-            return maximum
+            return club.reputation ** 2 * 10000
 
         def update_interest_rate(self):
             '''
@@ -103,9 +100,7 @@ class Finances:
             '''
             club = data.clubs.get_club_by_id(data.user.team)
 
-            maximum = int(((club.accounts.balance * 0.5) * 0.05) * club.reputation)
-
-            return maximum
+            return int(((club.accounts.balance * 0.5) * 0.05) * club.reputation)
 
         def update_interest_rate(self):
             '''
@@ -122,13 +117,15 @@ class Finances:
         Grant structure dealing with whether a grant is permitted and the amount.
         '''
         def __init__(self):
-            self.maximum = 0
             self.weeks = 24
 
         def decrement_grant_period(self):
             '''
             Decrement amount of time until grant money must be used.
             '''
+
+        def get_maximum_grant(self):
+            pass
 
         def get_grant_available(self):
             '''
@@ -139,7 +136,7 @@ class Finances:
             available = False
 
             if club.reputation < 12:
-                self.available = True
+                available = True
 
             return available
 
@@ -153,11 +150,12 @@ class Finances:
             self.timeout = 0
 
         def get_float_amount(self):
+            '''
+            Return amount of money available via flotation.
+            '''
             club = data.clubs.get_club_by_id(data.user.team)
 
-            amount = club.reputation ** 2 * 100000
-
-            return amount
+            return club.reputation ** 2 * 100000
 
         def set_initiate_float(self):
             '''

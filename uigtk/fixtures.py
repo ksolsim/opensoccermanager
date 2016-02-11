@@ -156,7 +156,9 @@ class Fixtures(uigtk.widgets.Grid):
             rounds = league.fixtures.get_number_of_rounds()
 
             for week in range(0, rounds):
-                title = "Round %i" % (week + 1)
+                day, month = league.fixtures.events[week]
+
+                title = "Round %i - %i/%i" % (week + 1, day, month)
                 parent = self.treestore.append(None, [None, title, "", "", "", 700])
 
                 fixtures = league.fixtures.get_fixtures_for_week(week)

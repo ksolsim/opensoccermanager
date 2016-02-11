@@ -18,6 +18,8 @@
 
 import collections
 
+import data
+
 
 class Accounts:
     class Item:
@@ -58,9 +60,11 @@ class Accounts:
         '''
         Verify whether the passed amount will overdraw the account.
         '''
-        overdrawn = self.balance - amount <= 0
+        club = data.clubs.get_club_by_id(data.user.team)
 
-        return overdrawn
+        state = (self.balance + club.finances.overdraft.amount) - amount >= 0
+
+        return state
 
     def withdraw(self, amount, category):
         '''

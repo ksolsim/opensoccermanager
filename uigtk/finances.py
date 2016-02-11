@@ -61,7 +61,7 @@ class Loan(uigtk.widgets.CommonFrame):
             self.set_modal(True)
             self.set_title("Confirm Loan")
             self.set_property("message-type", Gtk.MessageType.QUESTION)
-            self.set_markup("Apply for loan of %s at %i%% interest?" % (amount, interest))
+            self.set_markup("Apply for loan of %s at %i%% interest?" % (data.currency.get_currency(amount, integer=True), interest))
             self.add_button("_Cancel", Gtk.ResponseType.CANCEL)
             self.add_button("C_onfirm", Gtk.ResponseType.OK)
             self.set_default_response(Gtk.ResponseType.CANCEL)
@@ -82,27 +82,34 @@ class Loan(uigtk.widgets.CommonFrame):
         label.set_line_wrap(True)
         self.grid.attach(label, 0, 0, 1, 1)
 
-        sizegroup = Gtk.SizeGroup()
-        sizegroup.set_mode(Gtk.SizeGroupMode.HORIZONTAL)
+        sizegroupLabel = Gtk.SizeGroup()
+        sizegroupLabel.set_mode(Gtk.SizeGroupMode.HORIZONTAL)
+
+        sizegroupSpinButton = Gtk.SizeGroup()
+        sizegroupSpinButton.set_mode(Gtk.SizeGroupMode.HORIZONTAL)
 
         grid = uigtk.widgets.Grid()
         self.grid.attach(grid, 0, 2, 1, 1)
 
         label = uigtk.widgets.Label("_Loan Amount", leftalign=True)
-        sizegroup.add_widget(label)
+        sizegroupLabel.add_widget(label)
         grid.attach(label, 0, 0, 1, 1)
         self.spinbuttonAmount = Gtk.SpinButton()
         self.spinbuttonAmount.set_increments(100000, 1000000)
         self.spinbuttonAmount.connect("value-changed", self.on_amount_changed)
+        sizegroupSpinButton.add_widget(self.spinbuttonAmount)
         label.set_mnemonic_widget(self.spinbuttonAmount)
         grid.attach(self.spinbuttonAmount, 1, 0, 1, 1)
 
-        label = uigtk.widgets.Label("_Repayment Period", leftalign=True)
-        sizegroup.add_widget(label)
+        label = uigtk.widgets.Label("_Loan Period", leftalign=True)
+        sizegroupLabel.add_widget(label)
         grid.attach(label, 0, 1, 1, 1)
         self.spinbuttonPeriod = Gtk.SpinButton()
         self.spinbuttonPeriod.set_range(1, 5)
         self.spinbuttonPeriod.set_increments(1, 1)
+        self.spinbuttonPeriod.set_numeric(False)
+        self.spinbuttonPeriod.connect("output", self.format_repayment_output)
+        sizegroupSpinButton.add_widget(self.spinbuttonPeriod)
         label.set_mnemonic_widget(self.spinbuttonPeriod)
         grid.attach(self.spinbuttonPeriod, 1, 1, 1, 1)
 
@@ -113,16 +120,21 @@ class Loan(uigtk.widgets.CommonFrame):
         self.buttonApply = uigtk.widgets.Button("_Apply")
         self.buttonApply.set_sensitive(False)
         self.buttonApply.set_tooltip_text("Apply specified loan amount with current interest rate.")
+        self.buttonApply.connect("clicked", self.on_apply_clicked)
         buttonbox.add(self.buttonApply)
 
         grid = uigtk.widgets.Grid()
         self.grid.attach(grid, 0, 4, 1, 1)
 
         label = uigtk.widgets.Label("Repay _Amount", leftalign=True)
-        sizegroup.add_widget(label)
+        sizegroupLabel.add_widget(label)
         grid.attach(label, 0, 0, 1, 1)
         self.spinbuttonRepay = Gtk.SpinButton()
+        self.spinbuttonRepay.set_sensitive(False)
+        self.spinbuttonRepay.set_increments(100000, 1000000)
+        self.spinbuttonRepay.set_value(0)
         self.spinbuttonRepay.connect("value-changed", self.on_repay_changed)
+        sizegroupSpinButton.add_widget(self.spinbuttonRepay)
         label.set_mnemonic_widget(self.spinbuttonRepay)
         grid.attach(self.spinbuttonRepay, 1, 0, 1, 1)
 
@@ -130,10 +142,26 @@ class Loan(uigtk.widgets.CommonFrame):
         buttonbox.set_layout(Gtk.ButtonBoxStyle.END)
         self.grid.attach(buttonbox, 0, 5, 1, 1)
 
-        buttonRepay = uigtk.widgets.Button("_Repay")
-        buttonRepay.set_sensitive(False)
-        buttonRepay.set_tooltip_text("Repay specified amount of outstanding loan.")
-        buttonbox.add(buttonRepay)
+        self.buttonRepay = uigtk.widgets.Button("_Repay")
+        self.buttonRepay.set_sensitive(False)
+        self.buttonRepay.set_tooltip_text("Repay specified amount of outstanding loan.")
+        self.buttonRepay.connect("clicked", self.on_repay_clicked)
+        buttonbox.add(self.buttonRepay)
+
+    def format_repayment_output(self, spinbutton):
+        '''
+        Format year string onto period spinbutton.
+        '''
+        value = spinbutton.get_value_as_int()
+
+        if value > 1:
+            text = "Years"
+        else:
+            text = "Year"
+
+        spinbutton.set_text("%i %s" % (value, text))
+
+        return True
 
     def on_amount_changed(self, spinbutton):
         '''
@@ -153,20 +181,56 @@ class Loan(uigtk.widgets.CommonFrame):
         '''
         Claim loan for specified amount and repayment period.
         '''
-        pass
+        amount = self.spinbuttonAmount.get_value_as_int()
+        period = self.spinbuttonPeriod.get_value_as_int()
+
+        dialog = self.LoanDialog(amount, self.club.finances.loan.interest)
+
+        if dialog.show():
+            self.club.finances.loan.amount = amount
+            self.club.finances.loan.period = period
+
+            self.spinbuttonAmount.set_value(0)
+            self.spinbuttonPeriod.set_value(1)
+
+            self.spinbuttonAmount.set_sensitive(False)
+            self.spinbuttonPeriod.set_sensitive(False)
+            self.buttonApply.set_sensitive(False)
+
+            self.spinbuttonRepay.set_sensitive(True)
+            self.spinbuttonRepay.set_range(0, amount)
+
+            self.club.accounts.deposit(amount, category="loan")
 
     def on_repay_clicked(self, *args):
         '''
         Repay defined loan amount.
         '''
-        pass
+        repayment = self.spinbuttonRepay.get_value_as_int()
+
+        self.club.finances.loan.amount -= repayment
+
+        if self.club.accounts.request(repayment):
+            self.club.accounts.withdraw(repayment, category="loan")
+
+            self.spinbuttonRepay.set_range(0, self.club.finances.loan.amount)
+            self.spinbuttonRepay.set_value(0)
+
+            if self.club.finances.loan.amount == 0:
+                self.spinbuttonRepay.set_sensitive(False)
+                self.buttonRepay.set_sensitive(False)
+                self.spinbuttonAmount.set_sensitive(True)
+                self.spinbuttonPeriod.set_sensitive(True)
+                self.buttonApply.set_sensitive(True)
 
     def run(self):
-        club = data.clubs.get_club_by_id(data.user.team)
+        self.club = data.clubs.get_club_by_id(data.user.team)
 
-        maximum = club.finances.loan.get_maximum_loan()
+        maximum = self.club.finances.loan.get_maximum_loan()
         self.spinbuttonAmount.set_range(0, maximum)
-        self.spinbuttonAmount.set_value(0)
+        self.spinbuttonAmount.set_value(self.club.finances.loan.amount)
+
+        self.spinbuttonPeriod.set_value(self.club.finances.loan.period)
 
 
 class Overdraft(uigtk.widgets.CommonFrame):
@@ -177,7 +241,7 @@ class Overdraft(uigtk.widgets.CommonFrame):
             self.set_modal(True)
             self.set_title("Confirm Overdraft")
             self.set_property("message-type", Gtk.MessageType.QUESTION)
-            self.set_markup("Apply for overdraft of %s at %i%% interest?" % (amount, interest))
+            self.set_markup("Raise overdraft to %s with a %i%% interest charge?" % (data.currency.get_currency(amount, integer=True), interest))
             self.add_button("_Cancel", Gtk.ResponseType.CANCEL)
             self.add_button("C_onfirm", Gtk.ResponseType.OK)
             self.set_default_response(Gtk.ResponseType.CANCEL)
@@ -218,7 +282,7 @@ class Overdraft(uigtk.widgets.CommonFrame):
 
         self.buttonApply = uigtk.widgets.Button("_Apply")
         self.buttonApply.set_sensitive(False)
-        self.buttonApply.set_tooltip_text("Apply for overdraft using defined settings.")
+        self.buttonApply.set_tooltip_text("Apply overdraft for specified amount.")
         self.buttonApply.connect("clicked", self.on_apply_clicked)
         buttonbox.add(self.buttonApply)
 
@@ -226,29 +290,31 @@ class Overdraft(uigtk.widgets.CommonFrame):
         '''
         Change sensitivity of apply button.
         '''
-        sensitive = spinbutton.get_value() > 0
+        sensitive = spinbutton.get_value_as_int() > 0
         self.buttonApply.set_sensitive(sensitive)
 
     def on_apply_clicked(self, *args):
         '''
         Ask user to setup use of overdraft.
         '''
-        dialog = self.OverdraftDialog()
+        amount = self.spinbuttonOverdraft.get_value_as_int()
+
+        dialog = self.OverdraftDialog(amount, self.club.finances.overdraft.interest)
 
         if dialog.show():
-            club.finances.overdraft.amount = self.spinbuttonOverdraft.get_value()
+            self.club.finances.overdraft.amount = self.spinbuttonOverdraft.get_value_as_int()
 
     def run(self):
-        club = data.clubs.get_club_by_id(data.user.team)
+        self.club = data.clubs.get_club_by_id(data.user.team)
 
-        maximum = club.finances.overdraft.get_maximum_overdraft()
+        maximum = self.club.finances.overdraft.get_maximum_overdraft()
         self.spinbuttonOverdraft.set_range(0, maximum)
 
         amount = data.currency.get_currency(maximum, integer=True)
 
-        self.labelStatus.set_label("The maximum overdraft allowed at this time is %s with an interest rate of %i%%." % (amount, club.finances.overdraft.interest))
+        self.labelStatus.set_label("The maximum overdraft allowed at this time is %s with an interest rate of %i%%." % (amount, self.club.finances.overdraft.interest))
 
-        self.spinbuttonOverdraft.set_value(club.finances.overdraft.amount)
+        self.spinbuttonOverdraft.set_value(self.club.finances.overdraft.amount)
 
 
 class Grant(uigtk.widgets.CommonFrame):
@@ -272,7 +338,7 @@ class Grant(uigtk.widgets.CommonFrame):
         self.spinbuttonGrant = uigtk.widgets.SpinButton()
         self.spinbuttonGrant.set_increments(100000, 1000000)
         self.spinbuttonGrant.set_sensitive(False)
-        self.spinbuttonGrant.set_tooltip_text("Amount of grant money to apply for.")
+        self.spinbuttonGrant.set_tooltip_text("Amount of grant money to request.")
         label.set_mnemonic_widget(self.spinbuttonGrant)
         self.gridGrant.attach(self.spinbuttonGrant, 1, 0, 1, 1)
 
@@ -283,7 +349,11 @@ class Grant(uigtk.widgets.CommonFrame):
 
         self.buttonApply = uigtk.widgets.Button("_Apply")
         self.buttonApply.set_sensitive(False)
+        self.buttonApply.connect("clicked", self.on_apply_clicked)
         buttonbox.add(self.buttonApply)
+
+    def on_apply_clicked(self, *args):
+        pass
 
     def run(self):
         club = data.clubs.get_club_by_id(data.user.team)
