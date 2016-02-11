@@ -19,52 +19,15 @@
 from gi.repository import Gtk
 
 import data
+import uigtk.products
 import uigtk.widgets
 
 
-class Merchandise(uigtk.widgets.Grid):
+class Merchandise(uigtk.products.Products):
     __name__ = "merchandise"
 
-    class Item:
-        def __init__(self, product=""):
-            self.labelProduct = uigtk.widgets.Label(product, leftalign=True)
-            self.labelDescription = uigtk.widgets.Label(leftalign=True)
-            self.labelDescription.set_hexpand(True)
-            self.labelCost = uigtk.widgets.Label(leftalign=True)
-            self.labelSalePrice = uigtk.widgets.Label(leftalign=True)
-
-            self.spinbuttonProfit = Gtk.SpinButton()
-            self.spinbuttonProfit.set_range(-100, 1000)
-            self.spinbuttonProfit.set_increments(10, 100)
-            self.spinbuttonProfit.set_snap_to_ticks(True)
-            self.spinbuttonProfit.set_numeric(False)
-            self.spinbuttonProfit.set_value(100)
-            self.spinbuttonProfit.connect("output", self.on_percentage_output)
-
-        def on_percentage_output(self, spinbutton):
-            '''
-            Format percentage sign into spinbutton output.
-            '''
-            spinbutton.set_text("%i%%" % (spinbutton.get_value_as_int()))
-
-            return True
-
     def __init__(self):
-        uigtk.widgets.Grid.__init__(self)
-
-        label = uigtk.widgets.Label("<b>Product</b>")
-        self.attach(label, 0, 0, 1, 1)
-        label = uigtk.widgets.Label("<b>Description</b>")
-        self.attach(label, 1, 0, 1, 1)
-        label = uigtk.widgets.Label("<b>Production Cost</b>")
-        label.set_tooltip_text("The amount it costs to manufacture, transport and market the item.")
-        self.attach(label, 2, 0, 1, 1)
-        label = uigtk.widgets.Label("<b>Profit Percentage</b>")
-        label.set_tooltip_text("The amount of profit we want to make on this item.")
-        self.attach(label, 3, 0, 1, 1)
-        label = uigtk.widgets.Label("<b>Sale Price</b>")
-        label.set_tooltip_text("The total price that the customer will pay in the shop.")
-        self.attach(label, 4, 0, 1, 1)
+        uigtk.products.Products.__init__(self)
 
         self.products = []
         self.profit = []
@@ -74,16 +37,16 @@ class Merchandise(uigtk.widgets.Grid):
         Setup interface with appropriate widgets to display data.
         '''
         for count, product in enumerate(self.club.merchandise.get_merchandise(), start=1):
-            item = self.Item()
+            item = uigtk.products.Item()
 
-            item.labelProduct.set_label(product[0])
-            self.attach(item.labelProduct, 0, count, 1, 1)
-            self.attach(item.labelDescription, 1, count, 1, 1)
+            item.labelProduct.set_label("_%s" % (product[0]))
+            self.pricing.attach(item.labelProduct, 0, count, 1, 1)
+            self.pricing.attach(item.labelDescription, 1, count, 1, 1)
             item.labelCost.set_label("%s" % (data.currency.get_currency(product[1])))
-            self.attach(item.labelCost, 2, count, 1, 1)
-            self.attach(item.spinbuttonProfit, 3, count, 1, 1)
+            self.pricing.attach(item.labelCost, 2, count, 1, 1)
+            self.pricing.attach(item.spinbuttonProfit, 3, count, 1, 1)
 
-            self.attach(item.labelSalePrice, 4, count, 1, 1)
+            self.pricing.attach(item.labelSalePrice, 4, count, 1, 1)
 
             item.spinbuttonProfit.connect("value-changed", self.on_profit_changed, count - 1)
 
@@ -102,6 +65,9 @@ class Merchandise(uigtk.widgets.Grid):
         self.profit[index].set_label(profit)
 
     def calculate_profit(self, value, index):
+        '''
+        Determine profit of each item.
+        '''
         cost = self.products[index][1]
         profit = (0.01 * value) * cost + cost
 
