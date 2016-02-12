@@ -23,7 +23,8 @@ import structures.standings
 
 class Leagues:
     class League:
-        def __init__(self):
+        def __init__(self, leagueid):
+            self.leagueid = leagueid
             self.name = ""
             self.clubs = []
             self.referees = []
@@ -81,7 +82,7 @@ class Leagues:
         Generate fixtures for each of the leagues.
         '''
         for leagueid, league in self.leagues.items():
-            league.fixtures.generate_fixtures(leagueid, league)
+            league.fixtures.generate_fixtures(league)
 
     def populate_data(self):
         data.database.cursor.execute("SELECT * FROM league \
@@ -91,7 +92,7 @@ class Leagues:
                                      (self.season,))
 
         for item in data.database.cursor.fetchall():
-            league = self.League()
             leagueid = item[0]
+            league = self.League(leagueid)
             league.name = item[1]
             self.leagues[leagueid] = league

@@ -51,6 +51,7 @@ class Players:
             self.wage = None
             self.contract = None
             self.transfer = [False, False]
+            self.not_for_sale = False
             self.appearances = 0
             self.substitute = 0
             self.goals = 0

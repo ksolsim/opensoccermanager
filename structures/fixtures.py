@@ -36,7 +36,7 @@ class Fixtures:
 
         return self.fixtureid
 
-    def generate_fixtures(self, leagueid, league):
+    def generate_fixtures(self, league):
         '''
         Generate season fixture list for passed clubs argument.
         '''
@@ -60,7 +60,7 @@ class Fixtures:
                     away = rounds
 
                 fixture = Fixture()
-                fixture.leagueid = leagueid
+                fixture.leagueid = self.league.leagueid
                 fixture.week = week
                 fixture.referee = referees[match]
 
@@ -85,7 +85,7 @@ class Fixtures:
                     away = rounds
 
                 fixture = Fixture()
-                fixture.leagueid = leagueid
+                fixture.leagueid = self.league.leagueid
                 fixture.week = rounds + week
                 fixture.referee = referees[match]
 

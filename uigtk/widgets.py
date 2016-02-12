@@ -132,6 +132,13 @@ class MenuItem(Gtk.MenuItem):
         self.set_use_underline(True)
 
 
+class CheckMenuItem(Gtk.CheckMenuItem):
+    def __init__(self, label=""):
+        Gtk.CheckMenuItem.__init__(self)
+        self.set_label(label)
+        self.set_use_underline(True)
+
+
 class TreeView(Gtk.TreeView):
     '''
     TreeView with search disabled and TreeSelection accessible.

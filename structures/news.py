@@ -46,13 +46,7 @@ class News:
         '''
         Return the number of unread articles.
         '''
-        count = 0
-
-        for article in self.articles.values():
-            if article.unread:
-                count += 1
-
-        return count
+        return sum(1 for article in self.articles.values() if article.unread)
 
     def get_newsid(self):
         '''
@@ -131,6 +125,9 @@ class Keys:
                      "_CARDS_": kwargs.get("cards")}
 
     def get_keys(self):
+        '''
+        Return dictionary of key and value pairs.
+        '''
         return self.keys.items()
 
 
