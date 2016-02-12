@@ -83,7 +83,7 @@ class Negotiations(Gtk.Grid):
             self.buttonEnd.connect("clicked", self.on_end_clicked)
             buttonbox.add(self.buttonEnd)
 
-            self.contextmenu = ContextMenu()
+            self.contextmenu = ContextMenu(self)
 
         def on_key_press_event(self, treeview, event):
             '''
@@ -92,6 +92,8 @@ class Negotiations(Gtk.Grid):
             if Gdk.keyval_name(event.keyval) == "Menu":
                 event.button = 3
                 self.on_context_menu_event(event)
+            elif Gdk.keyval_name(event.keyval) == "Delete":
+                self.on_end_clicked()
 
         def on_button_release_event(self, treeview, event):
             '''
@@ -203,7 +205,9 @@ class Negotiations(Gtk.Grid):
 
 
 class ContextMenu(Gtk.Menu):
-    def __init__(self):
+    def __init__(self, negotiation):
+        self.negotiation = negotiation
+
         Gtk.Menu.__init__(self)
 
         menuitem = uigtk.widgets.MenuItem("_End Transfer")
@@ -216,6 +220,9 @@ class ContextMenu(Gtk.Menu):
         self.append(menuitem)
 
     def on_end_clicked(self, *args):
+        '''
+        Display message to confirm whether transfer will be ended.
+        '''
         negotiation = data.negotiations.get_negotiation_by_id(self.negotiationid)
         player = data.players.get_player_by_id(negotiation.playerid)
         dialog = EndTransfer(player.get_name(mode=1))
@@ -223,8 +230,17 @@ class ContextMenu(Gtk.Menu):
         if dialog.show():
             data.negotiations.end_negotiation(self.negotiationid)
 
+            self.negotiation.populate_data()
+
     def on_player_information_clicked(self, *args):
-        pass
+        '''
+        Launch player information screen for selected player.
+        '''
+        model, treeiter = self.negotiation.treeview.treeselection.get_selected()
+        playerid = model[treeiter][1]
+
+        data.window.screen.change_visible_screen("playerinformation")
+        data.window.screen.active.set_visible_player(playerid)
 
 
 class PurchaseEnquiry(uigtk.shared.TransferEnquiry):
