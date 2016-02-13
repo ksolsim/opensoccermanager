@@ -174,15 +174,19 @@ class Negotiations(Gtk.Grid):
 
             for negotiationid, negotiation in self.negotiations():
                 player = data.players.get_player_by_id(negotiation.playerid)
-                transfer_type = ("Purchase", "Loan")[negotiation.transfer_type]
-                club = data.clubs.get_club_by_id(player.squad)
+                transfer_type = ("Purchase", "Loan", "Free Transfer")[negotiation.transfer_type]
+
+                if negotiation.transfer_type in (0, 1):
+                    club = data.clubs.get_club_by_id(player.squad).name
+                else:
+                    club = "None"
 
                 self.liststore.append([negotiationid,
                                        negotiation.playerid,
                                        player.get_name(mode=1),
                                        negotiation.offer_date,
                                        transfer_type,
-                                       club.name,
+                                       club,
                                        negotiation.get_status_message()])
 
     def __init__(self):
@@ -253,11 +257,7 @@ class PurchaseEnquiry(uigtk.shared.TransferEnquiry):
     def show(self, club, player):
         self.set_markup("Approach %s for the purchase of %s?" % (club.name, player.get_name(mode=1)))
 
-        state = 0
-
-        if self.run() == Gtk.ResponseType.OK:
-            state = 1
-
+        state = self.run() == Gtk.ResponseType.OK
         self.destroy()
 
         return state
@@ -273,11 +273,7 @@ class LoanEnquiry(uigtk.shared.TransferEnquiry):
     def show(self, club, player):
         self.set_markup("Approach %s for the loan of %s?" % (club.name, player.get_name(mode=1)))
 
-        state = 0
-
-        if self.run() == Gtk.ResponseType.OK:
-            state = 1
-
+        state = self.run() == Gtk.ResponseType.OK
         self.destroy()
 
         return state
@@ -293,12 +289,10 @@ class FreeEnquiry(uigtk.shared.TransferEnquiry):
     def show(self, player):
         self.set_markup("Approach %s to join on a free transfer?" % (player.get_name(mode=1)))
 
-        state = 0
-
-        if self.run() == Gtk.ResponseType.OK:
-            state = 1
-
+        state = self.run() == Gtk.ResponseType.OK
         self.destroy()
+
+        return state
 
 
 class EndTransfer(Gtk.MessageDialog):
@@ -415,12 +409,17 @@ class LoanOffer(Gtk.Dialog):
 
 class EnquiryRejection(Gtk.MessageDialog):
     def __init__(self, player, club):
+        if player.squad:
+            message = "The enquiry for %s has been rejected by %s." % (player.get_name(mode=1), club.name)
+        else:
+            message = "The enquiry for %s has been rejected by the player." % (player.get_name(mode=1))
+
         Gtk.MessageDialog.__init__(self)
         self.set_transient_for(data.window)
         self.set_modal(True)
         self.set_title("Enquiry Rejected")
         self.set_property("message-type", Gtk.MessageType.INFO)
-        self.set_markup("The enquiry for %s has been rejected by %s." % (player.get_name(mode=1), club.name))
+        self.set_markup(message)
         self.add_button("_Close", Gtk.ResponseType.CLOSE)
 
         self.run()
@@ -504,11 +503,16 @@ class InProgress(Gtk.MessageDialog):
 
 class AwaitingResponse(Gtk.MessageDialog):
     def __init__(self, player, club):
+        if player.squad:
+            message = "We are currently awaiting a response from %s for %s." % (club.name, player.get_name(mode=1))
+        else:
+            message = "We are currently awaiting a response from %s." % (player.get_name(mode=1))
+
         Gtk.MessageDialog.__init__(self)
         self.set_transient_for(data.window)
         self.set_title("Awaiting Response")
         self.set_property("message-type", Gtk.MessageType.INFO)
-        self.set_markup("We are currently awaiting a response from %s for %s." % (club.name, player.get_name(mode=1)))
+        self.set_markup(message)
         self.add_button("_Close", Gtk.ResponseType.CLOSE)
 
         self.run()

@@ -677,12 +677,12 @@ class ContextMenu2(ContextMenu1):
 
         separator = Gtk.SeparatorMenuItem()
         self.insert(separator, 1)
-        menuitem = uigtk.widgets.MenuItem("Make Offer to _Purchase")
-        menuitem.connect("activate", self.on_purchase_offer_clicked)
-        self.insert(menuitem, 2)
-        menuitem = uigtk.widgets.MenuItem("Make Offer to _Loan")
-        menuitem.connect("activate", self.on_loan_offer_clicked)
-        self.insert(menuitem, 3)
+        self.menuitemPurchase = uigtk.widgets.MenuItem("Make Offer to _Purchase")
+        self.menuitemPurchase.connect("activate", self.on_purchase_offer_clicked)
+        self.insert(self.menuitemPurchase, 2)
+        self.menuitemLoan = uigtk.widgets.MenuItem("Make Offer to _Loan")
+        self.menuitemLoan.connect("activate", self.on_loan_offer_clicked)
+        self.insert(self.menuitemLoan, 3)
         self.menuitemAddShortlist = uigtk.widgets.MenuItem("_Add to Shortlist")
         self.menuitemAddShortlist.connect("activate", self.on_add_to_shortlist_clicked)
         self.insert(self.menuitemAddShortlist, 4)
@@ -714,10 +714,11 @@ class ContextMenu2(ContextMenu1):
         '''
         dialog = uigtk.shortlist.RemoveShortlist()
 
-        if dialog.show(self.playerid) == 1:
+        if dialog.show(self.playerid):
             self.club.shortlist.remove_from_shortlist(self.playerid)
 
     def show(self):
+        player = data.players.get_player_by_id(self.playerid)
         self.club = data.clubs.get_club_by_id(data.user.team)
 
         self.show_all()
@@ -725,3 +726,10 @@ class ContextMenu2(ContextMenu1):
         sensitive = self.club.shortlist.get_player_in_shortlist(self.playerid)
         self.menuitemAddShortlist.set_sensitive(not sensitive)
         self.menuitemRemoveShortlist.set_sensitive(sensitive)
+
+        if player.squad:
+            self.menuitemPurchase.set_label("Make Offer to _Purchase")
+            self.menuitemLoan.set_sensitive(True)
+        else:
+            self.menuitemPurchase.set_label("Make Offer to _Sign")
+            self.menuitemLoan.set_sensitive(False)

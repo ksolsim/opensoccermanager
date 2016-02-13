@@ -101,9 +101,9 @@ class Players:
             '''
             Return club name player is contracted to.
             '''
-            club = data.clubs.get_club_by_id(self.squad)
+            if self.squad:
+                club = data.clubs.get_club_by_id(self.squad)
 
-            if club:
                 return club.name
             else:
                 return ""
@@ -346,7 +346,7 @@ class History:
         club = data.clubs.get_club_by_id(player.squad)
 
         current = (data.date.get_season(),
-                   club.name,
+                   player.get_club_name(),
                    "",
                    player.appearances,
                    player.goals,

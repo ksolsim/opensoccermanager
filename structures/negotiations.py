@@ -106,6 +106,9 @@ class Negotiations:
                     self.update_free_transfers(negotiation)
 
     def update_purchases(self, negotiation):
+        '''
+        Update status of purchase from player or club response.
+        '''
         if negotiation.statusid == 0:
             if negotiation.consider_enquiry():
                 negotiation.statusid = 2
@@ -123,31 +126,59 @@ class Negotiations:
                 negotiation.statusid = 7
 
     def update_loans(self, negotiation):
+        '''
+        Update status of loan from club response.
+        '''
         if negotiation.statusid == 0:
             if negotiation.consider_enquiry():
                 negotiation.statusid = 2
             else:
                 negotiation.statusid = 1
+        elif negotiation.statusid == 3:
+            if negotiation.consider_contract():
+                negotiation.statusid = 5
+            else:
+                negotiation.statusid = 4
 
     def update_free_transfers(self, negotiation):
-        print("Update free transfers")
+        '''
+        Update status of free transfer from player response.
+        '''
+        if negotiation.statusid == 0:
+            if negotiation.consider_enquiry():
+                negotiation.statusid = 10
+            else:
+                negotiation.statusid = 9
+        elif negotiation.statusid == 6:
+            if negotiation.consider_contract():
+                negotiation.statusid = 8
+            else:
+                negotiation.statusid = 7
 
     def initialise_purchase(self, playerid):
         '''
         Create purchase transfer negotiation object.
         '''
         if not self.get_player_in_negotiations(playerid):
-            dialog = uigtk.negotiations.PurchaseEnquiry()
-
             player = data.players.get_player_by_id(playerid)
-            club = data.clubs.get_club_by_id(player.squad)
 
-            if dialog.show(club, player) == 1:
+            if player.squad:
+                club = data.clubs.get_club_by_id(player.squad)
+                dialog = uigtk.negotiations.PurchaseEnquiry()
+                state = dialog.show(club, player)
+            else:
+                dialog = uigtk.negotiations.FreeEnquiry()
+                state = dialog.show(player)
+
+            if state:
                 negotiationid = self.get_negotiationid()
 
                 negotiation = Negotiation(negotiationid, playerid)
                 negotiation.clubid = data.user.team
                 self.negotiations[negotiationid] = negotiation
+
+                if not player.squad:
+                    negotiation.transfer_type = 2
 
                 club = data.clubs.get_club_by_id(data.user.team)
                 club.shortlist.add_to_shortlist(playerid)
@@ -260,10 +291,10 @@ class Negotiation:
             uigtk.negotiations.EnquiryRejection(player, club)
             data.negotiations.end_negotiation(self.negotiationid)
         elif self.statusid == 4:
-            uigtk.negotiations.OfferRejection()
+            uigtk.negotiations.OfferRejection(player, club)
             data.negotiations.end_negotiation(self.negotiationid)
         elif self.statusid == 7:
-            uigtk.negotiations.ContractRejection()
+            uigtk.negotiations.ContractRejection(player)
             data.negotiations.end_negotiation(self.negotiationid)
         elif self.statusid in (0, 3, 6):
             uigtk.negotiations.AwaitingResponse(player, club)
@@ -277,7 +308,7 @@ class Negotiation:
         elif self.statusid == 5:
             dialog = uigtk.negotiations.ContractNegotiation(self.playerid)
 
-            if dialog.show() == 1:
+            if dialog.show():
                 self.set_status(6)
             else:
                 data.negotiations.end_negotiation(self.negotiationid)
@@ -296,8 +327,10 @@ class Negotiation:
 
         if self.statusid == 1:
             uigtk.negotiations.EnquiryRejection(player, club)
+            data.negotiations.end_negotiation(self.negotiationid)
         elif self.statusid == 4:
-            uigtk.negotiations.OfferRejection()
+            uigtk.negotiations.OfferRejection(player, club)
+            data.negotiations.end_negotiation(self.negotiationid)
         elif self.statusid in (0, 3):
             uigtk.negotiations.AwaitingResponse(player, club)
         elif self.statusid == 2:
@@ -307,6 +340,11 @@ class Negotiation:
                 self.set_status(3)
             else:
                 data.negotiations.end_negotiation(self.negotiationid)
+        elif self.statusid == 5:
+            dialog = uigtk.negotiations.CompleteTransfer(self.playerid)
+
+            if dialog.show():
+                print("Complete move")
 
     def respond_to_free_transfer(self):
         '''
@@ -314,6 +352,27 @@ class Negotiation:
         '''
         player = data.players.get_player_by_id(self.playerid)
         club = data.clubs.get_club_by_id(player.squad)
+
+        if self.statusid == 9:
+            uigtk.negotiations.EnquiryRejection(player, club)
+            data.negotiations.end_negotiation(self.negotiationid)
+        elif self.statusid == 7:
+            uigtk.negotiations.ContractRejection(player)
+            data.negotiations.end_negotiation(self.negotiationid)
+        elif self.statusid in (0, 3):
+            uigtk.negotiations.AwaitingResponse(player, club)
+        elif self.statusid == 10:
+            dialog = uigtk.negotiations.ContractNegotiation(self.playerid)
+
+            if dialog.show():
+                self.set_status(6)
+            else:
+                data.negotiations.end_negotiation(self.negotiationid)
+        elif self.statusid == 8:
+            dialog = uigtk.negotiations.CompleteTransfer(self.playerid)
+
+            if dialog.show():
+                print("Complete move")
 
     def consider_enquiry(self):
         '''

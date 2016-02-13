@@ -161,7 +161,7 @@ class Shortlist(Gtk.Grid):
 
         dialog = RemoveShortlist()
 
-        if dialog.show(playerid) == 1:
+        if dialog.show(playerid):
             self.club.shortlist.remove_from_shortlist(playerid)
 
             self.populate_data()
@@ -286,7 +286,7 @@ class ContextMenu(Gtk.Menu):
 
         dialog = RemoveShortlist()
 
-        if dialog.show(playerid) == 1:
+        if dialog.show(playerid):
             self.club.shortlist.remove_from_shortlist(playerid)
 
     def on_scout_report_clicked(self, *args):
@@ -327,11 +327,7 @@ class RemoveShortlist(Gtk.MessageDialog):
 
         self.set_markup("<span size='12000'><b>Remove %s from shortlist?</b></span>" % (name))
 
-        state = 0
-
-        if self.run() == Gtk.ResponseType.OK:
-            state = 1
-
+        state = self.run() == Gtk.ResponseType.OK
         self.destroy()
 
         return state

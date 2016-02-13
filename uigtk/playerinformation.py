@@ -348,19 +348,21 @@ class Training(uigtk.widgets.CommonFrame):
         Set the training status string.
         '''
         player = data.players.get_player_by_id(PlayerInformation.playerid)
-        club = data.clubs.get_club_by_id(player.squad)
 
-        if club.individual_training.get_player_in_training(PlayerInformation.playerid):
-            item = club.individual_training.get_individual_training_by_playerid(PlayerInformation.playerid)
+        if player.squad:
+            club = data.clubs.get_club_by_id(player.squad)
 
-            coach = club.coaches.get_coach_by_id(item.coachid)
-            skill = self.skills.get_skill_name(item.skill)
+            if club.individual_training.get_player_in_training(PlayerInformation.playerid):
+                item = club.individual_training.get_individual_training_by_playerid(PlayerInformation.playerid)
 
-            message = "Currently working on %s with coach %s." % (skill, coach.name)
-        else:
-            message = "Not currently participating in individual training."
+                coach = club.coaches.get_coach_by_id(item.coachid)
+                skill = self.skills.get_skill_name(item.skill)
 
-        self.labelTraining.set_label(message)
+                message = "Currently working on %s with coach %s." % (skill, coach.name)
+            else:
+                message = "Not currently participating in individual training."
+
+            self.labelTraining.set_label(message)
 
 
 class History(uigtk.widgets.CommonFrame):
@@ -537,12 +539,12 @@ class ContextMenu2(Gtk.Menu):
     def __init__(self):
         Gtk.Menu.__init__(self)
 
-        menuitem = uigtk.widgets.MenuItem("Make Offer To _Purchase")
-        menuitem.connect("activate", self.on_purchase_offer_clicked)
-        self.append(menuitem)
-        menuitem = uigtk.widgets.MenuItem("Make Offer To _Loan")
-        menuitem.connect("activate", self.on_loan_offer_clicked)
-        self.append(menuitem)
+        self.menuitemPurchase = uigtk.widgets.MenuItem("Make Offer To _Purchase")
+        self.menuitemPurchase.connect("activate", self.on_purchase_offer_clicked)
+        self.append(self.menuitemPurchase)
+        self.menuitemLoan = uigtk.widgets.MenuItem("Make Offer To _Loan")
+        self.menuitemLoan.connect("activate", self.on_loan_offer_clicked)
+        self.append(self.menuitemLoan)
         self.menuitemAddShortlist = uigtk.widgets.MenuItem("_Add To Shortlist")
         self.menuitemAddShortlist.connect("activate", self.on_add_to_shortlist_clicked)
         self.append(self.menuitemAddShortlist)
@@ -559,25 +561,13 @@ class ContextMenu2(Gtk.Menu):
         '''
         Initiate purchase offer of selected player.
         '''
-        dialog = uigtk.negotiations.PurchaseApproach()
-
-        player = data.players.get_player_by_id(self.playerid)
-        club = data.clubs.get_club_by_id(player.squad)
-
-        if dialog.show(club, player) == 1:
-            data.negotiations.initialise_purchase(self.playerid)
+        data.negotiations.initialise_purchase(self.playerid)
 
     def on_loan_offer_clicked(self, *args):
         '''
         Initiate loan offer of selected player.
         '''
-        dialog = uigtk.negotiations.LoanApproach()
-
-        player = data.players.get_player_by_id(self.playerid)
-        club = data.clubs.get_club_by_id(player.squad)
-
-        if dialog.show(club, player) == 1:
-            data.negotiations.initialise_loan(self.playerid)
+        data.negotiations.initialise_loan(self.playerid)
 
     def on_add_to_shortlist_clicked(self, *args):
         '''
@@ -592,7 +582,7 @@ class ContextMenu2(Gtk.Menu):
         '''
         dialog = uigtk.shortlist.RemoveShortlist()
 
-        if dialog.show(self.playerid) == 1:
+        if dialog.show(self.playerid):
             self.club.shortlist.remove_from_shortlist(self.playerid)
             self.update_sensitivity()
 
@@ -609,6 +599,13 @@ class ContextMenu2(Gtk.Menu):
         sensitive = self.club.shortlist.get_player_in_shortlist(self.playerid)
         self.menuitemAddShortlist.set_sensitive(not sensitive)
         self.menuitemRemoveShortlist.set_sensitive(sensitive)
+
+        if self.player.squad:
+            self.menuitemPurchase.set_label("Make Offer to _Purchase")
+            self.menuitemLoan.set_sensitive(True)
+        else:
+            self.menuitemPurchase.set_label("Make Offer to _Sign")
+            self.menuitemLoan.set_sensitive(False)
 
     def show(self):
         self.player = data.players.get_player_by_id(self.playerid)
