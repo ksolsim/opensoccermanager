@@ -42,26 +42,29 @@ class Menu(Gtk.MenuBar):
         menu = Gtk.Menu()
         menuitem.set_submenu(menu)
         menuitemNew = uigtk.widgets.MenuItem("_New Game...")
+        key, modifier = Gtk.accelerator_parse("<Control>N")
         menuitemNew.add_accelerator("activate",
                                     data.window.accelgroup,
-                                    Gtk.accelerator_parse("N")[0],
-                                    Gdk.ModifierType.CONTROL_MASK,
+                                    key,
+                                    modifier,
                                     Gtk.AccelFlags.VISIBLE)
         menuitemNew.connect("activate", self.on_new_clicked)
         menu.append(menuitemNew)
         menuitemLoad = uigtk.widgets.MenuItem("_Load Game...")
+        key, modifier = Gtk.accelerator_parse("<Control>L")
         menuitemLoad.add_accelerator("activate",
                                      data.window.accelgroup,
-                                     Gtk.accelerator_parse("O")[0],
-                                     Gdk.ModifierType.CONTROL_MASK,
+                                     key,
+                                     modifier,
                                      Gtk.AccelFlags.VISIBLE)
         menuitemLoad.connect("activate", uigtk.filedialog.LoadDialog)
         menu.append(menuitemLoad)
         menuitemSave = uigtk.widgets.MenuItem("_Save Game...")
+        key, modifier = Gtk.accelerator_parse("<Control>S")
         menuitemSave.add_accelerator("activate",
                                      data.window.accelgroup,
-                                     Gtk.accelerator_parse("S")[0],
-                                     Gdk.ModifierType.CONTROL_MASK,
+                                     key,
+                                     modifier,
                                      Gtk.AccelFlags.VISIBLE)
         menuitemSave.connect("activate", uigtk.filedialog.SaveDialog)
         menu.append(menuitemSave)
@@ -71,20 +74,22 @@ class Menu(Gtk.MenuBar):
         separator = Gtk.SeparatorMenuItem()
         menu.append(separator)
         menuitemPrint = uigtk.widgets.MenuItem("_Print...")
+        key, modifier = Gtk.accelerator_parse("<Control>P")
         menuitemPrint.add_accelerator("activate",
                                       data.window.accelgroup,
-                                      Gtk.accelerator_parse("P")[0],
-                                      Gdk.ModifierType.CONTROL_MASK,
+                                      key,
+                                      modifier,
                                       Gtk.AccelFlags.VISIBLE)
         menuitemPrint.connect("activate", self.on_print_clicked)
         menu.append(menuitemPrint)
         separator = Gtk.SeparatorMenuItem()
         menu.append(separator)
         menuitemQuit = uigtk.widgets.MenuItem("_Quit Game")
+        key, modifier = Gtk.accelerator_parse("<Control>Q")
         menuitemQuit.add_accelerator("activate",
                                      data.window.accelgroup,
-                                     Gtk.accelerator_parse("Q")[0],
-                                     Gdk.ModifierType.CONTROL_MASK,
+                                     key,
+                                     modifier,
                                      Gtk.AccelFlags.VISIBLE)
         menuitemQuit.connect("activate", self.on_quit_clicked)
         menu.append(menuitemQuit)
@@ -102,6 +107,20 @@ class Menu(Gtk.MenuBar):
         menuitemPreferences.connect("activate", uigtk.preferences.Dialog)
         menu.append(menuitemPreferences)
 
+        menuitem = uigtk.widgets.MenuItem("_Screen")
+        self.add(menuitem)
+        menu = Gtk.Menu()
+        menuitem.set_submenu(menu)
+        menuitemBack = uigtk.widgets.MenuItem("_Back")
+        key, modifier = Gtk.accelerator_parse("<Alt>Left")
+        menuitemBack.add_accelerator("activate",
+                                     data.window.accelgroup,
+                                     key,
+                                     modifier,
+                                     Gtk.AccelFlags.VISIBLE)
+        menuitemBack.connect("activate", self.on_back_clicked)
+        menu.append(menuitemBack)
+
         menuitem = uigtk.widgets.MenuItem("_View")
         self.add(menuitem)
         menu = Gtk.Menu()
@@ -112,28 +131,31 @@ class Menu(Gtk.MenuBar):
         menuitem.set_submenu(menuSearch)
         menuitemPlayerSearch = uigtk.widgets.MenuItem("_Players")
         menuitemPlayerSearch.name = "playersearch"
+        key, modifier = Gtk.accelerator_parse("1")
         menuitemPlayerSearch.add_accelerator("activate",
                                              data.window.accelgroup,
-                                             Gtk.accelerator_parse("1")[0],
-                                             Gdk.ModifierType.CONTROL_MASK,
+                                             key,
+                                             modifier,
                                              Gtk.AccelFlags.VISIBLE)
         menuitemPlayerSearch.connect("activate", self.on_screen_clicked)
         menuSearch.append(menuitemPlayerSearch)
         menuitemClubSearch = uigtk.widgets.MenuItem("_Clubs")
         menuitemClubSearch.name = "clubsearch"
+        key, modifier = Gtk.accelerator_parse("2")
         menuitemClubSearch.add_accelerator("activate",
                                            data.window.accelgroup,
-                                           Gtk.accelerator_parse("2")[0],
-                                           Gdk.ModifierType.CONTROL_MASK,
+                                           key,
+                                           modifier,
                                            Gtk.AccelFlags.VISIBLE)
         menuitemClubSearch.connect("activate", self.on_screen_clicked)
         menuSearch.append(menuitemClubSearch)
         menuitemNationSearch = uigtk.widgets.MenuItem("_Nations")
         menuitemNationSearch.name = "nationsearch"
+        key, modifier = Gtk.accelerator_parse("3")
         menuitemNationSearch.add_accelerator("activate",
                                              data.window.accelgroup,
-                                             Gtk.accelerator_parse("3")[0],
-                                             Gdk.ModifierType.CONTROL_MASK,
+                                             key,
+                                             modifier,
                                              Gtk.AccelFlags.VISIBLE)
         menuitemNationSearch.connect("activate", self.on_screen_clicked)
         menuSearch.append(menuitemNationSearch)
@@ -300,6 +322,12 @@ class Menu(Gtk.MenuBar):
         '''
         dialog = uigtk.printdialog.PrintDialog()
         dialog.show()
+
+    def on_back_clicked(self, *args):
+        '''
+        Move back to previously visible screen.
+        '''
+        data.window.screen.return_previous_screen()
 
     def on_sponsorship_clicked(self, *args):
         '''

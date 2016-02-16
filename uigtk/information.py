@@ -57,9 +57,6 @@ class Information(Gtk.Grid):
 
         self.infotip = uigtk.infotip.InfoTip()
 
-        self.leagueid = None
-        self.fixtureid = None
-
     def on_tooltip_queried(self, widget, x, y, mode, tooltip):
         '''
         Display latest overview information in tooltip.

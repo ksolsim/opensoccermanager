@@ -56,7 +56,7 @@ class Screen(Gtk.Grid):
         self.set_vexpand(True)
         self.set_hexpand(True)
 
-        self.previous = None
+        self.history = []
         self.active = None
 
     def screen_initialiser(self):
@@ -103,13 +103,20 @@ class Screen(Gtk.Grid):
         Change visible screen being displayed to the user.
         '''
         if self.active:
-            self.previous = self.active
+            self.history.append(self.active)
             self.remove(self.active)
 
         self.active = self.screens[name]
         self.active.name = name
         self.add(self.active)
         self.active.run()
+
+    def refresh_visible_screen(self):
+        '''
+        Refresh the visible screen currently on display.
+        '''
+        if self.active:
+            self.active.run()
 
     def get_visible_screen(self):
         '''
@@ -121,17 +128,18 @@ class Screen(Gtk.Grid):
         '''
         Return to previously visible screen.
         '''
-        self.remove(self.active)
-        self.active = self.previous
-        self.add(self.active)
-        self.active.run()
-
-    def refresh_visible_screen(self):
-        '''
-        Refresh the visible screen currently on display.
-        '''
-        if self.active:
+        if len(self.history) > 0:
+            self.remove(self.active)
+            self.active = self.history[-1]
+            self.history.remove(self.active)
+            self.add(self.active)
             self.active.run()
+
+    def clear_previous_screens(self):
+        '''
+        Remove all screens from previous listing.
+        '''
+        self.history.clear()
 
     def run(self):
         self.screen_initialiser()

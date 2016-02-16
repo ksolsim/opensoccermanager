@@ -75,10 +75,7 @@ class Clubs:
             '''
             Get total value of all players in squad.
             '''
-            value = 0
-
-            for playerid, player in self.squad.get_squad():
-                value += player.value.get_value()
+            value = sum(player.value.get_value() for playerid, player in self.squad.get_squad())
 
             return value
 
@@ -86,10 +83,7 @@ class Clubs:
             '''
             Get total wage bill for players at the club.
             '''
-            wage = 0
-
-            for playerid, player in self.squad.get_squad():
-                wage += player.wage.get_wage()
+            wage = sum(player.wage.get_wage() for playerid, player in self.squad.get_squad())
 
             return wage
 
