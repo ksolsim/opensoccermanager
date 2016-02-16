@@ -37,24 +37,27 @@ class Catering(uigtk.products.Products):
         Setup interface with appropriate widgets to display data.
         '''
         for count, product in enumerate(self.club.catering.get_catering(), start=1):
+            self.products.append(product)
+
             item = uigtk.products.Item()
 
-            item.labelProduct.set_label(product[0])
+            item.labelProduct.set_label(product[1])
             self.pricing.attach(item.labelProduct, 0, count, 1, 1)
-            self.pricing.attach(item.labelDescription, 1, count, 1, 1)
-            item.labelCost.set_label("%s" % (data.currency.get_currency(product[1])))
-            self.pricing.attach(item.labelCost, 2, count, 1, 1)
-            self.pricing.attach(item.spinbuttonProfit, 3, count, 1, 1)
 
-            self.pricing.attach(item.labelSalePrice, 4, count, 1, 1)
+            item.labelDescription.set_label(product[2])
+            self.pricing.attach(item.labelDescription, 1, count, 1, 1)
+
+            item.labelCost.set_label("%s" % (data.currency.get_currency(product[3])))
+            self.pricing.attach(item.labelCost, 2, count, 1, 1)
 
             item.spinbuttonProfit.connect("value-changed", self.on_profit_changed, count - 1)
-
-            self.products.append(product)
-            self.profit.append(item.labelSalePrice)
+            self.pricing.attach(item.spinbuttonProfit, 3, count, 1, 1)
 
             profit = self.calculate_profit(100, count - 1)
             item.labelSalePrice.set_label(profit)
+            self.pricing.attach(item.labelSalePrice, 4, count, 1, 1)
+
+            self.profit.append(item.labelSalePrice)
 
     def on_profit_changed(self, spinbutton, index):
         '''
@@ -68,7 +71,7 @@ class Catering(uigtk.products.Products):
         '''
         Determine profit of each item.
         '''
-        cost = self.products[index][1]
+        cost = self.products[index][3]
         profit = (0.01 * value) * cost + cost
 
         return data.currency.get_currency(profit)
