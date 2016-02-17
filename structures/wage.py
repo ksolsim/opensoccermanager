@@ -82,6 +82,12 @@ class Wage:
 
         return wage
 
+    def set_wage(self, wage):
+        '''
+        Set wage to defined value.
+        '''
+        self.wage = wage
+
     def get_wage(self):
         '''
         Return player wage as value.

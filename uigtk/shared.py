@@ -96,45 +96,69 @@ class ContractNegotiation(Gtk.Dialog):
 
         label = uigtk.widgets.Label("_Weekly Wage", leftalign=True)
         frame.grid.attach(label, 0, 0, 1, 1)
-        spinbuttonWage = uigtk.widgets.SpinButton(maximum=100000)
-        label.set_mnemonic_widget(spinbuttonWage)
-        #spinbuttonWage.set_value(wage)
-        frame.grid.attach(spinbuttonWage, 1, 0, 1, 1)
+        self.spinbuttonWage = uigtk.widgets.SpinButton(maximum=100000)
+        self.spinbuttonWage.set_increments(5, 10)
+        label.set_mnemonic_widget(self.spinbuttonWage)
+        frame.grid.attach(self.spinbuttonWage, 1, 0, 1, 1)
         label = uigtk.widgets.Label("League _Champions Bonus", leftalign=True)
         frame.grid.attach(label, 0, 1, 1, 1)
-        spinbuttonLeagueChampions = uigtk.widgets.SpinButton(maximum=200000)
-        label.set_mnemonic_widget(spinbuttonLeagueChampions)
-        #spinbuttonLeagueChampions.set_value(leaguewin)
-        frame.grid.attach(spinbuttonLeagueChampions, 1, 1, 1, 1)
+        self.spinbuttonLeagueChampions = uigtk.widgets.SpinButton(maximum=200000)
+        self.spinbuttonLeagueChampions.set_increments(5, 10)
+        label.set_mnemonic_widget(self.spinbuttonLeagueChampions)
+        frame.grid.attach(self.spinbuttonLeagueChampions, 1, 1, 1, 1)
         label = uigtk.widgets.Label("League _Runner Up Bonus", leftalign=True)
         frame.grid.attach(label, 0, 2, 1, 1)
-        spinbuttonLeagueRunnerUp = uigtk.widgets.SpinButton(maximum=200000)
-        label.set_mnemonic_widget(spinbuttonLeagueRunnerUp)
-        #spinbuttonLeagueRunnerUp.set_value(leaguerunnerup)
-        frame.grid.attach(spinbuttonLeagueRunnerUp, 1, 2, 1, 1)
+        self.spinbuttonLeagueRunnerUp = uigtk.widgets.SpinButton(maximum=200000)
+        self.spinbuttonLeagueRunnerUp.set_increments(5, 10)
+        label.set_mnemonic_widget(self.spinbuttonLeagueRunnerUp)
+        frame.grid.attach(self.spinbuttonLeagueRunnerUp, 1, 2, 1, 1)
         label = uigtk.widgets.Label("_Win Bonus", leftalign=True)
         frame.grid.attach(label, 0, 3, 1, 1)
-        spinbuttonWinBonus = uigtk.widgets.SpinButton(maximum=10000)
-        label.set_mnemonic_widget(spinbuttonWinBonus)
-        #spinbuttonWinBonus.set_value(winbonus)
-        frame.grid.attach(spinbuttonWinBonus, 1, 3, 1, 1)
+        self.spinbuttonWinBonus = uigtk.widgets.SpinButton(maximum=10000)
+        self.spinbuttonWinBonus.set_increments(5, 10)
+        label.set_mnemonic_widget(self.spinbuttonWinBonus)
+        frame.grid.attach(self.spinbuttonWinBonus, 1, 3, 1, 1)
         label = uigtk.widgets.Label("_Goal Bonus", leftalign=True)
         frame.grid.attach(label, 0, 4, 1, 1)
-        spinbuttonGoalBonus = uigtk.widgets.SpinButton(maximum=10000)
-        label.set_mnemonic_widget(spinbuttonGoalBonus)
-        #spinbuttonGoalBonus.set_value(goalbonus)
-        frame.grid.attach(spinbuttonGoalBonus, 1, 4, 1, 1)
+        self.spinbuttonGoalBonus = uigtk.widgets.SpinButton(maximum=10000)
+        self.spinbuttonGoalBonus.set_increments(5, 10)
+        label.set_mnemonic_widget(self.spinbuttonGoalBonus)
+        frame.grid.attach(self.spinbuttonGoalBonus, 1, 4, 1, 1)
         label = uigtk.widgets.Label("_Contract Length", leftalign=True)
         frame.grid.attach(label, 0, 5, 1, 1)
-        spinbuttonContract = Gtk.SpinButton.new_with_range(1, 5, 1)
-        label.set_mnemonic_widget(spinbuttonContract)
-        #spinbuttonContract.set_value(contract)
-        frame.grid.attach(spinbuttonContract, 1, 5, 1, 1)
+        self.spinbuttonContract = Gtk.SpinButton.new_with_range(1, 5, 1)
+        label.set_mnemonic_widget(self.spinbuttonContract)
+        frame.grid.attach(self.spinbuttonContract, 1, 5, 1, 1)
 
     def show(self, *args):
+        state = False
+
+        wage = self.player.contract.get_contract_renewal()
+        wage = data.currency.get_rounded_value(wage)
+
+        if wage <= self.player.wage.get_wage():
+            wage *= 1.1
+
+        self.spinbuttonWage.set_value(wage)
+        self.spinbuttonLeagueChampions.set_value(data.currency.get_rounded_value(wage * 2))
+        self.spinbuttonLeagueRunnerUp.set_value(data.currency.get_rounded_value(wage * 0.25))
+        self.spinbuttonWinBonus.set_value(data.currency.get_rounded_value(wage * 0.1))
+        self.spinbuttonGoalBonus.set_value(data.currency.get_rounded_value(wage * 0.1))
+
         self.show_all()
 
-        state = self.run() == Gtk.ResponseType.OK
+        if self.run() == Gtk.ResponseType.OK:
+            contract = (self.spinbuttonLeagueChampions.get_value_as_int(),
+                        self.spinbuttonLeagueRunnerUp.get_value_as_int(),
+                        self.spinbuttonWinBonus.get_value_as_int(),
+                        self.spinbuttonGoalBonus.get_value_as_int())
+
+            self.player.wage.set_wage(self.spinbuttonWage.get_value_as_int())
+            self.player.contract.set_contract(contract)
+            self.player.contract.set_contract_length(self.spinbuttonContract.get_value_as_int())
+
+            state = True
+
         self.destroy()
 
         return state

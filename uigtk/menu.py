@@ -131,7 +131,7 @@ class Menu(Gtk.MenuBar):
         menuitem.set_submenu(menuSearch)
         menuitemPlayerSearch = uigtk.widgets.MenuItem("_Players")
         menuitemPlayerSearch.name = "playersearch"
-        key, modifier = Gtk.accelerator_parse("1")
+        key, modifier = Gtk.accelerator_parse("<Control>1")
         menuitemPlayerSearch.add_accelerator("activate",
                                              data.window.accelgroup,
                                              key,
@@ -141,7 +141,7 @@ class Menu(Gtk.MenuBar):
         menuSearch.append(menuitemPlayerSearch)
         menuitemClubSearch = uigtk.widgets.MenuItem("_Clubs")
         menuitemClubSearch.name = "clubsearch"
-        key, modifier = Gtk.accelerator_parse("2")
+        key, modifier = Gtk.accelerator_parse("<Control>2")
         menuitemClubSearch.add_accelerator("activate",
                                            data.window.accelgroup,
                                            key,
@@ -151,7 +151,7 @@ class Menu(Gtk.MenuBar):
         menuSearch.append(menuitemClubSearch)
         menuitemNationSearch = uigtk.widgets.MenuItem("_Nations")
         menuitemNationSearch.name = "nationsearch"
-        key, modifier = Gtk.accelerator_parse("3")
+        key, modifier = Gtk.accelerator_parse("<Control>3")
         menuitemNationSearch.add_accelerator("activate",
                                              data.window.accelgroup,
                                              key,
@@ -350,7 +350,13 @@ class Menu(Gtk.MenuBar):
         data.window.screen.change_visible_screen(menuitem.name)
 
     def on_help_clicked(self, *args):
+        '''
+        Display help dialog window for current screen.
+        '''
         data.window.help_dialog.show()
 
     def on_quit_clicked(self, *args):
+        '''
+        Handle quitting of game when clicked from menu.
+        '''
         data.window.on_quit_game()

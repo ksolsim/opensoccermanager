@@ -71,6 +71,12 @@ class Currency:
 
         return amount
 
+    def get_rounded_value(self, amount):
+        '''
+        Round passed amount for accessing.
+        '''
+        return int(5 * round(float(amount) / 5))
+
     def get_comma_value(self, amount):
         '''
         Return value formatted with commas.

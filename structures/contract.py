@@ -27,8 +27,8 @@ class Contract:
 
         self.leaguechamp = 0
         self.leaguerunnerup = 0
-        self.goalbonus = 0
         self.winbonus = 0
+        self.goalbonus = 0
 
         self.contract = random.randint(24, 260)
 
@@ -65,16 +65,26 @@ class Contract:
 
         return contract
 
-    def set_contract_length(self, length):
-        '''
-        Define length of contract in weeks, from passed year value.
-        '''
-        self.contract = length * 52
-
     def get_contract_renewal(self):
         '''
         Grab details for renewal of contract.
         '''
+        return self.player.wage.calculate_wage()
+
+    def set_contract(self, contract):
+        '''
+        Define contract details for player from passed contract tuple.
+        '''
+        self.leaguechamp = contract[0]
+        self.leaguerunnerup = contract[1]
+        self.winbonus = contract[2]
+        self.goalbonus = contract[3]
+
+    def set_contract_length(self, length):
+        '''
+        Define length of contract in weeks from passed year value.
+        '''
+        self.contract = length * 52
 
     def get_termination_payout(self):
         '''

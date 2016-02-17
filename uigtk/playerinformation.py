@@ -500,7 +500,7 @@ class ContextMenu1(Gtk.Menu):
         '''
         dialog = uigtk.squad.RenewContract(self.playerid)
 
-        if dialog.show() == 1:
+        if dialog.show():
             print("Renew contract")
 
     def on_terminate_contract_clicked(self, *args):
@@ -509,7 +509,7 @@ class ContextMenu1(Gtk.Menu):
         '''
         dialog = uigtk.squad.TerminateContract(self.playerid)
 
-        if dialog.show() == 1:
+        if dialog.show():
             self.player.contract.terminate_contract()
             data.window.screen.refresh_visible_screen()
 
