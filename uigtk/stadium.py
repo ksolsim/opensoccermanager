@@ -238,7 +238,9 @@ class Stadium(Gtk.Grid):
         Store values and update interface when user clicks to build.
         '''
         dialog = UpgradeStadium(cost=0)
-        dialog.show()
+
+        if dialog.show():
+            self.save_data()
 
     def on_reset_clicked(self, *args):
         '''
@@ -246,12 +248,55 @@ class Stadium(Gtk.Grid):
         '''
         self.populate_data()
 
-    def populate_data(self):
-        club = data.clubs.get_club_by_id(data.user.team)
-        stadium = data.stadiums.get_stadium_by_id(club.stadium)
+    def update_interface(self):
+        '''
+        Update interface by changing sensitivity of unchangeable widgets.
+        '''
+        for stands in (self.main_stands, self.corner_stands):
+            for stand in stands:
+                if stand.seating.get_active():
+                    stand.standing.set_sensitive(False)
+                    stand.seating.set_sensitive(False)
 
+                if stand.roof.get_active():
+                    stand.roof.set_sensitive(False)
+
+        for stand in self.main_stands:
+            stand.capacity.set_range(stand.capacity.get_value_as_int(), 15000)
+
+            stand.box.set_range(stand.box.get_value_as_int(), 500)
+
+            if stand.box.get_value_as_int() == 500:
+                stand.box.set_sensitive(False)
+
+        for stand in self.corner_stands:
+            stand.capacity.set_range(stand.capacity.get_value_as_int(), 3000)
+
+        self.details.set_details()
+        self.maintenance.set_maintenance_cost()
+
+    def save_data(self):
+        '''
+        Save stadium data into data structure.
+        '''
+        for count, item in enumerate(self.main_stands):
+            stand = self.stadium.main_stands[count]
+
+            stand.capacity = item.capacity.get_value_as_int()
+            stand.roof = item.roof.get_active()
+            stand.box = item.box.get_value_as_int()
+
+        for count, item in enumerate(self.corner_stands):
+            stand = self.stadium.corner_stands[count]
+
+            stand.capacity = item.capacity.get_value_as_int()
+            stand.roof = item.roof.get_active()
+
+        self.update_interface()
+
+    def populate_data(self):
         # Main stand data
-        for count, item in enumerate(stadium.main_stands):
+        for count, item in enumerate(self.stadium.main_stands):
             stand = self.main_stands[count]
 
             stand.capacity.set_value(item.capacity)
@@ -275,7 +320,7 @@ class Stadium(Gtk.Grid):
             stand.box.set_range(item.box, 500)
 
         # Corner stand data
-        for count, item in enumerate(stadium.corner_stands):
+        for count, item in enumerate(self.stadium.corner_stands):
             stand = self.corner_stands[count]
 
             stand.capacity.set_value(item.capacity)
@@ -292,7 +337,12 @@ class Stadium(Gtk.Grid):
             else:
                 stand.standing.set_active(True)
 
+        self.update_interface()
+
     def run(self):
+        club = data.clubs.get_club_by_id(data.user.team)
+        self.stadium = data.stadiums.get_stadium_by_id(club.stadium)
+
         self.details.set_details()
         self.maintenance.set_maintenance_cost()
         self.populate_data()
@@ -347,14 +397,13 @@ class MainStand:
         '''
         Update box widget based on capacity and roof status.
         '''
-        sensitive = self.capacity.get_value_as_int() >= 4000 and self.roof.get_active()
-
         if not self.roof.get_active():
             self.box.set_value(0)
 
         if self.capacity.get_value_as_int() < 4000:
             self.box.set_value(0)
 
+        sensitive = self.capacity.get_value_as_int() >= 4000 and self.roof.get_active()
         self.box.set_sensitive(sensitive)
 
 
@@ -395,7 +444,8 @@ class UpgradeStadium(Gtk.MessageDialog):
         self.set_modal(True)
         self.set_title("Upgrade Stadium")
         self.set_property("message-type", Gtk.MessageType.QUESTION)
-        self.set_markup("Begin the construction of upgrades to the stadium at cost of %s?" % (data.currency.get_currency(cost, integer=True)))
+        self.set_markup("<span size='12000'><b>Begin the construction of upgrades to the stadium at cost of %s?</b></span>" % (data.currency.get_currency(cost, integer=True)))
+        self.format_secondary_text("Once construction begins, no features of the stadium can be downgraded.")
         self.add_button("_Cancel", Gtk.ResponseType.CANCEL)
         self.add_button("_Upgrade", Gtk.ResponseType.OK)
         self.set_default_response(Gtk.ResponseType.CANCEL)

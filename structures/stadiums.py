@@ -61,10 +61,15 @@ class Stadiums:
                 for stand in stands:
                     capacity += stand.capacity
 
-            for stand in self.main_stands:
-                capacity += stand.box
+            capacity += self.get_box_capacity()
 
             return capacity
+
+        def get_box_capacity(self):
+            '''
+            Return total number of executive box seats.
+            '''
+            return sum(stand.box for stand in self.main_stands)
 
         def get_standing_uncovered(self):
             '''
