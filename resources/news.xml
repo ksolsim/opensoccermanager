@@ -107,17 +107,17 @@
     </article>
     <article id="TT02">
         <title>Team training schedule needs change</title>
-        <message>The team training schedule has been the same now for a couple of months, and the lads are getting a little bored of the same routine. Perhaps we could have a change and introduce some different skills into the sessions?</message>
+        <message>The team training schedule has been the same now for a couple of months, and the players are reporting that they are a little bored with the repetitive schedule.</message>
         <category>4</category>
     </article>
     <article id="TT02">
         <title>Request to refresh team training</title>
-        <message>Some of the lads have been complaining about the team training schedule being the same for the last few months. I recommend that we change it, and take the opportunity to train some new skills.</message>
+        <message>Some of the players have been complaining about the team training schedule being the same for the last few months. I recommend that we change it, and take the opportunity to train some new skills.</message>
         <category>4</category>
     </article>
     <article id="TT03">
         <title>Players ask for training break on Sunday</title>
-        <message>The players are getting a little upset that we have scheduled team training on Sunday. Maybe we should give them a day off to recuperate?</message>
+        <message>The players are a little upset that we have scheduled team training on Sunday. Maybe the team training schedule can be changed to ensure that Sunday is left free.</message>
         <category>4</category>
     </article>
     <article id="TT03">
@@ -128,6 +128,11 @@
     <article id="TT04">
         <title>Players being overworked on team training</title>
         <message>The squad are looking a little jaded from the amount of work they have been doing in team training. We really could do with reducing the workload for a couple of months.</message>
+        <category>4</category>
+    </article>
+    <article id="TT04">
+        <title>Players fatigued by team training schedule</title>
+        <message>The players appear to be fatigued from the heavy team training workload. We may get the best out of the team by focusing the session on a few hours per day.</message>
         <category>4</category>
     </article>
     <article id="TO01">
@@ -257,7 +262,7 @@
     </article>
     <article id="CC02">
         <title>_COACH_ is due to retire in one year</title>
-        <message>Coaching team member _COACH_ has decided that he will retire once his current contract has expired.</message>
+        <message>Coaching team member _COACH_ has decided that he will retire once his current contract has expired. We should make arrangements to bring in a replacement in the future.</message>
         <category>3</category>
     </article>
     <article id="SC01">
@@ -267,12 +272,27 @@
     </article>
     <article id="SC02">
         <title>_SCOUT_ is due to retire in one year</title>
-        <message>Scouting team member _SCOUT_ has decided that he will retire once his current contract has expired.</message>
+        <message>Scouting team member _SCOUT_ has decided that he will retire once his current contract has expired. We should make arrangements to bring in a replacement in the future.</message>
         <category>3</category>
     </article>
     <article id="SH01">
         <title>Shortlisted player available for free</title>
         <message>The contract of _PLAYER_ has now expired as his club failed to renew. We have the opportunity to sign him for free if we can make a deal with the player.</message>
+        <category>12</category>
+    </article>
+    <article id="SH02">
+        <title>Shortlisted player agrees new contract</title>
+        <message>The contract of shortlisted player _PLAYER_ has been renewed with his current club. This may make any near-future approaches for him difficult to negotiate.</message>
+        <category>12</category>
+    </article>
+    <article id="SH03">
+        <title>Shortlisted player announces retirement plans</title>
+        <message>_PLAYER_ has announced that he intends to see out his career with current club _CLUB_. The player wishes to run down his current contract before hanging up his boots.</message>
+        <category>12</category>
+    </article>
+    <article id="SH04">
+        <title>Shortlisted player has now retired</title>
+        <message>Shortlisted player _PLAYER_ has now retired from football after ending his current contract with club _CLUB_.</message>
         <category>12</category>
     </article>
     <article id="RC01">
@@ -350,6 +370,11 @@
         <message>The stadium improvement grant for _AMOUNT_ has now been received. The amount can be used to improve the stadium, or the shops outside.</message>
         <category>1</category>
     </article>
+    <article id="SG02">
+        <title>Application for stadium grant rejected</title>
+        <message>Our application for a stadium improvement grant has been rejected by the Football Association. The association panel believes that the money would be better spend elsewhere.</message>
+        <category>1</category>
+    </article>
     <article id="FL01">
         <title>Process to float club now started</title>
         <message>The process to float the club on the stock market has now begun, and the market response will take several months. It is imperative our results on and off the field during this time are good to ensure we get the best possible return.</message>
@@ -358,6 +383,11 @@
     <article id="FL02">
         <title>Club flotation on stock market completed</title>
         <message>The board have now confirmed that the public offering on the club has now been completed and all the shares have been purchased. We are also pleased to announce that the club made more money than was originally estimated.</message>
+        <category>13</category>
+    </article>
+    <article id="FL03">
+        <title>Club has now gone public on the stock marker</title>
+        <message>The public offering on the club has now been completed, and the amount earned through the sale of shares has been deposited in our account. Unfortunately, due to the poor performance recently, the club has not met its initial estimate.</message>
         <category>13</category>
     </article>
     <article id="IT01">
@@ -369,5 +399,15 @@
         <title>Workload of coach _COACH_ too high</title>
         <message>The workload of _COACH_ is too great, and it is affecting his ability to properly train the players assigned to him. We need to look at distributing the workload better.</message>
         <category>3</category>
+    </article>
+    <article id="OV01">
+        <title>Overdraft interest rate changes to _OVERDRAFTINTEREST_</title>
+        <message>The interest rate on our overdraft has been changed to _OVERDRAFTINTEREST_%. The amount charged per month while the overdraft is in use will be changed.</message>
+        <category>13</category>
+    </article>
+    <article id="OV02">
+        <title>Overdraft service now being used</title>
+        <message>Due to the low funds in our bank account, the overdraft is now being used. Our interest rate at this time is _OVERDRAFTINTEREST_%.</message>
+        <category>13</category>
     </article>
 </news>
