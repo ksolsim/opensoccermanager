@@ -113,6 +113,11 @@ class Stadium(Gtk.Grid):
             label = uigtk.widgets.Label("Upgrade Capacity", leftalign=True)
             self.grid.attach(label, 0, 1, 1, 1)
 
+        def update_cost(self):
+            '''
+            Set the cost and upgraded capacity for current amendments.
+            '''
+
     class Attendances(uigtk.widgets.CommonFrame):
         def __init__(self):
             uigtk.widgets.CommonFrame.__init__(self, "Attendances")
@@ -124,14 +129,14 @@ class Stadium(Gtk.Grid):
         self.details = self.Details()
         self.attach(self.details, 0, 0, 1, 1)
 
+        self.upgrades = self.Upgrades()
+        self.attach(self.upgrades, 0, 1, 1, 1)
+
         self.maintenance = self.Maintenance()
-        self.attach(self.maintenance, 0, 1, 1, 1)
+        self.attach(self.maintenance, 0, 2, 1, 1)
 
         self.attendances = self.Attendances()
         self.attach(self.attendances, 0, 3, 2, 1)
-
-        self.upgrades = self.Upgrades()
-        self.attach(self.upgrades, 0, 2, 1, 1)
 
         frame = uigtk.widgets.CommonFrame("Stands")
         self.attach(frame, 1, 0, 1, 3)
@@ -283,6 +288,7 @@ class Stadium(Gtk.Grid):
             stand = self.stadium.main_stands[count]
 
             stand.capacity = item.capacity.get_value_as_int()
+            stand.seating = not item.standing.get_active()
             stand.roof = item.roof.get_active()
             stand.box = item.box.get_value_as_int()
 
@@ -290,6 +296,7 @@ class Stadium(Gtk.Grid):
             stand = self.stadium.corner_stands[count]
 
             stand.capacity = item.capacity.get_value_as_int()
+            stand.seating = not item.standing.get_active()
             stand.roof = item.roof.get_active()
 
         self.update_interface()
@@ -308,8 +315,7 @@ class Stadium(Gtk.Grid):
                 if item.roof:
                     stand.roof.set_sensitive(False)
 
-            if item.seating:
-                if item.capacity > 0:
+                if item.seating:
                     stand.seating.set_active(True)
                     stand.seating.set_sensitive(False)
                     stand.standing.set_sensitive(False)
@@ -329,8 +335,10 @@ class Stadium(Gtk.Grid):
             if item.capacity > 0:
                 stand.roof.set_active(item.roof)
 
-            if item.seating:
-                if item.capacity > 0:
+                if item.roof:
+                    stand.roof.set_sensitive(False)
+
+                if item.seating:
                     stand.seating.set_active(True)
                     stand.seating.set_sensitive(False)
                     stand.standing.set_sensitive(False)
@@ -364,14 +372,14 @@ class MainStand:
         '''
         Update widgets on change of capacity.
         '''
-        sensitive = spinbutton.get_value_as_int() > 0
-
         if not self.roof:
             self.roof.set_sensitive(True)
 
         if not self.seating:
             self.standing.set_sensitive(True)
             self.seating.set_sensitive(True)
+
+        sensitive = spinbutton.get_value_as_int() > 0
 
         if not sensitive:
             self.roof.set_active(False)
@@ -405,6 +413,11 @@ class MainStand:
 
         sensitive = self.capacity.get_value_as_int() >= 4000 and self.roof.get_active()
         self.box.set_sensitive(sensitive)
+
+    def update_cost(self):
+        '''
+        Update cost for change of main stand configuration.
+        '''
 
 
 class CornerStand:

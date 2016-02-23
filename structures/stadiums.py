@@ -179,16 +179,16 @@ class Stadiums:
             for count in range(0, 4):
                 stand = MainStand()
                 stand.capacity = main_capacity[count]
-                stand.roof = roof[count]
-                stand.seating = seating[count]
-                stand.box = box_capacity[count]
+                stand.set_roof(roof[count])
+                stand.set_seating(seating[count])
+                stand.set_box(box_capacity[count])
                 stadium.main_stands.append(stand)
 
             for count in range(0, 4):
                 stand = CornerStand()
                 stand.capacity = corner_capacity[count]
-                stand.roof = roof[count + 4]
-                stand.seating = seating[count + 4]
+                stand.set_roof(roof[count + 4])
+                stand.set_seating(seating[count + 4])
                 stadium.corner_stands.append(stand)
 
             for count, shop in enumerate(shops):
@@ -203,9 +203,44 @@ class MainStand:
         self.roof = False
         self.box = 0
 
+    def set_seating(self, seating):
+        '''
+        Set seating boolean if set and capacity is greater than zero.
+        '''
+        if seating and self.capacity > 0:
+            self.seating = True
+
+    def set_roof(self, roof):
+        '''
+        Set roof boolean if set and capacity is greater than zero.
+        '''
+        if roof and self.capacity > 0:
+            self.roof = True
+
+    def set_box(self, box):
+        '''
+        Set box capacity if roof is set and capacity is greater than 4000.
+        '''
+        if box > 0 and self.roof and self.capacity > 4000:
+            self.box = box
+
 
 class CornerStand:
     def __init__(self):
         self.capacity = 0
         self.seating = False
         self.roof = False
+
+    def set_seating(self, seating):
+        '''
+        Set seating boolean if set and capacity is greater than zero.
+        '''
+        if seating and self.capacity > 0:
+            self.seating = True
+
+    def set_roof(self, roof):
+        '''
+        Set roof boolean if set and capacity is greater than zero.
+        '''
+        if roof and self.capacity > 0:
+            self.roof = True
