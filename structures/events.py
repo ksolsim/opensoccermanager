@@ -46,6 +46,7 @@ class Events:
         self.club.pay_staff()
         self.club.coaches.update_contracts()
         self.club.scouts.update_contracts()
+        self.club.team_training.update_schedule()
         data.advertising.decrement_advertising()
         data.advertising.refresh_advertising()
 

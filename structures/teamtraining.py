@@ -18,12 +18,14 @@
 
 import random
 
+import data
+
 
 class TeamTraining:
     def __init__(self):
         self.team_training = [0] * 42
 
-        self.timeout = random.randint(8, 12)
+        self.timeout = 6
 
     def get_training(self):
         '''
@@ -36,6 +38,8 @@ class TeamTraining:
         Set team training value for given index in list.
         '''
         self.team_training[index] = value
+
+        self.get_random_timeout()
 
     def get_random_schedule(self):
         '''
@@ -51,6 +55,14 @@ class TeamTraining:
             self.team_training[count * 6 + 3] = 0
             self.team_training[count * 6 + 4] = 0
             self.team_training[count * 6 + 5] = 0
+
+        self.get_random_timeout()
+
+    def get_random_timeout(self):
+        '''
+        Get random number of weeks for timeout.
+        '''
+        self.timeout = random.randint(8, 12)
 
     def get_sunday_training(self):
         '''
@@ -69,23 +81,16 @@ class TeamTraining:
         '''
         Return True if the team is being overworked.
         '''
-        count = 0
+        count = sum(1 for trainingid in self.team_training if trainingid != 0)
+        overworked = count > 18
 
-        for trainingid in self.team_training:
-            if trainingid != 0:
-                count += 1
-
-        overwork = count > 18
-
-        return overwork
+        return overworked
 
     def get_schedule_set(self):
         '''
         Return whether a schedule has been set.
         '''
-        state = self.team_training != [0] * 42
-
-        return state
+        return self.team_training != [0] * 42
 
     def get_individual_set(self):
         '''
@@ -97,8 +102,21 @@ class TeamTraining:
         '''
         Generate new training schedule and apply.
         '''
-        if self.timeout == 0:
-            self.get_random_schedule()
-            self.timeout = random.randint(8, 12)
-        else:
+        if self.timeout > 0:
             self.timeout -= 1
+
+            if self.timeout == 0:
+                club = data.clubs.get_club_by_id(data.user.team)
+
+                if self.get_schedule_set():
+                    club.news.publish("TT02")
+                    self.get_random_timeout()
+                else:
+                    club.news.publish("TT01")
+                    self.get_random_timeout()
+
+                if self.get_sunday_training():
+                    club.news.publish("TT03")
+
+                if self.get_overworked_training():
+                    club.news.publish("TT04")
