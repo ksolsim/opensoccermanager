@@ -23,7 +23,7 @@ import structures.stadiums
 import uigtk.widgets
 
 
-class Stadium(Gtk.Grid):
+class Stadium(uigtk.widgets.Grid):
     __name__ = "stadium"
 
     class Details(uigtk.widgets.CommonFrame):
@@ -109,14 +109,25 @@ class Stadium(Gtk.Grid):
 
             label = uigtk.widgets.Label("Upgrade Cost", leftalign=True)
             self.grid.attach(label, 0, 0, 1, 1)
+            self.labelUpgradeCost = uigtk.widgets.Label(leftalign=True)
+            self.grid.attach(self.labelUpgradeCost, 1, 0, 1, 1)
 
             label = uigtk.widgets.Label("Upgrade Capacity", leftalign=True)
             self.grid.attach(label, 0, 1, 1, 1)
+            self.labelUpgradeCapacity = uigtk.widgets.Label(leftalign=True)
+            self.grid.attach(self.labelUpgradeCapacity, 1, 1, 1, 1)
 
-        def update_cost(self):
+        def update_cost(self, cost):
             '''
-            Set the cost and upgraded capacity for current amendments.
+            Set the upgrade cost for current amendments.
             '''
+            self.labelUpgradeCost.set_label(cost)
+
+        def update_capacity(self, capacity):
+            '''
+            Set the upgrade capacity for the current amendments.
+            '''
+            self.labelUpgradeCapacity.set_label("%s" % (capacity))
 
     class Attendances(uigtk.widgets.CommonFrame):
         def __init__(self):
@@ -160,7 +171,7 @@ class Stadium(Gtk.Grid):
             stand.capacity.set_value(0)
             stand.capacity.set_snap_to_ticks(True)
             stand.capacity.set_numeric(True)
-            stand.capacity.connect("value-changed", stand.on_capacity_changed)
+            stand.capacity.connect("value-changed", self.on_capacity_changed, stand)
             frame.grid.attach(stand.capacity, 1, count, 1, 1)
 
             stand.roof = Gtk.CheckButton("Roof")
@@ -185,6 +196,7 @@ class Stadium(Gtk.Grid):
             stand.box.set_snap_to_ticks(True)
             stand.box.set_numeric(True)
             stand.box.set_sensitive(False)
+            stand.box.connect("value-changed", self.on_capacity_changed, stand)
             frame.grid.attach(stand.box, 6, count, 1, 1)
 
         # Populate adjacent main stands for corner stands
@@ -206,7 +218,7 @@ class Stadium(Gtk.Grid):
             stand.capacity.set_snap_to_ticks(True)
             stand.capacity.set_numeric(True)
             stand.capacity.set_sensitive(False)
-            stand.capacity.connect("value-changed", stand.on_capacity_changed)
+            stand.capacity.connect("value-changed", self.on_capacity_changed, stand)
             frame.grid.attach(stand.capacity, 1, count + 4, 1, 1)
 
             stand.roof = Gtk.CheckButton("Roof")
@@ -237,6 +249,18 @@ class Stadium(Gtk.Grid):
         buttonConstruct.set_tooltip_text("Begin construction of stadium upgrades.")
         buttonConstruct.connect("clicked", self.on_construct_clicked)
         buttonbox.add(buttonConstruct)
+
+    def on_capacity_changed(self, spinbutton, stand):
+        '''
+        Handle changes to main or corner stand capacities.
+        '''
+        capacity = sum(stand.capacity.get_value_as_int() for stand in self.main_stands)
+        capacity += sum(stand.box.get_value_as_int() for stand in self.main_stands)
+        capacity += sum(stand.capacity.get_value_as_int() for stand in self.corner_stands)
+
+        self.upgrades.update_capacity(capacity)
+
+        stand.on_capacity_changed(spinbutton)
 
     def on_construct_clicked(self, *args):
         '''
@@ -379,9 +403,7 @@ class MainStand:
             self.standing.set_sensitive(True)
             self.seating.set_sensitive(True)
 
-        sensitive = spinbutton.get_value_as_int() > 0
-
-        if not sensitive:
+        if not spinbutton.get_value_as_int() > 0:
             self.roof.set_active(False)
             self.standing.set_active(True)
 
@@ -413,11 +435,6 @@ class MainStand:
 
         sensitive = self.capacity.get_value_as_int() >= 4000 and self.roof.get_active()
         self.box.set_sensitive(sensitive)
-
-    def update_cost(self):
-        '''
-        Update cost for change of main stand configuration.
-        '''
 
 
 class CornerStand:
