@@ -30,7 +30,14 @@ class Buildings:
 
     def __init__(self):
         self.buildings = []
-        self.filenames = ("programmevendor", "stall", "burgerbar", "bar", "smallshop", "largeshop", "cafe", "restaurant")
+        self.filenames = ("programmevendor",
+                          "stall",
+                          "burgerbar",
+                          "bar",
+                          "smallshop",
+                          "largeshop",
+                          "cafe",
+                          "restaurant")
 
         self.populate_data()
 
@@ -50,12 +57,7 @@ class Buildings:
         '''
         Return number of plots currently in use.
         '''
-        plots = 0
-
-        for building in self.buildings:
-            plots += building.size * building.number
-
-        return plots
+        return sum(shop.size * shop.number for shop in self.buildings)
 
     def populate_data(self):
         data.database.cursor.execute("SELECT * FROM buildings")

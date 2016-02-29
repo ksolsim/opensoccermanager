@@ -87,15 +87,25 @@ class Totals(uigtk.widgets.CommonFrame):
         if not club.finances.grant.get_grant_available():
             self.labelAvailableGrant.set_label("Grant unavailable")
 
-    def update_construction_cost(self):
+    def calculate_construction_cost(self):
         '''
-        Update label displaying cost of construction work.
+        Calculate cost of construction works.
         '''
         cost = 0
 
         for shop in Buildings.shops:
-            cost += shop.building.cost * (shop.spinbutton.get_value_as_int() - shop.building.number)
+            if shop.spinbutton.get_value_as_int() < shop.building.number:
+                cost  += (shop.building.cost * 0.25) * (shop.building.number - shop.spinbutton.get_value_as_int())
+            else:
+                cost += shop.building.cost * (shop.spinbutton.get_value_as_int() - shop.building.number)
 
+        return cost
+
+    def update_construction_cost(self):
+        '''
+        Update label displaying cost of construction work.
+        '''
+        cost = self.calculate_construction_cost()
         cost = data.currency.get_currency(cost, integer=True)
         self.labelConstructionCost.set_label(cost)
 
@@ -103,13 +113,20 @@ class Totals(uigtk.widgets.CommonFrame):
         '''
         Get plot size and ask to confirm upgrade.
         '''
-        plots = 0
+        plots = sum(shop.building.size * shop.spinbutton.get_value_as_int() for shop in Buildings.shops)
 
-        for shop in Buildings.shops:
-            plots += shop.size * shop.spinbutton.get_value_as_int()
+        cost = self.calculate_construction_cost()
+        dialog = ConfirmBuilding(cost)
 
-        dialog = ConfirmBuilding()
-        dialog.show()
+        if dialog.show():
+            club = data.clubs.get_club_by_id(data.user.team)
+
+            if club.accounts.request(cost):
+                for shop in Buildings.shops:
+                    shop.building.number = shop.spinbutton.get_value_as_int()
+
+                club.accounts.withdraw(cost, "stadium")
+                self.update_construction_cost()
 
     def on_reset_clicked(self, button):
         '''
@@ -230,8 +247,9 @@ class Shop(uigtk.widgets.Grid):
         self.update_construction_cost(spinbutton)
 
     def update_construction_cost(self, spinbutton):
-        #amount = self.building.cost * (amount - self.building.number)
-
+        '''
+        Update cost of construction works.
+        '''
         Buildings.totals.update_construction_cost()
 
 
@@ -239,17 +257,19 @@ class ConfirmBuilding(Gtk.MessageDialog):
     '''
     Message dialog to confirm whether new buildings should be built.
     '''
-    def __init__(self):
+    def __init__(self, cost):
         Gtk.MessageDialog.__init__(self)
         self.set_transient_for(data.window)
         self.set_modal(True)
         self.set_title("Confirm Building Construction")
         self.set_markup("<span size='12000'><b>Do you want to build the specified new shops?</b></span>")
-        self.format_secondary_text("The cost of construction will be %s" % (cost))
+        self.format_secondary_text("The cost of construction will be %s." % (data.currency.get_currency(cost, integer=True)))
         self.add_button("_Cancel Construction", Gtk.ResponseType.CANCEL)
         self.add_button("C_onfirm Construction", Gtk.ResponseType.OK)
         self.set_default_response(Gtk.ResponseType.CANCEL)
 
     def show(self):
-        self.run()
+        state = self.run() == Gtk.ResponseType.OK
         self.destroy()
+
+        return state
