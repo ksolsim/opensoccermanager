@@ -29,6 +29,14 @@ class Referees:
             self.yellow_cards = 0
             self.red_cards = 0
 
+        def increment_statistics(self, fixture):
+            '''
+            Increment referee statistics for played fixture.
+            '''
+            self.games += 1
+            self.yellow_cards += fixture.home.yellow_cards + fixture.away.yellow_cards
+            self.red_cards += fixture.home.red_cards + fixture.away.red_cards
+
         def get_points(self):
             '''
             Calculate points for cards issued by referee.
@@ -87,11 +95,10 @@ class Referees:
 
         for item in data.database.cursor.fetchall():
             referee = self.Referee()
-            refereeid = item[0]
-            self.referees[refereeid] = referee
-
+            referee.refereeid = item[0]
             referee.name = item[1]
             referee.league = item[5]
+            self.referees[referee.refereeid] = referee
 
             league = data.leagues.get_league_by_id(referee.league)
-            league.add_referee(refereeid)
+            league.add_referee(referee.refereeid)

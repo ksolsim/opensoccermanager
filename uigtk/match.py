@@ -79,12 +79,14 @@ class Match(uigtk.widgets.Grid):
 
         home = data.clubs.get_club_by_id(fixture.home.clubid)
         stadium = data.stadiums.get_stadium_by_id(home.stadium)
-        referee = data.referees.get_referee_by_id(fixture.referee)
-        self.information.set_information(stadium.name, referee.name)
+        self.information.set_information(stadium.name, fixture.referee.name)
 
         away = data.clubs.get_club_by_id(fixture.away.clubid)
 
         self.teams.set_teams_list(home, away)
+
+        team = structures.match.Team(fixture)
+        team.set_team_selection()
 
     def set_tactics_buttons(self, fixtureid, fixture):
         '''
@@ -100,9 +102,15 @@ class Match(uigtk.widgets.Grid):
         Call match engine to generate result, then enable interface elements.
         '''
         structures.match.Score(self.fixture)
+
         self.score.set_result(self.fixture.result)
+
         league = data.leagues.get_league_by_id(self.fixture.leagueid)
         league.standings.update_standing(self.fixture)
+
+        self.fixture.referee.increment_statistics(self.fixture)
+
+        self.fixture.increment_player_appearances()
 
         self.fixture.played = True
 
@@ -113,6 +121,8 @@ class Match(uigtk.widgets.Grid):
                 if data.user.team not in (fixture.home.clubid, fixture.away.clubid):
                     structures.match.Score(fixture)
                     league.standings.update_standing(fixture)
+
+                    fixture.referee.increment_statistics(fixture)
 
                     fixture.played = True
 

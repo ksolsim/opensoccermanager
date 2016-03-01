@@ -70,8 +70,7 @@ class Result(uigtk.widgets.Grid):
         stadium = data.stadiums.get_stadium_by_id(home.stadium)
         self.information.labelStadium.set_label(stadium.name)
 
-        referee = data.referees.get_referee_by_id(fixture.referee)
-        self.information.labelReferee.set_label(referee.name)
+        self.information.labelReferee.set_label(fixture.referee.name)
 
         self.labelNotPlayed.set_visible(not fixture.played)
 

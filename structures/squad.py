@@ -107,14 +107,7 @@ class Squad:
         '''
         Return average age of players in squad.
         '''
-        age = 0
-
-        for player in self.squad.values():
-            age += player.get_age()
-
-        age = age / self.get_squad_count()
-
-        return age
+        return sum(player.get_age() for player in self.squad.values()) / self.get_squad_count()
 
     def generate_squad(self):
         '''

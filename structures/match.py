@@ -21,6 +21,23 @@ import random
 import data
 
 
+class Team:
+    def __init__(self, fixture):
+        self.fixture = fixture
+
+    def set_team_selection(self):
+        '''
+        Set team selection for match into fixture object.
+        '''
+        club = data.clubs.get_club_by_id(self.fixture.home.clubid)
+        self.fixture.home.team_selection[0] = club.squad.teamselection.team
+        self.fixture.home.team_selection[1] = club.squad.teamselection.subs
+
+        club = data.clubs.get_club_by_id(self.fixture.away.clubid)
+        self.fixture.away.team_selection[0] = club.squad.teamselection.team
+        self.fixture.away.team_selection[1] = club.squad.teamselection.subs
+
+
 class Score:
     def __init__(self, fixture):
         self.fixture = fixture

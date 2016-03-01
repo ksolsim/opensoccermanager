@@ -62,7 +62,7 @@ class Fixtures:
                 fixture = Fixture()
                 fixture.leagueid = self.league.leagueid
                 fixture.week = week
-                fixture.referee = referees[match]
+                fixture.referee = data.referees.get_referee_by_id(referees[match])
 
                 if week % 2 == 1:
                     fixture.home.clubid = self.clubs[home]
@@ -191,6 +191,13 @@ class Fixture:
 
         return club.name
 
+    def increment_player_appearances(self):
+        '''
+        Increment appearances for both clubs registered to fixture object.
+        '''
+        self.home.increment_player_appearances()
+        self.away.increment_player_appearances()
+
 
 class FixtureTeam:
     '''
@@ -199,5 +206,19 @@ class FixtureTeam:
     def __init__(self):
         self.clubid = None
 
+        self.team_selection = [[], []]
+
         self.team = []
         self.subs = []
+
+        self.yellow_cards = 0
+        self.red_cards = 0
+
+    def increment_player_appearances(self):
+        '''
+        Increment appearances for each player in team.
+        '''
+        for playerid in self.team_selection[0]: ###
+            if playerid:
+                player = data.players.get_player_by_id(playerid)
+                player.appearances += 1
