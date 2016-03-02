@@ -279,7 +279,7 @@ class Injury:
         '''
         return self.injuryid is not None
 
-    def get_injury_type(self):
+    def get_injury_name(self):
         '''
         Get type of injury player has received.
         '''
@@ -308,7 +308,7 @@ class Suspension:
         '''
         return self.suspensionid is not None
 
-    def get_suspension_type(self):
+    def get_suspension_name(self):
         '''
         Get type of suspension player has received.
         '''
@@ -330,6 +330,24 @@ class Training:
     def __init__(self):
         self.rate = 1
         self.points = 0
+
+    def increment_points(self, amount):
+        '''
+        Increment current training points value.
+        '''
+        self.points += amount
+
+        if self.points > 100:
+            remainder = self.points - 100
+
+    def decrement_points(self, amount):
+        '''
+        Decrement current training points value.
+        '''
+        self.points -= amount
+
+        if self.points < 0:
+            self.points = 100 + self.points
 
 
 class History:

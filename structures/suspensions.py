@@ -36,11 +36,18 @@ class Suspensions:
         '''
         return self.suspensions[suspensionid]
 
+    def get_random_suspension(self):
+        '''
+        Return random suspensions object.
+        '''
+        return random.choice(list(self.suspensions.values()))
+
     def populate_data(self):
         data.database.cursor.execute("SELECT * FROM suspension")
 
         for item in data.database.cursor.fetchall():
             suspension = self.Suspension()
+            suspension.suspensionid = item[0]
             suspension.name = item[1]
             suspension.period = (item[2], item[3])
-            self.suspensions[item[0]] = suspension
+            self.suspensions[suspension.suspensionid] = suspension

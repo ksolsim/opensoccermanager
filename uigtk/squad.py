@@ -309,8 +309,8 @@ class SquadList(Gtk.ListStore):
                          player.get_cards(),
                          player.man_of_the_match,
                          player.rating.get_average_rating(),
-                         player.injury.get_injury_type(),
-                         player.suspension.get_suspension_type()])
+                         player.injury.get_injury_name(),
+                         player.suspension.get_suspension_name()])
 
 
 class FirstTeam(uigtk.widgets.Grid):

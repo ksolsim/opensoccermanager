@@ -37,12 +37,19 @@ class Injuries:
         '''
         return self.injuries[injuryid]
 
+    def get_random_injury(self):
+        '''
+        Return random injury object.
+        '''
+        return random.choice(list(self.injuries.values()))
+
     def populate_data(self):
         data.database.cursor.execute("SELECT * FROM injury")
 
         for item in data.database.cursor.fetchall():
             injury = self.Injury()
+            injury.injuryid = item[0]
             injury.name = item[1]
             injury.period = (item[2], item[3])
             injury.impact = (item[4], item[5])
-            self.injuries[item[0]] = injury
+            self.injuries[injury.injuryid] = injury

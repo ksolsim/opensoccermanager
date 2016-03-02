@@ -93,7 +93,7 @@ class Injuries(uigtk.widgets.CommonFrame):
 
             self.liststore.append([playerid,
                                    player.get_name(),
-                                   player.injury.get_injury_type(),
+                                   player.injury.get_injury_name(),
                                    player.injury.get_injury_period(),
                                    "%s%%" % (player.fitness)])
 
@@ -158,7 +158,7 @@ class Suspensions(uigtk.widgets.CommonFrame):
 
             self.liststore.append([playerid,
                                    player.get_name(),
-                                   player.suspension.get_suspension_type(),
+                                   player.suspension.get_suspension_name(),
                                    player.suspension.get_suspension_period()])
 
     def run(self):

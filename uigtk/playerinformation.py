@@ -295,7 +295,7 @@ class Injuries(uigtk.widgets.CommonFrame):
         if not player.injury.get_injured():
             message = "Not currently injured."
         else:
-            message = "Out for %s with a %s." % (player.injury.get_injury_period(), player.injury.get_injury_type())
+            message = "Out for %s with a %s." % (player.injury.get_injury_period(), player.injury.get_injury_name())
 
         self.labelInjuries.set_label(message)
 
@@ -317,7 +317,7 @@ class Suspensions(uigtk.widgets.CommonFrame):
         if not player.suspension.get_suspended():
             message = "Not currently suspended."
         else:
-            message = "Out for %s due to a %s." % (player.suspension.get_suspension_period(), player.suspension.get_suspension_type())
+            message = "Out for %s due to a %s." % (player.suspension.get_suspension_period(), player.suspension.get_suspension_name())
 
         self.labelSuspensions.set_label(message)
 
