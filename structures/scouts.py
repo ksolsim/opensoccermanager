@@ -52,13 +52,22 @@ class Scouts(structures.staff.Staff):
         '''
         Decrement hired scout contract and remove any whose contract expired.
         '''
+        delete = []
+
         for scoutid, scout in self.hired.items():
             scout.contract -= 1
 
             if scout.contract in (4, 8, 12):
-                print("Scout contract ending soon")
+                club = data.clubs.get_club_by_id(data.user.team)
+                club.news.publish("SC03", scout=scout.name, period=scout.contract)
             elif scout.contract == 0:
-                del self.hired[scoutid]
+                club = data.clubs.get_club_by_id(data.user.team)
+                club.news.publish("SC01", scout=scout.name)
+
+                delete.append(scoutid)
+
+        for scoutid in delete:
+            del self.hired[scoutid]
 
     def hire_staff(self, scoutid):
         '''

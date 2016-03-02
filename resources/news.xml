@@ -265,6 +265,11 @@
         <message>Coaching team member _COACH_ has decided that he will retire once his current contract has expired. We should make arrangements to bring in a replacement in the future.</message>
         <category>3</category>
     </article>
+    <article id="CC03">
+        <title>Contract of _COACH_ is due to expire</title>
+        <message>The current contract of _COACH_ is due to expire in _PERIOD_ weeks. If we wish to retain his services, the contract must be renewed. If not, a replacement may need to be sought.</message>
+        <category>3</category>
+    </article>
     <article id="SC01">
         <title>_SCOUT_ has left the club</title>
         <message>Member of the scouting team _SCOUT_ has now left the club after his contract expired. He thanks you and the rest of the team here for his time with the club.</message>
@@ -273,6 +278,11 @@
     <article id="SC02">
         <title>_SCOUT_ is due to retire in one year</title>
         <message>Scouting team member _SCOUT_ has decided that he will retire once his current contract has expired. We should make arrangements to bring in a replacement in the future.</message>
+        <category>3</category>
+    </article>
+    <article id="SC03">
+        <title>_SCOUT_ contract is set to expire</title>
+        <message>The contract of _SCOUT_ is going to expire in _PERIOD_ weeks, and we need to negotiate soon if we wish to retain his services.</message>
         <category>3</category>
     </article>
     <article id="SH01">

@@ -47,12 +47,7 @@ class Staff:
         '''
         Return wages for all staff members contracted to the club.
         '''
-        wage = 0
-
-        for itemid, item in self.hired.items():
-            wage += item.wage
-
-        return wage
+        return sum(staff.wage for staff in self.hired.values())
 
 
 class Member(Staff):
@@ -79,9 +74,8 @@ class Member(Staff):
         letters = list(string.ascii_letters[26:])
         initial = random.choice(letters)
         surname = random.choice(Staff.surnames)
-        name = "%s. %s" % (initial, surname)
 
-        return name
+        return "%s. %s" % (initial, surname)
 
     def generate_wage(self):
         '''

@@ -54,13 +54,31 @@ class Coaches(structures.staff.Staff):
         '''
         Decrement hired coach contract and remove any whose contract expired.
         '''
+        delete = []
+
         for coachid, coach in self.hired.items():
             coach.contract -= 1
 
             if coach.contract in (4, 8, 12):
-                print("Coach contract ending soon")
+                club = data.clubs.get_club_by_id(data.user.team)
+                club.news.publish("CC03", coach=coach.name, period=coach.contract)
             elif coach.contract == 0:
-                del self.hired[coachid]
+                club = data.clubs.get_club_by_id(data.user.team)
+                club.news.publish("CC01", coach=coach.name)
+
+                delete.append(coachid)
+
+        for coachid in delete:
+            remove = []
+
+            for trainingid, training in club.individual_training.get_individual_training():
+                if coachid == training.coachid:
+                    remove.append(trainingid)
+
+            for trainingid in remove:
+                club.individual_training.remove_from_training(trainingid)
+
+            del self.hired[coachid]
 
     def hire_staff(self, coachid):
         '''
