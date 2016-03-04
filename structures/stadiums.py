@@ -16,8 +16,9 @@
 #  OpenSoccerManager.  If not, see <http://www.gnu.org/licenses/>.
 
 
-import data
+import random
 
+import data
 import structures.buildings
 
 
@@ -45,6 +46,8 @@ class Stadiums:
             self.name = ""
             self.condition = 100
             self.maintenance = 100
+            self.warnings = 0
+            self.fines = 0
 
             self.main_stands = []
             self.corner_stands = []
@@ -137,6 +140,38 @@ class Stadiums:
 
             return cost
 
+        def update_condition(self):
+            '''
+            Update the current condition of the stadium.
+            '''
+            club = data.clubs.get_club_by_id(data.user.team)
+            stadium = data.stadiums.get_stadium_by_id(club.stadium)
+
+            stadium.condition = stadium.maintenance + random.randint(-1, 2)
+
+            if stadium.condition > 100:
+                stadium.condition = 100
+            elif stadium.condition < 0:
+                stadium.condition = 0
+
+            if stadium.condition <= 25:
+                club.news.publish("SM01")
+
+                self.warnings += 1
+            elif stadium.condition <= 50:
+                club.news.publish("SM02")
+
+                self.warnings += 1
+
+            if stadium.warnings == 3:
+                fine = self.get_capacity() * 3 * (self.fines + 1)
+                club.accounts.withdraw(amount=fine, category="fines")
+
+                club.news.publish("SM03", amount=fine)
+
+                self.fines += 1
+                self.warnings = 0
+
     def __init__(self, season):
         self.season = season
         self.stadiums = {}
@@ -164,8 +199,8 @@ class Stadiums:
 
         for item in data.database.cursor.fetchall():
             stadium = self.Stadium()
-            stadiumid = item[0]
-            self.stadiums[stadiumid] = stadium
+            stadium.stadiumid = item[0]
+            self.stadiums[stadium.stadiumid] = stadium
 
             stadium.name = item[1]
 

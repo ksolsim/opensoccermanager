@@ -58,6 +58,7 @@ class Stadium(uigtk.widgets.Grid):
             label = uigtk.widgets.Label("Current Stadium Condition", leftalign=True)
             self.grid.attach(label, 0, 0, 1, 1)
             self.labelCondition = uigtk.widgets.Label(leftalign=True)
+            self.grid.attach(self.labelCondition, 1, 0, 1, 1)
 
             label = uigtk.widgets.Label("Estimated Maintenance Percentage", leftalign=True)
             self.grid.attach(label, 0, 1, 1, 1)
@@ -74,7 +75,17 @@ class Stadium(uigtk.widgets.Grid):
             label = uigtk.widgets.Label("Stadium Maintenance Cost", leftalign=True)
             self.grid.attach(label, 0, 2, 1, 1)
             self.labelCost = uigtk.widgets.Label(leftalign=True)
+            self.labelCost.connect("activate-link", self.on_maintenance_information_clicked)
             self.grid.attach(self.labelCost, 1, 2, 1, 1)
+
+        def set_condition_percentage(self):
+            '''
+            Update display label for current stadium condition percentage.
+            '''
+            club = data.clubs.get_club_by_id(data.user.team)
+            stadium = data.stadiums.get_stadium_by_id(club.stadium)
+
+            self.labelCondition.set_label("%i%%" % (stadium.condition))
 
         def set_maintenance_cost(self):
             '''
@@ -83,7 +94,23 @@ class Stadium(uigtk.widgets.Grid):
             club = data.clubs.get_club_by_id(data.user.team)
             stadium = data.stadiums.get_stadium_by_id(club.stadium)
 
-            self.labelCost.set_label(data.currency.get_currency(stadium.get_maintenance_cost(), integer=True))
+            self.labelCost.set_label("<a href=''>%s</a>" % data.currency.get_currency(stadium.get_maintenance_cost(), integer=True))
+
+        def on_maintenance_information_clicked(self, *args):
+            '''
+            Display message about cost of maintenance.
+            '''
+            messagedialog = Gtk.MessageDialog()
+            messagedialog.set_transient_for(data.window)
+            messagedialog.set_modal(True)
+            messagedialog.set_title("Maintenance Information")
+            messagedialog.set_property("message-type", Gtk.MessageType.INFO)
+            messagedialog.set_markup("The total maintenance cost is charged weekly, and is calculated from the total stadium capacity and number of shop buildings.")
+            messagedialog.add_button("_Close", Gtk.ResponseType.CLOSE)
+            messagedialog.run()
+            messagedialog.destroy()
+
+            return True
 
         def on_maintenance_changed(self, spinbutton):
             '''
@@ -377,6 +404,7 @@ class Stadium(uigtk.widgets.Grid):
 
         self.details.set_details()
         self.maintenance.set_maintenance_cost()
+        self.maintenance.set_condition_percentage()
         self.populate_data()
 
         self.show_all()

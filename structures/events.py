@@ -50,6 +50,9 @@ class Events:
         data.advertising.decrement_advertising()
         data.advertising.refresh_advertising()
 
+        stadium = data.stadiums.get_stadium_by_id(self.club.stadium)
+        stadium.update_condition()
+
     def process_monthly_events(self):
         '''
         Events processed at the end of each month.
