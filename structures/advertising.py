@@ -83,9 +83,7 @@ class Advertising:
         '''
         Return number of current advertisements.
         '''
-        count = sum([advert.quantity for advert in self.current.values()])
-
-        return count
+        return sum(advert.quantity for advert in self.current.values())
 
     def move(self, advertid):
         '''

@@ -111,3 +111,32 @@ class Member(Staff):
         Return payout for firing the coach.
         '''
         return self.contract * self.wage
+
+    def get_renew_contract(self):
+        '''
+        Return whether coach is willing to new his contract.
+        '''
+        if self.retiring:
+            return 1
+        elif self.morale < 5:
+            return 2
+
+        return 0
+
+    def get_contract_renewal_period(self):
+        '''
+        Get number of years staff member wishes to renew contract for.
+        '''
+        return random.randint(1, 3)
+
+    def get_contract_renewal_amount(self):
+        '''
+        Get wage amount staff member wants for new contract.
+        '''
+        return int(self.wage * 1.05)
+
+    def get_improve_wage_amount(self):
+        '''
+        Get improved wage amount for staff member.
+        '''
+        return int(self.wage * 1.01)

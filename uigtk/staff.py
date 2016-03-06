@@ -208,8 +208,15 @@ class Staff(Gtk.Grid):
                 coachid = model[treeiter][0]
                 coach = self.club.coaches.hired[coachid]
 
-                period = random.randint(1, 3)
-                amount = int(coach.wage * 1.05)
+                status = coach.get_renew_contract()
+
+                if status != 0:
+                    dialog = RenewContractError(coach.name, status)
+
+                    return
+
+                period = coach.get_contract_renewal_period()
+                amount = coach.get_contract_renewal_amount()
 
                 dialog = RenewContract(coach.name, period, amount)
 
@@ -226,7 +233,7 @@ class Staff(Gtk.Grid):
                 coachid = model[treeiter][0]
                 coach = self.club.coaches.hired[coachid]
 
-                amount = int(coach.wage * 1.01)
+                amount = self.get_improve_wage_amount()
 
                 dialog = ImproveWage(coach.name, amount)
 
@@ -362,8 +369,15 @@ class Staff(Gtk.Grid):
                 scoutid = model[treeiter][0]
                 scout = self.club.scouts.hired[scoutid]
 
-                period = random.randint(1, 5)
-                amount = int(scout.wage * 1.05)
+                status = scout.get_renew_contract()
+
+                if status != 0:
+                    dialog = RenewContractError(scout.name, status)
+
+                    return
+
+                period = coach.get_contract_renewal_period()
+                amount = coach.get_contract_renewal_amount()
 
                 dialog = RenewContract(scout.name, period, amount)
 
@@ -380,7 +394,7 @@ class Staff(Gtk.Grid):
                 scoutid = model[treeiter][0]
                 scout = self.club.scouts.hired[scoutid]
 
-                amount = int(scout.wage * 1.01)
+                amount = self.get_improve_wage_amount()
 
                 dialog = ImproveWage(scout.name, amount)
 
@@ -538,12 +552,17 @@ class RenewContractError(Gtk.MessageDialog):
     '''
     Error displayed when staff does not wish to renew contract.
     '''
-    def __init__(self, name):
+    def __init__(self, name, status):
+        if status == 1:
+            message = "%s is not willing to negotiate a new contract at this time."
+        elif status == 2:
+            message = "%s is planning to retire at the end of his current contract."
+
         Gtk.MessageDialog.__init__(self)
         self.set_transient_for(data.window)
         self.set_modal(True)
         self.set_title("Renew Contract")
-        self.set_markup("%s is not willing to negotiate a new contract at this time." % (name))
+        self.set_markup(message % (name))
         self.add_button("_Close", Gtk.ResponseType.CLOSE)
         self.connect("response", self.on_response)
 

@@ -39,9 +39,7 @@ class Tactics:
         '''
         Get set formation as a string for display.
         '''
-        formation = self.formations.get_formations()[0]
-
-        return formation
+        return self.formations.get_formations()[0]
 
     def get_formation_positions(self):
         '''

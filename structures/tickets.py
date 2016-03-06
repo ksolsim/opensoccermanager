@@ -23,9 +23,9 @@ class Tickets:
     def __init__(self):
         self.tickets = TicketCategories()
 
-        self.school_tickets = 0
+        self.school_tickets = 100
 
-        self.season_tickets = 0
+        self.season_tickets = 40
         self.season_tickets_available = True
 
     def get_ticket_prices(self):
@@ -65,9 +65,22 @@ class Tickets:
         self.season_tickets_available = not self.season_tickets_available
 
     def check_season_ticket_availability(self):
+        '''
+        Disable season ticket availability for season.
+        '''
         if data.date.get_date_for_event() == (16, 8):
-            club = data.clubs.get_club_by_id(data.user.team)
-            club.tickets.toggle_season_ticket_availability()
+            self.toggle_season_ticket_availability()
+
+            self.calculate_season_tickets()
+
+    def calculate_season_tickets(self):
+        '''
+        Determine number of season tickets sold in pre-season.
+        '''
+        club = data.clubs.get_club_by_id(data.user.team)
+        stadium = data.stadiums.get_stadium_by_id(club.stadium)
+
+        capacity = stadium.get_capacity() - stadium.get_box_capacity() - self.school_tickets
 
 
 class TicketCategories:
@@ -75,6 +88,9 @@ class TicketCategories:
         self.categories = [None] * 5
 
     def set_ticket_price(self, index1, index2, amount):
+        '''
+        Set passed amount on ticket type.
+        '''
         self.categories[index1].set_price(index2, amount)
 
     def add_ticket_price(self, ticket, multiplier):
@@ -100,14 +116,15 @@ class TicketPrices:
         '''
         Set initial ticket prices for league, cup, and season tickets.
         '''
-        self.prices = [multiplier + self.club.reputation,
-                       multiplier + self.club.reputation + (self.club.reputation * 0.25),
-                       (multiplier + self.club.reputation) * 15]
+        prices = [multiplier + self.club.reputation,
+                  multiplier + self.club.reputation + (self.club.reputation * 0.25),
+                  (multiplier + self.club.reputation) * 15]
 
-        self.prices = list(map(int, self.prices))
+        self.prices = list(map(int, prices))
+        self.base = list(map(int, prices))
 
     def set_price(self, index, amount):
         '''
         Set amount as price for given index.
         '''
-        self.prices[index] = amount
+        self.prices[index] = int(amount)

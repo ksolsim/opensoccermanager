@@ -238,16 +238,16 @@ class Squad(uigtk.widgets.Grid):
         display = True
 
         if Squad.squadfilter.options["position"] == 1:
-            if model[treeiter][2] not in ("GK",):
+            if model[treeiter][3] not in ("GK",):
                 display = False
         elif Squad.squadfilter.options["position"] == 2:
-            if model[treeiter][2] not in ("DL", "DR", "DC", "D"):
+            if model[treeiter][3] not in ("DL", "DR", "DC", "D"):
                 display = False
         elif Squad.squadfilter.options["position"] == 3:
-            if model[treeiter][2] not in ("ML", "MR", "MC", "M"):
+            if model[treeiter][3] not in ("ML", "MR", "MC", "M"):
                 display = False
         elif Squad.squadfilter.options["position"] == 4:
-            if model[treeiter][2] not in ("AF", "AS"):
+            if model[treeiter][3] not in ("AF", "AS"):
                 display = False
 
         return display
