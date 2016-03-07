@@ -145,25 +145,24 @@ class Stadiums:
             Update the current condition of the stadium.
             '''
             club = data.clubs.get_club_by_id(data.user.team)
-            stadium = data.stadiums.get_stadium_by_id(club.stadium)
 
-            stadium.condition = stadium.maintenance + random.randint(-1, 2)
+            club.stadium.condition = club.stadium.maintenance + random.randint(-1, 2)
 
-            if stadium.condition > 100:
-                stadium.condition = 100
-            elif stadium.condition < 0:
-                stadium.condition = 0
+            if club.stadium.condition > 100:
+                club.stadium.condition = 100
+            elif club.stadium.condition < 0:
+                club.stadium.condition = 0
 
-            if stadium.condition <= 25:
+            if club.stadium.condition <= 25:
                 club.news.publish("SM01")
 
                 self.warnings += 1
-            elif stadium.condition <= 50:
+            elif club.stadium.condition <= 50:
                 club.news.publish("SM02")
 
                 self.warnings += 1
 
-            if stadium.warnings == 3:
+            if club.stadium.warnings == 3:
                 fine = self.get_capacity() * 3 * (self.fines + 1)
                 club.accounts.withdraw(amount=fine, category="fines")
 

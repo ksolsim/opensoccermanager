@@ -74,9 +74,7 @@ class Totals(uigtk.widgets.CommonFrame):
         Set maximum allowable building plots.
         '''
         club = data.clubs.get_club_by_id(data.user.team)
-        stadium = data.stadiums.get_stadium_by_id(club.stadium)
-
-        self.labelMaximumPlots.set_label("%i" % (stadium.buildings.maximum_plots))
+        self.labelMaximumPlots.set_label("%i" % (club.stadium.buildings.maximum_plots))
 
     def update_grant_status(self):
         '''
@@ -191,9 +189,8 @@ class Shops(uigtk.widgets.Grid):
         Set number of buildings on to interface.
         '''
         club = data.clubs.get_club_by_id(data.user.team)
-        stadium = data.stadiums.get_stadium_by_id(club.stadium)
 
-        for count, building in enumerate(stadium.buildings.get_buildings()):
+        for count, building in enumerate(club.stadium.buildings.get_buildings()):
             self.shops[count].spinbutton.set_value(building.number)
 
     def get_building_count(self):
@@ -214,9 +211,8 @@ class Shop(uigtk.widgets.Grid):
         uigtk.widgets.Grid.__init__(self)
 
         club = data.clubs.get_club_by_id(data.user.team)
-        stadium = data.stadiums.get_stadium_by_id(club.stadium)
 
-        self.building = stadium.buildings.get_building_by_index(index)
+        self.building = club.stadium.buildings.get_building_by_index(index)
 
         self.labelName = uigtk.widgets.Label("<b>_%s</b>" % (self.building.name))
         self.attach(self.labelName, 0, 0, 2, 1)

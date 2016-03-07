@@ -78,8 +78,7 @@ class Match(uigtk.widgets.Grid):
         self.set_tactics_buttons(fixtureid, fixture)
 
         home = data.clubs.get_club_by_id(fixture.home.clubid)
-        stadium = data.stadiums.get_stadium_by_id(home.stadium)
-        self.information.set_information(stadium.name, fixture.referee.name)
+        self.information.set_information(home.stadium.name, fixture.referee.name)
 
         away = data.clubs.get_club_by_id(fixture.away.clubid)
 

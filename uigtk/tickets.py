@@ -106,22 +106,20 @@ class Tickets(uigtk.widgets.Grid):
         '''
         Update whether ticket item interface elements are sensitive.
         '''
-        stadium = data.stadiums.get_stadium_by_id(self.club.stadium)
-
         for stand in self.tickets[0]:
-            stand.set_sensitive(stadium.get_standing_uncovered())
+            stand.set_sensitive(self.club.stadium.get_standing_uncovered())
 
         for stand in self.tickets[1]:
-            stand.set_sensitive(stadium.get_standing_covered())
+            stand.set_sensitive(self.club.stadium.get_standing_covered())
 
         for stand in self.tickets[2]:
-            stand.set_sensitive(stadium.get_seating_uncovered())
+            stand.set_sensitive(self.club.stadium.get_seating_uncovered())
 
         for stand in self.tickets[3]:
-            stand.set_sensitive(stadium.get_seating_covered())
+            stand.set_sensitive(self.club.stadium.get_seating_covered())
 
         for stand in self.tickets[4]:
-            stand.set_sensitive(stadium.get_executive_box())
+            stand.set_sensitive(self.club.stadium.get_executive_box())
 
     def populate_data(self):
         for count, category in enumerate(self.club.tickets.get_ticket_prices()):

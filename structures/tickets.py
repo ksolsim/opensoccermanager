@@ -78,9 +78,8 @@ class Tickets:
         Determine number of season tickets sold in pre-season.
         '''
         club = data.clubs.get_club_by_id(data.user.team)
-        stadium = data.stadiums.get_stadium_by_id(club.stadium)
 
-        capacity = stadium.get_capacity() - stadium.get_box_capacity() - self.school_tickets
+        capacity = club.stadium.get_capacity() - club.stadium.get_box_capacity() - self.school_tickets
 
 
 class TicketCategories:

@@ -67,9 +67,7 @@ class Result(uigtk.widgets.Grid):
         self.labelAway.set_markup("<a href='club'><span size='18000'><b>%s</b></span></a>" % (away.name))
         self.labelAway.clubid = fixture.away.clubid
 
-        stadium = data.stadiums.get_stadium_by_id(home.stadium)
-        self.information.labelStadium.set_label(stadium.name)
-
+        self.information.labelStadium.set_label(home.stadium.name)
         self.information.labelReferee.set_label(fixture.referee.name)
 
         self.labelNotPlayed.set_visible(not fixture.played)

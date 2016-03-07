@@ -16,6 +16,8 @@
 #  OpenSoccerManager.  If not, see <http://www.gnu.org/licenses/>.
 
 
+import random
+
 import data
 
 
@@ -42,6 +44,17 @@ class Injuries:
         Return random injury object.
         '''
         return random.choice(list(self.injuries.values()))
+
+    def fitness_recovery(self):
+        '''
+        Increment recovery of unfit (not injured) players.
+        '''
+        for playerid, player in data.players.get_players():
+            if player.fitness < 100 and not player.injured.get_injured():
+                player.fitness += random.randint(0, 5)
+
+                if player.fitness > 100:
+                    player.fitness = 100
 
     def populate_data(self):
         data.database.cursor.execute("SELECT * FROM injury")

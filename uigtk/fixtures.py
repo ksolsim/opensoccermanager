@@ -166,14 +166,13 @@ class Fixtures(uigtk.widgets.Grid):
                 for fixtureid, fixture in fixtures.items():
                     home = data.clubs.get_club_by_id(fixture.home.clubid)
                     away = data.clubs.get_club_by_id(fixture.away.clubid)
-                    stadium = data.stadiums.get_stadium_by_id(home.stadium)
 
                     if fixture.result:
                         result = "%i - %i" % (fixture.result)
                     else:
                         result = ""
 
-                    self.treestore.append(parent, [fixtureid, home.name, result, away.name, stadium.name, 400])
+                    self.treestore.append(parent, [fixtureid, home.name, result, away.name, home.stadium.name, 400])
 
             self.treeview.expand_all()
 
@@ -191,14 +190,13 @@ class Fixtures(uigtk.widgets.Grid):
                 if data.user.team in (fixture.home.clubid, fixture.away.clubid):
                     home = data.clubs.get_club_by_id(fixture.home.clubid)
                     away = data.clubs.get_club_by_id(fixture.away.clubid)
-                    stadium = data.stadiums.get_stadium_by_id(home.stadium)
 
                     if fixture.result:
                         result = "%i - %i" % (fixture.result)
                     else:
                         result = ""
 
-                    self.treestore.append(None, [fixtureid, home.name, result, away.name, stadium.name, 400])
+                    self.treestore.append(None, [fixtureid, home.name, result, away.name, home.stadium.name, 400])
 
     def run(self):
         self.populate_leagues()

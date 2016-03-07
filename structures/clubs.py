@@ -147,7 +147,7 @@ class Clubs:
             club.league = data.leagues.get_league_by_id(item[6])
             club.manager = item[7]
             club.chairman = item[8]
-            club.stadium = item[9]
+            club.stadium = data.stadiums.get_stadium_by_id(item[9])
             club.reputation = item[10]
 
             club.squad.clubid = club.clubid

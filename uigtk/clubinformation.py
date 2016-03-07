@@ -269,16 +269,14 @@ class ClubInformation(uigtk.widgets.Grid):
         Update the display with the visible club for given id.
         '''
         club = data.clubs.get_club_by_id(clubid)
-        stadium = data.stadiums.get_stadium_by_id(club.stadium)
-        league = data.leagues.get_league_by_id(club.league)
 
         self.labelName.set_label("<span size='24000'><b>%s</b></span>" % (club.name))
         self.labelNickname.set_label(club.nickname)
         self.labelManager.set_label(club.manager)
         self.labelChairman.set_label(club.chairman)
-        self.labelStadiumName.set_label(stadium.name)
+        self.labelStadiumName.set_label(club.stadium.name)
         self.labelStadiumCapacity.set_label("%i" % (stadium.get_capacity()))
-        self.labelLeagueName.set_label(league.name)
+        self.labelLeagueName.set_label(club.league.name)
         self.labelLeaguePosition.set_label(league.standings.get_position_for_club(clubid))
         self.labelPlayerCount.set_label("%i" % (club.squad.get_squad_count()))
         self.labelAverageAge.set_label("%.1f" % (club.squad.get_average_age()))

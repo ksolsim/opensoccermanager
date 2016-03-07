@@ -90,8 +90,6 @@ class Start:
         '''
         data.leagues.generate_fixtures()
 
-        stadium = data.stadiums.get_stadium_by_id(self.club.stadium)
-
         self.club.hoardings.maximum = 48
         self.club.hoardings.generate_adverts(36)
 
@@ -103,9 +101,9 @@ class Start:
         self.club.programmes.generate_adverts(24)
 
         if self.club.reputation < 13:
-            stadium.buildings.maximum_plots = 60
+            self.club.stadium.buildings.maximum_plots = 60
         else:
-            stadium.buildings.maximum_plots = 80
+            self.club.stadium.buildings.maximum_plots = 80
 
         self.club.coaches.generate_initial_staff()
         self.club.scouts.generate_initial_staff()

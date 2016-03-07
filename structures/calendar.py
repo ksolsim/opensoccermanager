@@ -64,17 +64,16 @@ class Calendar:
         Return fixture for user operated club.
         '''
         club = data.clubs.get_club_by_id(data.user.team)
-        league = data.leagues.get_league_by_id(club.league)
 
-        fixtures = league.fixtures.get_fixtures_for_week(self.event)
+        fixtures = club.league.fixtures.get_fixtures_for_week(self.event)
 
-        if data.date.get_date_for_event() == league.fixtures.events[self.event]:
+        if data.date.get_date_for_event() == club.league.fixtures.events[self.event]:
             for fixtureid, fixture in fixtures.items():
                 if data.user.team in (fixture.home.clubid, fixture.away.clubid):
                     club1 = fixture.get_home_name()
                     club2 = fixture.get_away_name()
 
-                    data.window.mainscreen.information.leagueid = club.league
+                    data.window.mainscreen.information.leagueid = club.league.leagueid
                     data.window.mainscreen.information.fixtureid = fixtureid
                     data.window.mainscreen.information.set_show_next_match(club1, club2)
 
