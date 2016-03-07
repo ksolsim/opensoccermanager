@@ -203,9 +203,6 @@ class ClubSearch(uigtk.widgets.Grid):
         self.liststore.clear()
 
         for clubid, club in data.clubs.get_clubs():
-            league = data.leagues.get_league_by_id(club.league)
-            stadium = data.stadiums.get_stadium_by_id(club.stadium)
-
             value = data.currency.get_rounded_amount(club.get_total_value())
             wage = data.currency.get_rounded_amount(club.get_total_wage())
 
@@ -213,8 +210,8 @@ class ClubSearch(uigtk.widgets.Grid):
                                    club.name,
                                    club.manager,
                                    club.chairman,
-                                   stadium.name,
-                                   league.name,
+                                   club.stadium.name,
+                                   club.league.name,
                                    club.squad.get_squad_count(),
                                    value,
                                    wage])

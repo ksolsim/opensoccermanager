@@ -29,21 +29,21 @@ class Shortlist:
         '''
         return self.shortlist
 
-    def get_player_in_shortlist(self, playerid):
+    def get_player_in_shortlist(self, player):
         '''
         Return whether given player id is already in the shortlist.
         '''
-        return playerid in self.shortlist
+        return player in self.shortlist
 
-    def add_to_shortlist(self, playerid):
+    def add_to_shortlist(self, player):
         '''
         Add specified player id to the shortlist.
         '''
-        self.shortlist.add(playerid)
+        self.shortlist.add(player)
 
-    def remove_from_shortlist(self, playerid):
+    def remove_from_shortlist(self, player):
         '''
         Remove specified player id from shortlist.
         '''
-        if playerid in self.shortlist:
-            self.shortlist.remove(playerid)
+        if player in self.shortlist:
+            self.shortlist.remove(player)

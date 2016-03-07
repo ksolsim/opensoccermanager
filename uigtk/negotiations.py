@@ -138,9 +138,8 @@ class Negotiations(Gtk.Grid):
             model, treeiter = self.treeview.treeselection.get_selected()
             negotiationid = model[treeiter][0]
             negotiation = data.negotiations.get_negotiation_by_id(negotiationid)
-            player = data.players.get_player_by_id(negotiation.playerid)
 
-            dialog = EndTransfer(player.get_name(mode=1))
+            dialog = EndTransfer(negotiation.player.get_name(mode=1))
 
             if dialog.show():
                 data.negotiations.end_negotiation(negotiationid)
@@ -173,17 +172,16 @@ class Negotiations(Gtk.Grid):
             self.liststore.clear()
 
             for negotiationid, negotiation in self.negotiations():
-                player = data.players.get_player_by_id(negotiation.playerid)
                 transfer_type = ("Purchase", "Loan", "Free Transfer")[negotiation.transfer_type]
 
                 if negotiation.transfer_type in (0, 1):
-                    club = data.clubs.get_club_by_id(player.squad).name
+                    club = data.clubs.get_club_by_id(negotiation.player.squad).name
                 else:
                     club = "None"
 
                 self.liststore.append([negotiationid,
-                                       negotiation.playerid,
-                                       player.get_name(mode=1),
+                                       negotiation.player.playerid,
+                                       negotiation.player.get_name(mode=1),
                                        negotiation.offer_date,
                                        transfer_type,
                                        club,
@@ -455,18 +453,20 @@ class ContractRejection(Gtk.MessageDialog):
 
 
 class ContractNegotiation(uigtk.shared.ContractNegotiation):
-    def __init__(self, playerid):
-        player = data.players.get_player_by_id(playerid)
+    def __init__(self, negotiationid):
+        negotiation = data.negotiations.get_negotiation_by_id(negotiationid)
 
         uigtk.shared.ContractNegotiation.__init__(self)
         self.set_title("Contract Negotiation")
         self.add_button("_Negotiate", Gtk.ResponseType.OK)
 
-        self.labelContract.set_label("Contract negotiation details for %s." % (player.get_name(mode=1)))
+        self.labelContract.set_label("Contract negotiation details for %s." % (negotiation.player.get_name(mode=1)))
 
 
 class CompleteTransfer(Gtk.MessageDialog):
-    def __init__(self):
+    def __init__(self, negotiation):
+        negotiation = data.negotiations.get_negotiation_by_id(negotiationid)
+
         Gtk.MessageDialog.__init__(self)
         self.set_transient_for(data.window)
         self.set_modal(True)

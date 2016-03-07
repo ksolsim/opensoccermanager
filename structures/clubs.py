@@ -187,11 +187,10 @@ class History:
         '''
         Return tuple for current season history.
         '''
-        league = data.leagues.get_league_by_id(self.club.league)
+        position = self.club.league.standings.get_position_for_club(self.club.clubid)
+        history = [data.date.get_season(), position]
 
-        history = [data.date.get_season(), league.standings.get_position_for_club(self.club.clubid)]
-
-        standing = league.standings.get_standing_for_club(self.club.clubid)
+        standing = self.club.league.standings.get_standing_for_club(self.club.clubid)
         history.extend(standing[2:])
 
         return history
