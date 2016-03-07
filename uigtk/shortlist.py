@@ -159,10 +159,12 @@ class Shortlist(Gtk.Grid):
         model, treeiter = self.treeview.treeselection.get_selected()
         playerid = model[treeiter][0]
 
+        player = data.players.get_player_by_id(playerid)
+
         dialog = RemoveShortlist()
 
-        if dialog.show(playerid):
-            self.club.shortlist.remove_from_shortlist(playerid)
+        if dialog.show(player):
+            self.club.shortlist.remove_from_shortlist(player)
 
             self.populate_data()
 
@@ -213,10 +215,8 @@ class Shortlist(Gtk.Grid):
     def populate_data(self):
         self.liststore.clear()
 
-        for playerid in self.club.shortlist.get_shortlist():
-            player = data.players.get_player_by_id(playerid)
-
-            self.liststore.append([playerid,
+        for player in self.club.shortlist.get_shortlist():
+            self.liststore.append([player.playerid,
                                    player.get_name(),
                                    player.get_age(),
                                    player.position,
@@ -321,8 +321,7 @@ class RemoveShortlist(Gtk.MessageDialog):
         self.add_button("_Remove", Gtk.ResponseType.OK)
         self.set_default_response(Gtk.ResponseType.CANCEL)
 
-    def show(self, playerid):
-        player = data.players.get_player_by_id(playerid)
+    def show(self, player):
         name = player.get_name(mode=1)
 
         self.set_markup("<span size='12000'><b>Remove %s from shortlist?</b></span>" % (name))

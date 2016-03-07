@@ -84,7 +84,7 @@ class Negotiations:
 
         for negotiation in self.negotiations.values():
             if playerid == negotiation.player.playerid:
-                if data.user.team == negotiation.clubid:
+                if data.user.team == negotiation.club.clubid:
                     uigtk.negotiations.InProgress()
                     status = True
 
@@ -174,7 +174,7 @@ class Negotiations:
                 negotiationid = self.get_negotiationid()
 
                 negotiation = Negotiation(negotiationid, player)
-                negotiation.clubid = data.user.team
+                negotiation.club = data.clubs.get_club_by_id(data.user.team)
                 self.negotiations[negotiationid] = negotiation
 
                 if not player.squad:
@@ -197,18 +197,18 @@ class Negotiations:
                 negotiationid = self.get_negotiationid()
 
                 negotiation = Negotiation(negotiationid, player)
-                negotiation.clubid = data.user.team
+                negotiation.club = data.clubs.get_club_by_id(data.user.team)
                 negotiation.transfer_type = 1
                 self.negotiations[negotiationid] = negotiation
 
                 club = data.clubs.get_club_by_id(data.user.team)
                 club.shortlist.add_to_shortlist(player)
 
-    def end_negotiation(self, negotiationid):
+    def end_negotiation(self, negotiation):
         '''
-        Call negotiation for passed negotiation id.
+        Remove negotiation for passed negotiation id.
         '''
-        del self.negotiations[negotiationid]
+        del self.negotiations[negotiation.negotiationid]
 
     def get_user_incoming(self):
         '''
@@ -217,7 +217,7 @@ class Negotiations:
         incoming = {}
 
         for negotiationid, negotiation in self.negotiations.items():
-            if negotiation.clubid == data.user.team:
+            if negotiation.club.clubid == data.user.team:
                 incoming[negotiationid] = negotiation
 
         return incoming.items()
@@ -229,7 +229,7 @@ class Negotiations:
         outgoing = {}
 
         for negotiationid, negotiation in self.negotiations.items():
-            if negotiation.clubid != data.user.team:
+            if negotiation.club.clubid != data.user.team:
                 outgoing[negotationid] = negotation
 
         return outgoing.items()
@@ -239,7 +239,7 @@ class Negotiation:
     def __init__(self, negotiationid, player):
         self.negotiationid = negotiationid
         self.player = player
-        self.clubid = None
+        self.club = None
         self.transfer_type = 0
         self.offer_date = data.date.get_date_as_string()
         self.statusid = 0
@@ -258,7 +258,7 @@ class Negotiation:
         '''
         Retrieve current transfer status message for given status id.
         '''
-        if self.clubid == data.user.team:
+        if self.club.clubid == data.user.team:
             return self.status.get_inbound_status(self.statusid)
         else:
             return self.status.get_outbound_status(self.statusid)
@@ -287,32 +287,33 @@ class Negotiation:
         club = data.clubs.get_club_by_id(self.player.squad)
 
         if self.statusid == 1:
-            uigtk.negotiations.EnquiryRejection(self.player, club)
-            data.negotiations.end_negotiation(self.negotiationid)
+            uigtk.negotiations.EnquiryRejection(self)
+            data.negotiations.end_negotiation(self)
         elif self.statusid == 4:
-            uigtk.negotiations.OfferRejection(self.player, club)
-            data.negotiations.end_negotiation(self.negotiationid)
+            uigtk.negotiations.OfferRejection(self)
+            data.negotiations.end_negotiation(self)
         elif self.statusid == 7:
-            uigtk.negotiations.ContractRejection(self.player)
-            data.negotiations.end_negotiation(self.negotiationid)
+            uigtk.negotiations.ContractRejection(self)
+            data.negotiations.end_negotiation(self)
         elif self.statusid in (0, 3, 6):
-            uigtk.negotiations.AwaitingResponse(self.player, club)
+            uigtk.negotiations.AwaitingResponse(self)
         elif self.statusid == 2:
-            dialog = uigtk.negotiations.PurchaseOffer(self.player, club)
+            dialog = uigtk.negotiations.PurchaseOffer(self)
 
             if dialog.show():
                 self.set_status(3)
             else:
-                data.negotiations.end_negotiation(self.negotiationid)
+                data.negotiations.end_negotiation(self)
         elif self.statusid == 5:
-            dialog = uigtk.negotiations.ContractNegotiation(self.negotiationid)
+            dialog = uigtk.negotiations.ContractNegotiation(self)
+            dialog.player = self.player
 
             if dialog.show():
                 self.set_status(6)
             else:
-                data.negotiations.end_negotiation(self.negotiationid)
+                data.negotiations.end_negotiation(self)
         elif self.statusid == 8:
-            dialog = uigtk.negotiations.CompleteTransfer(self.negotiationid)
+            dialog = uigtk.negotiations.CompleteTransfer(self)
 
             if dialog.show():
                 print("Complete move")
@@ -324,22 +325,22 @@ class Negotiation:
         club = data.clubs.get_club_by_id(self.player.squad)
 
         if self.statusid == 1:
-            uigtk.negotiations.EnquiryRejection(self.player, club)
-            data.negotiations.end_negotiation(self.negotiationid)
+            uigtk.negotiations.EnquiryRejection(self)
+            data.negotiations.end_negotiation(self)
         elif self.statusid == 4:
-            uigtk.negotiations.OfferRejection(self.player, club)
-            data.negotiations.end_negotiation(self.negotiationid)
+            uigtk.negotiations.OfferRejection(self)
+            data.negotiations.end_negotiation(self)
         elif self.statusid in (0, 3):
-            uigtk.negotiations.AwaitingResponse(self.player, club)
+            uigtk.negotiations.AwaitingResponse(self)
         elif self.statusid == 2:
-            dialog = uigtk.negotiations.LoanOffer(self.player, club)
+            dialog = uigtk.negotiations.LoanOffer(self)
 
             if dialog.show():
                 self.set_status(3)
             else:
-                data.negotiations.end_negotiation(self.negotiationid)
+                data.negotiations.end_negotiation(self)
         elif self.statusid == 5:
-            dialog = uigtk.negotiations.CompleteTransfer(self.negotiationid)
+            dialog = uigtk.negotiations.CompleteTransfer(self)
 
             if dialog.show():
                 print("Complete move")
@@ -348,25 +349,24 @@ class Negotiation:
         '''
         Handle response for free transfer types.
         '''
-        club = data.clubs.get_club_by_id(self.player.squad)
-
         if self.statusid == 9:
-            uigtk.negotiations.EnquiryRejection(self.player, club)
-            data.negotiations.end_negotiation(self.negotiationid)
+            uigtk.negotiations.EnquiryRejection(self)
+            data.negotiations.end_negotiation(self)
         elif self.statusid == 7:
-            uigtk.negotiations.ContractRejection(self.player)
-            data.negotiations.end_negotiation(self.negotiationid)
+            uigtk.negotiations.ContractRejection(self)
+            data.negotiations.end_negotiation(self)
         elif self.statusid in (0, 3):
-            uigtk.negotiations.AwaitingResponse(self.player, club)
+            uigtk.negotiations.AwaitingResponse(self)
         elif self.statusid == 10:
-            dialog = uigtk.negotiations.ContractNegotiation(self.player.playerid)
+            dialog = uigtk.negotiations.ContractNegotiation(self)
+            dialog.player = self.player
 
             if dialog.show():
                 self.set_status(6)
             else:
-                data.negotiations.end_negotiation(self.negotiationid)
+                data.negotiations.end_negotiation(self)
         elif self.statusid == 8:
-            dialog = uigtk.negotiations.CompleteTransfer(self.player.playerid)
+            dialog = uigtk.negotiations.CompleteTransfer(self)
 
             if dialog.show():
                 print("Complete move")

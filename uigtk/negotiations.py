@@ -111,7 +111,7 @@ class Negotiations(Gtk.Grid):
             if treeiter:
                 negotiationid = model[treeiter][0]
 
-                self.contextmenu.negotiationid = negotiationid
+                self.contextmenu.negotiation = data.negotiations.get_negotiation_by_id(negotiationid)
                 self.contextmenu.show_all()
                 self.contextmenu.popup(None,
                                        None,
@@ -139,10 +139,10 @@ class Negotiations(Gtk.Grid):
             negotiationid = model[treeiter][0]
             negotiation = data.negotiations.get_negotiation_by_id(negotiationid)
 
-            dialog = EndTransfer(negotiation.player.get_name(mode=1))
+            dialog = EndTransfer(negotiation)
 
             if dialog.show():
-                data.negotiations.end_negotiation(negotiationid)
+                data.negotiations.end_negotiation(negotiation)
                 self.populate_data()
 
         def on_row_activated(self, treeview, treepath, treeviewcolumn):
@@ -207,8 +207,8 @@ class Negotiations(Gtk.Grid):
 
 
 class ContextMenu(Gtk.Menu):
-    def __init__(self, negotiation):
-        self.negotiation = negotiation
+    def __init__(self, interface):
+        self.interface = interface
 
         Gtk.Menu.__init__(self)
 
@@ -225,20 +225,22 @@ class ContextMenu(Gtk.Menu):
         '''
         Display message to confirm whether transfer will be ended.
         '''
-        negotiation = data.negotiations.get_negotiation_by_id(self.negotiationid)
-        player = data.players.get_player_by_id(negotiation.playerid)
-        dialog = EndTransfer(player.get_name(mode=1))
+        model, treeiter = self.interface.treeview.treeselection.get_selected()
+        negotiationid = model[treeiter][0]
+        negotiation = data.negotiations.get_negotiation_by_id(negotiationid)
+
+        dialog = EndTransfer(negotiation)
 
         if dialog.show():
-            data.negotiations.end_negotiation(self.negotiationid)
+            data.negotiations.end_negotiation(negotiation)
 
-            self.negotiation.populate_data()
+            self.interface.populate_data()
 
     def on_player_information_clicked(self, *args):
         '''
         Launch player information screen for selected player.
         '''
-        model, treeiter = self.negotiation.treeview.treeselection.get_selected()
+        model, treeiter = self.interface.treeview.treeselection.get_selected()
         playerid = model[treeiter][1]
 
         data.window.screen.change_visible_screen("playerinformation")
@@ -293,32 +295,11 @@ class FreeEnquiry(uigtk.shared.TransferEnquiry):
         return state
 
 
-class EndTransfer(Gtk.MessageDialog):
-    '''
-    Message dialog to confirm cancellation of ongoing negotiation.
-    '''
-    def __init__(self, name):
-        Gtk.MessageDialog.__init__(self)
-        self.set_transient_for(data.window)
-        self.set_title("End Transfer")
-        self.set_markup("Do you want to end the transfer negotiations for %s?" % (name))
-        self.set_property("message-type", Gtk.MessageType.WARNING)
-        self.add_button("_Do Not End", Gtk.ResponseType.CANCEL)
-        self.add_button("_End Negotiation", Gtk.ResponseType.OK)
-        self.set_default_response(Gtk.ResponseType.CANCEL)
-
-    def show(self):
-        state = self.run() == Gtk.ResponseType.OK
-        self.destroy()
-
-        return state
-
-
 class PurchaseOffer(Gtk.Dialog):
     '''
     Dialog to request offer amount for player when purchasing.
     '''
-    def __init__(self, player, club):
+    def __init__(self, negotiation):
         Gtk.Dialog.__init__(self)
         self.set_transient_for(data.window)
         self.set_modal(True)
@@ -331,13 +312,14 @@ class PurchaseOffer(Gtk.Dialog):
         grid = uigtk.widgets.Grid()
         self.vbox.add(grid)
 
-        label = uigtk.widgets.Label("The offer for %s has been accepted.\n%s would like to negotiate a fee for the transfer." % (player.get_name(mode=1), club.name))
+        club = data.clubs.get_club_by_id(negotiation.player.squad)
+
+        label = uigtk.widgets.Label("The offer for %s has been accepted.\n%s would like to negotiate a fee for the transfer." % (negotiation.player.get_name(mode=1), club.name))
         grid.attach(label, 0, 0, 2, 1)
         label = uigtk.widgets.Label("Enter the amount to offer for the player:")
         grid.attach(label, 0, 1, 1, 1)
-        spinbuttonAmount = Gtk.SpinButton.new_with_range(0, 999999999, 100000)
-        #spinbuttonAmount.set_value(player.value * 1.10)
-        grid.attach(spinbuttonAmount, 1, 1, 1, 1)
+        self.spinbuttonAmount = Gtk.SpinButton.new_with_range(0, 999999999, 100000)
+        grid.attach(self.spinbuttonAmount, 1, 1, 1, 1)
 
     def show(self):
         self.show_all()
@@ -352,7 +334,9 @@ class LoanOffer(Gtk.Dialog):
     '''
     Dialog to request period for player when loaning.
     '''
-    def __init__(self, player, club):
+    def __init__(self, negotiation):
+        club = data.clubs.get_club_by_id(negotiation.player.squad)
+
         Gtk.Dialog.__init__(self)
         self.set_transient_for(data.window)
         self.set_default_size(300, -1)
@@ -366,7 +350,7 @@ class LoanOffer(Gtk.Dialog):
         grid = uigtk.widgets.Grid()
         self.vbox.add(grid)
 
-        label = uigtk.widgets.Label("The loan offer for %s has been accepted. %s would like to negotiate a loan period for the player." % (player.get_name(mode=1), club.name))
+        label = uigtk.widgets.Label("The loan offer for %s has been accepted. %s would like to negotiate a loan period for the player." % (negotiation.player.get_name(mode=1), club.name))
         label.set_line_wrap(True)
         grid.attach(label, 0, 0, 3, 1)
         label = uigtk.widgets.Label("Loan Period in Weeks")
@@ -406,11 +390,16 @@ class LoanOffer(Gtk.Dialog):
 
 
 class EnquiryRejection(Gtk.MessageDialog):
-    def __init__(self, player, club):
-        if player.squad:
-            message = "The enquiry for %s has been rejected by %s." % (player.get_name(mode=1), club.name)
+    '''
+    Message for rejection of initial enquiry from player/club.
+    '''
+    def __init__(self, negotiation):
+        if negotiation.player.squad:
+            club = data.clubs.get_club_by_id(negotiation.player.squad)
+
+            message = "The enquiry for %s has been rejected by %s." % (negotiation.player.get_name(mode=1), club.name)
         else:
-            message = "The enquiry for %s has been rejected by the player." % (player.get_name(mode=1))
+            message = "The enquiry for %s has been rejected by the player." % (negotiation.player.get_name(mode=1))
 
         Gtk.MessageDialog.__init__(self)
         self.set_transient_for(data.window)
@@ -425,13 +414,18 @@ class EnquiryRejection(Gtk.MessageDialog):
 
 
 class OfferRejection(Gtk.MessageDialog):
-    def __init__(self, player, club):
+    '''
+    Message for rejection of offered negotiation from club.
+    '''
+    def __init__(self, negotiation):
+        club = data.clubs.get_club_by_id(negotiation.player.squad)
+
         Gtk.MessageDialog.__init__(self)
         self.set_transient_for(data.window)
         self.set_modal(True)
         self.set_title("Offer Rejected")
         self.set_property("message-type", Gtk.MessageType.INFO)
-        self.set_markup("The offer for %s has been rejected by %s." % (player.get_name(mode=1), club.name))
+        self.set_markup("The offer for %s has been rejected by %s." % (negotiation.player.get_name(mode=1), club.name))
         self.add_button("_Close", Gtk.ResponseType.CLOSE)
 
         self.run()
@@ -439,13 +433,16 @@ class OfferRejection(Gtk.MessageDialog):
 
 
 class ContractRejection(Gtk.MessageDialog):
-    def __init__(self, player):
+    '''
+    Message for rejection of offered contract from player.
+    '''
+    def __init__(self, negotiation):
         Gtk.MessageDialog.__init__(self)
         self.set_transient_for(data.window)
         self.set_modal(True)
         self.set_title("Transfer Rejected")
         self.set_property("message-type", Gtk.MessageType.INFO)
-        self.set_markup("The contract offered to %s has been rejected." % (player.get_name(mode=1)))
+        self.set_markup("The contract offered to %s has been rejected." % (negotiation.player.get_name(mode=1)))
         self.add_button("_Close", Gtk.ResponseType.CLOSE)
 
         self.run()
@@ -453,9 +450,10 @@ class ContractRejection(Gtk.MessageDialog):
 
 
 class ContractNegotiation(uigtk.shared.ContractNegotiation):
-    def __init__(self, negotiationid):
-        negotiation = data.negotiations.get_negotiation_by_id(negotiationid)
-
+    '''
+    Negotiation dialog for specifying contract details.
+    '''
+    def __init__(self, negotiation):
         uigtk.shared.ContractNegotiation.__init__(self)
         self.set_title("Contract Negotiation")
         self.add_button("_Negotiate", Gtk.ResponseType.OK)
@@ -464,6 +462,9 @@ class ContractNegotiation(uigtk.shared.ContractNegotiation):
 
 
 class CompleteTransfer(Gtk.MessageDialog):
+    '''
+    Confirmation dialog for completion of transfer.
+    '''
     def __init__(self, negotiation):
         negotiation = data.negotiations.get_negotiation_by_id(negotiationid)
 
@@ -493,7 +494,8 @@ class InProgress(Gtk.MessageDialog):
         Gtk.MessageDialog.__init__(self)
         self.set_transient_for(data.window)
         self.set_title("Transfer Status")
-        self.set_markup("Transfer negotiations for this player are already in progress.")
+        self.set_markup("<span size='12000'><b>Transfer negotiations for this player are already in progress.</b></span>")
+        self.format_secondary_text("Cancel the current negotiations if you wish to change the approach type.")
         self.set_property("message-type", Gtk.MessageType.ERROR)
         self.add_button("_Close", Gtk.ResponseType.CLOSE)
 
@@ -502,11 +504,16 @@ class InProgress(Gtk.MessageDialog):
 
 
 class AwaitingResponse(Gtk.MessageDialog):
-    def __init__(self, player, club):
-        if player.squad:
-            message = "We are currently awaiting a response from %s for %s." % (club.name, player.get_name(mode=1))
+    '''
+    Message for awaiting response from other club.
+    '''
+    def __init__(self, negotiation):
+        if negotiation.player.squad:
+            club = data.clubs.get_club_by_id(negotiation.player.squad)
+
+            message = "We are currently awaiting a response from %s for %s." % (club.name, negotiation.player.get_name(mode=1))
         else:
-            message = "We are currently awaiting a response from %s." % (player.get_name(mode=1))
+            message = "We are currently awaiting a response from %s." % (negotiation.player.get_name(mode=1))
 
         Gtk.MessageDialog.__init__(self)
         self.set_transient_for(data.window)
@@ -517,3 +524,24 @@ class AwaitingResponse(Gtk.MessageDialog):
 
         self.run()
         self.destroy()
+
+
+class EndTransfer(Gtk.MessageDialog):
+    '''
+    Message dialog to confirm cancellation of ongoing negotiation.
+    '''
+    def __init__(self, negotiation):
+        Gtk.MessageDialog.__init__(self)
+        self.set_transient_for(data.window)
+        self.set_title("End Transfer")
+        self.set_markup("Do you want to end the transfer negotiations for %s?" % (negotiation.player.get_name(mode=1)))
+        self.set_property("message-type", Gtk.MessageType.WARNING)
+        self.add_button("_Do Not End", Gtk.ResponseType.CANCEL)
+        self.add_button("_End Negotiation", Gtk.ResponseType.OK)
+        self.set_default_response(Gtk.ResponseType.CANCEL)
+
+    def show(self):
+        state = self.run() == Gtk.ResponseType.OK
+        self.destroy()
+
+        return state

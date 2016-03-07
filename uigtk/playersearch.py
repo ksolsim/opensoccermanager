@@ -203,7 +203,7 @@ class PlayerSearch(uigtk.widgets.Grid):
             else:
                 contextmenu = self.contextmenu2
 
-            contextmenu.playerid = playerid
+            contextmenu.player = data.players.get_player_by_id(playerid)
             contextmenu.show()
             contextmenu.popup(None, None, None, None, event.button, event.time)
 
@@ -694,19 +694,19 @@ class ContextMenu2(ContextMenu1):
         '''
         Initiate purchase offer of selected player.
         '''
-        data.negotiations.initialise_purchase(self.playerid)
+        data.negotiations.initialise_purchase(self.player.playerid)
 
     def on_loan_offer_clicked(self, *args):
         '''
         Initiate loan offer of selected player.
         '''
-        data.negotiations.initialise_loan(self.playerid)
+        data.negotiations.initialise_loan(self.player.playerid)
 
     def on_add_to_shortlist_clicked(self, *args):
         '''
         Add player to shortlist.
         '''
-        self.club.shortlist.add_to_shortlist(self.playerid)
+        self.club.shortlist.add_to_shortlist(self.player)
 
     def on_remove_from_shortlist_clicked(self, *args):
         '''
@@ -714,20 +714,19 @@ class ContextMenu2(ContextMenu1):
         '''
         dialog = uigtk.shortlist.RemoveShortlist()
 
-        if dialog.show(self.playerid):
-            self.club.shortlist.remove_from_shortlist(self.playerid)
+        if dialog.show(self.player):
+            self.club.shortlist.remove_from_shortlist(self.player)
 
     def show(self):
-        player = data.players.get_player_by_id(self.playerid)
         self.club = data.clubs.get_club_by_id(data.user.team)
 
         self.show_all()
 
-        sensitive = self.club.shortlist.get_player_in_shortlist(self.playerid)
+        sensitive = self.club.shortlist.get_player_in_shortlist(self.player)
         self.menuitemAddShortlist.set_sensitive(not sensitive)
         self.menuitemRemoveShortlist.set_sensitive(sensitive)
 
-        if player.squad:
+        if self.player.squad:
             self.menuitemPurchase.set_label("Make Offer to _Purchase")
             self.menuitemLoan.set_sensitive(True)
         else:
