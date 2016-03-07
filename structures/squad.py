@@ -31,11 +31,11 @@ class Squad:
 
         self.teamgenerator = TeamGenerator()
 
-    def add_to_squad(self, playerid, player):
+    def add_to_squad(self, player):
         '''
         Add player id to squad list.
         '''
-        self.squad[playerid] = player
+        self.squad[player.playerid] = player
 
     def remove_from_squad(self, playerid):
         '''

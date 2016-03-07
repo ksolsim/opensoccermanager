@@ -27,11 +27,11 @@ class Nations:
 
             self.players = []
 
-        def add_to_nation(self, playerid):
+        def add_to_nation(self, player):
             '''
             Add player to national list.
             '''
-            self.players.append(playerid)
+            self.players.append(player.playerid)
 
         def get_national_team(self):
             '''
@@ -72,17 +72,6 @@ class Nations:
 
         self.populate_data()
 
-    def populate_data(self):
-        data.database.cursor.execute("SELECT * FROM nation")
-
-        for item in data.database.cursor.fetchall():
-            nationid = item[0]
-
-            nation = self.Nation()
-            nation.name = item[1]
-            nation.denonym = item[2]
-            self.nations[nationid] = nation
-
     def get_nation_by_id(self, nationid):
         '''
         Return the nation object for the given id.
@@ -94,3 +83,13 @@ class Nations:
         Return complete dictionary of nations.
         '''
         return self.nations.items()
+
+    def populate_data(self):
+        data.database.cursor.execute("SELECT * FROM nation")
+
+        for item in data.database.cursor.fetchall():
+            nation = self.Nation()
+            nation.nationid = item[0]
+            nation.name = item[1]
+            nation.denonym = item[2]
+            self.nations[nation.nationid] = nation

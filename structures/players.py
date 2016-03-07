@@ -112,9 +112,7 @@ class Players:
             '''
             Return nationality country name.
             '''
-            nation = data.nations.get_nation_by_id(self.nationality)
-
-            return nation.name
+            return self.nationality.name
 
         def get_skills(self):
             '''
@@ -180,6 +178,9 @@ class Players:
         return self.players[playerid]
 
     def update_contracts(self):
+        '''
+        Update contract period of players.
+        '''
         for playerid, player in self.players.items():
             player.contract.decrement_contract_period()
 
@@ -192,9 +193,8 @@ class Players:
 
         for item in data.database.cursor.fetchall():
             if item[9] in data.clubs.get_club_keys():
-                playerid = item[0]
-                player = self.Player(playerid)
-                self.players[playerid] = player
+                player = self.Player(item[0])
+                self.players[player.playerid] = player
 
                 player.first_name = item[1]
                 player.second_name = item[2]
@@ -203,7 +203,7 @@ class Players:
                     player.common_name = item[3]
 
                 player.date_of_birth = list(map(int, item[4].split("-")))
-                player.nationality = item[5]
+                player.nationality = data.nations.get_nation_by_id(item[5])
                 player.squad = item[9]
                 player.position = item[10]
 
@@ -220,14 +220,13 @@ class Players:
 
                 # Add player to squad
                 club = data.clubs.get_club_by_id(player.squad)
-                club.squad.add_to_squad(playerid, player)
+                club.squad.add_to_squad(player)
 
                 # Add player to nation
-                nation = data.nations.get_nation_by_id(player.nationality)
-                nation.add_to_nation(playerid)
+                player.nationality.add_to_nation(player)
 
                 # Add history object
-                player.history = History(playerid)
+                player.history = History(player)
 
                 # Set value, wage and contract values
                 player.value = structures.value.Value(player)
@@ -256,14 +255,14 @@ class Rating:
         Return average rating for last passed games amount.
         '''
         if len(self.rating) == 0:
-            return "0.0"
-
-        if number != -1:
-            average = sum(self.rating) / len(self.rating)
+            average = "0.0"
         else:
-            average = sum(self.rating[:number]) / number
+            if number != -1:
+                average = sum(self.rating) / len(self.rating)
+            else:
+                average = sum(self.rating[:number]) / number
 
-        average = "%.1f" % (average)
+            average = "%.1f" % (average)
 
         return average
 
@@ -351,10 +350,10 @@ class Training:
 
 
 class History:
-    def __init__(self, playerid):
+    def __init__(self, player):
         self.history = []
 
-        self.playerid = playerid
+        self.playerid = player.playerid
 
     def get_current_season(self):
         '''
