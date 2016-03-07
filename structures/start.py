@@ -122,7 +122,6 @@ class Start:
         '''
         self.club.news.publish("MA01")
 
-        league = data.leagues.get_league_by_id(self.club.league)
-        initial1, initial2, initial3 = league.fixtures.get_initial_fixtures()
+        initial1, initial2, initial3 = self.club.league.fixtures.get_initial_fixtures()
 
         self.club.news.publish("FX01", fixture1=initial1, fixture2=initial2, fixture3=initial3)

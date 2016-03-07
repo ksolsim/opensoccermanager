@@ -139,22 +139,20 @@ class Clubs:
                                      (self.season,))
 
         for item in data.database.cursor.fetchall():
-            clubid = item[0]
-            club = self.Club(clubid)
-            self.clubs[clubid] = club
+            club = self.Club(item[0])
+            self.clubs[club.clubid] = club
 
             club.name = item[1]
             club.nickname = item[2]
-            club.league = item[6]
+            club.league = data.leagues.get_league_by_id(item[6])
             club.manager = item[7]
             club.chairman = item[8]
             club.stadium = item[9]
             club.reputation = item[10]
 
-            club.squad.clubid = clubid
+            club.squad.clubid = club.clubid
 
-            league = data.leagues.get_league_by_id(club.league)
-            league.add_club(clubid)
+            club.league.add_club_to_league(club)
 
     def set_initial_balance(self, option):
         '''

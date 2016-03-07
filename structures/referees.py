@@ -97,8 +97,7 @@ class Referees:
             referee = self.Referee()
             referee.refereeid = item[0]
             referee.name = item[1]
-            referee.league = item[5]
+            referee.league = data.leagues.get_league_by_id(item[5])
             self.referees[referee.refereeid] = referee
 
-            league = data.leagues.get_league_by_id(referee.league)
-            league.add_referee(referee.refereeid)
+            referee.league.add_referee_to_league(referee)

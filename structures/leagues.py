@@ -34,18 +34,18 @@ class Leagues:
 
             self.televised = []
 
-        def add_club(self, clubid):
+        def add_club_to_league(self, club):
             '''
             Add club to league and standings.
             '''
-            self.clubs.append(clubid)
-            self.standings.add_club(clubid)
+            self.clubs.append(club.clubid)
+            self.standings.add_club(club.clubid)
 
-        def add_referee(self, refereeid):
+        def add_referee_to_league(self, referee):
             '''
             Add referee to list of league referees.
             '''
-            self.referees.append(refereeid)
+            self.referees.append(referee.refereeid)
 
         def get_referees(self):
             '''
@@ -81,7 +81,7 @@ class Leagues:
         '''
         Generate fixtures for each of the leagues.
         '''
-        for leagueid, league in self.leagues.items():
+        for league in self.leagues.values():
             league.fixtures.generate_fixtures(league)
 
     def populate_data(self):
@@ -92,7 +92,6 @@ class Leagues:
                                      (self.season,))
 
         for item in data.database.cursor.fetchall():
-            leagueid = item[0]
-            league = self.League(leagueid)
+            league = self.League(item[0])
             league.name = item[1]
-            self.leagues[leagueid] = league
+            self.leagues[league.leagueid] = league
