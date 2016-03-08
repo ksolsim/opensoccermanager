@@ -162,10 +162,9 @@ class Negotiations:
         if not self.get_player_in_negotiations(playerid):
             player = data.players.get_player_by_id(playerid)
 
-            if player.squad:
-                club = data.clubs.get_club_by_id(player.squad)
+            if player.club:
                 dialog = uigtk.negotiations.PurchaseEnquiry()
-                state = dialog.show(club, player)
+                state = dialog.show(player.club, player)
             else:
                 dialog = uigtk.negotiations.FreeEnquiry()
                 state = dialog.show(player)
@@ -177,7 +176,7 @@ class Negotiations:
                 negotiation.club = data.clubs.get_club_by_id(data.user.team)
                 self.negotiations[negotiationid] = negotiation
 
-                if not player.squad:
+                if not player.club:
                     negotiation.transfer_type = 2
 
                 club = data.clubs.get_club_by_id(data.user.team)
@@ -191,9 +190,8 @@ class Negotiations:
             dialog = uigtk.negotiations.LoanEnquiry()
 
             player = data.players.get_player_by_id(playerid)
-            club = data.clubs.get_club_by_id(player.squad)
 
-            if dialog.show(club, player) == 1:
+            if dialog.show(player.club, player) == 1:
                 negotiationid = self.get_negotiationid()
 
                 negotiation = Negotiation(negotiationid, player)
@@ -284,8 +282,6 @@ class Negotiation:
         '''
         Handle response for purchase transfer types.
         '''
-        club = data.clubs.get_club_by_id(self.player.squad)
-
         if self.statusid == 1:
             uigtk.negotiations.EnquiryRejection(self)
             data.negotiations.end_negotiation(self)
@@ -322,8 +318,6 @@ class Negotiation:
         '''
         Handle response for loan transfer types.
         '''
-        club = data.clubs.get_club_by_id(self.player.squad)
-
         if self.statusid == 1:
             uigtk.negotiations.EnquiryRejection(self)
             data.negotiations.end_negotiation(self)

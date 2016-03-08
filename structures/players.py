@@ -33,7 +33,7 @@ class Players:
             self.second_name = ""
             self.common_name = None
             self.date_of_birth = [0, 0, 0]
-            self.squad = structures.squad.Squad()
+            self.club = None
             self.nationality = None
             self.position = ""
             self.morale = 20
@@ -101,10 +101,8 @@ class Players:
             '''
             Return club name player is contracted to.
             '''
-            if self.squad:
-                club = data.clubs.get_club_by_id(self.squad)
-
-                return club.name
+            if self.club:
+                return self.club.name
             else:
                 return ""
 
@@ -203,8 +201,6 @@ class Players:
                     player.common_name = item[3]
 
                 player.date_of_birth = list(map(int, item[4].split("-")))
-                player.nationality = data.nations.get_nation_by_id(item[5])
-                player.squad = item[9]
                 player.position = item[10]
 
                 player.keeping = item[11]
@@ -219,10 +215,11 @@ class Players:
                 player.training_value = item[20]
 
                 # Add player to squad
-                club = data.clubs.get_club_by_id(player.squad)
-                club.squad.add_to_squad(player)
+                player.club = data.clubs.get_club_by_id(item[9])
+                player.club.squad.add_to_squad(player)
 
                 # Add player to nation
+                player.nationality = data.nations.get_nation_by_id(item[5])
                 player.nationality.add_to_nation(player)
 
                 # Add history object
@@ -353,23 +350,20 @@ class History:
     def __init__(self, player):
         self.history = []
 
-        self.playerid = player.playerid
+        self.player = player
 
     def get_current_season(self):
         '''
         Return tuple of current season history data.
         '''
-        player = data.players.get_player_by_id(self.playerid)
-        club = data.clubs.get_club_by_id(player.squad)
-
         current = (data.date.get_season(),
-                   player.get_club_name(),
+                   self.player.get_club_name(),
                    "",
-                   player.appearances,
-                   player.goals,
-                   player.assists,
-                   "%i/%i" % (player.yellow_cards, player.red_cards),
-                   player.man_of_the_match)
+                   self.player.appearances,
+                   self.player.goals,
+                   self.player.assists,
+                   "%i/%i" % (self.player.yellow_cards, self.player.red_cards),
+                   self.player.man_of_the_match)
 
         return current
 

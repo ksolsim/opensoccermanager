@@ -191,12 +191,12 @@ class PlayerSearch(uigtk.widgets.Grid):
         '''
         Display appropriate context menu for selected player.
         '''
-        club = data.clubs.get_club_by_id(data.user.team)
-
         model, treeiter = self.treeselection.get_selected()
 
         if treeiter:
             playerid = model[treeiter][0]
+
+            club = data.clubs.get_club_by_id(data.user.team)
 
             if club.squad.get_player_in_squad(playerid):
                 contextmenu = self.contextmenu1
@@ -397,7 +397,7 @@ class PlayerList(Gtk.ListStore):
             self.append([playerid,
                          player.get_name(),
                          player.get_age(),
-                         player.squad,
+                         player.club.clubid,
                          player.get_club_name(),
                          player.get_nationality_name(),
                          player.position,
@@ -656,13 +656,13 @@ class ContextMenu1(Gtk.Menu):
         Launch player information screen for selected player.
         '''
         data.window.screen.change_visible_screen("playerinformation")
-        data.window.screen.active.set_visible_player(self.playerid)
+        data.window.screen.active.set_visible_player(self.player.playerid)
 
     def on_comparison_clicked(self, *args):
         '''
         Add player to stack for comparison.
         '''
-        data.comparison.add_to_comparison(self.playerid)
+        data.comparison.add_to_comparison(self.player.playerid)
 
     def show(self):
         self.show_all()
@@ -726,7 +726,7 @@ class ContextMenu2(ContextMenu1):
         self.menuitemAddShortlist.set_sensitive(not sensitive)
         self.menuitemRemoveShortlist.set_sensitive(sensitive)
 
-        if self.player.squad:
+        if self.player.club:
             self.menuitemPurchase.set_label("Make Offer to _Purchase")
             self.menuitemLoan.set_sensitive(True)
         else:

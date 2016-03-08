@@ -106,7 +106,7 @@ class PlayerInformation(uigtk.widgets.Grid):
         PlayerInformation.playerid = playerid
         player = data.players.get_player_by_id(playerid)
 
-        self.personal.club = player.squad
+        self.personal.club = player.club.clubid
         self.personal.nation = player.nationality
 
         self.labelName.set_label("<span size='24000'><b>%s</b></span>" % (player.get_name(mode=1)))
@@ -140,7 +140,7 @@ class PlayerInformation(uigtk.widgets.Grid):
         self.injuries.set_injury_status()
         self.suspensions.set_suspension_status()
 
-        if player.squad == data.user.team:
+        if player.club.clubid == data.user.team:
             actionmenu = ContextMenu1()
         else:
             actionmenu = ContextMenu2()
@@ -349,13 +349,11 @@ class Training(uigtk.widgets.CommonFrame):
         '''
         player = data.players.get_player_by_id(PlayerInformation.playerid)
 
-        if player.squad:
-            club = data.clubs.get_club_by_id(player.squad)
+        if player.club:
+            if player.club.individual_training.get_player_in_training(PlayerInformation.playerid):
+                item = player.club.individual_training.get_individual_training_by_playerid(PlayerInformation.playerid)
 
-            if club.individual_training.get_player_in_training(PlayerInformation.playerid):
-                item = club.individual_training.get_individual_training_by_playerid(PlayerInformation.playerid)
-
-                coach = club.coaches.get_coach_by_id(item.coachid)
+                coach = player.club.coaches.get_coach_by_id(item.coachid)
                 skill = self.skills.get_skill_name(item.skill)
 
                 message = "Currently working on %s with coach %s." % (skill, coach.name)
@@ -600,7 +598,7 @@ class ContextMenu2(Gtk.Menu):
         self.menuitemAddShortlist.set_sensitive(not sensitive)
         self.menuitemRemoveShortlist.set_sensitive(sensitive)
 
-        if self.player.squad:
+        if self.player.club:
             self.menuitemPurchase.set_label("Make Offer to _Purchase")
             self.menuitemLoan.set_sensitive(True)
         else:

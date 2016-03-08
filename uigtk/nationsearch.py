@@ -120,39 +120,35 @@ class NationSearch(uigtk.widgets.Grid):
 
         for playerid in positions[0]:
             player = data.players.get_player_by_id(playerid)
-            club = data.clubs.get_club_by_id(player.squad)
 
             self.goalkeepers.liststore.append([playerid,
                                                player.get_name(mode=1),
                                                player.position,
-                                               club.name])
+                                               player.club.name])
 
         for playerid in positions[1]:
             player = data.players.get_player_by_id(playerid)
-            club = data.clubs.get_club_by_id(player.squad)
 
             self.defenders.liststore.append([playerid,
                                              player.get_name(mode=1),
                                              player.position,
-                                             club.name])
+                                             player.club.name])
 
         for playerid in positions[2]:
             player = data.players.get_player_by_id(playerid)
-            club = data.clubs.get_club_by_id(player.squad)
 
             self.midfielders.liststore.append([playerid,
                                                player.get_name(mode=1),
                                                player.position,
-                                               club.name])
+                                               player.club.name])
 
         for playerid in positions[3]:
             player = data.players.get_player_by_id(playerid)
-            club = data.clubs.get_club_by_id(player.squad)
 
             self.attackers.liststore.append([playerid,
                                              player.get_name(mode=1),
                                              player.position,
-                                             club.name])
+                                             player.club.name])
 
     def on_selection_changed(self, treeselection):
         '''

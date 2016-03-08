@@ -175,7 +175,7 @@ class Negotiations(Gtk.Grid):
                 transfer_type = ("Purchase", "Loan", "Free Transfer")[negotiation.transfer_type]
 
                 if negotiation.transfer_type in (0, 1):
-                    club = data.clubs.get_club_by_id(negotiation.player.squad).name
+                    club = negotiation.player.club.name
                 else:
                     club = "None"
 
@@ -312,9 +312,7 @@ class PurchaseOffer(Gtk.Dialog):
         grid = uigtk.widgets.Grid()
         self.vbox.add(grid)
 
-        club = data.clubs.get_club_by_id(negotiation.player.squad)
-
-        label = uigtk.widgets.Label("The offer for %s has been accepted.\n%s would like to negotiate a fee for the transfer." % (negotiation.player.get_name(mode=1), club.name))
+        label = uigtk.widgets.Label("The offer for %s has been accepted.\n%s would like to negotiate a fee for the transfer." % (negotiation.player.get_name(mode=1), negotiation.player.club.name))
         grid.attach(label, 0, 0, 2, 1)
         label = uigtk.widgets.Label("Enter the amount to offer for the player:")
         grid.attach(label, 0, 1, 1, 1)
@@ -335,8 +333,6 @@ class LoanOffer(Gtk.Dialog):
     Dialog to request period for player when loaning.
     '''
     def __init__(self, negotiation):
-        club = data.clubs.get_club_by_id(negotiation.player.squad)
-
         Gtk.Dialog.__init__(self)
         self.set_transient_for(data.window)
         self.set_default_size(300, -1)
@@ -350,7 +346,7 @@ class LoanOffer(Gtk.Dialog):
         grid = uigtk.widgets.Grid()
         self.vbox.add(grid)
 
-        label = uigtk.widgets.Label("The loan offer for %s has been accepted. %s would like to negotiate a loan period for the player." % (negotiation.player.get_name(mode=1), club.name))
+        label = uigtk.widgets.Label("The loan offer for %s has been accepted. %s would like to negotiate a loan period for the player." % (negotiation.player.get_name(mode=1), negotiation.player.club.name))
         label.set_line_wrap(True)
         grid.attach(label, 0, 0, 3, 1)
         label = uigtk.widgets.Label("Loan Period in Weeks")
@@ -394,10 +390,8 @@ class EnquiryRejection(Gtk.MessageDialog):
     Message for rejection of initial enquiry from player/club.
     '''
     def __init__(self, negotiation):
-        if negotiation.player.squad:
-            club = data.clubs.get_club_by_id(negotiation.player.squad)
-
-            message = "The enquiry for %s has been rejected by %s." % (negotiation.player.get_name(mode=1), club.name)
+        if negotiation.player.club:
+            message = "The enquiry for %s has been rejected by %s." % (negotiation.player.get_name(mode=1), negotiation.club.name)
         else:
             message = "The enquiry for %s has been rejected by the player." % (negotiation.player.get_name(mode=1))
 
@@ -418,14 +412,12 @@ class OfferRejection(Gtk.MessageDialog):
     Message for rejection of offered negotiation from club.
     '''
     def __init__(self, negotiation):
-        club = data.clubs.get_club_by_id(negotiation.player.squad)
-
         Gtk.MessageDialog.__init__(self)
         self.set_transient_for(data.window)
         self.set_modal(True)
         self.set_title("Offer Rejected")
         self.set_property("message-type", Gtk.MessageType.INFO)
-        self.set_markup("The offer for %s has been rejected by %s." % (negotiation.player.get_name(mode=1), club.name))
+        self.set_markup("The offer for %s has been rejected by %s." % (negotiation.player.get_name(mode=1), negotiation.club.name))
         self.add_button("_Close", Gtk.ResponseType.CLOSE)
 
         self.run()
@@ -442,7 +434,7 @@ class ContractRejection(Gtk.MessageDialog):
         self.set_modal(True)
         self.set_title("Transfer Rejected")
         self.set_property("message-type", Gtk.MessageType.INFO)
-        self.set_markup("The contract offered to %s has been rejected." % (negotiation.player.get_name(mode=1)))
+        self.set_markup("The contract offered to %s has been rejected by the player." % (negotiation.player.get_name(mode=1)))
         self.add_button("_Close", Gtk.ResponseType.CLOSE)
 
         self.run()
@@ -508,10 +500,8 @@ class AwaitingResponse(Gtk.MessageDialog):
     Message for awaiting response from other club.
     '''
     def __init__(self, negotiation):
-        if negotiation.player.squad:
-            club = data.clubs.get_club_by_id(negotiation.player.squad)
-
-            message = "We are currently awaiting a response from %s for %s." % (club.name, negotiation.player.get_name(mode=1))
+        if negotiation.player.club:
+            message = "We are currently awaiting a response from %s for %s." % (negotiation.player.club.name, negotiation.player.get_name(mode=1))
         else:
             message = "We are currently awaiting a response from %s." % (negotiation.player.get_name(mode=1))
 
