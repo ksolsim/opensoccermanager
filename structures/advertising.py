@@ -44,11 +44,9 @@ class Advertising:
             Return period string for display.
             '''
             if self.period > 1:
-                period = "%i Weeks" % (self.period)
+                return "%i Weeks" % (self.period)
             else:
-                period = "%i Week" % (self.period)
-
-            return period
+                return "%i Week" % (self.period)
 
     def __init__(self):
         self.advertid = 0

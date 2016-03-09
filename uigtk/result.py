@@ -31,11 +31,12 @@ class Result(uigtk.widgets.Grid):
 
     def __init__(self):
         uigtk.widgets.Grid.__init__(self)
+        self.set_column_homogeneous(True)
 
         grid = uigtk.widgets.Grid()
         grid.set_hexpand(True)
         grid.set_column_homogeneous(True)
-        self.attach(grid, 0, 0, 1, 1)
+        self.attach(grid, 0, 0, 2, 1)
 
         self.labelHome = uigtk.widgets.Label()
         self.labelHome.connect("activate-link", self.on_label_activated)
@@ -47,10 +48,15 @@ class Result(uigtk.widgets.Grid):
         grid.attach(self.labelAway, 2, 0, 1, 1)
 
         self.information = uigtk.match.Information()
-        grid.attach(self.information, 1, 1, 1, 1)
+        grid.attach(self.information, 1, 1, 2, 1)
 
         self.labelNotPlayed = Gtk.Label("This fixture has not yet been played.")
-        self.attach(self.labelNotPlayed, 0, 1, 1, 1)
+        self.attach(self.labelNotPlayed, 0, 1, 2, 1)
+
+        self.treeviewHomeSquad = Squad()
+        self.attach(self.treeviewHomeSquad, 0, 2, 1, 1)
+        self.treeviewAwaySquad = Squad()
+        self.attach(self.treeviewAwaySquad, 1, 2, 1, 1)
 
     def set_visible_result(self, leagueid, fixtureid):
         '''
@@ -71,9 +77,25 @@ class Result(uigtk.widgets.Grid):
         self.information.labelReferee.set_label(fixture.referee.name)
 
         self.labelNotPlayed.set_visible(not fixture.played)
+        self.treeviewHomeSquad.set_visible(fixture.played)
+        self.treeviewAwaySquad.set_visible(fixture.played)
 
         if fixture.played:
             self.labelResult.set_markup("<span size='18000'><b>%i - %i</b></span>" % (fixture.result))
+
+            self.treeviewHomeSquad.liststore.clear()
+
+            for playerid in fixture.home.team_selection[0]:
+                if playerid:
+                    player = data.players.get_player_by_id(playerid)
+                    self.treeviewHomeSquad.liststore.append([playerid, "", player.get_name(mode=1)])
+
+            self.treeviewAwaySquad.liststore.clear()
+
+            for playerid in fixture.away.team_selection[0]:
+                if playerid:
+                    player = data.players.get_player_by_id(playerid)
+                    self.treeviewAwaySquad.liststore.append([playerid, "", player.get_name(mode=1)])
 
     def on_label_activated(self, label, uri):
         '''
@@ -86,3 +108,17 @@ class Result(uigtk.widgets.Grid):
 
     def run(self):
         self.show_all()
+
+
+class Squad(uigtk.widgets.TreeView):
+    def __init__(self):
+        uigtk.widgets.TreeView.__init__(self)
+        self.set_vexpand(True)
+
+        self.liststore = Gtk.ListStore(int, str, str)
+        self.set_model(self.liststore)
+
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Position", column=1)
+        self.append_column(treeviewcolumn)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Player", column=2)
+        self.append_column(treeviewcolumn)

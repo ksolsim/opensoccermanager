@@ -100,6 +100,7 @@ class Match(uigtk.widgets.Grid):
         '''
         Call match engine to generate result, then enable interface elements.
         '''
+        # Update visible user fixture
         structures.match.Score(self.fixture)
 
         self.score.set_result(self.fixture.result)
@@ -109,10 +110,12 @@ class Match(uigtk.widgets.Grid):
 
         self.fixture.referee.increment_statistics(self.fixture)
 
+        self.fixture.store_team_selection()
         self.fixture.increment_player_appearances()
 
         self.fixture.played = True
 
+        # Update other fixtures
         for leagueid, league in data.leagues.get_leagues():
             for fixtureid in data.calendar.get_other_fixtures(leagueid):
                 fixture = league.fixtures.get_fixture_by_id(fixtureid)
@@ -122,6 +125,9 @@ class Match(uigtk.widgets.Grid):
                     league.standings.update_standing(fixture)
 
                     fixture.referee.increment_statistics(fixture)
+
+                    self.fixture.store_team_selection()
+                    fixture.increment_player_appearances()
 
                     fixture.played = True
 

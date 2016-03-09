@@ -102,10 +102,11 @@ class NationSearch(uigtk.widgets.Grid):
                 treepath = item.path
                 break
 
-        treepath = self.treemodelsort.convert_child_path_to_path(treepath)
-        treepath = self.treemodelfilter.convert_child_path_to_path(treepath)
-        self.treeviewSearch.treeselection.select_path(treepath)
-        self.treeviewSearch.scroll_to_cell(treepath, self.treeviewcolumn, True, False, False)
+        if treepath:
+            treepath = self.treemodelsort.convert_child_path_to_path(treepath)
+            treepath = self.treemodelfilter.convert_child_path_to_path(treepath)
+            self.treeviewSearch.treeselection.select_path(treepath)
+            self.treeviewSearch.scroll_to_cell(treepath, self.treeviewcolumn, True, False, False)
 
     def set_national_team(self, nation):
         '''

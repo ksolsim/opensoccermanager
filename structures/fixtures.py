@@ -163,6 +163,9 @@ class Fixtures:
 
 
 class Fixture:
+    '''
+    Fixture object representing match to be played.
+    '''
     def __init__(self):
         self.week = 0
         self.played = False
@@ -198,6 +201,13 @@ class Fixture:
         self.home.increment_player_appearances()
         self.away.increment_player_appearances()
 
+    def store_team_selection(self):
+        '''
+        Save selected first team and substitutions into fixture object.
+        '''
+        self.home.team_played[0] = self.home.team_selection[0]
+        self.away.team_played[0] = self.away.team_selection[0]
+
 
 class FixtureTeam:
     '''
@@ -207,18 +217,26 @@ class FixtureTeam:
         self.clubid = None
 
         self.team_selection = [[], []]
+        self.team_played = [[], []]
 
         self.team = []
         self.subs = []
 
-        self.yellow_cards = 0
-        self.red_cards = 0
+        self.formationid = 0
+
+        self.yellow_cards = []
+        self.red_cards = []
 
     def increment_player_appearances(self):
         '''
         Increment appearances for each player in team.
         '''
-        for playerid in self.team_selection[0]: ###
+        for playerid in self.team_played[0]:
+            if playerid:
+                player = data.players.get_player_by_id(playerid)
+                player.appearances += 1
+
+        for playerid in self.team_played[1]:
             if playerid:
                 player = data.players.get_player_by_id(playerid)
                 player.appearances += 1

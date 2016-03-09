@@ -21,6 +21,7 @@ from gi.repository import Gdk
 
 import data
 import structures.negotiations
+import structures.transfer
 import uigtk.shared
 import uigtk.widgets
 
@@ -83,6 +84,7 @@ class Negotiations(Gtk.Grid):
             self.buttonEnd.connect("clicked", self.on_end_clicked)
             buttonbox.add(self.buttonEnd)
 
+            self.transfer_type = structures.transfer.TransferType()
             self.contextmenu = ContextMenu(self)
 
         def on_key_press_event(self, treeview, event):
@@ -172,8 +174,6 @@ class Negotiations(Gtk.Grid):
             self.liststore.clear()
 
             for negotiationid, negotiation in self.negotiations():
-                transfer_type = ("Purchase", "Loan", "Free Transfer")[negotiation.transfer_type]
-
                 if negotiation.transfer_type in (0, 1):
                     club = negotiation.player.club.name
                 else:
@@ -183,7 +183,7 @@ class Negotiations(Gtk.Grid):
                                        negotiation.player.playerid,
                                        negotiation.player.get_name(mode=1),
                                        negotiation.offer_date,
-                                       transfer_type,
+                                       self.transfer_type.get_transfer_type_for_index(negotiation.transfer_type),
                                        club,
                                        negotiation.get_status_message()])
 

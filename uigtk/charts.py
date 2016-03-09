@@ -259,7 +259,7 @@ class Referees(uigtk.widgets.Grid):
         self.liststore.clear()
 
         for referee in data.referees.get_referee_data():
-            league = data.leagues.get_league_by_id(referee[2])
+            league = referee[2]
 
             self.liststore.append([referee[0],
                                    referee[1],

@@ -34,8 +34,8 @@ class Referees:
             Increment referee statistics for played fixture.
             '''
             self.games += 1
-            self.yellow_cards += fixture.home.yellow_cards + fixture.away.yellow_cards
-            self.red_cards += fixture.home.red_cards + fixture.away.red_cards
+            self.yellow_cards += len(fixture.home.yellow_cards) + len(fixture.away.yellow_cards)
+            self.red_cards += len(fixture.home.red_cards) + len(fixture.away.red_cards)
 
         def get_points(self):
             '''
@@ -78,11 +78,11 @@ class Referees:
 
         if data.calendar.event == 0:
             referees = sorted(referees,
-                               key=lambda item: data.referees.get_referee_by_id(item[0]).name)
+                              key=lambda item: data.referees.get_referee_by_id(item[0]).name)
         else:
             referees = sorted(referees,
-                               key=lambda item: (item[5], item[4], item[3], item[2]),
-                               reverse=True)
+                              key=lambda item: (item[5], item[4], item[3], item[2]),
+                              reverse=True)
 
         return referees
 
