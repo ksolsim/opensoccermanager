@@ -27,11 +27,11 @@ class Events:
         '''
         Events processed each day.
         '''
+        self.club.tickets.check_season_ticket_availability()
         self.club.sponsorship.update_sponsorship()
         data.injury.increment_fitness()
         data.injury.generate_injuries()
         data.advertising.assistant_handled()
-        self.club.tickets.check_season_ticket_availability()
         data.negotiations.update_negotiations()
 
     def process_weekly_events(self):
@@ -41,16 +41,16 @@ class Events:
         self.club.accounts.reset_weekly()
         self.club.finances.loan.update_interest_rate()
         self.club.finances.overdraft.update_interest_rate()
-        data.players.update_contracts()
         self.club.pay_players()
         self.club.pay_staff()
         self.club.coaches.update_contracts()
         self.club.scouts.update_contracts()
         self.club.team_training.update_schedule()
+        self.club.individual_training.individual_training_event()
+        self.club.stadium.update_condition()
+        data.players.update_contracts()
         data.advertising.decrement_advertising()
         data.advertising.refresh_advertising()
-
-        self.club.stadium.update_condition()
 
     def process_monthly_events(self):
         '''

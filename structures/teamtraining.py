@@ -98,6 +98,12 @@ class TeamTraining:
         '''
         return 1 in self.team_training
 
+    def get_individual_sessions(self):
+        '''
+        Return number of individual sessions set in training schedule.
+        '''
+        return sum(1 for item in self.team_training if item == 1)
+
     def update_schedule(self):
         '''
         Generate new training schedule and apply.

@@ -22,6 +22,7 @@ import data
 class IndividualTraining:
     class Item:
         def __init__(self):
+            self.player = None
             self.coachid = None
             self.skill = None
             self.intensity = 1
@@ -46,6 +47,7 @@ class IndividualTraining:
         player = data.players.get_player_by_id(playerid)
 
         training = self.Item()
+        training.player = player
         training.coachid = coachid
         training.skill = skill
         training.intensity = intensity
@@ -70,6 +72,52 @@ class IndividualTraining:
         Return individual training object for given player id.
         '''
         return self.individual_training[playerid]
+
+    def individual_training_event(self):
+        '''
+        Process individual training for club.
+        '''
+        club = data.clubs.get_club_by_id(data.user.team)
+
+        for individual in self.individual_training.values():
+            coach = club.coaches.hired[individual.coachid]
+
+            ability = coach.ability + 1
+            intensity = individual.intensity + 1
+            sessions = 0.4 * club.team_training.get_individual_sessions()
+
+            if coach.speciality == 0:
+                if individual.skill == 0:
+                    speciality = 1
+                else:
+                    speciality = 0.1
+            elif coach.speciality == 1:
+                if individual.skill in (1, 6):
+                    speciality = 1
+                else:
+                    speciality = 0.1
+            elif coach.speciality == 2:
+                if individual.skill in (2, 7):
+                    speciality = 1
+                else:
+                    speciality = 0.1
+            elif coach.speciality == 3:
+                if individual.skill == 3:
+                    speciality = 1
+                else:
+                    speciality = 0.1
+            elif coach.speciality == 4:
+                if individual.skill in (9, 6, 7):
+                    speciality = 1
+                else:
+                    speciality = 0.1
+            elif coach.speciality == 5:
+                speciality = 1
+
+            points = (ability * intensity * speciality * sessions) * (individual.player.training.rate * 0.1)
+
+            individual.player.training.points += points
+            individual.player.training.points = int(individual.player.training.points)
 
 
 class Status:
