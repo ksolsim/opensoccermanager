@@ -799,19 +799,25 @@ class ContextMenu(Gtk.Menu):
         data.window.screen.change_visible_screen("playerinformation")
         data.window.screen.active.set_visible_player(self.playerid)
 
-    def show(self):
-        ContextMenu.playerid = self.playerid
-        self.player = data.players.get_player_by_id(self.playerid)
-
+    def update_sensitivity(self):
+        '''
+        Update menu item sensitivity for available options.
+        '''
         self.menuitemAddPurchase.set_sensitive(not self.player.transfer[0])
         self.menuitemRemovePurchase.set_sensitive(self.player.transfer[0])
         self.menuitemAddLoan.set_sensitive(not self.player.transfer[1])
         self.menuitemRemoveLoan.set_sensitive(self.player.transfer[1])
         self.menuitemNotForSale.set_active(self.player.not_for_sale)
 
+    def show(self):
+        ContextMenu.playerid = self.playerid
+        self.player = data.players.get_player_by_id(self.playerid)
+
         self.positionmenu = PositionMenu()
         self.menuitemAddTeam.set_submenu(self.positionmenu)
         self.positionmenu.show()
+
+        self.update_sensitivity()
 
         self.show_all()
 

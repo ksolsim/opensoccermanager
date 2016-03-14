@@ -466,6 +466,9 @@ class ContextMenu1(Gtk.Menu):
         menuitem = uigtk.widgets.MenuItem("_Terminate Contract")
         menuitem.connect("activate", self.on_terminate_contract_clicked)
         self.append(menuitem)
+        self.menuitemNotForSale = uigtk.widgets.CheckMenuItem("_Not for Sale")
+        self.menuitemNotForSale.connect("toggled", self.on_not_for_sale_clicked)
+        self.append(self.menuitemNotForSale)
 
         separator = Gtk.SeparatorMenuItem()
         self.append(separator)
@@ -499,7 +502,7 @@ class ContextMenu1(Gtk.Menu):
         dialog = uigtk.squad.RenewContract(self.playerid)
 
         if dialog.show():
-            print("Renew contract")
+            data.window.screen.refresh_visible_screen()
 
     def on_terminate_contract_clicked(self, *args):
         '''
@@ -510,6 +513,12 @@ class ContextMenu1(Gtk.Menu):
         if dialog.show():
             self.player.contract.terminate_contract()
             data.window.screen.refresh_visible_screen()
+
+    def on_not_for_sale_clicked(self, checkmenuitem):
+        '''
+        Toggle not for sale flag on player object.
+        '''
+        self.player.not_for_sale = checkmenuitem.get_active()
 
     def on_comparison_clicked(self, *args):
         '''
@@ -525,6 +534,7 @@ class ContextMenu1(Gtk.Menu):
         self.menuitemRemovePurchase.set_sensitive(self.player.transfer[0])
         self.menuitemAddLoan.set_sensitive(not self.player.transfer[1])
         self.menuitemRemoveLoan.set_sensitive(self.player.transfer[1])
+        self.menuitemNotForSale.set_active(self.player.not_for_sale)
 
     def show(self):
         self.player = data.players.get_player_by_id(self.playerid)
