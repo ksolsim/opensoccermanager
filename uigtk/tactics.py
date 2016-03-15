@@ -40,10 +40,14 @@ class Tactics(uigtk.widgets.Grid):
         self.responsibilities = Responsibilities()
         self.attach(self.responsibilities, 0, 2, 1, 1)
 
+        self.bonuses = Bonuses()
+        self.attach(self.bonuses, 0, 3, 1, 1)
+
     def populate_data(self):
         self.formations.set_formation()
         self.responsibilities.set_responsibilities()
         self.styles.set_styles()
+        self.bonuses.set_bonus()
 
     def run(self):
         Tactics.club = data.clubs.get_club_by_id(data.user.team)
@@ -300,6 +304,43 @@ class Responsibilities(uigtk.widgets.CommonFrame):
         if not self.comboboxCornerTaker.set_active_id(str(Tactics.club.tactics.corner_taker)):
             self.comboboxCornerTaker.set_active(0)
             Tactics.club.tactics.corner_taker = None
+
+
+class Bonuses(uigtk.widgets.CommonFrame):
+    def __init__(self):
+        uigtk.widgets.CommonFrame.__init__(self, "Bonuses")
+
+        label = uigtk.widgets.Label("_Win Bonus", leftalign=True)
+        self.grid.attach(label, 0, 0, 1, 1)
+        self.comboboxBonus = Gtk.ComboBoxText()
+        self.comboboxBonus.append("0", "None")
+        self.comboboxBonus.append("1", "10%")
+        self.comboboxBonus.append("2", "30%")
+        self.comboboxBonus.append("3", "50%")
+        self.comboboxBonus.connect("changed", self.on_bonus_changed)
+        self.grid.attach(self.comboboxBonus, 1, 0, 1, 1)
+
+    def on_bonus_changed(self, combobox):
+        '''
+        Update bonus to be paid on win in next match.
+        '''
+        club = data.clubs.get_club_by_id(data.user.team)
+
+        if combobox.get_active_id() != "0":
+            club.tactics.bonus = int(combobox.get_active_id())
+        else:
+            club.tactics.bonus = None
+
+    def set_bonus(self):
+        '''
+        Set win bonus for next match.
+        '''
+        club = data.clubs.get_club_by_id(data.user.team)
+
+        if club.tactics.bonus:
+            self.comboboxBonus.set_active_id(str(club.tactics.bonus))
+        else:
+            self.comboboxBonus.set_active_id("0")
 
 
 class Selector(uigtk.widgets.ComboBox):

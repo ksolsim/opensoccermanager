@@ -33,6 +33,8 @@ class Tactics:
         self.free_kick_taker = None
         self.penalty_taker = None
 
+        self.bonus = None
+
         self.formations = structures.formations.Formations()
 
     def get_formation_name(self):
