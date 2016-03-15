@@ -99,9 +99,7 @@ class Squad:
         '''
         Return list of players not in squad.
         '''
-        count = sum(1 for playerid in self.squad.keys() if playerid not in self.teamselection.team)
-
-        return count
+        return sum(1 for playerid in self.squad.keys() if playerid not in self.teamselection.team)
 
     def get_average_age(self):
         '''
@@ -180,25 +178,19 @@ class TeamSelection:
         '''
         Return number of team players selected.
         '''
-        count = sum(1 for playerid in self.team if playerid)
-
-        return count
+        return sum(1 for playerid in self.team if playerid)
 
     def get_subs_count(self):
         '''
         Return number of substitutes selected.
         '''
-        count = sum(1 for playerid in self.subs if playerid)
-
-        return count
+        return sum(1 for playerid in self.subs if playerid)
 
     def get_team_ids(self):
         '''
         Return list of player ids in team selection.
         '''
-        team = [playerid for playerid in self.team if playerid]
-
-        return team
+        return [playerid for playerid in self.team if playerid]
 
     def get_player_for_position(self, positionid):
         '''
@@ -211,6 +203,20 @@ class TeamSelection:
         Get substitute player id for given position id.
         '''
         return self.subs[positionid]
+
+    def pay_win_bonus(self):
+        '''
+        Pay contract win bonus for players in team selection.
+        '''
+        total = 0
+
+        for playerid in self.team:
+            if playerid:
+                player = data.players.get_player_by_id(playerid)
+                total += player.contract.winbonus
+
+        club = data.clubs.get_club_by_id(data.user.team)
+        club.accounts.withdraw(amount=total, category="playerwage")
 
 
 class TeamGenerator:

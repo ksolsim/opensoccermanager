@@ -56,10 +56,16 @@ class Events:
         '''
         Events processed at the end of each month.
         '''
-        print("Monthly events")
 
     def process_end_of_season_events(self):
         '''
         Events processed at the end of each season.
         '''
         self.club.tickets.toggle_season_ticket_availability()
+
+        data.date.set_end_of_season()
+
+    def process_end_of_match_events(self):
+        '''
+        Events processed at the end of a match.
+        '''

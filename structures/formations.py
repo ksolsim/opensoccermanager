@@ -31,9 +31,7 @@ class Formations:
         '''
         Return list of formation names.
         '''
-        names = [name[0] for name in self.formations]
-
-        return names
+        return [name[0] for name in self.formations]
 
     def get_formations(self):
         '''

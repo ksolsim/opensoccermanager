@@ -49,6 +49,8 @@ class Date:
             else:
                 self.month += 1
                 self.day = 1
+
+                data.events.process_monthly_events()
         else:
             self.day += 1
 
@@ -95,9 +97,7 @@ class Date:
         else:
             month = str(self.month)
 
-        date = "%i/%s/%s" % (self.year, month, day)
-
-        return date
+        return "%i/%s/%s" % (self.year, month, day)
 
     def get_date_as_tuple(self):
         '''

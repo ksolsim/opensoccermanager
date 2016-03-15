@@ -54,8 +54,9 @@ class Calendar:
         state = False
 
         for leagueid, league in data.leagues.get_leagues():
-            if data.date.get_date_for_event() == league.fixtures.events[self.event]:
-                state = True
+            if self.event <= len(league.fixtures.events):
+                if data.date.get_date_for_event() == league.fixtures.events[self.event]:
+                    state = True
 
         return state
 
@@ -113,3 +114,11 @@ class Calendar:
         Increment event index value.
         '''
         self.event += 1
+
+    def end_of_season(self):
+        '''
+        Handle end of season event and initiate reset of data.
+        '''
+        uigtk.endofseason.EndOfSeason()
+
+        data

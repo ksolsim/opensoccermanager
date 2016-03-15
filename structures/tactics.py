@@ -62,3 +62,8 @@ class Tactics:
 
         if playerid == self.penalty_taker:
             self.penalty_taker = None
+
+    def pay_bonus(self):
+        '''
+        Pay win bonus specified on tactics screen.
+        '''

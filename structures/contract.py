@@ -40,17 +40,19 @@ class Contract:
         '''
         self.leaguechamp = self.player.wage.get_wage() * 10
         self.leaguerunnerup = self.player.wage.get_wage() * 2
-        self.goalbonus = self.player.wage.get_wage() * 0.1
         self.winbonus = self.player.wage.get_wage() * 0.1
+        self.goalbonus = self.player.wage.get_wage() * 0.1
 
     def get_bonus(self, index):
         '''
         Return player bonus value for given bonus index.
         '''
-        bonuses = (self.leaguechamp, self.leaguerunnerup, self.goalbonus, self.winbonus)
-        bonus = data.currency.get_rounded_amount(bonuses[index])
+        bonuses = (self.leaguechamp,
+                   self.leaguerunnerup,
+                   self.goalbonus,
+                   self.winbonus)
 
-        return bonus
+        return data.currency.get_rounded_amount(bonuses[index])
 
     def get_contract(self):
         '''
@@ -98,11 +100,10 @@ class Contract:
         '''
         self.contract = 0
 
-        club = data.clubs.get_club_by_id(self.player.squad)
-        club.squad.remove_from_squad(self.player.playerid)
-        club.individual_training.remove_from_training(self.player.playerid)
+        self.player.club.squad.remove_from_squad(self.player.playerid)
+        self.player.club.individual_training.remove_from_training(self.player.playerid)
 
-        self.player.squad = None
+        self.player.club = None
 
         self.player.transfer = [False, False]
 
@@ -116,10 +117,10 @@ class Contract:
             club = data.clubs.get_club_by_id(data.user.team)
 
             if self.contract in (4, 8, 12):
-                if self.player.squad == data.user.team:
+                if self.player.club.clubid == data.user.team:
                     club.news.publish("PC02", player=self.player.get_name(mode=1), weeks=self.contract)
             elif self.contract == 0:
-                if self.player.squad == data.user.team:
+                if self.player.club.clubid == data.user.team:
                     club.news.publish("PC01", player=self.player.get_name(mode=1))
                 elif club.shortlist.get_player_in_shortlist(self.player.playerid):
                     club.news.publish("SH01", player=self.player.get_name(mode=1))
