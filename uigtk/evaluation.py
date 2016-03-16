@@ -17,6 +17,8 @@
 
 
 from gi.repository import Gtk
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_gtk3cairo import FigureCanvasGTK3Cairo as FigureCanvas
 
 import uigtk.widgets
 
@@ -26,19 +28,26 @@ class Evaluation(uigtk.widgets.Grid):
 
     def __init__(self):
         uigtk.widgets.Grid.__init__(self)
-        self.set_hexpand(True)
-        self.set_vexpand(True)
 
-        frame = uigtk.widgets.CommonFrame("Players")
-        self.attach(frame, 0, 0, 1, 1)
-        frame = uigtk.widgets.CommonFrame("Fans")
-        self.attach(frame, 1, 0, 1, 1)
-        frame = uigtk.widgets.CommonFrame("Staff")
-        self.attach(frame, 0, 1, 1, 1)
-        frame = uigtk.widgets.CommonFrame("Media")
-        self.attach(frame, 1, 1, 1, 1)
-        frame = uigtk.widgets.CommonFrame("Overall")
-        self.attach(frame, 0, 2, 2, 1)
+        figure = Figure()
+        axis = figure.add_subplot(1, 1, 1)
+        axis.set_xlim(0, 46)
+        axis.set_xlabel("Week")
+        axis.set_ylim(0, 100)
+        axis.set_ylabel("Percentage Rating")
+
+        values = [0] * 46
+        line, = axis.plot(values, label='Chairman')
+        line, = axis.plot(values, label='Staff')
+        line, = axis.plot(values, label='Fans')
+        line, = axis.plot(values, label='Finances')
+        line, = axis.plot(values, label='Media')
+        axis.legend()
+
+        figurecanvas = FigureCanvas(figure)
+        figurecanvas.set_hexpand(True)
+        figurecanvas.set_vexpand(True)
+        self.add(figurecanvas)
 
     def run(self):
         self.show_all()
