@@ -318,6 +318,7 @@ class Bonuses(uigtk.widgets.CommonFrame):
         self.comboboxBonus.append("2", "30%")
         self.comboboxBonus.append("3", "50%")
         self.comboboxBonus.connect("changed", self.on_bonus_changed)
+        label.set_mnemonic_widget(self.comboboxBonus)
         self.grid.attach(self.comboboxBonus, 1, 0, 1, 1)
 
     def on_bonus_changed(self, combobox):
@@ -341,6 +342,12 @@ class Bonuses(uigtk.widgets.CommonFrame):
             self.comboboxBonus.set_active_id(str(club.tactics.bonus))
         else:
             self.comboboxBonus.set_active_id("0")
+
+    def remove_bonus(self):
+        '''
+        Remove set bonus after match has been played.
+        '''
+        club.tactics.bonus = None
 
 
 class Selector(uigtk.widgets.ComboBox):

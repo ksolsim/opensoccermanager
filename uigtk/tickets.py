@@ -78,15 +78,24 @@ class Tickets(uigtk.widgets.Grid):
         buttonbox.set_layout(Gtk.ButtonBoxStyle.END)
         self.attach(buttonbox, 0, 1, 4, 1)
 
-        buttonDefault = uigtk.widgets.Button("Default")
-        buttonDefault.set_tooltip_text("Reset ticket prices to suggested defaults.")
-        buttonbox.add(buttonDefault)
+        buttonAssistant = uigtk.widgets.Button("Assistant")
+        buttonAssistant.set_tooltip_text("Have assistant manager reset to recommended ticket price.")
+        buttonAssistant.connect("clicked", self.on_assistant_clicked)
+        buttonbox.add(buttonAssistant)
 
         self.season_tickets = SeasonTickets()
         self.attach(self.season_tickets, 0, 2, 1, 1)
 
         self.school_tickets = SchoolTickets()
         self.attach(self.school_tickets, 0, 3, 1, 1)
+
+    def on_assistant_clicked(self, *args):
+        '''
+        Set ticket prices to those recommended by assistant manager.
+        '''
+        Tickets.club.tickets.set_initial_prices()
+
+        self.populate_data()
 
     def on_ticket_changed(self, scale):
         '''

@@ -86,7 +86,7 @@ class Sponsorship:
 
     def missed_offer(self):
         '''
-        Reset sponsorship is offer timeout has passed.
+        Reset sponsorship if offer timeout has passed and deal has been missed.
         '''
         self.status = 0
         self.timeout = random.randint(6, 10)
