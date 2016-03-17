@@ -172,22 +172,25 @@ class Fixtures(uigtk.widgets.Grid):
                     else:
                         result = ""
 
-                    self.treestore.append(parent, [fixtureid, home.name, result, away.name, home.stadium.name, 400])
+                    self.treestore.append(parent, [fixtureid,
+                                                   home.name,
+                                                   result,
+                                                   away.name,
+                                                   home.stadium.name,
+                                                   400])
 
             self.treeview.expand_all()
 
     def populate_club_data(self):
         self.treestore.clear()
 
-        league = data.leagues.get_league_by_id(self.club.league)
-
-        rounds = league.fixtures.get_number_of_rounds()
+        rounds = data.user.club.league.fixtures.get_number_of_rounds()
 
         for week in range(0, rounds):
-            fixtures = league.fixtures.get_fixtures_for_week(week)
+            fixtures = data.user.club.league.fixtures.get_fixtures_for_week(week)
 
             for fixtureid, fixture in fixtures.items():
-                if data.user.team in (fixture.home.clubid, fixture.away.clubid):
+                if data.user.clubid in (fixture.home.clubid, fixture.away.clubid):
                     home = data.clubs.get_club_by_id(fixture.home.clubid)
                     away = data.clubs.get_club_by_id(fixture.away.clubid)
 
@@ -196,16 +199,19 @@ class Fixtures(uigtk.widgets.Grid):
                     else:
                         result = ""
 
-                    self.treestore.append(None, [fixtureid, home.name, result, away.name, home.stadium.name, 400])
+                    self.treestore.append(None, [fixtureid,
+                                                 home.name,
+                                                 result,
+                                                 away.name,
+                                                 home.stadium.name,
+                                                 400])
 
     def run(self):
         self.populate_leagues()
         self.populate_all_data()
 
         self.radiobuttonAllFixtures.set_active(True)
-
-        self.club = data.clubs.get_club_by_id(data.user.team)
-        self.radiobuttonClubFixtures.set_label("%s _Fixtures" % (self.club.name))
+        self.radiobuttonClubFixtures.set_label("%s _Fixtures" % (data.user.club.name))
 
         self.show_all()
 

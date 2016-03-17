@@ -30,8 +30,7 @@ class Charts(uigtk.widgets.Grid):
                       1: Assisters(),
                       2: Cards(),
                       3: Transfers(),
-                      4: Referees()
-                     }
+                      4: Referees()}
 
         uigtk.widgets.Grid.__init__(self)
 
@@ -258,16 +257,11 @@ class Referees(uigtk.widgets.Grid):
     def populate_data(self):
         self.liststore.clear()
 
-        for referee in data.referees.get_referee_data():
-            league = referee[2]
-
-            self.liststore.append([referee[0],
-                                   referee[1],
-                                   league.name,
-                                   referee[3],
-                                   referee[4],
-                                   referee[5],
-                                   referee[6]])
+        for refereeid, referee in data.referees.get_referee_data():
+            self.liststore.append([refereeid,
+                                   referee.name,
+                                   referee.league.name,
+                                   0, 0, 0, 0])
 
     def run(self):
         self.populate_data()

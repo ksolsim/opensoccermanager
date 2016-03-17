@@ -65,24 +65,15 @@ class Referees:
         '''
         Return sorted list of referee data.
         '''
-        referees = []
-
-        for refereeid, referee in self.get_referees():
-            referees.append([refereeid,
-                             referee.name,
-                             referee.league,
-                             referee.games,
-                             referee.yellow_cards,
-                             referee.red_cards,
-                             referee.get_points()])
-
         if data.calendar.event == 0:
-            referees = sorted(referees,
-                              key=lambda item: data.referees.get_referee_by_id(item[0]).name)
+            referees = sorted(self.referees.items(),
+                              key=lambda item: item[1].name)
         else:
-            referees = sorted(referees,
-                              key=lambda item: (item[5], item[4], item[3], item[2]),
-                              reverse=True)
+            referees = sorted(self.referees.items(),
+                              key=lambda item: (item[1].get_points(),
+                                                item[1].red_cards,
+                                                item[1].yellow_cards,
+                                                item[1].games))
 
         return referees
 

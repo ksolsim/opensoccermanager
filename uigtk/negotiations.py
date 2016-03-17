@@ -391,7 +391,7 @@ class EnquiryRejection(Gtk.MessageDialog):
     '''
     def __init__(self, negotiation):
         if negotiation.player.club:
-            message = "The enquiry for %s has been rejected by %s." % (negotiation.player.get_name(mode=1), negotiation.club.name)
+            message = "The enquiry for %s has been rejected by %s." % (negotiation.player.get_name(mode=1), negotiation.player.club.name)
         else:
             message = "The enquiry for %s has been rejected by the player." % (negotiation.player.get_name(mode=1))
 
@@ -417,7 +417,7 @@ class OfferRejection(Gtk.MessageDialog):
         self.set_modal(True)
         self.set_title("Offer Rejected")
         self.set_property("message-type", Gtk.MessageType.INFO)
-        self.set_markup("The offer for %s has been rejected by %s." % (negotiation.player.get_name(mode=1), negotiation.club.name))
+        self.set_markup("The offer for %s has been rejected by %s." % (negotiation.player.get_name(mode=1), negotiation.player.club.name))
         self.add_button("_Close", Gtk.ResponseType.CLOSE)
 
         self.run()

@@ -51,6 +51,12 @@ class AdvertHandler:
     def __init__(self):
         self.club = data.clubs.get_club_by_id(data.user.team)
 
+        self.update_timeout()
+
+    def update_timeout(self):
+        '''
+        Refresh timeout
+        '''
         self.timeout = random.randint(12, 20)
 
     def decrement_advertising(self):
@@ -76,7 +82,7 @@ class AdvertHandler:
         self.timeout -= 1
 
         if self.timeout == 0:
-            self.timeout = random.randint(12, 20)
+            self.update_timeout()
 
             self.club.hoardings.available = {}
             self.club.hoardings.generate_adverts(36)
