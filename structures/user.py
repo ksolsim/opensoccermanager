@@ -27,6 +27,14 @@ class User:
     '''
     def __init__(self):
         self.team = None
+        self.clubid = None
+        self.club = None
+
+    def set_club(self, clubid):
+        '''
+        Load club object and store for access.
+        '''
+        self.club = data.clubs.get_club_by_id(clubid)
 
 
 class Names:
@@ -97,7 +105,5 @@ class Names:
 
     def populate_names(self):
         with open(self.filepath, "r") as names:
-            names = names.readlines()
-
-            for name in names:
+            for name in names.readlines():
                 self.names.append(name.rstrip("\n"))

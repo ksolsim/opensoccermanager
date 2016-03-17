@@ -43,9 +43,9 @@ class Start:
     '''
     Object initialisation for in-game data structures.
     '''
-    def __init__(self, teamid, season):
+    def __init__(self, clubid, season):
         data.user = structures.user.User()
-        data.user.team = teamid
+        data.user.team = clubid
 
         data.calendar = structures.calendar.Calendar()
         data.date = structures.date.Date(season)
@@ -75,13 +75,13 @@ class Start:
         data.injury = structures.computer.InjuryGenerator()
         data.advertising = structures.computer.AdvertHandler()
 
-        self.club = data.clubs.get_club_by_id(data.user.team)
+        data.user.set_club(clubid)
 
     def set_manager_name(self, name):
         '''
         Set passed manager name argument and add to names list.
         '''
-        self.club.manager = name
+        data.user.club.manager = name
         data.names.add_name(name)
 
     def setup_initial_values(self):
@@ -90,27 +90,27 @@ class Start:
         '''
         data.leagues.generate_fixtures()
 
-        self.club.hoardings.maximum = 48
-        self.club.hoardings.generate_adverts(36)
+        data.user.club.hoardings.maximum = 48
+        data.user.club.hoardings.generate_adverts(36)
 
-        if self.club.reputation < 10:
-            self.club.programmes.maximum = 36
+        if data.user.club.reputation < 10:
+            data.user.club.programmes.maximum = 36
         else:
-            self.club.programmes.maximum = 48
+            data.user.club.programmes.maximum = 48
 
-        self.club.programmes.generate_adverts(24)
+        data.user.club.programmes.generate_adverts(24)
 
-        if self.club.reputation < 13:
-            self.club.stadium.buildings.maximum_plots = 60
+        if data.user.club.reputation < 13:
+            data.user.club.stadium.buildings.maximum_plots = 60
         else:
-            self.club.stadium.buildings.maximum_plots = 80
+            data.user.club.stadium.buildings.maximum_plots = 80
 
-        self.club.coaches.generate_initial_staff()
-        self.club.scouts.generate_initial_staff()
+        data.user.club.coaches.generate_initial_staff()
+        data.user.club.scouts.generate_initial_staff()
 
-        self.club.tickets.set_initial_prices()
-        self.club.tickets.set_initial_school_tickets()
-        self.club.tickets.set_initial_season_tickets()
+        data.user.club.tickets.set_initial_prices()
+        data.user.club.tickets.set_initial_school_tickets()
+        data.user.club.tickets.set_initial_season_tickets()
 
         self.publish_initial_news()
 
@@ -118,8 +118,8 @@ class Start:
         '''
         Publish initial news articles for user on starting new game.
         '''
-        self.club.news.publish("MA01")
+        data.user.club.news.publish("MA01")
 
-        initial1, initial2, initial3 = self.club.league.fixtures.get_initial_fixtures()
+        initial1, initial2, initial3 = data.user.club.league.fixtures.get_initial_fixtures()
 
-        self.club.news.publish("FX01", fixture1=initial1, fixture2=initial2, fixture3=initial3)
+        data.user.club.news.publish("FX01", fixture1=initial1, fixture2=initial2, fixture3=initial3)

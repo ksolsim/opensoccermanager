@@ -141,7 +141,7 @@ class Standings(Gtk.Grid):
                                                 standing[6],
                                                 standing[7],
                                                 standing[8],
-                                                ""])
+                                                club.form.get_form_string_for_length(6)])
 
     def run(self):
         self.populate_leagues()

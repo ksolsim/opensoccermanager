@@ -40,3 +40,9 @@ class Form:
         Return form list for given required length.
         '''
         return self.form[:length]
+
+    def get_form_string_for_length(self, length):
+        '''
+        Return form listing in string form.
+        '''
+        return "".join(self.get_form_for_length(length))

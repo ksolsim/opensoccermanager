@@ -312,9 +312,9 @@ class Details(uigtk.widgets.Grid):
         Load main game screen with screen from preferences.
         '''
         season = self.user.comboboxSeason.get_active_id()
-        teamid = int(self.user.comboboxClub.get_active_id())
+        clubid = int(self.user.comboboxClub.get_active_id())
 
-        start = structures.start.Start(teamid, season)
+        start = structures.start.Start(clubid, season)
 
         name = self.user.entryName.get_text()
         start.set_manager_name(name)
