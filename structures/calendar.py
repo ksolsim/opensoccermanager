@@ -80,7 +80,7 @@ class Calendar:
 
                     data.window.mainscreen.information.set_continue_to_match()
 
-                    return fixtureid, fixture
+                    return fixture
 
     def get_other_fixtures(self, leagueid):
         '''
@@ -100,7 +100,7 @@ class Calendar:
         '''
         Return club id of opposition team.
         '''
-        fixtureid, fixture = self.get_user_fixture()
+        fixture = self.get_user_fixture()
 
         if fixture.home.clubid == data.user.team:
             club = fixture.away.clubid

@@ -103,12 +103,12 @@ class ContinueToMatch:
             state = dialog.show()
 
         if state:
-            fixtureid, fixture = data.calendar.get_user_fixture()
+            fixture = data.calendar.get_user_fixture()
 
             self.match_preparations(fixture)
 
             data.window.screen.change_visible_screen("match")
-            data.window.screen.active.update_match_details(fixtureid, fixture)
+            data.window.screen.active.update_match_details(fixture)
 
         return state
 

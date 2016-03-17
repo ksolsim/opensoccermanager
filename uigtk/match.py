@@ -67,15 +67,14 @@ class Match(uigtk.widgets.Grid):
         self.statistics.set_visible(False)
         self.notebook.append_page(self.statistics, uigtk.widgets.Label("_Statistics"))
 
-    def update_match_details(self, fixtureid, fixture):
+    def update_match_details(self, fixture):
         '''
         Set match details for given fixture.
         '''
-        self.fixtureid = fixtureid
         self.fixture = fixture
 
-        self.score.set_teams(fixtureid, fixture)
-        self.set_tactics_buttons(fixtureid, fixture)
+        self.score.set_teams(fixture.fixtureid, fixture)
+        self.set_tactics_buttons(fixture.fixtureid, fixture)
 
         home = data.clubs.get_club_by_id(fixture.home.clubid)
         self.information.set_information(home.stadium.name, fixture.referee.name)

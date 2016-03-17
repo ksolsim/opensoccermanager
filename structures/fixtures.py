@@ -71,8 +71,8 @@ class Fixtures:
                     fixture.home.clubid = self.clubs[away]
                     fixture.away.clubid = self.clubs[home]
 
-                fixtureid = self.get_fixtureid()
-                self.fixtures[fixtureid] = fixture
+                fixture.fixtureid = self.get_fixtureid()
+                self.fixtures[fixture.fixtureid] = fixture
 
         for week in range(0, rounds):
             referees = self.get_referee_list()
@@ -87,7 +87,7 @@ class Fixtures:
                 fixture = Fixture()
                 fixture.leagueid = self.league.leagueid
                 fixture.week = rounds + week
-                fixture.referee = referees[match]
+                fixture.referee = data.referees.get_referee_by_id(referees[match])
 
                 if (rounds + week) % 2 == 1:
                     fixture.home.clubid = self.clubs[home]
@@ -96,8 +96,8 @@ class Fixtures:
                     fixture.away.clubid = self.clubs[away]
                     fixture.home.clubid = self.clubs[home]
 
-                fixtureid = self.get_fixtureid()
-                self.fixtures[fixtureid] = fixture
+                fixture.fixtureid = self.get_fixtureid()
+                self.fixtures[fixture.fixtureid] = fixture
 
     def get_referee_list(self):
         '''
