@@ -46,7 +46,6 @@ class Players:
             self.stamina = 0
             self.set_pieces = 0
             self.ball_control = 0
-            self.fitness = 100
             self.value = None
             self.wage = None
             self.contract = None
@@ -268,6 +267,15 @@ class Injury:
     def __init__(self):
         self.injuryid = None
         self.period = 0
+        self.fitness = 100
+
+    def set_injured(self, injury):
+        '''
+        Set player injured to given injury id.
+        '''
+        self.injuryid = injury.injuryid
+        self.period = random.randint(*injury.period)
+        self.fitness -= random.randint(*injury.impact)
 
     def get_injured(self):
         '''

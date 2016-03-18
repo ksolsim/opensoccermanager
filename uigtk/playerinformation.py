@@ -134,7 +134,7 @@ class PlayerInformation(uigtk.widgets.Grid):
 
         self.morale.set_morale()
 
-        self.training.set_fitness_value(player.fitness)
+        self.training.set_fitness_value(player.injury.fitness)
         self.training.set_training_status()
 
         self.injuries.set_injury_status()

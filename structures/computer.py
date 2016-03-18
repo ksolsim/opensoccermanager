@@ -32,19 +32,24 @@ class InjuryGenerator:
         '''
         Generate injuries with weighting for players with lower fitness.
         '''
-        #for playerid, player in data.players.get_players():
-        #    print(player.get_name())
+        for clubid, club in data.clubs.get_clubs():
+            for playerid, player in club.squad.get_squad():
+                number = random.randint(0, 256)
+
+                if number < 1:
+                    injury = data.injuries.get_random_injury()
+                    player.injury.set_injured(injury)
 
     def increment_fitness(self):
         '''
         Improve fitness for players with less than 100 fitness.
         '''
         for playerid, player in data.players.get_players():
-            if player.fitness < 100:
-                player.fitness += random.randint(1, 5)
+            if player.injury.fitness < 100:
+                player.injury.fitness += random.randint(0, 5)
 
-                if player.fitness > 100:
-                    player.fitness = 100
+                if player.injury.fitness > 100:
+                    player.injury.fitness = 100
 
 
 class AdvertHandler:

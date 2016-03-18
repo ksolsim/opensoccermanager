@@ -277,7 +277,7 @@ class SquadList(Gtk.ListStore):
     def __init__(self):
         Gtk.ListStore.__init__(self)
         self.set_column_types([int, str, int, str, int, int, int, int, int, int,
-                               int, int, int, int, str, str, str, str, str, str,
+                               int, int, int, str, str, str, str, str, str, str,
                                int, int, str, int, str, str, str])
 
     def update(self):
@@ -297,7 +297,7 @@ class SquadList(Gtk.ListStore):
                          player.stamina,
                          player.ball_control,
                          player.set_pieces,
-                         player.fitness,
+                         "%s%%" % (player.injury.fitness),
                          player.get_nationality_name(),
                          player.value.get_value_as_string(),
                          player.wage.get_wage_as_string(),

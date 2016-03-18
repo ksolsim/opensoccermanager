@@ -95,7 +95,7 @@ class Injuries(uigtk.widgets.CommonFrame):
                                    player.get_name(),
                                    player.injury.get_injury_name(),
                                    player.injury.get_injury_period(),
-                                   "%s%%" % (player.fitness)])
+                                   "%s%%" % (player.injury.fitness)])
 
     def run(self):
         self.club = data.clubs.get_club_by_id(data.user.team)
