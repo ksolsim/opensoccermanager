@@ -68,9 +68,7 @@ class Finances:
             '''
             Return maximum permissible loan club can receive.
             '''
-            club = data.clubs.get_club_by_id(data.user.team)
-
-            return club.reputation ** 2 * 10000
+            return data.user.club.reputation ** 2 * 10000
 
         def update_interest_rate(self):
             '''
@@ -98,9 +96,7 @@ class Finances:
             '''
             Return the maximum allowed overdraft.
             '''
-            club = data.clubs.get_club_by_id(data.user.team)
-
-            return int(((club.accounts.balance * 0.5) * 0.05) * club.reputation)
+            return int(((club.accounts.balance * 0.5) * 0.05) * data.user.club.reputation)
 
         def update_interest_rate(self):
             '''
@@ -131,11 +127,9 @@ class Finances:
             '''
             Return if club is able to receive the stadium improvement grant.
             '''
-            club = data.clubs.get_club_by_id(data.user.team)
-
             available = False
 
-            if club.reputation < 12:
+            if data.user.club.reputation < 12:
                 available = True
 
             return available
@@ -153,9 +147,7 @@ class Finances:
             '''
             Return amount of money available via flotation.
             '''
-            club = data.clubs.get_club_by_id(data.user.team)
-
-            return club.reputation ** 2 * 100000
+            return data.user.club.reputation ** 2 * 100000
 
         def set_initiate_float(self):
             '''
@@ -163,8 +155,7 @@ class Finances:
             '''
             self.timeout = random.randint(12, 18)
 
-            club = data.clubs.get_club_by_id(data.user.team)
-            club.news.publish("FL01")
+            data.user.club.news.publish("FL01")
 
         def set_float_public(self):
             '''
@@ -172,8 +163,7 @@ class Finances:
             '''
             self.public = True
 
-            club = data.clubs.get_club_by_id(data.user.team)
-            club.news.publish("FL02")
+            data.user.club.news.publish("FL02")
 
         def decrement_float_period(self):
             '''

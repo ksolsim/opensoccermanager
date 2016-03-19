@@ -60,9 +60,7 @@ class Accounts:
         '''
         Verify whether the passed amount will overdraw the account.
         '''
-        club = data.clubs.get_club_by_id(data.user.team)
-
-        state = (self.balance + club.finances.overdraft.amount) - amount >= 0
+        state = (self.balance + data.user.club.finances.overdraft.amount) - amount >= 0
 
         return state
 

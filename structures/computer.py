@@ -25,9 +25,6 @@ class InjuryGenerator:
     '''
     Generate random injuries for players outside of a match.
     '''
-    def __init__(self):
-        pass
-
     def generate_injuries(self):
         '''
         Generate injuries with weighting for players with lower fitness.
@@ -54,8 +51,6 @@ class InjuryGenerator:
 
 class AdvertHandler:
     def __init__(self):
-        self.club = data.clubs.get_club_by_id(data.user.team)
-
         self.update_timeout()
 
     def update_timeout(self):
@@ -68,7 +63,7 @@ class AdvertHandler:
         '''
         Decrement weeks remaining on purchased adverts.
         '''
-        for item in (self.club.hoardings, self.club.programmes):
+        for item in (data.user.club.hoardings, data.user.club.programmes):
             delete = []
 
             for advertid, advert in item.current.items():
@@ -89,18 +84,18 @@ class AdvertHandler:
         if self.timeout == 0:
             self.update_timeout()
 
-            self.club.hoardings.available = {}
-            self.club.hoardings.generate_adverts(36)
+            data.user.club.hoardings.available = {}
+            data.user.club.hoardings.generate_adverts(36)
 
-            self.club.programmes.available = {}
-            self.club.programmes.generate_adverts(24)
+            data.user.club.programmes.available = {}
+            data.user.club.programmes.generate_adverts(24)
 
     def assistant_handled(self):
         '''
         Have assistant manager populate free advertisement spacings.
         '''
-        if self.club.assistant.get_handle_advertising():
-            for item in (self.club.hoardings, self.club.programmes):
+        if data.user.club.assistant.get_handle_advertising():
+            for item in (data.user.club.hoardings, data.user.club.programmes):
                 delete = []
 
                 for advertid, advert in item.available.items():

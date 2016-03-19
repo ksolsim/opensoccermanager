@@ -34,6 +34,7 @@ class User:
         '''
         Load club object and store for access.
         '''
+        self.clubid = clubid
         self.club = data.clubs.get_club_by_id(clubid)
 
 
@@ -81,13 +82,11 @@ class Names:
         '''
         self.add_name(name)
 
-        club = data.clubs.get_club_by_id(data.user.team)
+        for article in data.user.club.news.articles.values():
+            article.title = article.title.replace(data.user.club.manager, name)
+            article.message = article.message.replace(data.user.club.manager, name)
 
-        for article in club.news.articles.values():
-            article.title = article.title.replace(club.manager, name)
-            article.message = article.message.replace(club.manager, name)
-
-        club.manager = name
+        data.user.club.manager = name
 
     def save_names(self):
         '''

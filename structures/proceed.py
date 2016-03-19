@@ -79,8 +79,7 @@ class ContinueToMatch:
         '''
         Verify eleven selected players are eligible.
         '''
-        club = data.clubs.get_club_by_id(data.user.team)
-        count = club.squad.teamselection.get_team_count()
+        count = data.user.club.squad.teamselection.get_team_count()
 
         state = count == 1
 
@@ -93,8 +92,7 @@ class ContinueToMatch:
         '''
         Check whether the user has selected all substitutes.
         '''
-        club = data.clubs.get_club_by_id(data.user.team)
-        count = club.squad.teamselection.get_subs_count()
+        count = data.user.club.squad.teamselection.get_subs_count()
 
         state = True
 
@@ -116,9 +114,9 @@ class ContinueToMatch:
         '''
         Generate squad for computer-run club.
         '''
-        if fixture.home.clubid == data.user.team:
+        if fixture.home.clubid == data.user.clubid:
             club = data.clubs.get_club_by_id(fixture.away.clubid)
             club.squad.generate_squad()
-        elif fixture.away.clubid == data.user.team:
+        elif fixture.away.clubid == data.user.clubid:
             club = data.clubs.get_club_by_id(fixture.home.clubid)
             club.squad.generate_squad()

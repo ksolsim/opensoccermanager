@@ -47,24 +47,18 @@ class TrainingCamp:
         '''
         Return cost of training camp for reserve team.
         '''
-        club = data.clubs.get_club_by_id(data.user.team)
-
-        cost = self.get_player_cost() * club.squad.get_reserves_count()
-
-        return cost
+        return self.get_player_cost() * data.user.club.squad.get_reserves_count()
 
     def get_total_cost(self):
         '''
         Return total training camp cost for selected team members.
         '''
-        club = data.clubs.get_club_by_id(data.user.team)
-
         if self.options.squad == 0:
-            squad = club.squad.get_squad_count()
+            squad = data.user.club.squad.get_squad_count()
         elif self.options.squad == 1:
             squad = 16
         elif self.options.squad == 2:
-            squad = club.squad.get_reserves_count()
+            squad = data.user.club.squad.get_reserves_count()
 
         cost = squad * self.get_player_cost()
 

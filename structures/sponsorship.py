@@ -41,17 +41,15 @@ class Sponsorship:
         '''
         Create sponsorship offer details and announce to user.
         '''
-        club = data.clubs.get_club_by_id(data.user.team)
-
         self.status = 1
         self.timeout = random.randint(28, 45)
 
         self.offer = self.Offer()
         self.offer.company = random.choice(data.companies.get_companies())
         self.offer.period = random.randint(1, 5)
-        self.offer.amount = (club.reputation * random.randrange(950, 1100, 10)) * club.reputation ** 2
+        self.offer.amount = (data.user.club.reputation * random.randrange(950, 1100, 10)) * data.user.club.reputation ** 2
 
-        club.news.publish("BS01")
+        data.user.club.news.publish("BS01")
 
     def update_sponsorship(self):
         self.timeout -= 1
@@ -71,9 +69,7 @@ class Sponsorship:
         self.status = 2
         self.offer.period = self.offer.period * 52
 
-        club = data.clubs.get_club_by_id(data.user.team)
-
-        club.accounts.deposit(self.offer.amount, "sponsorship")
+        data.user.club.accounts.deposit(self.offer.amount, "sponsorship")
 
     def reject_offer(self):
         '''
@@ -93,9 +89,7 @@ class Sponsorship:
 
         self.offer = None
 
-        club = data.clubs.get_club_by_id(data.user.team)
-
-        club.news.publish("BS03")
+        data.user.club.news.publish("BS03")
 
     def display_sponsorship_dialog(self):
         '''

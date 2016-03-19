@@ -20,15 +20,12 @@ import data
 
 
 class Events:
-    def __init__(self):
-        self.club = data.clubs.get_club_by_id(data.user.team)
-
     def process_daily_events(self):
         '''
         Events processed each day.
         '''
-        self.club.tickets.check_season_ticket_availability()
-        self.club.sponsorship.update_sponsorship()
+        data.user.club.tickets.check_season_ticket_availability()
+        data.user.club.sponsorship.update_sponsorship()
         data.injury.increment_fitness()
         data.injury.generate_injuries()
         data.advertising.assistant_handled()
@@ -38,16 +35,16 @@ class Events:
         '''
         Events processed at the end of each week.
         '''
-        self.club.accounts.reset_weekly()
-        self.club.finances.loan.update_interest_rate()
-        self.club.finances.overdraft.update_interest_rate()
-        self.club.pay_players()
-        self.club.pay_staff()
-        self.club.coaches.update_contracts()
-        self.club.scouts.update_contracts()
-        self.club.team_training.update_schedule()
-        self.club.individual_training.individual_training_event()
-        self.club.stadium.update_condition()
+        data.user.club.accounts.reset_weekly()
+        data.user.club.finances.loan.update_interest_rate()
+        data.user.club.finances.overdraft.update_interest_rate()
+        data.user.club.pay_players()
+        data.user.club.pay_staff()
+        data.user.club.coaches.update_contracts()
+        data.user.club.scouts.update_contracts()
+        data.user.club.team_training.update_schedule()
+        data.user.club.individual_training.individual_training_event()
+        data.user.club.stadium.update_condition()
         data.players.update_contracts()
         data.advertising.decrement_advertising()
         data.advertising.refresh_advertising()
@@ -61,7 +58,7 @@ class Events:
         '''
         Events processed at the end of each season.
         '''
-        self.club.tickets.toggle_season_ticket_availability()
+        data.user.club.tickets.toggle_season_ticket_availability()
 
         data.date.set_end_of_season()
 

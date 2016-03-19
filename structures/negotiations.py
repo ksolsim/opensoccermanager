@@ -84,7 +84,7 @@ class Negotiations:
 
         for negotiation in self.negotiations.values():
             if playerid == negotiation.player.playerid:
-                if data.user.team == negotiation.club.clubid:
+                if data.user.clubid == negotiation.club.clubid:
                     uigtk.negotiations.InProgress()
                     status = True
 
@@ -173,14 +173,13 @@ class Negotiations:
                 negotiationid = self.get_negotiationid()
 
                 negotiation = Negotiation(negotiationid, player)
-                negotiation.club = data.clubs.get_club_by_id(data.user.team)
+                negotiation.club = data.user.club
                 self.negotiations[negotiationid] = negotiation
 
                 if not player.club:
                     negotiation.transfer_type = 2
 
-                club = data.clubs.get_club_by_id(data.user.team)
-                club.shortlist.add_to_shortlist(player)
+                data.user.club.shortlist.add_to_shortlist(player)
 
     def initialise_loan(self, playerid):
         '''
@@ -195,12 +194,11 @@ class Negotiations:
                 negotiationid = self.get_negotiationid()
 
                 negotiation = Negotiation(negotiationid, player)
-                negotiation.club = data.clubs.get_club_by_id(data.user.team)
+                negotiation.club = data.user.club
                 negotiation.transfer_type = 1
                 self.negotiations[negotiationid] = negotiation
 
-                club = data.clubs.get_club_by_id(data.user.team)
-                club.shortlist.add_to_shortlist(player)
+                data.user.club.shortlist.add_to_shortlist(player)
 
     def end_negotiation(self, negotiation):
         '''
@@ -215,7 +213,7 @@ class Negotiations:
         incoming = {}
 
         for negotiationid, negotiation in self.negotiations.items():
-            if negotiation.club.clubid == data.user.team:
+            if negotiation.club.clubid == data.user.clubid:
                 incoming[negotiationid] = negotiation
 
         return incoming.items()
@@ -227,7 +225,7 @@ class Negotiations:
         outgoing = {}
 
         for negotiationid, negotiation in self.negotiations.items():
-            if negotiation.club.clubid != data.user.team:
+            if negotiation.club.clubid != data.user.clubid:
                 outgoing[negotationid] = negotation
 
         return outgoing.items()
@@ -256,7 +254,7 @@ class Negotiation:
         '''
         Retrieve current transfer status message for given status id.
         '''
-        if self.club.clubid == data.user.team:
+        if self.club.clubid == data.user.clubid:
             return self.status.get_inbound_status(self.statusid)
         else:
             return self.status.get_outbound_status(self.statusid)

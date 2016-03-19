@@ -77,14 +77,12 @@ class IndividualTraining:
         '''
         Process individual training for club.
         '''
-        club = data.clubs.get_club_by_id(data.user.team)
-
         for individual in self.individual_training.values():
-            coach = club.coaches.hired[individual.coachid]
+            coach = data.user.club.coaches.hired[individual.coachid]
 
             ability = coach.ability + 1
             intensity = individual.intensity + 1
-            sessions = 0.4 * club.team_training.get_individual_sessions()
+            sessions = 0.4 * data.user.club.team_training.get_individual_sessions()
 
             if coach.speciality == 0:
                 if individual.skill == 0:

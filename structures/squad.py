@@ -215,8 +215,7 @@ class TeamSelection:
                 player = data.players.get_player_by_id(playerid)
                 total += player.contract.winbonus
 
-        club = data.clubs.get_club_by_id(data.user.team)
-        club.accounts.withdraw(amount=total, category="playerwage")
+        data.user.club.accounts.withdraw(amount=total, category="playerwage")
 
 
 class TeamGenerator:

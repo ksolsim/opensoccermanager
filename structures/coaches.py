@@ -60,11 +60,9 @@ class Coaches(structures.staff.Staff):
             coach.contract -= 1
 
             if coach.contract in (4, 8, 12):
-                club = data.clubs.get_club_by_id(data.user.team)
-                club.news.publish("CC03", coach=coach.name, period=coach.contract)
+                data.user.club.news.publish("CC03", coach=coach.name, period=coach.contract)
             elif coach.contract == 0:
-                club = data.clubs.get_club_by_id(data.user.team)
-                club.news.publish("CC01", coach=coach.name)
+                data.user.club.news.publish("CC01", coach=coach.name)
 
                 delete.append(coachid)
 
@@ -92,9 +90,8 @@ class Coaches(structures.staff.Staff):
         Remove given coach id from hired staff listing and pay off contract.
         '''
         coach = self.hired[coachid]
-        club = data.clubs.get_club_by_id(data.user.team)
 
-        club.accounts.withdraw(coach.get_payout(), "staffwage")
+        data.user.club.accounts.withdraw(coach.get_payout(), "staffwage")
         del self.hired[coachid]
 
 
@@ -108,11 +105,9 @@ class Coach(structures.staff.Member):
         '''
         Return number of players being individually trained by coach.
         '''
-        club = data.clubs.get_club_by_id(data.user.team)
-
         count = 0
 
-        for trainingid, training in club.individual_training.get_individual_training():
+        for trainingid, training in data.user.club.individual_training.get_individual_training():
             if self.coachid == training.coachid:
                 count += 1
 

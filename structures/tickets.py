@@ -48,15 +48,13 @@ class Tickets:
         '''
         Set initial number of school tickets to be made available.
         '''
-        club = data.clubs.get_club_by_id(data.user.team)
-        self.school_tickets = 100 * (int((20 - club.reputation) * 0.5) + 1)
+        self.school_tickets = 100 * (int((20 - data.user.club.reputation) * 0.5) + 1)
 
     def set_initial_season_tickets(self):
         '''
         Return percentage capacity allocted to season tickets.
         '''
-        club = data.clubs.get_club_by_id(data.user.team)
-        self.season_tickets = 40 + club.reputation
+        self.season_tickets = 40 + data.user.club.reputation
 
     def toggle_season_ticket_availability(self):
         '''
@@ -77,9 +75,7 @@ class Tickets:
         '''
         Determine number of season tickets sold in pre-season.
         '''
-        club = data.clubs.get_club_by_id(data.user.team)
-
-        capacity = club.stadium.get_capacity() - club.stadium.get_box_capacity() - self.school_tickets
+        capacity = data.user.club.stadium.get_capacity() - data.user.club.stadium.get_box_capacity() - self.school_tickets
 
 
 class TicketCategories:
@@ -107,17 +103,15 @@ class TicketCategories:
 
 class TicketPrices:
     def __init__(self, multiplier):
-        self.club = data.clubs.get_club_by_id(data.user.team)
-
         self.set_initial_prices(multiplier)
 
     def set_initial_prices(self, multiplier):
         '''
         Set initial ticket prices for league, cup, and season tickets.
         '''
-        prices = [multiplier + self.club.reputation,
-                  multiplier + self.club.reputation + (self.club.reputation * 0.25),
-                  (multiplier + self.club.reputation) * 15]
+        prices = [multiplier + data.user.club.reputation,
+                  multiplier + data.user.club.reputation + (data.user.club.reputation * 0.25),
+                  (multiplier + data.user.club.reputation) * 15]
 
         self.prices = list(map(int, prices))
         self.base = list(map(int, prices))

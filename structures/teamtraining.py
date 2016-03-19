@@ -112,17 +112,15 @@ class TeamTraining:
             self.timeout -= 1
 
             if self.timeout == 0:
-                club = data.clubs.get_club_by_id(data.user.team)
-
                 if self.get_schedule_set():
-                    club.news.publish("TT02")
+                    data.user.club.news.publish("TT02")
                     self.get_random_timeout()
                 else:
-                    club.news.publish("TT01")
+                    data.user.club.news.publish("TT01")
                     self.get_random_timeout()
 
                 if self.get_sunday_training():
-                    club.news.publish("TT03")
+                    data.user.club.news.publish("TT03")
 
                 if self.get_overworked_training():
-                    club.news.publish("TT04")
+                    data.user.club.news.publish("TT04")

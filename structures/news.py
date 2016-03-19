@@ -78,9 +78,7 @@ class News:
 
 class Article:
     def __init__(self, newsid, kwargs):
-        club = data.clubs.get_club_by_id(data.user.team)
-
-        item = random.choice(club.news.news[newsid])
+        item = random.choice(data.user.club.news.news[newsid])
 
         self.date = data.date.get_date_as_string()
         self.title = item[0]
@@ -102,11 +100,9 @@ class Keys:
     Key substitution class for passed news articles.
     '''
     def __init__(self, kwargs):
-        club = data.clubs.get_club_by_id(data.user.team)
-
-        self.keys = {"_CLUB_": club.name,
-                     "_USER_": club.manager,
-                     "_CHAIRMAN_": club.chairman,
+        self.keys = {"_CLUB_": data.user.club.name,
+                     "_USER_": data.user.club.manager,
+                     "_CHAIRMAN_": data.user.club.chairman,
                      "_SEASON_": data.date.get_season(),
                      "_FIXTURE1_": kwargs.get("fixture1"),
                      "_FIXTURE2_": kwargs.get("fixture2"),

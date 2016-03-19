@@ -58,11 +58,9 @@ class Scouts(structures.staff.Staff):
             scout.contract -= 1
 
             if scout.contract in (4, 8, 12):
-                club = data.clubs.get_club_by_id(data.user.team)
-                club.news.publish("SC03", scout=scout.name, period=scout.contract)
+                data.user.club.news.publish("SC03", scout=scout.name, period=scout.contract)
             elif scout.contract == 0:
-                club = data.clubs.get_club_by_id(data.user.team)
-                club.news.publish("SC01", scout=scout.name)
+                data.user.club.news.publish("SC01", scout=scout.name)
 
                 delete.append(scoutid)
 
@@ -81,9 +79,8 @@ class Scouts(structures.staff.Staff):
         Remove given scout id from hired staff listing and pay off contract.
         '''
         scout = self.hired[scoutid]
-        club = data.clubs.get_club_by_id(data.user.team)
 
-        club.accounts.withdraw(scout.get_payout(), "staffwage")
+        data.user.club.accounts.withdraw(scout.get_payout(), "staffwage")
         del self.hired[scoutid]
 
 

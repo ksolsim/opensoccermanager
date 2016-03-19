@@ -24,12 +24,10 @@ import data
 class Advertising:
     class Advert:
         def __init__(self, name):
-            club = data.clubs.get_club_by_id(data.user.team)
-
             self.name = name
             self.quantity = random.randint(1, 6)
             self.period = random.randint(1, 12)
-            self.amount = (club.reputation + random.randint(-5, 5)) * 100
+            self.amount = (data.user.club.reputation + random.randint(-5, 5)) * 100
 
         def get_item(self):
             '''
@@ -92,7 +90,6 @@ class Advertising:
         if self.get_advert_count() + advert.quantity <= self.maximum:
             self.current[advertid] = advert
 
-            club = data.clubs.get_club_by_id(data.user.team)
-            club.accounts.deposit(advert.amount, "advertising")
+            data.user.club.accounts.deposit(advert.amount, "advertising")
 
             del self.available[advertid]

@@ -147,12 +147,12 @@ class Fixtures:
 
         for fixture in self.fixtures.values():
             if fixture.week in (0, 1, 2):
-                if data.user.team in (fixture.home.clubid, fixture.away.clubid):
+                if data.user.clubid in (fixture.home.clubid, fixture.away.clubid):
                     fixtures.append([fixture.home.clubid, fixture.away.clubid])
 
         for teams in fixtures:
             for count, team in enumerate(teams):
-                if team != data.user.team:
+                if team != data.user.clubid:
                     club = data.clubs.get_club_by_id(team)
                     location = ("A", "H")[count]
 
