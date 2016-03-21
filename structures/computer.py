@@ -37,12 +37,29 @@ class InjuryGenerator:
                     injury = data.injuries.get_random_injury()
                     player.injury.set_injured(injury)
 
+                    player.club.news.publish("IN01", player=player.get_name(mode=1), weeks=player.injury.period, injury=injury.name)
+
+    def injury_recovery(self):
+        '''
+        Decrement injury recovery period for injured players.
+        '''
+        for playerid, player in data.players.get_players():
+            if player.injury.get_injured():
+                player.injury.period -= 1
+
+                if player.injury.period == 0:
+                    injury = data.injuries.get_injury_by_id(player.injury.injuryid)
+
+                    player.club.news.publish("IN03", player=player.get_name(mode=1), injury=injury.name)
+
+                    player.injury.injuryid = None
+
     def increment_fitness(self):
         '''
         Improve fitness for players with less than 100 fitness.
         '''
         for playerid, player in data.players.get_players():
-            if player.injury.fitness < 100:
+            if player.injury.fitness < 100 and not player.injury.get_injured():
                 player.injury.fitness += random.randint(0, 5)
 
                 if player.injury.fitness > 100:
@@ -55,7 +72,7 @@ class AdvertHandler:
 
     def update_timeout(self):
         '''
-        Refresh timeout
+        Refresh timeout for advertising not setup alert.
         '''
         self.timeout = random.randint(12, 20)
 

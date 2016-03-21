@@ -45,17 +45,6 @@ class Injuries:
         '''
         return random.choice(list(self.injuries.values()))
 
-    def fitness_recovery(self):
-        '''
-        Increment recovery of unfit (not injured) players.
-        '''
-        for playerid, player in data.players.get_players():
-            if player.injury.fitness < 100 and not player.injured.get_injured():
-                player.injury.fitness += random.randint(0, 5)
-
-                if player.injury.fitness > 100:
-                    player.injury.fitness = 100
-
     def populate_data(self):
         data.database.cursor.execute("SELECT * FROM injury")
 

@@ -59,7 +59,7 @@ class NegotiateOffer(Sponsorship):
         self.add_button("_Reject Deal", Gtk.ResponseType.REJECT)
         self.add_button("_Accept Deal", Gtk.ResponseType.ACCEPT)
         self.set_default_response(Gtk.ResponseType.ACCEPT)
-        self.set_markup("<span size='12000'><b>%s have made a %i year offer worth %s.</b></span>" % (data.user.club.sponsorship.offer.company, club.sponsorship.offer.period, amount))
+        self.set_markup("<span size='12000'><b>%s have made a %i year offer worth %s.</b></span>" % (data.user.club.sponsorship.offer.company, data.user.club.sponsorship.offer.period, amount))
         self.format_secondary_text("Do you wish to accept or reject this deal?")
 
     def show(self):

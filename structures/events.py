@@ -46,6 +46,7 @@ class Events:
         data.user.club.individual_training.individual_training_event()
         data.user.club.stadium.update_condition()
         data.players.update_contracts()
+        data.injury.injury_recovery()
         data.advertising.decrement_advertising()
         data.advertising.refresh_advertising()
 
