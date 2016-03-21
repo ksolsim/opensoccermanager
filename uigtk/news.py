@@ -78,7 +78,7 @@ class News(uigtk.widgets.Grid):
 
         self.liststoreNews = Gtk.ListStore(int, str, str, str, int, str, bool, int)
         self.treemodelfilter = self.liststoreNews.filter_new()
-        self.treemodelfilter.set_visible_func(self.filter_visible, data.clubs.get_club_by_id(data.user.team).news)
+        self.treemodelfilter.set_visible_func(self.filter_visible, data.user.club.news)
         treemodelsort = Gtk.TreeModelSort(self.treemodelfilter)
         treemodelsort.set_sort_column_id(0, Gtk.SortType.DESCENDING)
 
@@ -140,10 +140,8 @@ class News(uigtk.widgets.Grid):
         model, treeiter = treeselection.get_selected()
 
         if treeiter:
-            club = data.clubs.get_club_by_id(data.user.team)
-
             newsid = model[treeiter][0]
-            article = club.news.articles[newsid]
+            article = data.user.club.news.articles[newsid]
             article.unread = False
 
             self.textview.textbuffer.set_text(article.message)
@@ -201,9 +199,7 @@ class News(uigtk.widgets.Grid):
     def populate_news(self):
         self.liststoreNews.clear()
 
-        club = data.clubs.get_club_by_id(data.user.team)
-
-        for articleid, article in club.news.articles.items():
+        for articleid, article in data.user.club.news.articles.items():
             if article.unread:
                 weight = 700
             else:

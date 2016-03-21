@@ -287,7 +287,7 @@ class FriendlyDialog(Gtk.Dialog):
         for leagueid, league in data.leagues.get_leagues():
             for clubid in league.get_clubs():
                 if leagueid == int(self.comboboxLeague.get_active_id()):
-                    if clubid != data.user.team:
+                    if clubid != data.user.clubid:
                         club = data.clubs.get_club_by_id(clubid)
                         self.liststoreClubs.append([str(clubid), club.name])
 

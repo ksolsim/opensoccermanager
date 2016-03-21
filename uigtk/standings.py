@@ -120,8 +120,6 @@ class Standings(Gtk.Grid):
         self.comboboxLeague.set_active(0)
 
     def populate_data(self):
-        club = data.clubs.get_club_by_id(data.user.team)
-
         self.liststoreStandings.clear()
 
         if self.comboboxLeague.get_active_id():

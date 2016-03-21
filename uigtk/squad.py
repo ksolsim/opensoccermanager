@@ -263,7 +263,7 @@ class Squad(uigtk.widgets.Grid):
         self.substitutions.populate_subs()
 
     def run(self):
-        Squad.club = data.clubs.get_club_by_id(data.user.team)
+        Squad.club = data.user.club
 
         self.populate_data()
         self.populate_selection()

@@ -127,12 +127,10 @@ class Advertising(uigtk.widgets.Grid):
             advertid = int(selectiondata[1])
 
             if int(selectiondata[0]) == index:
-                club = data.clubs.get_club_by_id(data.user.team)
-
                 if index == 0:
-                    club.hoardings.move(advertid)
+                    data.user.club.hoardings.move(advertid)
                 elif index == 1:
-                    club.programmes.move(advertid)
+                    data.user.club.programmes.move(advertid)
 
                 context.finish(True, True, time)
 
@@ -142,7 +140,6 @@ class Advertising(uigtk.widgets.Grid):
             '''
             Set the current number of adverts running.
             '''
-            club = data.clubs.get_club_by_id(data.user.team)
             count = advert.get_advert_count()
             self.labelCount.set_label("%i out of %i spaces used" % (count, advert.maximum))
 
@@ -177,10 +174,10 @@ class Advertising(uigtk.widgets.Grid):
         Move selected advert to current listing.
         '''
         if advert is self.hoardings:
-            advert.add_advertising(self.club.hoardings)
+            advert.add_advertising(data.user.club.hoardings)
             self.populate_hoardings()
         else:
-            advert.add_advertising(self.club.programmes)
+            advert.add_advertising(data.user.club.programmes)
             self.populate_programmes()
 
     def on_advert_drag_and_drop(self, treeview, context, x, y, selection, info, time, index):
@@ -198,13 +195,13 @@ class Advertising(uigtk.widgets.Grid):
         '''
         Toggle assistant manager to handle advertising.
         '''
-        self.club.assistant.set_handle_advertising(togglebutton.get_active())
+        data.user.club.assistant.set_handle_advertising(togglebutton.get_active())
 
     def populate_hoardings(self):
         self.hoardings.liststoreAvailable.clear()
         self.hoardings.liststoreCurrent.clear()
 
-        for advertid, advert in self.club.hoardings.available.items():
+        for advertid, advert in data.user.club.hoardings.available.items():
             amount = data.currency.get_currency(advert.amount, integer=True)
 
             self.hoardings.liststoreAvailable.append([advertid,
@@ -213,7 +210,7 @@ class Advertising(uigtk.widgets.Grid):
                                                       advert.get_period(),
                                                       amount])
 
-        for advertid, advert in self.club.hoardings.current.items():
+        for advertid, advert in data.user.club.hoardings.current.items():
             amount = data.currency.get_currency(advert.amount, integer=True)
 
             self.hoardings.liststoreCurrent.append([advertid,
@@ -221,13 +218,13 @@ class Advertising(uigtk.widgets.Grid):
                                                     advert.quantity,
                                                     advert.get_period()])
 
-        self.hoardings.update_advert_count(self.club.hoardings)
+        self.hoardings.update_advert_count(data.user.club.hoardings)
 
     def populate_programmes(self):
         self.programmes.liststoreAvailable.clear()
         self.programmes.liststoreCurrent.clear()
 
-        for advertid, advert in self.club.programmes.available.items():
+        for advertid, advert in data.user.club.programmes.available.items():
             amount = data.currency.get_currency(advert.amount, integer=True)
 
             self.programmes.liststoreAvailable.append([advertid,
@@ -236,7 +233,7 @@ class Advertising(uigtk.widgets.Grid):
                                                        advert.get_period(),
                                                        amount])
 
-        for advertid, advert in self.club.programmes.current.items():
+        for advertid, advert in data.user.club.programmes.current.items():
             amount = data.currency.get_currency(advert.amount, integer=True)
 
             self.programmes.liststoreCurrent.append([advertid,
@@ -244,14 +241,12 @@ class Advertising(uigtk.widgets.Grid):
                                                      advert.quantity,
                                                      advert.get_period()])
 
-        self.programmes.update_advert_count(self.club.programmes)
+        self.programmes.update_advert_count(data.user.club.programmes)
 
     def run(self):
-        self.club = data.clubs.get_club_by_id(data.user.team)
-
         self.populate_hoardings()
         self.populate_programmes()
 
-        self.buttonAssistant.set_active(self.club.assistant.get_handle_advertising())
+        self.buttonAssistant.set_active(data.user.club.assistant.get_handle_advertising())
 
         self.show_all()

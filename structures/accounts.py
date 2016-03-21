@@ -62,6 +62,8 @@ class Accounts:
         '''
         state = (self.balance + data.user.club.finances.overdraft.amount) - amount >= 0
 
+        print(state)
+
         return state
 
     def withdraw(self, amount, category):

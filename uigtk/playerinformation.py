@@ -140,7 +140,7 @@ class PlayerInformation(uigtk.widgets.Grid):
         self.injuries.set_injury_status()
         self.suspensions.set_suspension_status()
 
-        if player.club.clubid == data.user.team:
+        if player.club.clubid == data.user.clubid:
             actionmenu = ContextMenu1()
         else:
             actionmenu = ContextMenu2()
@@ -180,7 +180,7 @@ class Personal(uigtk.widgets.Grid):
         Load club information screen.
         '''
         data.window.screen.change_visible_screen("clubinformation")
-        data.window.screen.active.set_visible_club(self.club)
+        data.window.screen.active.set_visible_club(data.user.club)
 
         return True
 
@@ -581,7 +581,7 @@ class ContextMenu2(Gtk.Menu):
         '''
         Add player to shortlist.
         '''
-        self.club.shortlist.add_to_shortlist(self.playerid)
+        data.user.club.shortlist.add_to_shortlist(self.playerid)
         self.update_sensitivity()
 
     def on_remove_from_shortlist_clicked(self, *args):
@@ -591,7 +591,7 @@ class ContextMenu2(Gtk.Menu):
         dialog = uigtk.shortlist.RemoveShortlist()
 
         if dialog.show(self.playerid):
-            self.club.shortlist.remove_from_shortlist(self.playerid)
+            data.user.club.shortlist.remove_from_shortlist(self.playerid)
             self.update_sensitivity()
 
     def on_comparison_clicked(self, *args):
@@ -604,7 +604,7 @@ class ContextMenu2(Gtk.Menu):
         '''
         Update menu item sensitivity for available options.
         '''
-        sensitive = self.club.shortlist.get_player_in_shortlist(self.playerid)
+        sensitive = data.user.club.shortlist.get_player_in_shortlist(self.playerid)
         self.menuitemAddShortlist.set_sensitive(not sensitive)
         self.menuitemRemoveShortlist.set_sensitive(sensitive)
 
@@ -617,7 +617,6 @@ class ContextMenu2(Gtk.Menu):
 
     def show(self):
         self.player = data.players.get_player_by_id(self.playerid)
-        self.club = data.clubs.get_club_by_id(data.user.team)
 
         self.update_sensitivity()
         self.show_all()

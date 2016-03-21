@@ -82,22 +82,20 @@ class TeamTraining(Gtk.Grid):
         '''
         Update schedule with selected categories.
         '''
-        self.club.team_training.set_training(combobox.value, int(combobox.get_active_id()))
+        data.user.club.team_training.set_training(combobox.value, int(combobox.get_active_id()))
 
     def on_assistant_clicked(self, *args):
         '''
         Generate random training session and display.
         '''
-        self.club.team_training.get_random_schedule()
+        data.user.club.team_training.get_random_schedule()
 
         self.populate_data()
 
     def populate_data(self):
-        for count, trainingid in enumerate(self.club.team_training.get_training()):
+        for count, trainingid in enumerate(data.user.club.team_training.get_training()):
             self.comboboxes[count].set_active(trainingid)
 
     def run(self):
-        self.club = data.clubs.get_club_by_id(data.user.team)
-
         self.populate_data()
         self.show_all()

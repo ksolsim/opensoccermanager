@@ -119,7 +119,7 @@ class Match(uigtk.widgets.Grid):
             for fixtureid in data.calendar.get_other_fixtures(leagueid):
                 fixture = league.fixtures.get_fixture_by_id(fixtureid)
 
-                if data.user.team not in (fixture.home.clubid, fixture.away.clubid):
+                if data.user.clubid not in (fixture.home.clubid, fixture.away.clubid):
                     structures.match.Score(fixture)
                     league.standings.update_standing(fixture)
 

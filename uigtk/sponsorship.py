@@ -53,14 +53,13 @@ class NegotiateOffer(Sponsorship):
     Message dialog when sponsorship offer is available for negotiation.
     '''
     def __init__(self):
-        club = data.clubs.get_club_by_id(data.user.team)
-        amount = data.currency.get_currency(club.sponsorship.offer.amount, integer=True)
+        amount = data.currency.get_currency(data.user.club.sponsorship.offer.amount, integer=True)
 
         Sponsorship.__init__(self)
         self.add_button("_Reject Deal", Gtk.ResponseType.REJECT)
         self.add_button("_Accept Deal", Gtk.ResponseType.ACCEPT)
         self.set_default_response(Gtk.ResponseType.ACCEPT)
-        self.set_markup("<span size='12000'><b>%s have made a %i year offer worth %s.</b></span>" % (club.sponsorship.offer.company, club.sponsorship.offer.period, amount))
+        self.set_markup("<span size='12000'><b>%s have made a %i year offer worth %s.</b></span>" % (data.user.club.sponsorship.offer.company, club.sponsorship.offer.period, amount))
         self.format_secondary_text("Do you wish to accept or reject this deal?")
 
     def show(self):
@@ -83,10 +82,8 @@ class CurrentOffer(Sponsorship):
     Display message dialog when sponsorship offer is running.
     '''
     def __init__(self):
-        club = data.clubs.get_club_by_id(data.user.team)
-
-        if club.sponsorship.offer.period > 1:
-            message = "The current sponsorship deal with %s will run for %i weeks." % (club.sponsorship.offer.company, club.sponsorship.offer.period)
+        if data.user.club.sponsorship.offer.period > 1:
+            message = "The current sponsorship deal with %s will run for %i weeks." % (data.user.club.sponsorship.offer.company, data.user.club.sponsorship.offer.period)
         else:
             message = "The current sponsorship deal expires next week."
 

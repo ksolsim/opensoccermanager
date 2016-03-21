@@ -194,7 +194,7 @@ class Staff(Gtk.Grid):
                     dialog = FireStaff(coach.name, payout)
 
                     if dialog.show():
-                        if self.club.accounts.request(payout):
+                        if not self.club.accounts.request(payout):
                             uigtk.accounts.NotEnoughFunds()
                         else:
                             self.club.coaches.fire_staff(coachid)
@@ -279,7 +279,7 @@ class Staff(Gtk.Grid):
                                             "%s Players" % (coach.count_players_training())])
 
         def run(self):
-            self.club = data.clubs.get_club_by_id(data.user.team)
+            self.club = data.user.club
             self.populate_data()
 
             self.treeviewAvailable.set_cursor(0)
@@ -358,9 +358,12 @@ class Staff(Gtk.Grid):
                 dialog = FireStaff(scout.name, scout.get_payout())
 
                 if dialog.show():
-                    self.club.scouts.fire_staff(scoutid)
+                    if not self.club.accounts.request(payout):
+                        uigtk.accounts.NotEnoughFunds()
+                    else:
+                        self.club.scouts.fire_staff(scoutid)
 
-                    self.populate_data()
+                        self.populate_data()
 
         def renew_contract(self, button):
             model, treeiter = self.treeviewHired.treeselection.get_selected()
@@ -434,7 +437,7 @@ class Staff(Gtk.Grid):
                                             morale.get_morale(scout.morale)])
 
         def run(self):
-            self.club = data.clubs.get_club_by_id(data.user.team)
+            self.club = data.user.club
             self.populate_data()
 
             self.treeviewAvailable.set_cursor(0)

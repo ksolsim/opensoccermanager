@@ -45,10 +45,8 @@ class Stadium(uigtk.widgets.Grid):
             '''
             Set stadium details.
             '''
-            club = data.clubs.get_club_by_id(data.user.team)
-
-            self.labelName.set_label(club.stadium.name)
-            self.labelCapacity.set_label("%i" % (club.stadium.get_capacity()))
+            self.labelName.set_label(data.user.club.stadium.name)
+            self.labelCapacity.set_label("%i" % (data.user.club.stadium.get_capacity()))
 
     class Maintenance(uigtk.widgets.CommonFrame):
         def __init__(self):
@@ -81,15 +79,13 @@ class Stadium(uigtk.widgets.Grid):
             '''
             Update display label for current stadium condition percentage.
             '''
-            club = data.clubs.get_club_by_id(data.user.team)
-            self.labelCondition.set_label("%i%%" % (club.stadium.condition))
+            self.labelCondition.set_label("%i%%" % (data.user.club.stadium.condition))
 
         def set_maintenance_cost(self):
             '''
             Update display label for cost of maintaining stadium and buildings.
             '''
-            club = data.clubs.get_club_by_id(data.user.team)
-            self.labelCost.set_label("<a href=''>%s</a>" % (data.currency.get_currency(club.stadium.get_maintenance_cost(), integer=True)))
+            self.labelCost.set_label("<a href=''>%s</a>" % (data.currency.get_currency(data.user.club.stadium.get_maintenance_cost(), integer=True)))
 
         def on_maintenance_information_clicked(self, *args):
             '''
@@ -111,8 +107,7 @@ class Stadium(uigtk.widgets.Grid):
             '''
             Store updated maintenance percentage value.
             '''
-            club = data.clubs.get_club_by_id(data.user.team)
-            club.stadium.maintenance = spinbutton.get_value_as_int()
+            data.user.club.stadium.maintenance = spinbutton.get_value_as_int()
 
             self.set_maintenance_cost()
 
@@ -393,8 +388,7 @@ class Stadium(uigtk.widgets.Grid):
         self.update_interface()
 
     def run(self):
-        club = data.clubs.get_club_by_id(data.user.team)
-        self.stadium = club.stadium
+        self.stadium = data.user.club.stadium
 
         self.details.set_details()
         self.maintenance.set_maintenance_cost()

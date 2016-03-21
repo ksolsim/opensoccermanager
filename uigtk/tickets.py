@@ -137,7 +137,7 @@ class Tickets(uigtk.widgets.Grid):
             self.tickets[count][2].set_value(category.prices[2])
 
     def run(self):
-        Tickets.club = data.clubs.get_club_by_id(data.user.team)
+        Tickets.club = data.user.club
 
         self.update_interface()
 

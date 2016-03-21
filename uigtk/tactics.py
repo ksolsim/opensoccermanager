@@ -50,7 +50,7 @@ class Tactics(uigtk.widgets.Grid):
         self.bonuses.set_bonus()
 
     def run(self):
-        Tactics.club = data.clubs.get_club_by_id(data.user.team)
+        Tactics.club = data.user.club
 
         self.responsibilities.update_players_list()
         self.populate_data()
@@ -325,21 +325,17 @@ class Bonuses(uigtk.widgets.CommonFrame):
         '''
         Update bonus to be paid on win in next match.
         '''
-        club = data.clubs.get_club_by_id(data.user.team)
-
         if combobox.get_active_id() != "0":
-            club.tactics.bonus = int(combobox.get_active_id())
+            data.user.club.tactics.bonus = int(combobox.get_active_id())
         else:
-            club.tactics.bonus = None
+            data.user.club.tactics.bonus = None
 
     def set_bonus(self):
         '''
         Set win bonus for next match.
         '''
-        club = data.clubs.get_club_by_id(data.user.team)
-
-        if club.tactics.bonus:
-            self.comboboxBonus.set_active_id(str(club.tactics.bonus))
+        if data.user.club.tactics.bonus:
+            self.comboboxBonus.set_active_id(str(data.user.club.tactics.bonus))
         else:
             self.comboboxBonus.set_active_id("0")
 
@@ -359,12 +355,10 @@ class Selector(uigtk.widgets.ComboBox):
         self.set_id_column(0)
 
     def populate_items(self):
-        club = data.clubs.get_club_by_id(data.user.team)
-
         self.liststore.clear()
 
         self.liststore.insert(0, [None, "Not Selected"])
 
-        for playerid in club.squad.teamselection.get_team_ids():
+        for playerid in data.user.club.squad.teamselection.get_team_ids():
             player = data.players.get_player_by_id(playerid)
             self.liststore.append([str(playerid), player.get_name()])

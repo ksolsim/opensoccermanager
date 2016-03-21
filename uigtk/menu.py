@@ -333,9 +333,7 @@ class Menu(Gtk.MenuBar):
         '''
         Display sponsorship dialog for current sponsor status.
         '''
-        club = data.clubs.get_club_by_id(data.user.team)
-
-        club.sponsorship.display_sponsorship_dialog()
+        data.user.club.sponsorship.display_sponsorship_dialog()
 
     def on_comparison_clicked(self, *args):
         '''

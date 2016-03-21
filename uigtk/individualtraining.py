@@ -31,7 +31,6 @@ class IndividualTraining(Gtk.Grid):
     class AddTraining(Gtk.Dialog):
         def __init__(self, playerid=None):
             self.playerid = playerid
-            self.club = data.clubs.get_club_by_id(data.user.team)
 
             Gtk.Dialog.__init__(self)
             self.set_transient_for(data.window)
@@ -59,8 +58,8 @@ class IndividualTraining(Gtk.Grid):
                 treemodelsort = Gtk.TreeModelSort(liststore)
                 treemodelsort.set_sort_column_id(1, Gtk.SortType.ASCENDING)
 
-                for playerid, player in self.club.squad.get_squad():
-                    if not self.club.individual_training.get_player_in_training(playerid):
+                for playerid, player in data.user.club.squad.get_squad():
+                    if not data.user.club.individual_training.get_player_in_training(playerid):
                         liststore.append([playerid, player.get_name(mode=1)])
 
                 self.comboboxPlayer = uigtk.widgets.ComboBox(column=1)
@@ -83,7 +82,7 @@ class IndividualTraining(Gtk.Grid):
             self.labelCategory = uigtk.widgets.Label(leftalign=True)
             grid.attach(self.labelCategory, 2, 1, 1, 1)
 
-            for coachid, coach in self.club.coaches.hired.items():
+            for coachid, coach in data.user.club.coaches.hired.items():
                 self.comboboxCoach.append(str(coachid), coach.name)
 
             self.comboboxCoach.set_active(0)
@@ -134,7 +133,7 @@ class IndividualTraining(Gtk.Grid):
             Update recommended training categories when coach is changed.
             '''
             coachid = int(combobox.get_active_id())
-            coach = self.club.coaches.get_coach_by_id(coachid)
+            coach = data.user.club.coaches.get_coach_by_id(coachid)
 
             label = self.categories.get_category_label(coach.speciality)
             self.labelCategory.set_label(label)
@@ -158,7 +157,7 @@ class IndividualTraining(Gtk.Grid):
 
                 training = (self.playerid, coachid, skill, intensity)
 
-                self.club.individual_training.add_to_training(training)
+                data.user.club.individual_training.add_to_training(training)
 
             self.destroy()
 
@@ -287,7 +286,7 @@ class IndividualTraining(Gtk.Grid):
         dialog = self.RemoveTraining(playerid)
 
         if dialog.show():
-            self.club.individual_training.remove_from_training(playerid)
+            data.user.club.individual_training.remove_from_training(playerid)
 
             self.populate_data()
 
@@ -352,9 +351,9 @@ class IndividualTraining(Gtk.Grid):
 
         self.liststore.clear()
 
-        for playerid, training in self.club.individual_training.get_individual_training():
+        for playerid, training in data.user.club.individual_training.get_individual_training():
             player = data.players.get_player_by_id(playerid)
-            coach = self.club.coaches.get_coach_by_id(training.coachid)
+            coach = data.user.club.coaches.get_coach_by_id(training.coachid)
 
             self.liststore.append([playerid,
                                    player.get_name(),
@@ -366,15 +365,13 @@ class IndividualTraining(Gtk.Grid):
                                    status.get_status(training.status)])
 
     def run(self):
-        self.club = data.clubs.get_club_by_id(data.user.team)
-
         self.populate_data()
         self.show_all()
 
-        individual = self.club.team_training.get_individual_set()
+        individual = data.user.club.team_training.get_individual_set()
         self.infobar.set_visible(not individual)
 
-        state = self.club.coaches.get_staff_count() > 0
+        state = data.user.club.coaches.get_staff_count() > 0
         self.buttonAddTraining.set_sensitive(state)
         self.treeview.set_sensitive(state)
         self.labelNoStaff.set_visible(not state)
@@ -396,8 +393,7 @@ class ContextMenu(Gtk.Menu):
         dialog.show()
 
     def on_remove_clicked(self, *args):
-        club = data.clubs.get_club_by_id(data.user.team)
-        club.individual_training.remove_from_training(self.playerid)
+        data.user.club.individual_training.remove_from_training(self.playerid)
 
     def show(self):
         self.show_all()

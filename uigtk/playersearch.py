@@ -196,9 +196,7 @@ class PlayerSearch(uigtk.widgets.Grid):
         if treeiter:
             playerid = model[treeiter][0]
 
-            club = data.clubs.get_club_by_id(data.user.team)
-
-            if club.squad.get_player_in_squad(playerid):
+            if data.user.club.squad.get_player_in_squad(playerid):
                 contextmenu = self.contextmenu1
             else:
                 contextmenu = self.contextmenu2
@@ -301,7 +299,7 @@ class PlayerSearch(uigtk.widgets.Grid):
         # Filter user club
         if visible:
             if not options["own_players"]:
-                if model[treeiter][3] == data.user.team:
+                if model[treeiter][3] == data.user.clubid:
                     visible = False
 
         # Filter position
@@ -476,10 +474,8 @@ class Filter(Gtk.Dialog):
         self.vbox.set_border_width(5)
         self.vbox.set_spacing(5)
 
-        club = data.clubs.get_club_by_id(data.user.team)
-
         self.checkbuttonShowOwnPlayers = uigtk.widgets.CheckButton()
-        self.checkbuttonShowOwnPlayers.set_label("Display %s Players In Search Results" % (club.name))
+        self.checkbuttonShowOwnPlayers.set_label("Display %s Players In Search Results" % (data.user.club.name))
         self.vbox.add(self.checkbuttonShowOwnPlayers)
 
         frame = uigtk.widgets.CommonFrame("Personal")
@@ -706,7 +702,7 @@ class ContextMenu2(ContextMenu1):
         '''
         Add player to shortlist.
         '''
-        self.club.shortlist.add_to_shortlist(self.player)
+        data.user.club.shortlist.add_to_shortlist(self.player)
 
     def on_remove_from_shortlist_clicked(self, *args):
         '''
@@ -715,14 +711,12 @@ class ContextMenu2(ContextMenu1):
         dialog = uigtk.shortlist.RemoveShortlist()
 
         if dialog.show(self.player):
-            self.club.shortlist.remove_from_shortlist(self.player)
+            data.user.club.shortlist.remove_from_shortlist(self.player)
 
     def show(self):
-        self.club = data.clubs.get_club_by_id(data.user.team)
-
         self.show_all()
 
-        sensitive = self.club.shortlist.get_player_in_shortlist(self.player)
+        sensitive = data.user.club.shortlist.get_player_in_shortlist(self.player)
         self.menuitemAddShortlist.set_sensitive(not sensitive)
         self.menuitemRemoveShortlist.set_sensitive(sensitive)
 

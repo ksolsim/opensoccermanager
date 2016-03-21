@@ -164,11 +164,11 @@ class Loan(uigtk.widgets.CommonFrame):
             '''
             Update range of spinbutton for repayment.
             '''
-            loan = data.currency.get_amount(self.club.finances.loan.amount)
+            loan = data.currency.get_amount(data.user.club.finances.loan.amount)
             loan = "%s%s" % (data.currency.get_currency_symbol(), data.currency.get_comma_value(loan))
 
             self.labelOutstanding.set_label(loan)
-            self.spinbuttonRepay.set_range(0, self.club.finances.loan.amount)
+            self.spinbuttonRepay.set_range(0, data.user.club.finances.loan.amount)
 
     def __init__(self):
         uigtk.widgets.CommonFrame.__init__(self, "Loan")
@@ -206,16 +206,16 @@ class Loan(uigtk.widgets.CommonFrame):
 
         period = self.application.spinbuttonPeriod.get_value_as_int()
 
-        dialog = self.application.LoanDialog(loan, self.club.finances.loan.interest, period)
+        dialog = self.application.LoanDialog(loan, data.user.club.finances.loan.interest, period)
 
         if dialog.show():
-            self.club.finances.loan.amount = amount
-            self.club.finances.loan.period = period
+            data.user.club.finances.loan.amount = amount
+            data.user.club.finances.loan.period = period
 
             self.application.spinbuttonAmount.set_value(0)
             self.application.spinbuttonPeriod.set_value(1)
 
-            self.club.accounts.deposit(amount, category="loan")
+            data.user.club.accounts.deposit(amount, category="loan")
 
             self.stack.set_visible_child_name("repayment")
             self.repayment.update_interface()
@@ -226,35 +226,33 @@ class Loan(uigtk.widgets.CommonFrame):
         '''
         repayment = self.repayment.spinbuttonRepay.get_value_as_int()
 
-        if self.club.accounts.request(repayment):
-            self.club.finances.loan.amount -= repayment
+        if data.user.club.accounts.request(repayment):
+            data.user.club.finances.loan.amount -= repayment
 
-            self.club.accounts.withdraw(repayment, category="loan")
+            data.user.club.accounts.withdraw(repayment, category="loan")
 
-            self.repayment.spinbuttonRepay.set_range(0, self.club.finances.loan.amount)
+            self.repayment.spinbuttonRepay.set_range(0, data.user.club.finances.loan.amount)
             self.repayment.spinbuttonRepay.set_value(0)
             self.repayment.update_interface()
 
-            if self.club.finances.loan.amount == 0:
+            if data.user.club.finances.loan.amount == 0:
                 self.stack.set_visible_child_name("application")
 
     def run(self):
-        self.club = data.clubs.get_club_by_id(data.user.team)
-
-        self.application.club = self.club
-        self.repayment.club = self.club
+        self.application.club = data.user.club
+        self.repayment.club = data.user.club
 
         self.stack.set_visible_child_name("application")
 
-        maximum = self.club.finances.loan.get_maximum_loan()
+        maximum = data.user.club.finances.loan.get_maximum_loan()
         amount = data.currency.get_amount(maximum)
         amount = "%s%s" % (data.currency.get_currency_symbol(), data.currency.get_comma_value(amount))
 
-        self.labelStatus.set_label("The maximum loan allowed at this time is %s with an interest rate of %i%%." % (amount, self.club.finances.loan.interest))
+        self.labelStatus.set_label("The maximum loan allowed at this time is %s with an interest rate of %i%%." % (amount, data.user.club.finances.loan.interest))
 
         self.application.spinbuttonAmount.set_range(0, maximum)
-        self.application.spinbuttonAmount.set_value(self.club.finances.loan.amount)
-        self.application.spinbuttonPeriod.set_value(self.club.finances.loan.period)
+        self.application.spinbuttonAmount.set_value(data.user.club.finances.loan.amount)
+        self.application.spinbuttonPeriod.set_value(data.user.club.finances.loan.period)
 
 
 class Overdraft(uigtk.widgets.CommonFrame):
@@ -324,23 +322,21 @@ class Overdraft(uigtk.widgets.CommonFrame):
         amount = self.spinbuttonOverdraft.get_value_as_int()
         amount = "%s%s" % (data.currency.get_currency_symbol(), data.currency.get_comma_value(amount))
 
-        dialog = self.OverdraftDialog(amount, self.club.finances.overdraft.interest)
+        dialog = self.OverdraftDialog(amount, data.user.club.finances.overdraft.interest)
 
         if dialog.show():
-            self.club.finances.overdraft.amount = self.spinbuttonOverdraft.get_value_as_int()
+            data.user.club.finances.overdraft.amount = self.spinbuttonOverdraft.get_value_as_int()
 
     def run(self):
-        self.club = data.clubs.get_club_by_id(data.user.team)
-
-        maximum = self.club.finances.overdraft.get_maximum_overdraft()
+        maximum = data.user.club.finances.overdraft.get_maximum_overdraft()
         self.spinbuttonOverdraft.set_range(0, maximum)
 
         amount = data.currency.get_amount(maximum)
         amount = "%s%s" % (data.currency.get_currency_symbol(), data.currency.get_comma_value(amount))
 
-        self.labelStatus.set_label("The maximum overdraft allowed at this time is %s with an interest rate of %i%%." % (amount, self.club.finances.overdraft.interest))
+        self.labelStatus.set_label("The maximum overdraft allowed at this time is %s with an interest rate of %i%%." % (amount, data.user.club.finances.overdraft.interest))
 
-        self.spinbuttonOverdraft.set_value(self.club.finances.overdraft.amount)
+        self.spinbuttonOverdraft.set_value(data.user.club.finances.overdraft.amount)
 
 
 class Grant(uigtk.widgets.CommonFrame):
@@ -382,9 +378,7 @@ class Grant(uigtk.widgets.CommonFrame):
         pass
 
     def run(self):
-        club = data.clubs.get_club_by_id(data.user.team)
-
-        if club.finances.grant.get_grant_available():
+        if data.user.club.finances.grant.get_grant_available():
             self.labelGrant.set_markup("<b>Grant is available.</b>")
             self.spinbuttonGrant.set_sensitive(True)
             self.buttonApply.set_sensitive(True)
@@ -446,17 +440,15 @@ class Flotation(uigtk.widgets.CommonFrame):
         dialog = self.FloatDialog()
 
         if dialog.show():
-            self.club.finances.flotation.set_initiate_float()
+            data.user.club.finances.flotation.set_initiate_float()
             self.buttonFloat.set_sensitive(False)
 
     def run(self):
-        self.club = data.clubs.get_club_by_id(data.user.team)
-
-        amount = self.club.finances.flotation.get_float_amount()
+        amount = data.user.club.finances.flotation.get_float_amount()
         amount = data.currency.get_amount(amount)
         amount = "%s%s" % (data.currency.get_currency_symbol(), data.currency.get_comma_value(amount))
 
-        if not self.club.finances.flotation.public:
+        if not data.user.club.finances.flotation.public:
             self.buttonFloat.set_sensitive(True)
             self.labelStatus.set_markup("<b>Floating the club at this time would raise in the region of %s.</b>" % (amount))
         else:

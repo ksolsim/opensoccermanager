@@ -36,7 +36,7 @@ class Merchandise(uigtk.products.Products):
         '''
         Setup interface with appropriate widgets to display data.
         '''
-        for count, product in enumerate(self.club.merchandise.get_merchandise(), start=1):
+        for count, product in enumerate(data.user.club.merchandise.get_merchandise(), start=1):
             self.products.append(product)
 
             item = uigtk.products.Item()
@@ -77,8 +77,6 @@ class Merchandise(uigtk.products.Products):
         return data.currency.get_currency(profit)
 
     def run(self):
-        self.club = data.clubs.get_club_by_id(data.user.team)
-
         if self.products == []:
             self.setup_display_widgets()
 

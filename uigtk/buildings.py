@@ -73,16 +73,13 @@ class Totals(uigtk.widgets.CommonFrame):
         '''
         Set maximum allowable building plots.
         '''
-        club = data.clubs.get_club_by_id(data.user.team)
-        self.labelMaximumPlots.set_label("%i" % (club.stadium.buildings.maximum_plots))
+        self.labelMaximumPlots.set_label("%i" % (data.user.club.stadium.buildings.maximum_plots))
 
     def update_grant_status(self):
         '''
         Update upgrade status and total costs.
         '''
-        club = data.clubs.get_club_by_id(data.user.team)
-
-        if not club.finances.grant.get_grant_available():
+        if not data.user.club.finances.grant.get_grant_available():
             self.labelAvailableGrant.set_label("Grant unavailable")
 
     def calculate_construction_cost(self):
@@ -117,13 +114,11 @@ class Totals(uigtk.widgets.CommonFrame):
         dialog = ConfirmBuilding(cost)
 
         if dialog.show():
-            club = data.clubs.get_club_by_id(data.user.team)
-
-            if club.accounts.request(cost):
+            if data.user.club.accounts.request(cost):
                 for shop in Buildings.shops:
                     shop.building.number = shop.spinbutton.get_value_as_int()
 
-                club.accounts.withdraw(cost, "stadium")
+                data.user.club.accounts.withdraw(cost, "stadium")
                 self.update_construction_cost()
 
     def on_reset_clicked(self, button):
@@ -188,9 +183,7 @@ class Shops(uigtk.widgets.Grid):
         '''
         Set number of buildings on to interface.
         '''
-        club = data.clubs.get_club_by_id(data.user.team)
-
-        for count, building in enumerate(club.stadium.buildings.get_buildings()):
+        for count, building in enumerate(data.user.club.stadium.buildings.get_buildings()):
             self.shops[count].spinbutton.set_value(building.number)
 
     def get_building_count(self):
@@ -210,9 +203,7 @@ class Shop(uigtk.widgets.Grid):
     def __init__(self, index):
         uigtk.widgets.Grid.__init__(self)
 
-        club = data.clubs.get_club_by_id(data.user.team)
-
-        self.building = club.stadium.buildings.get_building_by_index(index)
+        self.building = data.user.club.stadium.buildings.get_building_by_index(index)
 
         self.labelName = uigtk.widgets.Label("<b>_%s</b>" % (self.building.name))
         self.attach(self.labelName, 0, 0, 2, 1)

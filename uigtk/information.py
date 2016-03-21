@@ -24,8 +24,7 @@ import uigtk.infotip
 
 class Information(Gtk.Grid):
     '''
-    Display information statusbar with current date, unread news widget, next
-    match, and button to continue on with the game.
+    Information display container shown at bottom of game screen.
     '''
     def __init__(self):
         Gtk.Grid.__init__(self)
@@ -115,9 +114,7 @@ class Information(Gtk.Grid):
         '''
         Update whether unread news item is visible.
         '''
-        club = data.clubs.get_club_by_id(data.user.team)
-
-        visible = club.news.get_unread_count() > 0
+        visible = data.user.club.news.get_unread_count() > 0
         self.buttonNews.set_visible(visible)
 
     def update_date(self):

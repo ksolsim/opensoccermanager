@@ -88,7 +88,7 @@ class Injuries(uigtk.widgets.CommonFrame):
     def populate_data(self):
         self.liststore.clear()
 
-        for playerid in self.club.squad.get_injured_players():
+        for playerid in data.user.club.squad.get_injured_players():
             player = data.players.get_player_by_id(playerid)
 
             self.liststore.append([playerid,
@@ -98,12 +98,11 @@ class Injuries(uigtk.widgets.CommonFrame):
                                    "%s%%" % (player.injury.fitness)])
 
     def run(self):
-        self.club = data.clubs.get_club_by_id(data.user.team)
         self.populate_data()
 
         self.show_all()
 
-        state = len(self.club.squad.get_injured_players()) > 0
+        state = len(data.user.club.squad.get_injured_players()) > 0
         self.scrolledwindow.set_sensitive(state)
         self.labelNoInjuries.set_visible(not state)
 
@@ -151,9 +150,7 @@ class Suspensions(uigtk.widgets.CommonFrame):
     def populate_data(self):
         self.liststore.clear()
 
-        club = data.clubs.get_club_by_id(data.user.team)
-
-        for playerid in club.squad.get_suspended_players():
+        for playerid in data.user.club.squad.get_suspended_players():
             player = data.players.get_player_by_id(playerid)
 
             self.liststore.append([playerid,
@@ -162,11 +159,10 @@ class Suspensions(uigtk.widgets.CommonFrame):
                                    player.suspension.get_suspension_period()])
 
     def run(self):
-        self.club = data.clubs.get_club_by_id(data.user.team)
         self.populate_data()
 
         self.show_all()
 
-        state = len(self.club.squad.get_suspended_players()) > 0
+        state = len(data.user.club.squad.get_suspended_players()) > 0
         self.scrolledwindow.set_sensitive(state)
         self.labelNoSuspensions.set_visible(not state)

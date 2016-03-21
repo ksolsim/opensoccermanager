@@ -96,7 +96,7 @@ class Finances:
             '''
             Return the maximum allowed overdraft.
             '''
-            return int(((club.accounts.balance * 0.5) * 0.05) * data.user.club.reputation)
+            return int(((data.user.club.accounts.balance * 0.5) * 0.05) * data.user.club.reputation)
 
         def update_interest_rate(self):
             '''
@@ -121,6 +121,9 @@ class Finances:
             '''
 
         def get_maximum_grant(self):
+            '''
+            Return the maximum permitted stadium improvement grant.
+            '''
             pass
 
         def get_grant_available(self):

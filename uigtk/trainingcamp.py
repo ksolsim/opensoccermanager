@@ -169,7 +169,7 @@ class TrainingCamp(uigtk.widgets.Grid):
         '''
         Update cost when days value is changed.
         '''
-        self.club.training_camp.options.days = int(combobox.get_active_id())
+        data.user.club.training_camp.options.days = int(combobox.get_active_id())
         self.update_cost()
 
     def on_quality_toggled(self, radiobutton):
@@ -177,7 +177,7 @@ class TrainingCamp(uigtk.widgets.Grid):
         Update cost when quality of camp is changed.
         '''
         if radiobutton.get_active():
-            self.club.training_camp.options.quality = radiobutton.quality
+            data.user.club.training_camp.options.quality = radiobutton.quality
             self.update_cost()
 
     def on_location_toggled(self, radiobutton):
@@ -185,7 +185,7 @@ class TrainingCamp(uigtk.widgets.Grid):
         Update cost when location is changed.
         '''
         if radiobutton.get_active():
-            self.club.training_camp.options.location = radiobutton.location
+            data.user.club.training_camp.options.location = radiobutton.location
             self.update_cost()
 
     def on_purpose_toggled(self, radiobutton):
@@ -193,7 +193,7 @@ class TrainingCamp(uigtk.widgets.Grid):
         Update cost when purpose of training is changed.
         '''
         if radiobutton.get_active():
-            self.club.training_camp.options.purpose = radiobutton.purpose
+            data.user.club.training_camp.options.purpose = radiobutton.purpose
             self.update_cost()
 
         self.update_warning_status()
@@ -203,7 +203,7 @@ class TrainingCamp(uigtk.widgets.Grid):
         Update cost when team members attending is changed.
         '''
         if radiobutton.get_active():
-            self.club.training_camp.options.squad = radiobutton.squad
+            data.user.club.training_camp.options.squad = radiobutton.squad
             self.update_cost()
 
         self.update_warning_status()
@@ -212,16 +212,16 @@ class TrainingCamp(uigtk.widgets.Grid):
         '''
         Update costing labels.
         '''
-        cost = self.club.training_camp.get_player_cost()
+        cost = data.user.club.training_camp.get_player_cost()
         self.labelPlayerCost.set_label("%s" % (data.currency.get_currency(cost, integer=True)))
 
-        cost = self.club.training_camp.get_first_team_cost()
+        cost = data.user.club.training_camp.get_first_team_cost()
         self.labelFirstTeamCost.set_label("%s" % (data.currency.get_currency(cost, integer=True)))
 
-        cost = self.club.training_camp.get_reserve_team_cost()
+        cost = data.user.club.training_camp.get_reserve_team_cost()
         self.labelReserveTeamCost.set_label("%s" % (data.currency.get_currency(cost, integer=True)))
 
-        cost = self.club.training_camp.get_total_cost()
+        cost = data.user.club.training_camp.get_total_cost()
         self.labelTotalCost.set_label("%s" % (data.currency.get_currency(cost, integer=True)))
 
     def on_reset_clicked(self, *args):
@@ -234,11 +234,11 @@ class TrainingCamp(uigtk.widgets.Grid):
         '''
         Setup training camp with selected details.
         '''
-        cost = self.club.training_camp.get_total_cost()
+        cost = data.user.club.training_camp.get_total_cost()
         dialog = ConfirmTraining(data.currency.get_currency(cost, integer=True))
 
         if dialog.show():
-            self.club.training_camp.apply_options()
+            data.user.club.training_camp.apply_options()
 
     def on_squad_warning_clicked(self, *args):
         '''
@@ -259,20 +259,18 @@ class TrainingCamp(uigtk.widgets.Grid):
         self.buttonScheduleWarning.set_visible(False)
 
         if self.radiobuttonSchedule.get_active():
-            if not self.club.team_training.get_schedule_set():
+            if not data.user.club.team_training.get_schedule_set():
                 self.buttonScheduleWarning.set_visible(True)
         else:
             self.buttonScheduleWarning.set_visible(False)
 
         if self.radiobuttonFirstTeam.get_active():
-            if self.club.squad.teamselection.get_team_count() + self.club.squad.teamselection.get_subs_count() < 16:
+            if data.user.club.squad.teamselection.get_team_count() + data.user.club.squad.teamselection.get_subs_count() < 16:
                 self.buttonSquadWarning.set_visible(True)
         else:
             self.buttonSquadWarning.set_visible(False)
 
     def run(self):
-        self.club = data.clubs.get_club_by_id(data.user.team)
-
         self.show_all()
 
         self.update_warning_status()

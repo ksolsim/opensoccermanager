@@ -116,7 +116,7 @@ class Shortlist(Gtk.Grid):
             self.buttonLoan.set_sensitive(True)
             self.buttonRemove.set_sensitive(True)
 
-            if self.club.scouts.get_staff_count() > 0:
+            if data.user.club.scouts.get_staff_count() > 0:
                 self.buttonScout.set_sensitive(True)
         else:
             self.buttonPurchase.set_sensitive(False)
@@ -164,7 +164,7 @@ class Shortlist(Gtk.Grid):
         dialog = RemoveShortlist()
 
         if dialog.show(player):
-            self.club.shortlist.remove_from_shortlist(player)
+            data.user.club.shortlist.remove_from_shortlist(player)
 
             self.populate_data()
 
@@ -215,7 +215,7 @@ class Shortlist(Gtk.Grid):
     def populate_data(self):
         self.liststore.clear()
 
-        for player in self.club.shortlist.get_shortlist():
+        for player in data.user.club.shortlist.get_shortlist():
             self.liststore.append([player.playerid,
                                    player.get_name(),
                                    player.get_age(),
@@ -235,7 +235,6 @@ class Shortlist(Gtk.Grid):
                                    player.set_pieces])
 
     def run(self):
-        self.club = data.clubs.get_club_by_id(data.user.team)
         self.populate_data()
 
         self.show_all()
@@ -287,7 +286,7 @@ class ContextMenu(Gtk.Menu):
         dialog = RemoveShortlist()
 
         if dialog.show(playerid):
-            self.club.shortlist.remove_from_shortlist(playerid)
+            data.user.club.shortlist.remove_from_shortlist(playerid)
 
     def on_scout_report_clicked(self, *args):
         '''
@@ -299,11 +298,9 @@ class ContextMenu(Gtk.Menu):
         ScoutReport()
 
     def show(self):
-        self.club = data.clubs.get_club_by_id(data.user.team)
-
         self.show_all()
 
-        sensitive = self.club.scouts.get_staff_count() > 0
+        sensitive = data.user.club.scouts.get_staff_count() > 0
         self.menuitemScoutReport.set_sensitive(sensitive)
 
 
@@ -322,9 +319,7 @@ class RemoveShortlist(Gtk.MessageDialog):
         self.set_default_response(Gtk.ResponseType.CANCEL)
 
     def show(self, player):
-        name = player.get_name(mode=1)
-
-        self.set_markup("<span size='12000'><b>Remove %s from shortlist?</b></span>" % (name))
+        self.set_markup("<span size='12000'><b>Remove %s from shortlist?</b></span>" % (player.get_name(mode=1)))
 
         state = self.run() == Gtk.ResponseType.OK
         self.destroy()

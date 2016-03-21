@@ -54,16 +54,14 @@ class Accounts(uigtk.widgets.Grid):
         frame.grid.attach(self.labelBalance, 1, 2, 1, 1)
 
     def run(self):
-        club = data.clubs.get_club_by_id(data.user.team)
-
         self.income.run()
         self.expenditure.run()
 
-        amount = data.currency.get_currency(club.accounts.income, integer=True)
+        amount = data.currency.get_currency(data.user.club.accounts.income, integer=True)
         self.labelIncome.set_label(amount)
-        amount = data.currency.get_currency(club.accounts.expenditure, integer=True)
+        amount = data.currency.get_currency(data.user.club.accounts.expenditure, integer=True)
         self.labelExpenditure.set_label(amount)
-        amount = data.currency.get_currency(club.accounts.balance, integer=True)
+        amount = data.currency.get_currency(data.user.club.accounts.balance, integer=True)
         self.labelBalance.set_label(amount)
 
         self.show_all()
@@ -122,9 +120,7 @@ class Income(uigtk.widgets.Grid):
             self.labels.append((label1, label2))
 
     def run(self):
-        club = data.clubs.get_club_by_id(data.user.team)
-
-        for count, (key, item) in enumerate(club.accounts.incomes.items()):
+        for count, (key, item) in enumerate(data.user.club.accounts.incomes.items()):
             amount = data.currency.get_currency(item.week, integer=True)
             self.labels[count][0].set_label("%s" % (amount))
 
@@ -173,9 +169,7 @@ class Expenditure(uigtk.widgets.Grid):
             self.labels.append((label1, label2))
 
     def run(self):
-        club = data.clubs.get_club_by_id(data.user.team)
-
-        for count, (key, item) in enumerate(club.accounts.expenditures.items()):
+        for count, (key, item) in enumerate(data.user.club.accounts.expenditures.items()):
             amount = data.currency.get_currency(item.week, integer=True)
             self.labels[count][0].set_label("%s" % (amount))
 

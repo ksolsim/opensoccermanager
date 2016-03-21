@@ -45,7 +45,6 @@ class Start:
     '''
     def __init__(self, clubid, season):
         data.user = structures.user.User()
-        data.user.team = clubid
 
         data.calendar = structures.calendar.Calendar()
         data.date = structures.date.Date(season)

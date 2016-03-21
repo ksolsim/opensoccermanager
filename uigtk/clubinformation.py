@@ -253,9 +253,8 @@ class ClubInformation(uigtk.widgets.Grid):
             playerid = model[treeiter][0]
 
             player = data.players.get_player_by_id(playerid)
-            club = data.clubs.get_club_by_id(data.user.team)
 
-            if playerid in club.squad.get_squad():
+            if playerid in data.user.club.squad.get_squad():
                 contextmenu = self.contextmenu1
             else:
                 contextmenu = self.contextmenu2

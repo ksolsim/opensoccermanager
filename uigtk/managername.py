@@ -50,8 +50,7 @@ class ManagerName(Gtk.Dialog):
 
         self.populate_names()
 
-        club = data.clubs.get_club_by_id(data.user.team)
-        self.entryName.set_text(club.manager)
+        self.entryName.set_text(data.user.club.manager)
 
         self.show_all()
 

@@ -46,10 +46,8 @@ class InfoTip(Gtk.Grid):
         self.attach(self.labelBalance, 1, 3, 1, 1)
 
     def show(self):
-        club = data.clubs.get_club_by_id(data.user.team)
-
-        self.labelManager.set_label("%s" % (club.manager))
-        self.labelChairman.set_label("%s" % (club.chairman))
-        self.labelBalance.set_label("%s" % (data.currency.get_currency(club.accounts.balance, integer=True)))
+        self.labelManager.set_label("%s" % (data.user.club.manager))
+        self.labelChairman.set_label("%s" % (data.user.club.chairman))
+        self.labelBalance.set_label("%s" % (data.currency.get_currency(data.user.club.accounts.balance, integer=True)))
 
         self.show_all()
