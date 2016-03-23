@@ -19,7 +19,7 @@
 class Loans:
     class Loan:
         def __init__(self):
-            self.playerid = None
+            self.player = None
             self.period = 0
 
     def __init__(self):
@@ -28,6 +28,9 @@ class Loans:
         self.loanid = 0
 
     def get_loanid(self):
+        '''
+        Return new loan id.
+        '''
         self.loanid += 1
 
         return self.loanid
@@ -43,3 +46,8 @@ class Loans:
         '''
         for loan in game.loans.values():
             loan.period -= 1
+
+            if loan.period in (4, 8, 12):
+                pass
+            elif loan.period == 0:
+                self.end_loan()

@@ -772,10 +772,11 @@ class ContextMenu(Gtk.Menu):
         '''
         Query user to terminate contract of selected player.
         '''
-        dialog = TerminateContract(self.playerid)
+        player = data.players.get_player_by_id(self.playerid)
+
+        dialog = TerminateContract(player)
 
         if dialog.show():
-            player = data.players.get_player_by_id(self.playerid)
             player.contract.terminate_contract()
 
             Squad.squadlist.update()
@@ -899,10 +900,9 @@ class TerminateContract(Gtk.MessageDialog):
     '''
     Confirmation dialog to arrange termination of a players contract.
     '''
-    def __init__(self, playerid):
-        player = data.players.get_player_by_id(playerid)
-
-        payout = data.currency.get_currency(player.contract.get_termination_payout(), integer=True)
+    def __init__(self, player):
+        payout = data.currency.get_amount(player.contract.get_termination_payout())
+        payout = data.currency.get_comma_value(payout)
 
         Gtk.MessageDialog.__init__(self)
         self.set_transient_for(data.window)
@@ -910,7 +910,7 @@ class TerminateContract(Gtk.MessageDialog):
         self.set_title("Terminate Contract")
         self.set_property("message-type", Gtk.MessageType.QUESTION)
         self.set_markup("<span size='12000'><b>Do you wish to terminate the contract of %s?</b></span>" % (player.get_name(mode=1)))
-        self.format_secondary_text("The player will be paid %s for the remainder of his contract." % (payout))
+        self.format_secondary_text("The player will be paid %s%s for the remainder of his contract." % (data.currency.get_currency_symbol(), payout))
         self.add_button("_Do Not Terminate", Gtk.ResponseType.CANCEL)
         self.add_button("_Terminate Contract", Gtk.ResponseType.OK)
         self.set_default_response(Gtk.ResponseType.CANCEL)
