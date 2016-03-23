@@ -763,7 +763,7 @@ class ContextMenu(Gtk.Menu):
         '''
         Query user to renew contract of selected player.
         '''
-        dialog = RenewContract(self.playerid)
+        dialog = RenewContract(self.player)
 
         if dialog.show():
             Squad.squadlist.update()
@@ -772,12 +772,10 @@ class ContextMenu(Gtk.Menu):
         '''
         Query user to terminate contract of selected player.
         '''
-        player = data.players.get_player_by_id(self.playerid)
-
-        dialog = TerminateContract(player)
+        dialog = TerminateContract(self.player)
 
         if dialog.show():
-            player.contract.terminate_contract()
+            self.player.contract.terminate_contract()
 
             Squad.squadlist.update()
 
@@ -791,7 +789,7 @@ class ContextMenu(Gtk.Menu):
         '''
         Add player to stack for comparison.
         '''
-        data.comparison.add_to_comparison(self.playerid)
+        data.comparison.add_to_comparison(self.player)
 
     def on_player_information_clicked(self, *args):
         '''
@@ -886,14 +884,14 @@ class ContextMenu2(Gtk.Menu):
 
 
 class RenewContract(uigtk.shared.ContractNegotiation):
-    def __init__(self, playerid):
-        self.player = data.players.get_player_by_id(playerid)
+    def __init__(self, player):
+        self.player = player
 
         uigtk.shared.ContractNegotiation.__init__(self)
         self.set_title("Renew Contract")
         self.add_button("_Renew", Gtk.ResponseType.OK)
 
-        self.labelContract.set_label("Contract renewal details for %s." % (self.player.get_name(mode=1)))
+        self.labelContract.set_label("Contract renewal details for %s." % (player.get_name(mode=1)))
 
 
 class TerminateContract(Gtk.MessageDialog):

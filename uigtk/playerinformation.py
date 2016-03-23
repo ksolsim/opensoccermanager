@@ -499,7 +499,7 @@ class ContextMenu1(Gtk.Menu):
         '''
         Query user to renew contract of selected player.
         '''
-        dialog = uigtk.squad.RenewContract(self.playerid)
+        dialog = uigtk.squad.RenewContract(self.player)
 
         if dialog.show():
             data.window.screen.refresh_visible_screen()
@@ -524,7 +524,7 @@ class ContextMenu1(Gtk.Menu):
         '''
         Add player to stack for comparison.
         '''
-        data.comparison.add_to_comparison(self.playerid)
+        data.comparison.add_to_comparison(self.player)
 
     def update_sensitivity(self):
         '''

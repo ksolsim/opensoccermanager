@@ -53,10 +53,7 @@ class ComparisonDialog(Gtk.Dialog):
             label = uigtk.widgets.Label("<b>%s</b>" % (title))
             grid.attach(label, count, 0, 1, 1)
 
-        playerid1, playerid2 = data.comparison.get_comparison()
-
-        player1 = data.players.get_player_by_id(playerid1)
-        player2 = data.players.get_player_by_id(playerid2)
+        player1, player2 = data.comparison.get_comparison()
 
         label = uigtk.widgets.Label("%s" % (player1.get_name(mode=1)), leftalign=True)
         grid.attach(label, 0, 1, 1, 1)

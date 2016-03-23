@@ -259,7 +259,7 @@ class ClubInformation(uigtk.widgets.Grid):
             else:
                 contextmenu = self.contextmenu2
 
-            contextmenu.playerid = playerid
+            contextmenu.player = player
             contextmenu.show()
             contextmenu.popup(None, None, None, None, event.button, event.time)
 

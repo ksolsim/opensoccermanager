@@ -658,7 +658,7 @@ class ContextMenu1(Gtk.Menu):
         '''
         Add player to stack for comparison.
         '''
-        data.comparison.add_to_comparison(self.player.playerid)
+        data.comparison.add_to_comparison(self.player)
 
     def show(self):
         self.show_all()

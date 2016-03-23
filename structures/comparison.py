@@ -23,12 +23,12 @@ class Comparison:
     def __init__(self):
         self.comparison = []
 
-    def add_to_comparison(self, playerid):
+    def add_to_comparison(self, player):
         '''
         Add player to comparison list.
         '''
-        if playerid not in self.comparison:
-            self.comparison.insert(0, playerid)
+        if player not in self.comparison:
+            self.comparison.insert(0, player)
 
             del self.comparison[2:]
 
