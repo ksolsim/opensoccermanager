@@ -298,7 +298,7 @@ class SquadList(Gtk.ListStore):
                          player.ball_control,
                          player.set_pieces,
                          "%s%%" % (player.injury.fitness),
-                         player.get_nationality_name(),
+                         player.nationality.name,
                          player.value.get_value_as_string(),
                          player.wage.get_wage_as_string(),
                          player.contract.get_contract(),

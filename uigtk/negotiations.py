@@ -177,7 +177,7 @@ class Negotiations(Gtk.Grid):
                 if negotiation.transfer_type in (0, 1):
                     club = negotiation.player.club.name
                 else:
-                    club = "None"
+                    club = ""
 
                 self.liststore.append([negotiationid,
                                        negotiation.player.playerid,

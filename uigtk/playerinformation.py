@@ -106,14 +106,20 @@ class PlayerInformation(uigtk.widgets.Grid):
         PlayerInformation.playerid = playerid
         player = data.players.get_player_by_id(playerid)
 
-        self.personal.club = player.club.clubid
+        if player.club:
+            club = player.club.name
+            self.personal.club = player.club.clubid
+        else:
+            club = ""
+            self.personal.club = None
+
         self.personal.nation = player.nationality
 
         self.labelName.set_label("<span size='24000'><b>%s</b></span>" % (player.get_name(mode=1)))
 
         self.personal.labelDateOfBirth.set_label("Date of Birth: %s (%i)" % (player.get_date_of_birth(), player.get_age()))
-        self.personal.labelClub.set_markup("Club: <a href='club'>%s</a>" % (player.get_club_name()))
-        self.personal.labelNationality.set_markup("Nation: <a href='nation'>%s</a>" % (player.get_nationality_name()))
+        self.personal.labelClub.set_markup("Club: <a href='club'>%s</a>" % (club))
+        self.personal.labelNationality.set_markup("Nation: <a href='nation'>%s</a>" % (player.nationality.name))
         self.personal.labelPosition.set_label("Position: %s" % (player.position))
 
         for count, skill in enumerate(player.get_skills()):

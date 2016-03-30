@@ -392,12 +392,19 @@ class PlayerList(Gtk.ListStore):
         self.clear()
 
         for playerid, player in data.players.get_players():
+            if player.club:
+                clubid = player.club.clubid
+                club = player.club.name
+            else:
+                clubid = None
+                club = ""
+
             self.append([playerid,
                          player.get_name(),
                          player.get_age(),
-                         player.club.clubid,
-                         player.get_club_name(),
-                         player.get_nationality_name(),
+                         clubid,
+                         club,
+                         player.nationality.name,
                          player.position,
                          player.keeping,
                          player.tackling,

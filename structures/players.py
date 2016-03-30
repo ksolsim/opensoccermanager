@@ -96,21 +96,6 @@ class Players:
             '''
             return "%i/%i/%i" % tuple(self.date_of_birth)
 
-        def get_club_name(self):
-            '''
-            Return club name player is contracted to.
-            '''
-            if self.club:
-                return self.club.name
-            else:
-                return ""
-
-        def get_nationality_name(self):
-            '''
-            Return nationality country name.
-            '''
-            return self.nationality.name
-
         def get_skills(self):
             '''
             Return tuple of the nine skills.
@@ -364,8 +349,13 @@ class History:
         '''
         Return tuple of current season history data.
         '''
+        if self.player.club:
+            club = self.player.club.name
+        else:
+            club = ""
+
         current = (data.date.get_season(),
-                   self.player.get_club_name(),
+                   club,
                    "",
                    self.player.appearances,
                    self.player.goals,

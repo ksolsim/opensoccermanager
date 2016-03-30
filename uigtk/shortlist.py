@@ -112,8 +112,16 @@ class Shortlist(Gtk.Grid):
         model, treeiter = treeselection.get_selected()
 
         if treeiter:
+            playerid = model[treeiter][0]
+            player = data.players.get_player_by_id(playerid)
+
             self.buttonPurchase.set_sensitive(True)
-            self.buttonLoan.set_sensitive(True)
+
+            if player.club:
+                self.buttonLoan.set_sensitive(True)
+            else:
+                self.buttonLoan.set_sensitive(False)
+
             self.buttonRemove.set_sensitive(True)
 
             if data.user.club.scouts.get_staff_count() > 0:
@@ -216,12 +224,17 @@ class Shortlist(Gtk.Grid):
         self.liststore.clear()
 
         for player in data.user.club.shortlist.get_shortlist():
+            if player.club:
+                club = player.club.name
+            else:
+                club = ""
+
             self.liststore.append([player.playerid,
                                    player.get_name(),
                                    player.get_age(),
                                    player.position,
-                                   player.get_club_name(),
-                                   player.get_nationality_name(),
+                                   club_name,
+                                   player.nationality.name,
                                    player.value.get_value_as_string(),
                                    player.wage.get_wage_as_string(),
                                    player.keeping,
@@ -247,9 +260,9 @@ class ContextMenu(Gtk.Menu):
         menuitem = uigtk.widgets.MenuItem("Approach for _Purchase")
         menuitem.connect("activate", self.on_purchase_clicked)
         self.append(menuitem)
-        menuitem = uigtk.widgets.MenuItem("Approach for _Loan")
-        menuitem.connect("activate", self.on_loan_clicked)
-        self.append(menuitem)
+        self.menuitemLoan = uigtk.widgets.MenuItem("Approach for _Loan")
+        self.menuitemLoan.connect("activate", self.on_loan_clicked)
+        self.append(self.menuitemLoan)
         menuitem = uigtk.widgets.MenuItem("_Remove Player")
         menuitem.connect("activate", self.on_remove_clicked)
         self.append(menuitem)
@@ -298,6 +311,16 @@ class ContextMenu(Gtk.Menu):
         ScoutReport()
 
     def show(self):
+        model, treeiter = Shortlist.treeselection.get_selected()
+        playerid = model[treeiter][0]
+
+        self.player = data.players.get_player_by_id(playerid)
+
+        if self.player.club:
+            self.menuitemLoan.set_sensitive(True)
+        else:
+            self.menuitemLoan.set_sensitive(False)
+
         self.show_all()
 
         sensitive = data.user.club.scouts.get_staff_count() > 0
