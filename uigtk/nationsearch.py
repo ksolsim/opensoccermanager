@@ -93,12 +93,14 @@ class NationSearch(uigtk.widgets.Grid):
         self.attackers = Position("Attackers")
         gridPositions.attach(self.attackers, 1, 2, 1, 1)
 
-    def set_visible_nation(self, nationid):
+    def set_visible_nation(self, nation):
         '''
         Select passed nation and highlight row in search.
         '''
+        treepath = None
+
         for item in self.liststoreNations:
-            if nationid == item[0]:
+            if nation.nationid == item[0]:
                 treepath = item.path
                 break
 

@@ -391,8 +391,9 @@ class Staff(Gtk.Grid):
             if treeiter:
                 scoutid = model[treeiter][0]
                 scout = self.club.scouts.hired[scoutid]
+                payout = scout.get_payout()
 
-                dialog = FireStaff(scout.name, scout.get_payout())
+                dialog = FireStaff(scout.name, payout)
 
                 if dialog.show():
                     if not self.club.accounts.request(payout):

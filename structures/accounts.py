@@ -62,8 +62,6 @@ class Accounts:
         '''
         state = (self.balance + data.user.club.finances.overdraft.amount) - amount >= 0
 
-        print(state)
-
         return state
 
     def withdraw(self, amount, category):
@@ -90,8 +88,6 @@ class Accounts:
         '''
         Clear weekly deposits and withdrawals.
         '''
-        for item in self.incomes.values():
-            item.week = 0
-
-        for item in self.expenditures.values():
-            item.week = 0
+        for finances in (self.incomes.values(), self.expenditures.values()):
+            for item in finances:
+                item.week = 0

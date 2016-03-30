@@ -150,16 +150,22 @@ class TeamSelection:
             index = self.subs.index(playerid)
             self.subs[index] = None
 
+        data.user.club.tactics.remove_responsiblity(playerid)
+
     def remove_from_team_by_position(self, positionid):
         '''
         Remove player from team for given position id.
         '''
+        playerid = self.team[positionid]
+        data.user.club.tactics.remove_responsiblity(playerid)
         self.team[positionid] = None
 
     def remove_from_subs_by_position(self, positionid):
         '''
         Remove player from subs for given position id.
         '''
+        playerid = self.team[positionid]
+        data.user.club.tactics.remove_responsiblity(playerid)
         self.subs[positionid] = None
 
     def get_team_selection(self):
