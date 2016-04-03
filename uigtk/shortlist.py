@@ -118,8 +118,12 @@ class Shortlist(Gtk.Grid):
             self.buttonPurchase.set_sensitive(True)
 
             if player.club:
+                self.buttonPurchase.set_label("_Purchase")
+                self.buttonPurchase.set_tooltip_text("Approach owning club to request purchase.")
                 self.buttonLoan.set_sensitive(True)
             else:
+                self.buttonPurchase.set_label("_Sign")
+                self.buttonPurchase.set_tooltip_text("Approach player to sign for club.")
                 self.buttonLoan.set_sensitive(False)
 
             self.buttonRemove.set_sensitive(True)
@@ -233,7 +237,7 @@ class Shortlist(Gtk.Grid):
                                    player.get_name(),
                                    player.get_age(),
                                    player.position,
-                                   club_name,
+                                   club,
                                    player.nationality.name,
                                    player.value.get_value_as_string(),
                                    player.wage.get_wage_as_string(),
@@ -257,9 +261,9 @@ class ContextMenu(Gtk.Menu):
     def __init__(self):
         Gtk.Menu.__init__(self)
 
-        menuitem = uigtk.widgets.MenuItem("Approach for _Purchase")
-        menuitem.connect("activate", self.on_purchase_clicked)
-        self.append(menuitem)
+        self.menuitemPurchase = uigtk.widgets.MenuItem("Approach for _Purchase")
+        self.menuitemPurchase.connect("activate", self.on_purchase_clicked)
+        self.append(self.menuitemPurchase)
         self.menuitemLoan = uigtk.widgets.MenuItem("Approach for _Loan")
         self.menuitemLoan.connect("activate", self.on_loan_clicked)
         self.append(self.menuitemLoan)
@@ -317,8 +321,10 @@ class ContextMenu(Gtk.Menu):
         self.player = data.players.get_player_by_id(playerid)
 
         if self.player.club:
+            self.menuitemPurchase.set_label("Approach for _Purchase")
             self.menuitemLoan.set_sensitive(True)
         else:
+            self.menuitemPurchase.set_label("Approach to _Sign")
             self.menuitemLoan.set_sensitive(False)
 
         self.show_all()

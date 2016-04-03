@@ -146,14 +146,15 @@ class PlayerInformation(uigtk.widgets.Grid):
         self.injuries.set_injury_status()
         self.suspensions.set_suspension_status()
 
-        if player.club.clubid == data.user.clubid:
-            actionmenu = ContextMenu1()
-        else:
-            actionmenu = ContextMenu2()
+        if player.club:
+            if player.club.clubid == data.user.clubid:
+                actionmenu = ContextMenu1()
+            else:
+                actionmenu = ContextMenu2()
 
-        actionmenu.playerid = playerid
-        self.buttonActions.set_popup(actionmenu)
-        actionmenu.show()
+            actionmenu.player = player
+            self.buttonActions.set_popup(actionmenu)
+            actionmenu.show()
 
     def run(self):
         self.show_all()
@@ -382,6 +383,7 @@ class History(uigtk.widgets.CommonFrame):
         treeview.set_hexpand(True)
         treeview.set_vexpand(True)
         treeview.set_model(self.liststore)
+        treeview.treeselection.set_mode(Gtk.SelectionMode.NONE)
         scrolledwindow.add(treeview)
 
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Season", column=0)
@@ -514,7 +516,7 @@ class ContextMenu1(Gtk.Menu):
         '''
         Query user to terminate contract of selected player.
         '''
-        dialog = uigtk.squad.TerminateContract(self.playerid)
+        dialog = uigtk.squad.TerminateContract(self.player)
 
         if dialog.show():
             self.player.contract.terminate_contract()
@@ -543,8 +545,6 @@ class ContextMenu1(Gtk.Menu):
         self.menuitemNotForSale.set_active(self.player.not_for_sale)
 
     def show(self):
-        self.player = data.players.get_player_by_id(self.playerid)
-
         self.update_sensitivity()
         self.show_all()
 
@@ -622,7 +622,5 @@ class ContextMenu2(Gtk.Menu):
             self.menuitemLoan.set_sensitive(False)
 
     def show(self):
-        self.player = data.players.get_player_by_id(self.playerid)
-
         self.update_sensitivity()
         self.show_all()
