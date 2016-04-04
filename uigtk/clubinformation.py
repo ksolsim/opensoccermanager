@@ -254,7 +254,7 @@ class ClubInformation(uigtk.widgets.Grid):
 
             player = data.players.get_player_by_id(playerid)
 
-            if playerid in data.user.club.squad.get_squad():
+            if self.club == data.user.club:
                 contextmenu = self.contextmenu1
             else:
                 contextmenu = self.contextmenu2
@@ -267,24 +267,24 @@ class ClubInformation(uigtk.widgets.Grid):
         '''
         Update the display with the visible club for given id.
         '''
-        club = data.clubs.get_club_by_id(clubid)
+        self.club = data.clubs.get_club_by_id(clubid)
 
-        self.labelName.set_label("<span size='24000'><b>%s</b></span>" % (club.name))
-        self.labelNickname.set_label(club.nickname)
-        self.labelManager.set_label(club.manager)
-        self.labelChairman.set_label(club.chairman)
-        self.labelStadiumName.set_label(club.stadium.name)
-        self.labelStadiumCapacity.set_label("%i" % (club.stadium.get_capacity()))
-        self.labelLeagueName.set_label(club.league.name)
-        self.labelLeaguePosition.set_label(club.league.standings.get_position_for_club(club.clubid))
-        self.labelPlayerCount.set_label("%i" % (club.squad.get_squad_count()))
-        self.labelAverageAge.set_label("%.1f" % (club.squad.get_average_age()))
-        self.labelSquadValue.set_label(data.currency.get_rounded_amount(club.get_total_value()))
-        self.labelWeeklyWage.set_label(data.currency.get_rounded_amount(club.get_total_wage()))
+        self.labelName.set_label("<span size='24000'><b>%s</b></span>" % (self.club.name))
+        self.labelNickname.set_label(self.club.nickname)
+        self.labelManager.set_label(self.club.manager)
+        self.labelChairman.set_label(self.club.chairman)
+        self.labelStadiumName.set_label(self.club.stadium.name)
+        self.labelStadiumCapacity.set_label("%i" % (self.club.stadium.get_capacity()))
+        self.labelLeagueName.set_label(self.club.league.name)
+        self.labelLeaguePosition.set_label(self.club.league.standings.get_position_for_club(self.club.clubid))
+        self.labelPlayerCount.set_label("%i" % (self.club.squad.get_squad_count()))
+        self.labelAverageAge.set_label("%.1f" % (self.club.squad.get_average_age()))
+        self.labelSquadValue.set_label(data.currency.get_rounded_amount(self.club.get_total_value()))
+        self.labelWeeklyWage.set_label(data.currency.get_rounded_amount(self.club.get_total_wage()))
 
         self.liststoreSquad.clear()
 
-        for playerid, player in club.squad.get_squad():
+        for playerid, player in self.club.squad.get_squad():
             self.liststoreSquad.append([playerid,
                                         player.get_name(),
                                         player.position,
@@ -302,12 +302,7 @@ class ClubInformation(uigtk.widgets.Grid):
 
         self.liststoreHistory.clear()
 
-        self.liststoreHistory.insert(0, club.history.get_current_history())
+        self.liststoreHistory.insert(0, self.club.history.get_current_history())
 
     def run(self):
         self.show_all()
-
-
-class ContextMenu(uigtk.playersearch.ContextMenu2):
-    def __init__(self):
-        uigtk.playersearch.ContextMenu2.__init__(self)

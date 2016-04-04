@@ -184,8 +184,9 @@ class Squad(uigtk.widgets.Grid):
 
         if treeiter:
             playerid = model[treeiter][0]
+            player = data.players.get_player_by_id(playerid)
 
-            self.contextmenu.playerid = playerid
+            self.contextmenu.player = player
             self.contextmenu.show()
             self.contextmenu.popup(None,
                                    None,
@@ -297,7 +298,7 @@ class SquadList(Gtk.ListStore):
                          player.stamina,
                          player.ball_control,
                          player.set_pieces,
-                         "%s%%" % (player.injury.fitness),
+                         player.injury.get_fitness_percentage(),
                          player.nationality.name,
                          player.value.get_value_as_string(),
                          player.wage.get_wage_as_string(),
@@ -809,8 +810,7 @@ class ContextMenu(Gtk.Menu):
         self.menuitemNotForSale.set_active(self.player.not_for_sale)
 
     def show(self):
-        ContextMenu.playerid = self.playerid
-        self.player = data.players.get_player_by_id(self.playerid)
+        ContextMenu.playerid = self.player.playerid
 
         self.positionmenu = PositionMenu()
         self.menuitemAddTeam.set_submenu(self.positionmenu)

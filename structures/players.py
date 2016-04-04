@@ -285,6 +285,12 @@ class Injury:
         '''
         return "%i Weeks" % (self.period)
 
+    def get_fitness_percentage(self):
+        '''
+        Return fitness value as percentage string.
+        '''
+        return "%s%%" % (self.fitness)
+
 
 class Suspension:
     def __init__(self):

@@ -30,15 +30,13 @@ class Shortlist(Gtk.Grid):
     treeselection = None
 
     def __init__(self):
-        self.liststore = Gtk.ListStore(int, str, int, str, str, str, str, str,
-                                       int, int, int, int, int, int, int, int,
-                                       int)
-
         Gtk.Grid.__init__(self)
         self.set_row_spacing(5)
 
         scrolledwindow = uigtk.widgets.ScrolledWindow()
         self.attach(scrolledwindow, 0, 0, 1, 1)
+
+        Shortlist.liststore = ShortlistList()
 
         self.treeview = uigtk.widgets.TreeView()
         self.treeview.set_vexpand(True)
@@ -214,8 +212,9 @@ class Shortlist(Gtk.Grid):
 
         if treeiter:
             playerid = model[treeiter][0]
+            player = data.players.get_player_by_id(playerid)
 
-            self.contextmenu.playerid = playerid
+            self.contextmenu.player = player
             self.contextmenu.show()
             self.contextmenu.popup(None,
                                    None,
@@ -225,7 +224,25 @@ class Shortlist(Gtk.Grid):
                                    event.time)
 
     def populate_data(self):
-        self.liststore.clear()
+        Shortlist.liststore.update()
+
+    def run(self):
+        self.populate_data()
+
+        self.show_all()
+
+
+class ShortlistList(Gtk.ListStore):
+    '''
+    ListStore holding players in the shortlist.
+    '''
+    def __init__(self):
+        Gtk.ListStore.__init__(self)
+        self.set_column_types([int, str, int, str, str, str, str, str, int, int,
+                               int, int, int, int, int, int, int])
+
+    def update(self):
+        self.clear()
 
         for player in data.user.club.shortlist.get_shortlist():
             if player.club:
@@ -233,28 +250,23 @@ class Shortlist(Gtk.Grid):
             else:
                 club = ""
 
-            self.liststore.append([player.playerid,
-                                   player.get_name(),
-                                   player.get_age(),
-                                   player.position,
-                                   club,
-                                   player.nationality.name,
-                                   player.value.get_value_as_string(),
-                                   player.wage.get_wage_as_string(),
-                                   player.keeping,
-                                   player.tackling,
-                                   player.passing,
-                                   player.shooting,
-                                   player.heading,
-                                   player.pace,
-                                   player.stamina,
-                                   player.ball_control,
-                                   player.set_pieces])
-
-    def run(self):
-        self.populate_data()
-
-        self.show_all()
+            self.append([player.playerid,
+                         player.get_name(),
+                         player.get_age(),
+                         player.position,
+                         club,
+                         player.nationality.name,
+                         player.value.get_value_as_string(),
+                         player.wage.get_wage_as_string(),
+                         player.keeping,
+                         player.tackling,
+                         player.passing,
+                         player.shooting,
+                         player.heading,
+                         player.pace,
+                         player.stamina,
+                         player.ball_control,
+                         player.set_pieces])
 
 
 class ContextMenu(Gtk.Menu):
@@ -302,8 +314,10 @@ class ContextMenu(Gtk.Menu):
 
         dialog = RemoveShortlist()
 
-        if dialog.show(playerid):
-            data.user.club.shortlist.remove_from_shortlist(playerid)
+        if dialog.show(self.player):
+            data.user.club.shortlist.remove_from_shortlist(self.player.playerid)
+
+            Shortlist.liststore.update()
 
     def on_scout_report_clicked(self, *args):
         '''
@@ -318,8 +332,6 @@ class ContextMenu(Gtk.Menu):
         model, treeiter = Shortlist.treeselection.get_selected()
         playerid = model[treeiter][0]
 
-        self.player = data.players.get_player_by_id(playerid)
-
         if self.player.club:
             self.menuitemPurchase.set_label("Approach for _Purchase")
             self.menuitemLoan.set_sensitive(True)
@@ -327,10 +339,10 @@ class ContextMenu(Gtk.Menu):
             self.menuitemPurchase.set_label("Approach to _Sign")
             self.menuitemLoan.set_sensitive(False)
 
-        self.show_all()
-
         sensitive = data.user.club.scouts.get_staff_count() > 0
         self.menuitemScoutReport.set_sensitive(sensitive)
+
+        self.show_all()
 
 
 class RemoveShortlist(Gtk.MessageDialog):
