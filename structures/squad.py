@@ -210,6 +210,38 @@ class TeamSelection:
         '''
         return self.subs[positionid]
 
+    def get_injured_players(self):
+        '''
+        Return list of injured players in team selection.
+        '''
+        injured = []
+
+        for selection in (self.team, self.subs):
+            for playerid in selection:
+                if playerid:
+                    player = data.players.get_player_by_id(playerid)
+
+                    if player.injury.get_injured():
+                        injured.append(player)
+
+        return injured
+
+    def get_suspended_players(self):
+        '''
+        Return list of suspended players from squad.
+        '''
+        suspended = []
+
+        for selection in (self.team, self.subs):
+            for playerid in selection:
+                if playerid:
+                    player = data.players.get_player_by_id(playerid)
+
+                    if player.suspension.get_suspended():
+                        suspended.append(playerid)
+
+        return suspended
+
     def pay_win_bonus(self):
         '''
         Pay contract win bonus for players in team selection.

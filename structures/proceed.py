@@ -19,6 +19,7 @@
 import data
 import structures.advertising
 import uigtk.match
+import uigtk.squaderror
 
 
 class ContinueGame:
@@ -81,10 +82,16 @@ class ContinueToMatch:
         '''
         count = data.user.club.squad.teamselection.get_team_count()
 
-        state = count == 1
+        state = count == 11
 
         if not state:
             uigtk.match.NotEnoughPlayers(count)
+
+        state = len(data.user.club.squad.teamselection.get_injured_players()) == 0 and len(data.user.club.squad.teamselection.get_suspended_players()) == 0
+
+        if not state:
+            dialog = uigtk.squaderror.SquadError()
+            dialog.show()
 
         return state
 
