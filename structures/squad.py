@@ -115,6 +115,7 @@ class Squad:
         self.teamgenerator.squad = self.squad
         self.teamgenerator.teamselection = self.teamselection
         self.teamgenerator.generate_team_selection()
+        self.teamgenerator.generate_sub_selection()
 
 
 class TeamSelection:
@@ -311,3 +312,34 @@ class TeamGenerator:
         '''
         Generate five substitution members and assign to substitutions.
         '''
+        selection = []
+
+        for count in range(0, 5):
+            scores = {}
+
+            for playerid in self.squad:
+                if playerid not in selection:
+                    if playerid not in self.teamselection.get_team_selection():
+                        player = data.players.get_player_by_id(playerid)
+
+                        skills = player.get_skills()
+                        score = sum(skills)
+
+                        if player.position in ("GK"):
+                            score = player.keeping * 2.5
+                        elif player.position in ("DL", "DR", "DC", "D"):
+                            score = player.tackling * 2.5
+                        elif player.position in ("ML", "MR", "MC", "M"):
+                            score = player.passing * 2.5
+                        elif player.position in ("AS", "AF"):
+                            score = player.shooting * 2.5
+                        else:
+                            score *= 0.1
+
+                        scores[playerid] = score
+
+            sorted_scores = sorted(scores, key=lambda x: scores[x], reverse=True)
+            selection.append(sorted_scores[0])
+
+        for count, playerid in enumerate(selection):
+            self.teamselection.add_to_subs(playerid, count)
