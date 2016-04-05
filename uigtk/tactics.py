@@ -368,14 +368,24 @@ class Bonuses(uigtk.widgets.CommonFrame):
         label.set_mnemonic_widget(self.comboboxBonus)
         self.grid.attach(self.comboboxBonus, 1, 0, 1, 1)
 
+        self.labelCost = uigtk.widgets.Label(leftalign=True)
+        self.grid.attach(self.labelCost, 2, 0, 1, 1)
+
     def on_bonus_changed(self, combobox):
         '''
-        Update bonus to be paid on win in next match.
+        Update bonus to be paid on win in forthcoming match.
         '''
         if combobox.get_active_id() != "0":
-            data.user.club.tactics.bonus = int(combobox.get_active_id())
+            active = int(combobox.get_active_id())
+
+            data.user.club.tactics.bonus = active
+
+            cost = int(data.user.club.get_total_wage() * (0.1 * active))
+            cost = data.currency.get_comma_value(cost)
+            self.labelCost.set_label("This will cost an extra %s%s." % (data.currency.get_currency_symbol(), cost))
         else:
-            data.user.club.tactics.bonus = None
+            self.remove_bonus()
+            self.labelCost.set_label("")
 
     def set_bonus(self):
         '''
