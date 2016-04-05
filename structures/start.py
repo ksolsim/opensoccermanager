@@ -89,6 +89,9 @@ class Start:
         '''
         data.leagues.generate_fixtures()
 
+        data.purchase_list = structures.transfer.PurchaseList()
+        data.loan_list = structures.transfer.LoanList()
+
         data.user.club.hoardings.maximum = 48
         data.user.club.hoardings.generate_adverts(36)
 
