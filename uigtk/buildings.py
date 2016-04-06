@@ -54,10 +54,11 @@ class Totals(uigtk.widgets.CommonFrame):
         buttonbox.set_layout(Gtk.ButtonBoxStyle.END)
         self.grid.attach(buttonbox, 0, 5, 2, 1)
 
-        buttonReset = uigtk.widgets.Button("_Reset")
-        buttonReset.set_sensitive(False)
-        buttonReset.set_tooltip_text("Reset changes made to building configuration.")
-        buttonbox.add(buttonReset)
+        self.buttonReset = uigtk.widgets.Button("_Reset")
+        self.buttonReset.set_sensitive(False)
+        self.buttonReset.set_tooltip_text("Reset changes made to building configuration.")
+        self.buttonReset.connect("clicked", self.on_reset_clicked)
+        buttonbox.add(self.buttonReset)
         buttonApply = uigtk.widgets.Button("_Apply")
         buttonApply.set_tooltip_text("Apply changes made to number of buildings.")
         buttonApply.connect("clicked", self.on_apply_clicked)
@@ -125,6 +126,8 @@ class Totals(uigtk.widgets.CommonFrame):
         '''
         Reset changed building count spinbuttons and labels.
         '''
+        Buildings.shops.set_building_count()
+
         button.set_sensitive(False)
 
 
@@ -230,6 +233,7 @@ class Shop(uigtk.widgets.Grid):
         Update number of used plots on spinbutton adjustment.
         '''
         Buildings.totals.update_used_plots()
+        Buildings.totals.buttonReset.set_sensitive(True)
 
         self.update_construction_cost(spinbutton)
 
@@ -253,6 +257,27 @@ class ConfirmBuilding(Gtk.MessageDialog):
         self.format_secondary_text("The cost of construction will be %s." % (data.currency.get_currency(cost, integer=True)))
         self.add_button("_Cancel Construction", Gtk.ResponseType.CANCEL)
         self.add_button("C_onfirm Construction", Gtk.ResponseType.OK)
+        self.set_default_response(Gtk.ResponseType.CANCEL)
+
+    def show(self):
+        state = self.run() == Gtk.ResponseType.OK
+        self.destroy()
+
+        return state
+
+
+class ResetBuilding(Gtk.MessageDialog):
+    '''
+    Message dialog to reset construction changes.
+    '''
+    def __init__(self):
+        Gtk.MessageDialog.__init__(self)
+        self.set_transient_for(data.window)
+        self.set_modal(True)
+        self.set_title("Reset Building Construction")
+        self.set_markup("Do you want to reset the specified building changes?")
+        self.add_button("_Cancel", Gtk.ResponseType.CANCEL)
+        self.add_button("_Reset", Gtk.ResponseType.OK)
         self.set_default_response(Gtk.ResponseType.CANCEL)
 
     def show(self):

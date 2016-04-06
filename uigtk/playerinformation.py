@@ -112,7 +112,7 @@ class PlayerInformation(uigtk.widgets.Grid):
 
         if player.club:
             club = player.club.name
-            self.personal.club = player.club.clubid
+            self.personal.club = player.club
         else:
             club = ""
             self.personal.club = None
@@ -191,7 +191,7 @@ class Personal(uigtk.widgets.Grid):
         Load club information screen.
         '''
         data.window.screen.change_visible_screen("clubinformation")
-        data.window.screen.active.set_visible_club(data.user.club)
+        data.window.screen.active.set_visible_club(self.club.clubid)
 
         return True
 
