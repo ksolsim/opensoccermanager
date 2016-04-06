@@ -52,12 +52,9 @@ class Score:
 
         for count, club in enumerate((data.clubs.get_club_by_id(self.fixture.home.clubid),
                                       data.clubs.get_club_by_id(self.fixture.away.clubid))):
-            for playerid in club.squad.teamselection.team:
-                if playerid:
-                    player = data.players.get_player_by_id(playerid)
-
-                    skills = player.get_skills()
-                    self.weights[count] = sum(skills)
+            for player in club.squad.teamselection.team:
+                if player:
+                    self.weights[count] = sum(player.get_skills())
 
         self.total = sum(self.weights)
 

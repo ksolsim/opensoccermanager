@@ -231,12 +231,10 @@ class FixtureTeam:
         '''
         Increment appearances for each player in team.
         '''
-        for playerid in self.team_played[0]:
-            if playerid:
-                player = data.players.get_player_by_id(playerid)
+        for player in self.team_played[0]:
+            if player:
                 player.appearances += 1
 
-        for playerid in self.team_played[1]:
-            if playerid:
-                player = data.players.get_player_by_id(playerid)
+        for player in self.team_played[1]:
+            if player:
                 player.appearances += 1

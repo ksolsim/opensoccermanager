@@ -99,7 +99,7 @@ class Squad:
         '''
         Return list of players not in squad.
         '''
-        return sum(1 for playerid in self.squad.keys() if playerid not in self.teamselection.team)
+        return sum(1 for player in self.squad.keys() if player not in self.teamselection.team)
 
     def get_average_age(self):
         '''
@@ -123,50 +123,50 @@ class TeamSelection:
         self.team = [None] * 11
         self.subs = [None] * 5
 
-    def add_to_team(self, playerid, positionid):
+    def add_to_team(self, player, positionid):
         '''
         Add player to team or move if already in team.
         '''
-        self.remove_from_team(playerid)
+        self.remove_from_team(player)
 
-        self.team[positionid] = playerid
+        self.team[positionid] = player
 
-    def add_to_subs(self, playerid, positionid):
+    def add_to_subs(self, player, positionid):
         '''
         Add player to substitutes or move if already in team.
         '''
-        self.remove_from_team(playerid)
+        self.remove_from_team(player)
 
-        self.subs[positionid] = playerid
+        self.subs[positionid] = player
 
-    def remove_from_team(self, playerid):
+    def remove_from_team(self, player):
         '''
         Remove player from team.
         '''
-        if playerid in self.team:
-            index = self.team.index(playerid)
+        if player in self.team:
+            index = self.team.index(player)
             self.team[index] = None
 
-        if playerid in self.subs:
-            index = self.subs.index(playerid)
+        if player in self.subs:
+            index = self.subs.index(player)
             self.subs[index] = None
 
-        data.user.club.tactics.remove_responsiblity(playerid)
+        data.user.club.tactics.remove_responsiblity(player)
 
     def remove_from_team_by_position(self, positionid):
         '''
         Remove player from team for given position id.
         '''
-        playerid = self.team[positionid]
-        data.user.club.tactics.remove_responsiblity(playerid)
+        player = self.team[positionid]
+        data.user.club.tactics.remove_responsiblity(player)
         self.team[positionid] = None
 
     def remove_from_subs_by_position(self, positionid):
         '''
         Remove player from subs for given position id.
         '''
-        playerid = self.team[positionid]
-        data.user.club.tactics.remove_responsiblity(playerid)
+        player = self.team[positionid]
+        data.user.club.tactics.remove_responsiblity(player)
         self.subs[positionid] = None
 
     def get_team_selection(self):
@@ -185,19 +185,19 @@ class TeamSelection:
         '''
         Return number of team players selected.
         '''
-        return sum(1 for playerid in self.team if playerid)
+        return sum(1 for player in self.team if player)
 
     def get_subs_count(self):
         '''
         Return number of substitutes selected.
         '''
-        return sum(1 for playerid in self.subs if playerid)
+        return sum(1 for player in self.subs if player)
 
     def get_team_ids(self):
         '''
         Return list of player ids in team selection.
         '''
-        return [playerid for playerid in self.team if playerid]
+        return [player.playerid for player in self.team if player]
 
     def get_player_for_position(self, positionid):
         '''
@@ -218,10 +218,8 @@ class TeamSelection:
         injured = []
 
         for selection in (self.team, self.subs):
-            for playerid in selection:
-                if playerid:
-                    player = data.players.get_player_by_id(playerid)
-
+            for player in selection:
+                if player:
                     if player.injury.get_injured():
                         injured.append(player)
 
@@ -234,12 +232,10 @@ class TeamSelection:
         suspended = []
 
         for selection in (self.team, self.subs):
-            for playerid in selection:
-                if playerid:
-                    player = data.players.get_player_by_id(playerid)
-
+            for player in selection:
+                if player:
                     if player.suspension.get_suspended():
-                        suspended.append(playerid)
+                        suspended.append(player)
 
         return suspended
 
@@ -249,9 +245,8 @@ class TeamSelection:
         '''
         total = 0
 
-        for playerid in self.team:
-            if playerid:
-                player = data.players.get_player_by_id(playerid)
+        for player in self.team:
+            if player:
                 total += player.contract.winbonus
 
         data.user.club.accounts.withdraw(amount=total, category="playerwage")
@@ -281,10 +276,8 @@ class TeamGenerator:
         for position in formation[1]:
             scores = {}
 
-            for playerid in self.squad:
-                if playerid not in selection:
-                    player = data.players.get_player_by_id(playerid)
-
+            for player in self.squad.values():
+                if player not in selection:
                     skills = player.get_skills()
                     score = sum(skills)
 
@@ -300,13 +293,13 @@ class TeamGenerator:
                     else:
                         score *= 0.1
 
-                    scores[playerid] = score
+                    scores[player] = score
 
             sorted_scores = sorted(scores, key=lambda x: scores[x], reverse=True)
             selection.append(sorted_scores[0])
 
-        for count, playerid in enumerate(selection):
-            self.teamselection.add_to_team(playerid, count)
+        for count, player in enumerate(selection):
+            self.teamselection.add_to_team(player, count)
 
     def generate_sub_selection(self):
         '''
@@ -317,11 +310,9 @@ class TeamGenerator:
         for count in range(0, 5):
             scores = {}
 
-            for playerid in self.squad:
-                if playerid not in selection:
-                    if playerid not in self.teamselection.get_team_selection():
-                        player = data.players.get_player_by_id(playerid)
-
+            for player in self.squad.values():
+                if player not in selection:
+                    if player not in self.teamselection.get_team_selection():
                         skills = player.get_skills()
                         score = sum(skills)
 
@@ -336,10 +327,10 @@ class TeamGenerator:
                         else:
                             score *= 0.1
 
-                        scores[playerid] = score
+                        scores[player] = score
 
             sorted_scores = sorted(scores, key=lambda x: scores[x], reverse=True)
             selection.append(sorted_scores[0])
 
-        for count, playerid in enumerate(selection):
-            self.teamselection.add_to_subs(playerid, count)
+        for count, player in enumerate(selection):
+            self.teamselection.add_to_subs(player, count)

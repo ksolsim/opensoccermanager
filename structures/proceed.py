@@ -86,12 +86,12 @@ class ContinueToMatch:
 
         if not state:
             uigtk.match.NotEnoughPlayers(count)
+        else:
+            state = len(data.user.club.squad.teamselection.get_injured_players()) == 0 and len(data.user.club.squad.teamselection.get_suspended_players()) == 0
 
-        state = len(data.user.club.squad.teamselection.get_injured_players()) == 0 and len(data.user.club.squad.teamselection.get_suspended_players()) == 0
-
-        if not state:
-            dialog = uigtk.squaderror.SquadError()
-            dialog.show()
+            if not state:
+                dialog = uigtk.squaderror.SquadError()
+                dialog.show()
 
         return state
 

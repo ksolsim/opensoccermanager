@@ -299,20 +299,17 @@ class Teams(uigtk.widgets.Grid):
         for count, team in enumerate((home, away)):
             self.teams[count].clear()
 
-            for number, playerid in enumerate(team.squad.teamselection.get_team_selection()):
-                if playerid:
+            for number, player in enumerate(team.squad.teamselection.get_team_selection()):
+                if player:
                     position = team.tactics.get_formation_positions()[number]
-                    player = data.players.get_player_by_id(playerid)
 
-                    self.teams[count].append([playerid,
+                    self.teams[count].append([player.playerid,
                                               position,
                                               player.get_name()])
 
-            for number, playerid in enumerate(team.squad.teamselection.get_subs_selection(), start=1):
-                if playerid:
-                    player = data.players.get_player_by_id(playerid)
-
-                    self.teams[count].append([playerid,
+            for number, player in enumerate(team.squad.teamselection.get_subs_selection(), start=1):
+                if player:
+                    self.teams[count].append([player.playerid,
                                               "Sub %i" % (number),
                                               player.get_name()])
 
