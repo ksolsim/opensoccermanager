@@ -62,7 +62,11 @@ class ContextMenu1(Gtk.Menu):
         '''
         Add player to the transfer list for sale.
         '''
-        self.player.transfer[0] = not self.player.transfer[0]
+        if data.purchase_list.get_player_listed(self.player):
+            data.purchase_list.remove_from_list(self.player)
+        else:
+            data.purchase_list.add_to_list(self.player)
+
         self.update_sensitivity()
 
         data.window.screen.refresh_visible_screen()
@@ -71,7 +75,11 @@ class ContextMenu1(Gtk.Menu):
         '''
         Add player to the transfer list for loan.
         '''
-        self.player.transfer[1] = not self.player.transfer[1]
+        if data.loan_list.get_player_listed(self.player):
+            data.loan_list.remove_from_list(self.player)
+        else:
+            data.loan_list.add_to_list(self.player)
+
         self.update_sensitivity()
 
         data.window.screen.refresh_visible_screen()
@@ -111,10 +119,10 @@ class ContextMenu1(Gtk.Menu):
         '''
         Update menu item sensitivity for available options.
         '''
-        self.menuitemAddPurchase.set_sensitive(not self.player.transfer[0])
-        self.menuitemRemovePurchase.set_sensitive(self.player.transfer[0])
-        self.menuitemAddLoan.set_sensitive(not self.player.transfer[1])
-        self.menuitemRemoveLoan.set_sensitive(self.player.transfer[1])
+        self.menuitemAddPurchase.set_sensitive(not data.purchase_list.get_player_listed(self.player))
+        self.menuitemRemovePurchase.set_sensitive(data.purchase_list.get_player_listed(self.player))
+        self.menuitemAddLoan.set_sensitive(not data.loan_list.get_player_listed(self.player))
+        self.menuitemRemoveLoan.set_sensitive(data.loan_list.get_player_listed(self.player))
         self.menuitemNotForSale.set_active(self.player.not_for_sale)
 
     def show(self):

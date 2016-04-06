@@ -241,7 +241,7 @@ class Transfer(uigtk.widgets.CommonFrame):
         '''
         player = data.players.get_player_by_id(PlayerInformation.playerid)
 
-        if player.transfer[0]:
+        if data.purchase_list.get_player_listed(player):
             self.labelPurchaseList.set_label("Currently added to purchase list.")
         else:
             self.labelPurchaseList.set_label("Not listed as available for purchase.")
@@ -252,7 +252,7 @@ class Transfer(uigtk.widgets.CommonFrame):
         '''
         player = data.players.get_player_by_id(PlayerInformation.playerid)
 
-        if player.transfer[1]:
+        if data.loan_list.get_player_listed(player):
             self.labelLoanList.set_label("Currently added to loan list.")
         else:
             self.labelLoanList.set_label("Not listed as available for loan.")

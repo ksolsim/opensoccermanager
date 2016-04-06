@@ -38,13 +38,42 @@ class TransferType:
         return self.transfer_types[index]
 
 
-class PurchaseList:
+class TransferList:
     def __init__(self):
         self.listed = []
 
-        self.refresh_purchase_list()
+    def get_listed(self):
+        '''
+        Return list of players available for transfer.
+        '''
+        return self.listed
 
-    def refresh_purchase_list(self):
+    def get_player_listed(self, player):
+        '''
+        Return if player is listed for transfer.
+        '''
+        return player in self.listed
+
+    def add_to_list(self, player):
+        '''
+        Add specified player to the list.
+        '''
+        self.listed.append(player)
+
+    def remove_from_list(self, player):
+        '''
+        Remove specified player from the list.
+        '''
+        self.listed.remove(player)
+
+
+class PurchaseList(TransferList):
+    def __init__(self):
+        TransferList.__init__(self)
+
+        self.refresh_list()
+
+    def refresh_list(self):
         '''
         Update players listed for purchase.
         '''
@@ -67,12 +96,12 @@ class PurchaseList:
                     choice = random.choice((False, True))
 
                     if score[playerid] < average * 0.125 and choice:
-                        player.transfer[0] = True
+                        self.add_to_list(player)
 
 
-class LoanList:
+class LoanList(TransferList):
     def __init__(self):
-        self.listed = []
+        TransferList.__init__(self)
 
         self.refresh_list()
 
@@ -104,4 +133,4 @@ class LoanList:
                     choice = random.choice((False, True))
 
                     if score[playerid] < average * 0.125 and choice:
-                        player.transfer[1] = True
+                        self.add_to_list(player)

@@ -49,7 +49,8 @@ class Events:
         data.injury.injury_recovery()
         data.advertising.decrement_advertising()
         data.advertising.refresh_advertising()
-        data.purchase_list.refresh_purchase_list()
+        data.purchase_list.refresh_list()
+        data.loan_list.refresh_list()
 
     def process_monthly_events(self):
         '''
