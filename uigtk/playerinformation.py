@@ -21,6 +21,7 @@ from gi.repository import Gdk
 
 import data
 import structures.skills
+import uigtk.contextmenu
 import uigtk.playersearch
 import uigtk.squad
 import uigtk.widgets
@@ -93,6 +94,9 @@ class PlayerInformation(uigtk.widgets.Grid):
         self.training = Training()
         box.pack_start(self.training, False, False, 0)
 
+        self.contextmenu1 = uigtk.contextmenu.ContextMenu1()
+        self.contextmenu2 = uigtk.contextmenu.ContextMenu2()
+
     def on_back_clicked(self, *args):
         '''
         Return to previous screen when back button is clicked.
@@ -148,9 +152,9 @@ class PlayerInformation(uigtk.widgets.Grid):
 
         if player.club:
             if player.club.clubid == data.user.clubid:
-                actionmenu = ContextMenu1()
+                actionmenu = self.contextmenu1
             else:
-                actionmenu = ContextMenu2()
+                actionmenu = self.contextmenu2
 
             actionmenu.player = player
             self.buttonActions.set_popup(actionmenu)
@@ -447,180 +451,3 @@ class Morale(uigtk.widgets.CommonFrame):
         morale = self.morale.get_morale(player.morale)
 
         self.labelMorale.set_label(morale)
-
-
-class ContextMenu1(Gtk.Menu):
-    '''
-    Context menu displayed for players belonging to user club.
-    '''
-    def __init__(self):
-        Gtk.Menu.__init__(self)
-
-        self.menuitemAddPurchase = uigtk.widgets.MenuItem("_Add To Purchase List")
-        self.menuitemAddPurchase.connect("activate", self.on_purchase_list_clicked)
-        self.append(self.menuitemAddPurchase)
-        self.menuitemRemovePurchase = uigtk.widgets.MenuItem("_Remove From Purchase List")
-        self.menuitemRemovePurchase.connect("activate", self.on_purchase_list_clicked)
-        self.append(self.menuitemRemovePurchase)
-        self.menuitemAddLoan = uigtk.widgets.MenuItem("_Add To Loan List")
-        self.menuitemAddLoan.connect("activate", self.on_loan_list_clicked)
-        self.append(self.menuitemAddLoan)
-        self.menuitemRemoveLoan = uigtk.widgets.MenuItem("_Remove From Loan List")
-        self.menuitemRemoveLoan.connect("activate", self.on_loan_list_clicked)
-        self.append(self.menuitemRemoveLoan)
-        menuitem = uigtk.widgets.MenuItem("_Renew Contract")
-        menuitem.connect("activate", self.on_renew_contract_clicked)
-        self.append(menuitem)
-        menuitem = uigtk.widgets.MenuItem("_Terminate Contract")
-        menuitem.connect("activate", self.on_terminate_contract_clicked)
-        self.append(menuitem)
-        self.menuitemNotForSale = uigtk.widgets.CheckMenuItem("_Not for Sale")
-        self.menuitemNotForSale.connect("toggled", self.on_not_for_sale_clicked)
-        self.append(self.menuitemNotForSale)
-
-        separator = Gtk.SeparatorMenuItem()
-        self.append(separator)
-
-        menuitem = uigtk.widgets.MenuItem("Add To _Comparison")
-        menuitem.connect("activate", self.on_comparison_clicked)
-        self.append(menuitem)
-
-    def on_purchase_list_clicked(self, *args):
-        '''
-        Add player to the transfer list for sale.
-        '''
-        self.player.transfer[0] = not self.player.transfer[0]
-        self.update_sensitivity()
-
-        data.window.screen.refresh_visible_screen()
-
-    def on_loan_list_clicked(self, *args):
-        '''
-        Add player to the transfer list for loan.
-        '''
-        self.player.transfer[1] = not self.player.transfer[1]
-        self.update_sensitivity()
-
-        data.window.screen.refresh_visible_screen()
-
-    def on_renew_contract_clicked(self, *args):
-        '''
-        Query user to renew contract of selected player.
-        '''
-        dialog = uigtk.squad.RenewContract(self.player)
-
-        if dialog.show():
-            data.window.screen.refresh_visible_screen()
-
-    def on_terminate_contract_clicked(self, *args):
-        '''
-        Query user to terminate contract of selected player.
-        '''
-        dialog = uigtk.squad.TerminateContract(self.player)
-
-        if dialog.show():
-            self.player.contract.terminate_contract()
-            data.window.screen.refresh_visible_screen()
-
-    def on_not_for_sale_clicked(self, checkmenuitem):
-        '''
-        Toggle not for sale flag on player object.
-        '''
-        self.player.not_for_sale = checkmenuitem.get_active()
-
-    def on_comparison_clicked(self, *args):
-        '''
-        Add player to stack for comparison.
-        '''
-        data.comparison.add_to_comparison(self.player)
-
-    def update_sensitivity(self):
-        '''
-        Update menu item sensitivity for available options.
-        '''
-        self.menuitemAddPurchase.set_sensitive(not self.player.transfer[0])
-        self.menuitemRemovePurchase.set_sensitive(self.player.transfer[0])
-        self.menuitemAddLoan.set_sensitive(not self.player.transfer[1])
-        self.menuitemRemoveLoan.set_sensitive(self.player.transfer[1])
-        self.menuitemNotForSale.set_active(self.player.not_for_sale)
-
-    def show(self):
-        self.update_sensitivity()
-        self.show_all()
-
-
-class ContextMenu2(Gtk.Menu):
-    def __init__(self):
-        Gtk.Menu.__init__(self)
-
-        self.menuitemPurchase = uigtk.widgets.MenuItem("Make Offer To _Purchase")
-        self.menuitemPurchase.connect("activate", self.on_purchase_offer_clicked)
-        self.append(self.menuitemPurchase)
-        self.menuitemLoan = uigtk.widgets.MenuItem("Make Offer To _Loan")
-        self.menuitemLoan.connect("activate", self.on_loan_offer_clicked)
-        self.append(self.menuitemLoan)
-        self.menuitemAddShortlist = uigtk.widgets.MenuItem("_Add To Shortlist")
-        self.menuitemAddShortlist.connect("activate", self.on_add_to_shortlist_clicked)
-        self.append(self.menuitemAddShortlist)
-        self.menuitemRemoveShortlist = uigtk.widgets.MenuItem("_Remove From Shortlist")
-        self.menuitemRemoveShortlist.connect("activate", self.on_remove_from_shortlist_clicked)
-        self.append(self.menuitemRemoveShortlist)
-        separator = Gtk.SeparatorMenuItem()
-        self.append(separator)
-        menuitem = uigtk.widgets.MenuItem("Add To _Comparison")
-        menuitem.connect("activate", self.on_comparison_clicked)
-        self.append(menuitem)
-
-    def on_purchase_offer_clicked(self, *args):
-        '''
-        Initiate purchase offer of selected player.
-        '''
-        data.negotiations.initialise_purchase(self.playerid)
-
-    def on_loan_offer_clicked(self, *args):
-        '''
-        Initiate loan offer of selected player.
-        '''
-        data.negotiations.initialise_loan(self.playerid)
-
-    def on_add_to_shortlist_clicked(self, *args):
-        '''
-        Add player to shortlist.
-        '''
-        data.user.club.shortlist.add_to_shortlist(self.playerid)
-        self.update_sensitivity()
-
-    def on_remove_from_shortlist_clicked(self, *args):
-        '''
-        Remove player from shortlist.
-        '''
-        dialog = uigtk.shortlist.RemoveShortlist()
-
-        if dialog.show(self.playerid):
-            data.user.club.shortlist.remove_from_shortlist(self.playerid)
-            self.update_sensitivity()
-
-    def on_comparison_clicked(self, *args):
-        '''
-        Add player to stack for comparison.
-        '''
-        data.comparison.add_to_comparison(self.playerid)
-
-    def update_sensitivity(self):
-        '''
-        Update menu item sensitivity for available options.
-        '''
-        sensitive = data.user.club.shortlist.get_player_in_shortlist(self.playerid)
-        self.menuitemAddShortlist.set_sensitive(not sensitive)
-        self.menuitemRemoveShortlist.set_sensitive(sensitive)
-
-        if self.player.club:
-            self.menuitemPurchase.set_label("Make Offer to _Purchase")
-            self.menuitemLoan.set_sensitive(True)
-        else:
-            self.menuitemPurchase.set_label("Make Offer to _Sign")
-            self.menuitemLoan.set_sensitive(False)
-
-    def show(self):
-        self.update_sensitivity()
-        self.show_all()

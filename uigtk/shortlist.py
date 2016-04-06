@@ -315,7 +315,7 @@ class ContextMenu(Gtk.Menu):
         dialog = RemoveShortlist()
 
         if dialog.show(self.player):
-            data.user.club.shortlist.remove_from_shortlist(self.player.playerid)
+            data.user.club.shortlist.remove_from_shortlist(self.player)
 
             Shortlist.liststore.update()
 

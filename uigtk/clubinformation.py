@@ -209,8 +209,8 @@ class ClubInformation(uigtk.widgets.Grid):
         treeviewcolumn.set_fixed_width(50)
         treeviewHistory.append_column(treeviewcolumn)
 
-        self.contextmenu1 = uigtk.playersearch.ContextMenu1()
-        self.contextmenu2 = uigtk.playersearch.ContextMenu2()
+        self.contextmenu1 = uigtk.contextmenu.ContextMenu1()
+        self.contextmenu2 = uigtk.contextmenu.ContextMenu2()
 
     def on_back_clicked(self, *args):
         '''

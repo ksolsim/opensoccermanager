@@ -25,6 +25,7 @@ import data
 import structures.filters
 import structures.shortlist
 import structures.skills
+import uigtk.contextmenu
 import uigtk.negotiations
 import uigtk.shared
 import uigtk.shortlist
@@ -156,8 +157,8 @@ class PlayerSearch(uigtk.widgets.Grid):
                 column.set_visible(False)
                 self.treeview.append_column(column)
 
-        self.contextmenu1 = ContextMenu1()
-        self.contextmenu2 = ContextMenu2()
+        self.contextmenu1 = uigtk.contextmenu.ContextMenu1()
+        self.contextmenu2 = uigtk.contextmenu.ContextMenu2()
         self.filter_dialog = Filter()
 
         PlayerSearch.playerfilter = structures.filters.Player()
@@ -636,100 +637,3 @@ class Filter(Gtk.Dialog):
         self.hide()
 
         return options
-
-
-class ContextMenu1(Gtk.Menu):
-    '''
-    Context menu to be displayed for players belonging to user club.
-    '''
-    def __init__(self):
-        Gtk.Menu.__init__(self)
-
-        menuitem = uigtk.widgets.MenuItem("_Player Information")
-        menuitem.connect("activate", self.on_player_information_clicked)
-        self.append(menuitem)
-        separator = Gtk.SeparatorMenuItem()
-        self.append(separator)
-        menuitem = uigtk.widgets.MenuItem("Add to _Comparison")
-        menuitem.connect("activate", self.on_comparison_clicked)
-        self.append(menuitem)
-
-    def on_player_information_clicked(self, *args):
-        '''
-        Launch player information screen for selected player.
-        '''
-        data.window.screen.change_visible_screen("playerinformation")
-        data.window.screen.active.set_visible_player(self.player.playerid)
-
-    def on_comparison_clicked(self, *args):
-        '''
-        Add player to stack for comparison.
-        '''
-        data.comparison.add_to_comparison(self.player)
-
-    def show(self):
-        self.show_all()
-
-
-class ContextMenu2(ContextMenu1):
-    '''
-    Content menu displayed for players belonging to other clubs.
-    '''
-    def __init__(self):
-        ContextMenu1.__init__(self)
-
-        separator = Gtk.SeparatorMenuItem()
-        self.insert(separator, 1)
-        self.menuitemPurchase = uigtk.widgets.MenuItem("Make Offer to _Purchase")
-        self.menuitemPurchase.connect("activate", self.on_purchase_offer_clicked)
-        self.insert(self.menuitemPurchase, 2)
-        self.menuitemLoan = uigtk.widgets.MenuItem("Make Offer to _Loan")
-        self.menuitemLoan.connect("activate", self.on_loan_offer_clicked)
-        self.insert(self.menuitemLoan, 3)
-        self.menuitemAddShortlist = uigtk.widgets.MenuItem("_Add to Shortlist")
-        self.menuitemAddShortlist.connect("activate", self.on_add_to_shortlist_clicked)
-        self.insert(self.menuitemAddShortlist, 4)
-        self.menuitemRemoveShortlist = uigtk.widgets.MenuItem("_Remove from Shortlist")
-        self.menuitemRemoveShortlist.connect("activate", self.on_remove_from_shortlist_clicked)
-        self.insert(self.menuitemRemoveShortlist, 5)
-
-    def on_purchase_offer_clicked(self, *args):
-        '''
-        Initiate purchase offer of selected player.
-        '''
-        data.negotiations.initialise_purchase(self.player.playerid)
-
-    def on_loan_offer_clicked(self, *args):
-        '''
-        Initiate loan offer of selected player.
-        '''
-        data.negotiations.initialise_loan(self.player.playerid)
-
-    def on_add_to_shortlist_clicked(self, *args):
-        '''
-        Add player to shortlist.
-        '''
-        data.user.club.shortlist.add_to_shortlist(self.player)
-
-    def on_remove_from_shortlist_clicked(self, *args):
-        '''
-        Remove player from shortlist.
-        '''
-        dialog = uigtk.shortlist.RemoveShortlist()
-
-        if dialog.show(self.player):
-            data.user.club.shortlist.remove_from_shortlist(self.player)
-
-    def show(self):
-        self.show_all()
-
-        sensitive = data.user.club.shortlist.get_player_in_shortlist(self.player)
-        self.menuitemAddShortlist.set_sensitive(not sensitive)
-        self.menuitemRemoveShortlist.set_sensitive(sensitive)
-
-        if self.player.club:
-            self.menuitemPurchase.set_label("Make Offer to _Purchase")
-            self.menuitemLoan.set_sensitive(True)
-        else:
-            self.menuitemPurchase.set_label("Make Offer to _Sign")
-            self.menuitemLoan.set_sensitive(False)
