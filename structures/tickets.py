@@ -77,6 +77,35 @@ class Tickets:
         '''
         capacity = data.user.club.stadium.get_capacity() - data.user.club.stadium.get_box_capacity() - self.school_tickets
 
+        # Calculate season ticket sales
+        available = (capacity * 0.01) * self.season_tickets
+
+        total = 0
+
+        if data.user.club.stadium.get_standing_uncovered():
+            capacity = (data.user.club.stadium.get_standing_uncovered_capacity() * 0.01) * self.season_tickets
+            total += self.get_ticket_prices()[0].prices[2] * capacity
+
+        if data.user.club.stadium.get_standing_covered():
+            capacity = (data.user.club.stadium.get_standing_covered_capacity() * 0.01) * self.season_tickets
+            total += self.get_ticket_prices()[1].prices[2] * capacity
+
+        if data.user.club.stadium.get_seating_uncovered():
+            capacity = (data.user.club.stadium.get_seating_uncovered_capacity() * 0.01) * self.season_tickets
+            total += self.get_ticket_prices()[2].prices[2] * capacity
+
+        if data.user.club.stadium.get_seating_covered():
+            capacity = (data.user.club.stadium.get_seating_covered_capacity() * 0.01) * self.season_tickets
+            total += self.get_ticket_prices()[3].prices[2] * capacity
+
+        # Calculate box season ticket sales
+        sales = (data.user.club.stadium.get_box_capacity() * 0.01) * self.season_tickets
+
+        box = self.get_ticket_prices()[4]
+        total += sales * box.prices[2]
+
+        data.user.club.accounts.deposit(amount=total, category="tickets")
+
 
 class TicketCategories:
     def __init__(self):

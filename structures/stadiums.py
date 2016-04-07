@@ -85,6 +85,19 @@ class Stadiums:
 
             return False
 
+        def get_standing_uncovered_capacity(self):
+            '''
+            Return capacity defined for uncovered standing.
+            '''
+            capacity = 0
+
+            for stands in (self.main_stands, self.corner_stands):
+                for stand in stands:
+                    if not stand.roof and not stand.seating:
+                        capacity += stand.capacity
+
+            return capacity
+
         def get_standing_covered(self):
             '''
             Return whether stadium has any covered standing areas.
@@ -95,6 +108,19 @@ class Stadiums:
                         return True
 
             return False
+
+        def get_standing_covered_capacity(self):
+            '''
+            Return capacity defined for covered standing.
+            '''
+            capacity = 0
+
+            for stands in (self.main_stands, self.corner_stands):
+                for stand in stands:
+                    if stand.roof and not stand.seating:
+                        capacity += stand.capacity
+
+            return capacity
 
         def get_seating_uncovered(self):
             '''
@@ -107,6 +133,19 @@ class Stadiums:
 
             return False
 
+        def get_seating_uncovered_capacity(self):
+            '''
+            Return capacity defined for uncovered seating.
+            '''
+            capacity = 0
+
+            for stands in (self.main_stands, self.corner_stands):
+                for stand in stands:
+                    if not stand.roof and stand.seating:
+                        capacity += stand.capacity
+
+            return capacity
+
         def get_seating_covered(self):
             '''
             Return whether stadium has any covered seating areas.
@@ -117,6 +156,19 @@ class Stadiums:
                         return True
 
             return False
+
+        def get_seating_covered_capacity(self):
+            '''
+            Return capacity defined for covered seating.
+            '''
+            capacity = 0
+
+            for stands in (self.main_stands, self.corner_stands):
+                for stand in stands:
+                    if stand.roof and stand.seating:
+                        capacity += stand.capacity
+
+            return capacity
 
         def get_executive_box(self):
             '''
