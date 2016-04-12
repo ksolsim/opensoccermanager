@@ -108,6 +108,29 @@ class Staff(Gtk.Grid):
     __name__ = "staff"
 
     class Coach(Interface):
+        class Columns:
+            def __init__(self):
+                self.columns = []
+
+                treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Name",
+                                                              column=1)
+                self.columns.append(treeviewcolumn)
+                treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Age",
+                                                              column=2)
+                self.columns.append(treeviewcolumn)
+                treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Ability",
+                                                              column=3)
+                self.columns.append(treeviewcolumn)
+                treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Speciality",
+                                                              column=4)
+                self.columns.append(treeviewcolumn)
+                treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Wage",
+                                                              column=5)
+                self.columns.append(treeviewcolumn)
+                treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Contract",
+                                                              column=6)
+                self.columns.append(treeviewcolumn)
+
         def __init__(self):
             Interface.__init__(self)
 
@@ -119,24 +142,11 @@ class Staff(Gtk.Grid):
             self.treeviewHired.connect("button-release-event", self.on_button_release_event)
             self.treeviewHired.connect("key-press-event", self.on_key_press_event)
 
-            treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Name",
-                                                          column=1)
-            self.treeviewHired.append_column(treeviewcolumn)
-            treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Age",
-                                                          column=2)
-            self.treeviewHired.append_column(treeviewcolumn)
-            treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Ability",
-                                                          column=3)
-            self.treeviewHired.append_column(treeviewcolumn)
-            treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Speciality",
-                                                          column=4)
-            self.treeviewHired.append_column(treeviewcolumn)
-            treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Wage",
-                                                          column=5)
-            self.treeviewHired.append_column(treeviewcolumn)
-            treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Contract",
-                                                          column=6)
-            self.treeviewHired.append_column(treeviewcolumn)
+            columns = self.Columns()
+
+            for column in columns.columns:
+                self.treeviewHired.append_column(column)
+
             treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Morale",
                                                           column=7)
             self.treeviewHired.append_column(treeviewcolumn)
@@ -144,24 +154,10 @@ class Staff(Gtk.Grid):
                                                           column=8)
             self.treeviewHired.append_column(treeviewcolumn)
 
-            treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Name",
-                                                          column=1)
-            self.treeviewAvailable.append_column(treeviewcolumn)
-            treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Age",
-                                                          column=2)
-            self.treeviewAvailable.append_column(treeviewcolumn)
-            treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Ability",
-                                                          column=3)
-            self.treeviewAvailable.append_column(treeviewcolumn)
-            treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Speciality",
-                                                          column=4)
-            self.treeviewAvailable.append_column(treeviewcolumn)
-            treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Wage",
-                                                          column=5)
-            self.treeviewAvailable.append_column(treeviewcolumn)
-            treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Contract",
-                                                          column=6)
-            self.treeviewAvailable.append_column(treeviewcolumn)
+            columns = self.Columns()
+
+            for column in columns.columns:
+                self.treeviewAvailable.append_column(column)
 
             self.buttonHire.connect("clicked", self.on_hire_clicked)
             self.buttonFire.connect("clicked", self.on_fire_clicked)
@@ -322,6 +318,26 @@ class Staff(Gtk.Grid):
             self.treeviewAvailable.set_cursor(0)
 
     class Scout(Interface):
+        class Columns:
+            def __init__(self):
+                self.columns = []
+
+                treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Name",
+                                                              column=1)
+                self.columns.append(treeviewcolumn)
+                treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Age",
+                                                              column=2)
+                self.columns.append(treeviewcolumn)
+                treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Ability",
+                                                              column=3)
+                self.columns.append(treeviewcolumn)
+                treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Wage",
+                                                              column=4)
+                self.columns.append(treeviewcolumn)
+                treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Contract",
+                                                              column=5)
+                self.columns.append(treeviewcolumn)
+
         def __init__(self):
             Interface.__init__(self)
 
@@ -330,46 +346,29 @@ class Staff(Gtk.Grid):
 
             self.liststoreHired = Gtk.ListStore(int, str, int, str, str, str, str)
             self.treeviewHired.set_model(self.liststoreHired)
+            self.treeviewHired.connect("button-release-event", self.on_button_release_event)
+            self.treeviewHired.connect("key-press-event", self.on_key_press_event)
 
-            treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Name",
-                                                          column=1)
-            self.treeviewHired.append_column(treeviewcolumn)
-            treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Age",
-                                                          column=2)
-            self.treeviewHired.append_column(treeviewcolumn)
-            treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Ability",
-                                                          column=3)
-            self.treeviewHired.append_column(treeviewcolumn)
-            treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Wage",
-                                                          column=4)
-            self.treeviewHired.append_column(treeviewcolumn)
-            treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Contract",
-                                                          column=5)
-            self.treeviewHired.append_column(treeviewcolumn)
+            columns = self.Columns()
+
+            for column in columns.columns:
+                self.treeviewHired.append_column(column)
+
             treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Morale",
                                                           column=6)
             self.treeviewHired.append_column(treeviewcolumn)
 
-            treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Name",
-                                                          column=1)
-            self.treeviewAvailable.append_column(treeviewcolumn)
-            treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Age",
-                                                          column=2)
-            self.treeviewAvailable.append_column(treeviewcolumn)
-            treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Ability",
-                                                          column=3)
-            self.treeviewAvailable.append_column(treeviewcolumn)
-            treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Wage",
-                                                          column=4)
-            self.treeviewAvailable.append_column(treeviewcolumn)
-            treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Contract",
-                                                          column=5)
-            self.treeviewAvailable.append_column(treeviewcolumn)
+            columns = self.Columns()
+
+            for column in columns.columns:
+                self.treeviewAvailable.append_column(column)
 
             self.buttonHire.connect("clicked", self.on_hire_clicked)
             self.buttonFire.connect("clicked", self.on_fire_clicked)
             self.buttonRenewContract.connect("clicked", self.on_renew_contract_clicked)
             self.buttonImproveWage.connect("clicked", self.on_improve_wage_clicked)
+
+            self.contextmenu = ContextMenu()
 
         def on_hire_clicked(self, *args):
             model, treeiter = self.treeviewAvailable.treeselection.get_selected()
@@ -443,6 +442,40 @@ class Staff(Gtk.Grid):
                     scout.wage = amount
 
                     self.populate_data()
+
+        def on_key_press_event(self, widget, event):
+            '''
+            Handle button clicks on the treeview.
+            '''
+            if Gdk.keyval_name(event.keyval) == "Menu":
+                event.button = 3
+                self.on_context_menu_event(event)
+
+        def on_button_release_event(self, widget, event):
+            '''
+            Handle right-clicking on the treeview.
+            '''
+            if event.button == 3:
+                self.on_context_menu_event(event)
+
+        def on_context_menu_event(self, event):
+            '''
+            Display context menu for selected player id.
+            '''
+            model, treeiter = self.treeviewHired.treeselection.get_selected()
+
+            if treeiter:
+                scoutid = model[treeiter][0]
+                scout = self.club.scouts.hired[scoutid]
+
+                self.contextmenu.show(scout)
+                self.contextmenu.popup(None,
+                                       None,
+                                       None,
+                                       None,
+                                       event.button,
+                                       event.time)
+
 
         def populate_data(self):
             self.liststoreAvailable.clear()
