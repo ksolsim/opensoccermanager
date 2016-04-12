@@ -165,6 +165,9 @@ class Staff(Gtk.Grid):
             self.buttonImproveWage.connect("clicked", self.on_improve_wage_clicked)
 
             self.contextmenu = ContextMenu()
+            self.contextmenu.menuitemFire.connect("activate", self.on_fire_clicked)
+            self.contextmenu.menuitemRenewContract.connect("activate", self.on_renew_contract_clicked)
+            self.contextmenu.menuitemImproveWage.connect("activate", self.on_improve_wage_clicked)
 
         def on_hire_clicked(self, *args):
             model, treeiter = self.treeviewAvailable.treeselection.get_selected()
@@ -233,7 +236,7 @@ class Staff(Gtk.Grid):
                 coachid = model[treeiter][0]
                 coach = self.club.coaches.hired[coachid]
 
-                amount = self.get_improve_wage_amount()
+                amount = coach.get_improve_wage_amount()
 
                 dialog = ImproveWage(coach.name, amount)
 
@@ -369,6 +372,9 @@ class Staff(Gtk.Grid):
             self.buttonImproveWage.connect("clicked", self.on_improve_wage_clicked)
 
             self.contextmenu = ContextMenu()
+            self.contextmenu.menuitemFire.connect("activate", self.on_fire_clicked)
+            self.contextmenu.menuitemRenewContract.connect("activate", self.on_renew_contract_clicked)
+            self.contextmenu.menuitemImproveWage.connect("activate", self.on_improve_wage_clicked)
 
         def on_hire_clicked(self, *args):
             model, treeiter = self.treeviewAvailable.treeselection.get_selected()
@@ -416,8 +422,8 @@ class Staff(Gtk.Grid):
 
                     return
 
-                period = coach.get_contract_renewal_period()
-                amount = coach.get_contract_renewal_amount()
+                period = scout.get_contract_renewal_period()
+                amount = scout.get_contract_renewal_amount()
 
                 dialog = RenewContract(scout.name, period, amount)
 
@@ -434,7 +440,7 @@ class Staff(Gtk.Grid):
                 scoutid = model[treeiter][0]
                 scout = self.club.scouts.hired[scoutid]
 
-                amount = self.get_improve_wage_amount()
+                amount = scout.get_improve_wage_amount()
 
                 dialog = ImproveWage(scout.name, amount)
 
@@ -667,12 +673,12 @@ class ContextMenu(Gtk.Menu):
     def __init__(self):
         Gtk.Menu.__init__(self)
 
-        menuitem = uigtk.widgets.MenuItem("_Fire Staff")
-        self.append(menuitem)
-        menuitem = uigtk.widgets.MenuItem("_Renew Contract")
-        self.append(menuitem)
-        menuitem = uigtk.widgets.MenuItem("_Improve Wage")
-        self.append(menuitem)
+        self.menuitemFire = uigtk.widgets.MenuItem("_Fire Staff")
+        self.append(self.menuitemFire)
+        self.menuitemRenewContract = uigtk.widgets.MenuItem("_Renew Contract")
+        self.append(self.menuitemRenewContract)
+        self.menuitemImproveWage = uigtk.widgets.MenuItem("_Improve Wage")
+        self.append(self.menuitemImproveWage)
 
     def show(self, staff):
         self.staff = staff
