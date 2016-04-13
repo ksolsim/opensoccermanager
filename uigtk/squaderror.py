@@ -29,6 +29,9 @@ class SquadError(Gtk.Dialog):
         self.set_border_width(5)
         self.set_title("Squad Errors")
         self.add_button("_Close", Gtk.ResponseType.CLOSE)
+        self.add_button("_Go To Squad", Gtk.ResponseType.OK)
+        self.set_default_response(Gtk.ResponseType.OK)
+        self.connect("response", self.on_response)
         self.vbox.set_spacing(5)
 
         label = uigtk.widgets.Label("The players listed below are unavailable to play in the next match.")
@@ -51,6 +54,11 @@ class SquadError(Gtk.Dialog):
         self.frameSuspensions.grid.attach(label, 0, 0, 1, 1)
         label = uigtk.widgets.Label("<b>Suspension</b>")
         self.frameSuspensions.grid.attach(label, 1, 0, 1, 1)
+
+    def on_response(self, dialog, response):
+        if response == Gtk.ResponseType.OK:
+            data.window.screen.change_visible_screen("squad")
+            self.destroy()
 
     def show(self):
         self.show_all()

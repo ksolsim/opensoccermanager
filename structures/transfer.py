@@ -73,6 +73,14 @@ class PurchaseList(TransferList):
 
         self.refresh_list()
 
+    def add_to_list(self, player):
+        '''
+        Add specified player to the list.
+        '''
+        self.listed.append(player)
+
+        player.not_for_sale = False
+
     def refresh_list(self):
         '''
         Update players listed for purchase.

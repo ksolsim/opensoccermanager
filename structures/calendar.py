@@ -54,7 +54,7 @@ class Calendar:
         state = False
 
         for leagueid, league in data.leagues.get_leagues():
-            if self.event <= len(league.fixtures.events):
+            if self.event <= len(league.fixtures.events) - 1:
                 if data.date.get_date_for_event() == league.fixtures.events[self.event]:
                     state = True
 

@@ -104,6 +104,9 @@ class Match(uigtk.widgets.Grid):
 
         self.score.set_result(self.fixture.result)
 
+        attendance = structures.match.Attendance(self.fixture)
+        self.statistics.set_attendance(str(attendance.get_attendance()))
+
         league = data.leagues.get_league_by_id(self.fixture.leagueid)
         league.standings.update_standing(self.fixture)
 
@@ -324,6 +327,8 @@ class Statistics(uigtk.widgets.Grid):
         self.labelAttendance = uigtk.widgets.Label(leftalign=True)
         self.attach(self.labelAttendance, 1, 0, 1, 1)
 
+        self.statistics = []
+
         for count, category in enumerate(("Shots On Target",
                                           "Shots Off Target",
                                           "Free Kicks",
@@ -337,6 +342,12 @@ class Statistics(uigtk.widgets.Grid):
                                           start=1):
             label = uigtk.widgets.Label(category, leftalign=True)
             self.attach(label, 0, count, 1, 1)
+
+    def set_attendance(self, attendance):
+        '''
+        Set attendance value at end of match.
+        '''
+        self.labelAttendance.set_label(attendance)
 
 
 class ProceedToMatch(Gtk.MessageDialog):

@@ -171,4 +171,32 @@ class Suspensions:
 
 
 class Goalscorers:
+    def __init__(self):
+        pass
+
+
+class Assisters:
     pass
+
+
+class Attendance:
+    def __init__(self, fixture):
+        self.fixture = fixture
+
+    def get_attendance(self):
+        '''
+        Return attendance for given fixture.
+        '''
+        club = data.clubs.get_club_by_id(self.fixture.home.clubid)
+
+        base = (74000 / (40 - club.reputation)) * club.reputation
+
+        minimum = int(base * -0.1)
+        maximum = int(base * 0.1)
+        attendance = base + random.randrange(minimum, maximum)
+
+        if attendance > club.stadium.get_capacity():
+            attendance = club.stadium.get_capacity()
+
+        return attendance
+
