@@ -273,19 +273,40 @@ class ContextMenu(Gtk.Menu):
     def __init__(self):
         Gtk.Menu.__init__(self)
 
-        self.menuitemPurchase = uigtk.widgets.MenuItem("Approach for _Purchase")
+        menuitem = uigtk.widgets.MenuItem("_Player Information")
+        menuitem.connect("activate", self.on_player_information_clicked)
+        self.append(menuitem)
+
+        separator = Gtk.SeparatorMenuItem()
+        self.append(separator)
+
+        self.menuitemPurchase = uigtk.widgets.MenuItem("Approach For _Purchase")
         self.menuitemPurchase.connect("activate", self.on_purchase_clicked)
         self.append(self.menuitemPurchase)
-        self.menuitemLoan = uigtk.widgets.MenuItem("Approach for _Loan")
+        self.menuitemLoan = uigtk.widgets.MenuItem("Approach For _Loan")
         self.menuitemLoan.connect("activate", self.on_loan_clicked)
         self.append(self.menuitemLoan)
-        menuitem = uigtk.widgets.MenuItem("_Remove Player")
+        menuitem = uigtk.widgets.MenuItem("_Remove Player From Shortlist")
         menuitem.connect("activate", self.on_remove_clicked)
         self.append(menuitem)
         self.menuitemScoutReport = uigtk.widgets.MenuItem("_Scout Report")
         self.menuitemScoutReport.set_sensitive(False)
         self.menuitemScoutReport.connect("activate", self.on_scout_report_clicked)
         self.append(self.menuitemScoutReport)
+
+        separator = Gtk.SeparatorMenuItem()
+        self.append(separator)
+
+        menuitem = uigtk.widgets.MenuItem("Add To _Comparison")
+        menuitem.connect("activate", self.on_comparison_clicked)
+        self.append(menuitem)
+
+    def on_player_information_clicked(self, *args):
+        '''
+        Launch player information screen for selected player.
+        '''
+        data.window.screen.change_visible_screen("playerinformation")
+        data.window.screen.active.set_visible_player(self.player.playerid)
 
     def on_purchase_clicked(self, *args):
         '''
@@ -327,6 +348,12 @@ class ContextMenu(Gtk.Menu):
         playerid = model[treeiter][0]
 
         ScoutReport()
+
+    def on_comparison_clicked(self, *args):
+        '''
+        Add player to stack for comparison.
+        '''
+        data.comparison.add_to_comparison(self.player)
 
     def show(self):
         model, treeiter = Shortlist.treeselection.get_selected()
