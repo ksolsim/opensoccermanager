@@ -29,6 +29,13 @@ class ContextMenu1(Gtk.Menu):
     def __init__(self):
         Gtk.Menu.__init__(self)
 
+        menuitem = uigtk.widgets.MenuItem("_Player Information")
+        menuitem.connect("activate", self.on_player_information_clicked)
+        self.append(menuitem)
+
+        separator = Gtk.SeparatorMenuItem()
+        self.append(separator)
+
         self.menuitemAddPurchase = uigtk.widgets.MenuItem("_Add To Purchase List")
         self.menuitemAddPurchase.connect("activate", self.on_purchase_list_clicked)
         self.append(self.menuitemAddPurchase)
@@ -57,6 +64,13 @@ class ContextMenu1(Gtk.Menu):
         menuitem = uigtk.widgets.MenuItem("Add To _Comparison")
         menuitem.connect("activate", self.on_comparison_clicked)
         self.append(menuitem)
+
+    def on_player_information_clicked(self, *args):
+        '''
+        Launch player information screen for selected player.
+        '''
+        data.window.screen.change_visible_screen("playerinformation")
+        data.window.screen.active.set_visible_player(self.player.playerid)
 
     def on_purchase_list_clicked(self, *args):
         '''
@@ -137,6 +151,13 @@ class ContextMenu2(Gtk.Menu):
     def __init__(self):
         Gtk.Menu.__init__(self)
 
+        menuitem = uigtk.widgets.MenuItem("_Player Information")
+        menuitem.connect("activate", self.on_player_information_clicked)
+        self.append(menuitem)
+
+        separator = Gtk.SeparatorMenuItem()
+        self.append(separator)
+
         self.menuitemPurchase = uigtk.widgets.MenuItem("Make Offer To _Purchase")
         self.menuitemPurchase.connect("activate", self.on_purchase_offer_clicked)
         self.append(self.menuitemPurchase)
@@ -149,11 +170,20 @@ class ContextMenu2(Gtk.Menu):
         self.menuitemRemoveShortlist = uigtk.widgets.MenuItem("_Remove From Shortlist")
         self.menuitemRemoveShortlist.connect("activate", self.on_remove_from_shortlist_clicked)
         self.append(self.menuitemRemoveShortlist)
+
         separator = Gtk.SeparatorMenuItem()
         self.append(separator)
+
         menuitem = uigtk.widgets.MenuItem("Add To _Comparison")
         menuitem.connect("activate", self.on_comparison_clicked)
         self.append(menuitem)
+
+    def on_player_information_clicked(self, *args):
+        '''
+        Launch player information screen for selected player.
+        '''
+        data.window.screen.change_visible_screen("playerinformation")
+        data.window.screen.active.set_visible_player(self.player.playerid)
 
     def on_purchase_offer_clicked(self, *args):
         '''

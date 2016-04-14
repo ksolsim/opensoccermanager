@@ -24,6 +24,7 @@ import unicodedata
 import data
 import structures.filters
 import structures.skills
+import uigtk.contextmenu
 import uigtk.widgets
 
 
@@ -692,137 +693,30 @@ class Filter(Gtk.Dialog):
         return options
 
 
-class ContextMenu(Gtk.Menu):
-    playerid = None
-
+class ContextMenu(uigtk.contextmenu.ContextMenu1):
     def __init__(self):
-        Gtk.Menu.__init__(self)
-
-        menuitem = uigtk.widgets.MenuItem("_Player Information")
-        menuitem.connect("activate", self.on_player_information_clicked)
-        self.append(menuitem)
-
-        separator = Gtk.SeparatorMenuItem()
-        self.append(separator)
+        uigtk.contextmenu.ContextMenu1.__init__(self)
 
         self.menuitemAddTeam = uigtk.widgets.MenuItem("_Add to Team")
-        self.append(self.menuitemAddTeam)
+        self.insert(self.menuitemAddTeam, 2)
         menuitem = uigtk.widgets.MenuItem("_Remove from Team")
         menuitem.connect("activate", self.on_remove_from_team_clicked)
-        self.append(menuitem)
+        self.insert(menuitem, 3)
 
         separator = Gtk.SeparatorMenuItem()
-        self.append(separator)
-
-        self.menuitemAddPurchase = uigtk.widgets.MenuItem("_Add to Purchase List")
-        self.menuitemAddPurchase.connect("activate", self.on_purchase_list_clicked)
-        self.append(self.menuitemAddPurchase)
-        self.menuitemRemovePurchase = uigtk.widgets.MenuItem("_Remove from Purchase List")
-        self.menuitemRemovePurchase.connect("activate", self.on_purchase_list_clicked)
-        self.append(self.menuitemRemovePurchase)
-        self.menuitemAddLoan = uigtk.widgets.MenuItem("_Add to Loan List")
-        self.menuitemAddLoan.connect("activate", self.on_loan_list_clicked)
-        self.append(self.menuitemAddLoan)
-        self.menuitemRemoveLoan = uigtk.widgets.MenuItem("_Remove from Loan List")
-        self.menuitemRemoveLoan.connect("activate", self.on_loan_list_clicked)
-        self.append(self.menuitemRemoveLoan)
-        menuitem = uigtk.widgets.MenuItem("_Renew Contract")
-        menuitem.connect("activate", self.on_renew_contract_clicked)
-        self.append(menuitem)
-        menuitem = uigtk.widgets.MenuItem("_Terminate Contract")
-        menuitem.connect("activate", self.on_terminate_contract_clicked)
-        self.append(menuitem)
-        self.menuitemNotForSale = uigtk.widgets.CheckMenuItem("_Not for Sale")
-        self.menuitemNotForSale.connect("toggled", self.on_not_for_sale_clicked)
-        self.append(self.menuitemNotForSale)
-
-        separator = Gtk.SeparatorMenuItem()
-        self.append(separator)
-
-        menuitem = uigtk.widgets.MenuItem("Add to _Comparison")
-        menuitem.connect("activate", self.on_comparison_clicked)
-        self.append(menuitem)
+        self.insert(separator, 4)
 
     def on_remove_from_team_clicked(self, *args):
         '''
         Remove player from team if found in team selection.
         '''
-        player = data.players.get_player_by_id(ContextMenu.playerid)
-        Squad.club.squad.teamselection.remove_from_team(player)
+        Squad.club.squad.teamselection.remove_from_team(self.player)
 
         Squad.populate_selection(Squad)
 
-    def on_purchase_list_clicked(self, *args):
-        '''
-        Add player to the transfer list for sale.
-        '''
-        if data.purchase_list.get_player_listed(self.player):
-            data.purchase_list.remove_from_list(self.player)
-        else:
-            data.purchase_list.add_to_list(self.player)
-
-    def on_loan_list_clicked(self, *args):
-        '''
-        Add player to the transfer list for loan.
-        '''
-        if data.loan_list.get_player_listed(self.player):
-            data.loan_list.remove_from_list(self.player)
-        else:
-            data.loan_list.add_to_list(self.player)
-
-    def on_renew_contract_clicked(self, *args):
-        '''
-        Query user to renew contract of selected player.
-        '''
-        dialog = RenewContract(self.player)
-
-        if dialog.show():
-            Squad.squadlist.update()
-
-    def on_terminate_contract_clicked(self, *args):
-        '''
-        Query user to terminate contract of selected player.
-        '''
-        dialog = TerminateContract(self.player)
-
-        if dialog.show():
-            self.player.contract.terminate_contract()
-
-            Squad.squadlist.update()
-
-    def on_not_for_sale_clicked(self, checkmenuitem):
-        '''
-        Toggle not for sale flag on player object.
-        '''
-        self.player.not_for_sale = checkmenuitem.get_active()
-
-    def on_comparison_clicked(self, *args):
-        '''
-        Add player to stack for comparison.
-        '''
-        data.comparison.add_to_comparison(self.player)
-
-    def on_player_information_clicked(self, *args):
-        '''
-        Launch player information screen for selected player.
-        '''
-        data.window.screen.change_visible_screen("playerinformation")
-        data.window.screen.active.set_visible_player(self.playerid)
-
-    def update_sensitivity(self):
-        '''
-        Update menu item sensitivity for available options.
-        '''
-        self.menuitemAddPurchase.set_sensitive(not data.purchase_list.get_player_listed(self.player))
-        self.menuitemRemovePurchase.set_sensitive(data.purchase_list.get_player_listed(self.player))
-        self.menuitemAddLoan.set_sensitive(not data.loan_list.get_player_listed(self.player))
-        self.menuitemRemoveLoan.set_sensitive(data.loan_list.get_player_listed(self.player))
-        self.menuitemNotForSale.set_active(self.player.not_for_sale)
-
     def show(self):
-        ContextMenu.playerid = self.player.playerid
-
         self.positionmenu = PositionMenu()
+        self.positionmenu.player = self.player
         self.menuitemAddTeam.set_submenu(self.positionmenu)
         self.positionmenu.show()
 
@@ -842,8 +736,7 @@ class PositionMenu(Gtk.Menu):
         '''
         Add player id to passed position id.
         '''
-        player = data.players.get_player_by_id(ContextMenu.playerid)
-        Squad.club.squad.teamselection.add_to_team(player, positionid)
+        Squad.club.squad.teamselection.add_to_team(self.player, positionid)
 
         Squad.populate_selection(Squad)
 
@@ -851,8 +744,7 @@ class PositionMenu(Gtk.Menu):
         '''
         Add player id to passed position (substitution) id.
         '''
-        player = data.players.get_player_by_id(ContextMenu.playerid)
-        Squad.club.squad.teamselection.add_to_subs(player, subid)
+        Squad.club.squad.teamselection.add_to_subs(self.player, subid)
 
         Squad.populate_selection(Squad)
 

@@ -142,6 +142,7 @@ class Finances:
         Flotation class handling flotation and the amount which will be raised.
         '''
         def __init__(self):
+            self.pending = False
             self.public = False
 
             self.timeout = 0
@@ -157,6 +158,7 @@ class Finances:
             Initialise timeout to countdown time until going public.
             '''
             self.timeout = random.randint(12, 18)
+            self.pending = True
 
             data.user.club.news.publish("FL01")
 

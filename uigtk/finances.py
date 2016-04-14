@@ -242,7 +242,10 @@ class Loan(uigtk.widgets.CommonFrame):
         self.application.club = data.user.club
         self.repayment.club = data.user.club
 
-        self.stack.set_visible_child_name("application")
+        if data.user.club.finances.loan.get_loan_active():
+            self.stack.set_visible_child_name("repayment")
+        else:
+            self.stack.set_visible_child_name("application")
 
         maximum = data.user.club.finances.loan.get_maximum_loan()
         amount = data.currency.get_amount(maximum)
@@ -448,7 +451,7 @@ class Flotation(uigtk.widgets.CommonFrame):
         amount = data.currency.get_amount(amount)
         amount = "%s%s" % (data.currency.get_currency_symbol(), data.currency.get_comma_value(amount))
 
-        if not data.user.club.finances.flotation.public:
+        if not data.user.club.finances.flotation.pending:
             self.buttonFloat.set_sensitive(True)
             self.labelStatus.set_markup("<b>Floating the club at this time would raise in the region of %s.</b>" % (amount))
         else:
