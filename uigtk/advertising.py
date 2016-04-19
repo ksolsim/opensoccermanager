@@ -27,7 +27,6 @@ targets = [("MY_TREE_MODEL_ROW", Gtk.TargetFlags.SAME_APP, 0),
            ("text/plain", 0, 1),
            ("TEXT", 0, 2),
            ("STRING", 0, 3)]
-target = Gtk.TargetEntry.new("MY_TREE_MODEL_ROW", Gtk.TargetFlags.SAME_APP, 0)
 
 
 class Advertising(uigtk.widgets.Grid):
@@ -47,6 +46,8 @@ class Advertising(uigtk.widgets.Grid):
 
             scrolledwindow = uigtk.widgets.ScrolledWindow()
             self.attach(scrolledwindow, 0, 1, 1, 1)
+
+            target = Gtk.TargetEntry.new("MY_TREE_MODEL_ROW", Gtk.TargetFlags.SAME_APP, 0)
 
             self.liststoreAvailable = Gtk.ListStore(int, str, int, str, str)
 
