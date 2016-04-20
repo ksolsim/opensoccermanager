@@ -222,6 +222,8 @@ class FixtureTeam:
         self.team = []
         self.subs = []
 
+        self.goalscorers = None
+
         self.formationid = 0
 
         self.yellow_cards = []

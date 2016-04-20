@@ -130,6 +130,14 @@ class Score:
 
         self.fixture.result = score
 
+        club = data.clubs.get_club_by_id(self.fixture.home.clubid)
+        goalscorers = Goalscorers(club, score[0])
+        self.fixture.home.goalscorers = goalscorers.generate_goalscorers()
+
+        club = data.clubs.get_club_by_id(self.fixture.away.clubid)
+        goalscorers = Goalscorers(club, score[1])
+        self.fixture.away.goalscorers = goalscorers.generate_goalscorers()
+
     def generate_goals(self):
         '''
         Generate goals scored for both teams.
@@ -171,8 +179,53 @@ class Suspensions:
 
 
 class Goalscorers:
-    def __init__(self):
-        pass
+    def __init__(self, club, score):
+        self.club = club
+        self.score = score
+
+    def calculate_score(self, player):
+        '''
+        Determine chance of goalscorer.
+        '''
+        maximum = 0
+
+        if player.position == "GK":
+            maximum = 1
+        elif player.position == ("DL", "DR", "DC", "D"):
+            maximum = player.tackling
+        elif player.position == ("ML", "MR", "MC", "M"):
+            maximum = player.passing * 2.5
+        elif player.position == ("AS", "AF"):
+            maximum = player.shooting * 5
+
+        return maximum
+
+    def generate_goalscorers(self):
+        '''
+        Return goalscorer object for goals.
+        '''
+        if self.score > 0:
+            goalscorers = []
+
+            for count in range(0, self.score):
+                scores = []
+
+                if scores != []:
+                    for player in self.club.squad.teamselection.get_team_selection():
+                        if player:
+                            maximum = self.calculate_score(player)
+
+                            for count in range(0, maximum):
+                                scores.append(player)
+
+                    random.shuffle(scores)
+
+                    goalscorer = random.choice(scores)
+                    goalscorers.append(goalscorer)
+
+            return goalscorers
+
+        return None
 
 
 class Assisters:
