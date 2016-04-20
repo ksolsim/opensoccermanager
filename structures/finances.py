@@ -92,6 +92,12 @@ class Finances:
 
             self.update_interest_rate()
 
+        def get_overdraft_active(self):
+            '''
+            Return whether an overdraft is currently set.
+            '''
+            return self.amount > 0
+
         def get_maximum_overdraft(self):
             '''
             Return the maximum allowed overdraft.

@@ -48,7 +48,7 @@ class Finances(uigtk.widgets.Grid):
 
 class Loan(uigtk.widgets.CommonFrame):
     class LoanApplication(uigtk.widgets.Grid):
-        class LoanDialog(Gtk.MessageDialog):
+        class ConfirmLoan(Gtk.MessageDialog):
             def __init__(self, amount, interest, period):
                 Gtk.MessageDialog.__init__(self)
                 self.set_transient_for(data.window)
@@ -123,6 +123,26 @@ class Loan(uigtk.widgets.CommonFrame):
             return True
 
     class LoanRepayment(uigtk.widgets.Grid):
+        class ConfirmRepayment(Gtk.MessageDialog):
+            def __init__(self, repayment):
+                repayment = "%s%s" % (data.currency.get_currency_symbol(), data.currency.get_comma_value(repayment))
+
+                Gtk.MessageDialog.__init__(self)
+                self.set_transient_for(data.window)
+                self.set_modal(True)
+                self.set_title("Confirm Repayment")
+                self.set_property("message-type", Gtk.MessageType.QUESTION)
+                self.set_markup("Repay %s of outstanding bank loan?" % (repayment))
+                self.add_button("_Cancel", Gtk.ResponseType.CANCEL)
+                self.add_button("C_onfirm", Gtk.ResponseType.OK)
+                self.set_default_response(Gtk.ResponseType.CANCEL)
+
+            def show(self):
+                state = self.run() == Gtk.ResponseType.OK
+                self.destroy()
+
+                return state
+
         def __init__(self):
             uigtk.widgets.Grid.__init__(self)
 
@@ -206,7 +226,7 @@ class Loan(uigtk.widgets.CommonFrame):
 
         period = self.application.spinbuttonPeriod.get_value_as_int()
 
-        dialog = self.application.LoanDialog(loan, data.user.club.finances.loan.interest, period)
+        dialog = self.application.ConfirmLoan(loan, data.user.club.finances.loan.interest, period)
 
         if dialog.show():
             data.user.club.finances.loan.amount = amount
@@ -226,17 +246,20 @@ class Loan(uigtk.widgets.CommonFrame):
         '''
         repayment = self.repayment.spinbuttonRepay.get_value_as_int()
 
-        if data.user.club.accounts.request(repayment):
-            data.user.club.finances.loan.amount -= repayment
+        dialog = self.repayment.ConfirmRepayment(repayment)
 
-            data.user.club.accounts.withdraw(repayment, category="loan")
+        if dialog.show():
+            if data.user.club.accounts.request(repayment):
+                data.user.club.finances.loan.amount -= repayment
 
-            self.repayment.spinbuttonRepay.set_range(0, data.user.club.finances.loan.amount)
-            self.repayment.spinbuttonRepay.set_value(0)
-            self.repayment.update_interface()
+                data.user.club.accounts.withdraw(repayment, category="loan")
 
-            if data.user.club.finances.loan.amount == 0:
-                self.stack.set_visible_child_name("application")
+                self.repayment.spinbuttonRepay.set_range(0, data.user.club.finances.loan.amount)
+                self.repayment.spinbuttonRepay.set_value(0)
+                self.repayment.update_interface()
+
+                if data.user.club.finances.loan.amount == 0:
+                    self.stack.set_visible_child_name("application")
 
     def run(self):
         self.application.club = data.user.club
@@ -261,12 +284,18 @@ class Loan(uigtk.widgets.CommonFrame):
 class Overdraft(uigtk.widgets.CommonFrame):
     class OverdraftDialog(Gtk.MessageDialog):
         def __init__(self, amount, interest):
+            if amount > 0:
+                amount = "%s%s" % (data.currency.get_currency_symbol(), data.currency.get_comma_value(amount))
+                message = "Set available overdraft to %s with a %i%% interest charge?" % (amount, interest)
+            else:
+                message = "Confirm clearance of available overdraft?"
+
             Gtk.MessageDialog.__init__(self)
             self.set_transient_for(data.window)
             self.set_modal(True)
             self.set_title("Confirm Overdraft")
             self.set_property("message-type", Gtk.MessageType.QUESTION)
-            self.set_markup("Raise overdraft to %s with a %i%% interest charge?" % (amount, interest))
+            self.set_markup(message)
             self.add_button("_Cancel", Gtk.ResponseType.CANCEL)
             self.add_button("C_onfirm", Gtk.ResponseType.OK)
             self.set_default_response(Gtk.ResponseType.CANCEL)
@@ -315,20 +344,26 @@ class Overdraft(uigtk.widgets.CommonFrame):
         '''
         Change sensitivity of apply button.
         '''
-        sensitive = spinbutton.get_value_as_int() > 0
-        self.buttonApply.set_sensitive(sensitive)
+        if data.user.club.finances.overdraft.get_overdraft_active():
+            self.buttonApply.set_sensitive(True)
+        else:
+            if spinbutton.get_value_as_int() > 0:
+                sensitive = spinbutton.get_value_as_int() > 0
+                self.buttonApply.set_sensitive(sensitive)
 
     def on_apply_clicked(self, *args):
         '''
         Ask user to setup use of overdraft.
         '''
         amount = self.spinbuttonOverdraft.get_value_as_int()
-        amount = "%s%s" % (data.currency.get_currency_symbol(), data.currency.get_comma_value(amount))
 
         dialog = self.OverdraftDialog(amount, data.user.club.finances.overdraft.interest)
 
         if dialog.show():
             data.user.club.finances.overdraft.amount = self.spinbuttonOverdraft.get_value_as_int()
+
+            if data.user.club.finances.overdraft.amount == 0:
+                self.buttonApply.set_sensitive(False)
 
     def run(self):
         maximum = data.user.club.finances.overdraft.get_maximum_overdraft()
