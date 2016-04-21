@@ -367,6 +367,12 @@ class Negotiation:
         '''
         Determine whether parent club wishes to negotiate for player.
         '''
+        if data.purchase_list.get_player_listed(self.player):
+            return True
+
+        if data.loan_list.get_player_listed(self.player):
+            return True
+
         return random.choice((True, False))
 
     def consider_offer(self):

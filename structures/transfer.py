@@ -52,34 +52,38 @@ class TransferList:
         '''
         Return if player is listed for transfer.
         '''
-        return player in self.listed
+        state = False
 
-    def add_to_list(self, player):
+        for listing in self.listed:
+            if listing.player is player:
+                state = True
+
+        return state
+
+    def add_to_list(self, listing):
         '''
         Add specified player to the list.
         '''
-        self.listed.append(player)
+        if listing not in self.listed:
+            self.listed.append(listing)
 
     def remove_from_list(self, player):
         '''
         Remove specified player from the list.
         '''
-        self.listed.remove(player)
+        for listing in self.listed:
+            if listing.player is player:
+                self.listed.remove(listing)
 
 
 class PurchaseList(TransferList):
+    '''
+    Listing of players available for purchase by other clubs.
+    '''
     def __init__(self):
         TransferList.__init__(self)
 
         self.refresh_list()
-
-    def add_to_list(self, player):
-        '''
-        Add specified player to the list.
-        '''
-        self.listed.append(player)
-
-        player.not_for_sale = False
 
     def refresh_list(self):
         '''
@@ -104,7 +108,19 @@ class PurchaseList(TransferList):
                     choice = random.choice((False, True))
 
                     if score[playerid] < average * 0.125 and choice:
-                        self.add_to_list(player)
+                        listing = PurchaseListing(player, player.value.get_value())
+                        self.add_to_list(listing)
+
+
+class PurchaseListing:
+    '''
+    Object containing purchase listing details.
+    '''
+    def __init__(self, player, value):
+        self.player = player
+        self.value = value
+
+        player.not_for_sale = False
 
 
 class LoanList(TransferList):
@@ -141,4 +157,13 @@ class LoanList(TransferList):
                     choice = random.choice((False, True))
 
                     if score[playerid] < average * 0.125 and choice:
-                        self.add_to_list(player)
+                        listing = LoanListing(player)
+                        self.add_to_list(listing)
+
+
+class LoanListing:
+    '''
+    Object containing loan listing details.
+    '''
+    def __init__(self, player):
+        self.player = player

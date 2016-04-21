@@ -19,6 +19,7 @@
 from gi.repository import Gtk
 
 import data
+import structures.transfer
 import uigtk.widgets
 
 
@@ -79,7 +80,8 @@ class ContextMenu1(Gtk.Menu):
         if data.purchase_list.get_player_listed(self.player):
             data.purchase_list.remove_from_list(self.player)
         else:
-            data.purchase_list.add_to_list(self.player)
+            listing = structures.transfer.PurchaseListing(self.player, self.player.value.get_value())
+            data.purchase_list.add_to_list(listing)
 
         self.update_sensitivity()
 
@@ -92,7 +94,8 @@ class ContextMenu1(Gtk.Menu):
         if data.loan_list.get_player_listed(self.player):
             data.loan_list.remove_from_list(self.player)
         else:
-            data.loan_list.add_to_list(self.player)
+            listing = structures.transfer.LoanListing(self.player)
+            data.loan_list.add_to_list(listing)
 
         self.update_sensitivity()
 

@@ -317,6 +317,7 @@ class PurchaseOffer(Gtk.Dialog):
         label = uigtk.widgets.Label("Enter the amount to offer for the player:")
         grid.attach(label, 0, 1, 1, 1)
         self.spinbuttonAmount = Gtk.SpinButton.new_with_range(0, 999999999, 100000)
+        self.spinbuttonAmount.set_value(negotiation.player.value.get_value())
         grid.attach(self.spinbuttonAmount, 1, 1, 1, 1)
 
     def show(self):

@@ -24,9 +24,7 @@ import uigtk.widgets
 
 
 targets = [("MY_TREE_MODEL_ROW", Gtk.TargetFlags.SAME_APP, 0),
-           ("text/plain", 0, 1),
-           ("TEXT", 0, 2),
-           ("STRING", 0, 3)]
+           ("TEXT", 0, 1)]
 
 
 class Advertising(uigtk.widgets.Grid):
