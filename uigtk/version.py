@@ -58,6 +58,15 @@ class VersionDialog(Gtk.Dialog):
                                     leftalign=True)
         grid.attach(label, 1, 2, 1, 1)
 
+        label = uigtk.widgets.Label("Database Binding", leftalign=True)
+        grid.attach(label, 0, 3, 1, 1)
+        label = uigtk.widgets.Label("%s" % (data.database.binding.name),
+                                    leftalign=True)
+        grid.attach(label, 1, 3, 1, 1)
+        label = uigtk.widgets.Label("%s" % (data.database.binding.version),
+                                    leftalign=True)
+        grid.attach(label, 2, 3, 1, 1)
+
         self.show_all()
 
     def on_response(self, dialog, response):

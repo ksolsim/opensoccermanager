@@ -15,11 +15,32 @@
 #  You should have received a copy of the GNU General Public License along with
 #  OpenSoccerManager.  If not, see <http://www.gnu.org/licenses/>.
 
-import sqlite3
+
 import os
+
 
 class Database:
     def __init__(self):
+        try:
+            import sqlite3
+            self.initialise(sqlite3, "python-sqlite2")
+            self.binding.version = sqlite3.version
+        except ImportError:
+            try:
+                import apsw
+                self.initialise(apsw, "apsw")
+                self.binding.version = apsw.apswversion()
+            except ImportError:
+                print("Requires python-sqlite2 or apsw for the database.")
+                exit()
+
+    def initialise(self, binding, name):
+        '''
+        Initialise connection and cursor objects.
+        '''
+        self.binding = binding
+        self.binding.name = name
+
         self.connection = None
         self.cursor = None
 
@@ -30,7 +51,7 @@ class Database:
         connected = False
 
         if os.path.exists(filepath):
-            self.connection = sqlite3.connect(filepath)
+            self.connection = self.binding.Connection(filepath)
             self.cursor = self.connection.cursor()
             self.cursor.execute("PRAGMA foreign_keys = on")
 
