@@ -255,7 +255,11 @@ class PurchaseEnquiry(uigtk.shared.TransferEnquiry):
         uigtk.shared.TransferEnquiry.__init__(self)
 
     def show(self, club, player):
-        self.set_markup("Approach %s for the purchase of %s?" % (club.name, player.get_name(mode=1)))
+        if player.injury.get_injured():
+            self.set_markup("<span size='12000'><b>Approach %s for the purchase of %s?</b></span>" % (club.name, player.get_name(mode=1)))
+            self.set_injury_warning(player)
+        else:
+            self.set_markup("Approach %s for the purchase of %s?" % (club.name, player.get_name(mode=1)))
 
         state = self.run() == Gtk.ResponseType.OK
         self.destroy()
@@ -271,7 +275,11 @@ class LoanEnquiry(uigtk.shared.TransferEnquiry):
         uigtk.shared.TransferEnquiry.__init__(self)
 
     def show(self, club, player):
-        self.set_markup("Approach %s for the loan of %s?" % (club.name, player.get_name(mode=1)))
+        if player.injury.get_injured():
+            self.set_markup("<span size='12000'><b>Approach %s for the loan of %s?</b></span>" % (club.name, player.get_name(mode=1)))
+            self.set_injury_warning(player)
+        else:
+            self.set_markup("Approach %s for the loan of %s?" % (club.name, player.get_name(mode=1)))
 
         state = self.run() == Gtk.ResponseType.OK
         self.destroy()
@@ -287,7 +295,11 @@ class FreeEnquiry(uigtk.shared.TransferEnquiry):
         uigtk.shared.TransferEnquiry.__init__(self)
 
     def show(self, player):
-        self.set_markup("Approach %s to join on a free transfer?" % (player.get_name(mode=1)))
+        if player.injury.get_injured():
+            self.set_markup("<span size='12000'><b>Approach %s to join on a free transfer?</b></span>" % (player.get_name(mode=1)))
+            self.set_injury_warning(player)
+        else:
+            self.set_markup("Approach %s to join on a free transfer?" % (player.get_name(mode=1)))
 
         state = self.run() == Gtk.ResponseType.OK
         self.destroy()

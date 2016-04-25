@@ -20,6 +20,7 @@ import random
 
 import data
 import structures.formations
+import uigtk.shared
 
 
 class Squad:
@@ -94,6 +95,16 @@ class Squad:
         Return number of players in squad.
         '''
         return len(self.squad)
+
+    def get_release_permitted(self):
+        if len(self.squad) < 17:
+            uigtk.shared.SquadSize(1)
+            return False
+        elif len(self.squad) > 29:
+            uigtk.shared.SquadSize(2)
+            return False
+        else:
+            return True
 
     def get_reserves_count(self):
         '''

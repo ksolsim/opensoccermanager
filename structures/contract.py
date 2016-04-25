@@ -98,17 +98,19 @@ class Contract:
         '''
         Run calls to terminate contract of player and cleanup actions.
         '''
-        self.player.club.squad.remove_from_squad(self.player.playerid)
-        self.player.club.individual_training.remove_from_training(self.player.playerid)
+        if self.player.club.squad.get_release_permitted():
+            self.player.club.squad.remove_from_squad(self.player.playerid)
+            self.player.club.individual_training.remove_from_training(self.player.playerid)
 
-        self.player.club.accounts.withdraw(amount=self.get_termination_payout(),
-                                           category="playerwage")
+            self.player.club.accounts.withdraw(amount=self.get_termination_payout(),
+                                               category="playerwage")
 
-        self.player.club = None
-        self.contract = 0
-        self.player.not_for_sale = False
+            self.player.club = None
+            self.contract = 0
+            self.player.not_for_sale = False
 
-        self.player.transfer = [False, False]
+            data.purchase_list.remove_from_list(self.player)
+            data.loan_list.remove_from_list(self.player)
 
     def decrement_contract_period(self):
         '''

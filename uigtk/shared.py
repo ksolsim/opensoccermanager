@@ -73,6 +73,13 @@ class TransferEnquiry(Gtk.MessageDialog):
         self.add_button("_Approach", Gtk.ResponseType.OK)
         self.set_default_response(Gtk.ResponseType.CANCEL)
 
+        self.message = self.get_message_area()
+
+    def set_injury_warning(self, player):
+        label = uigtk.widgets.Label("<i>This player is currently injured and will not be available for %s.</i>" % (player.injury.get_injury_period()))
+        self.message.add(label)
+        self.message.show_all()
+
 
 class ContractNegotiation(Gtk.Dialog):
     '''
@@ -162,3 +169,21 @@ class ContractNegotiation(Gtk.Dialog):
         self.destroy()
 
         return state
+
+
+class SquadSize(Gtk.MessageDialog):
+    def __init__(self, status):
+        if status == 1:
+            message = "The player could not be released as the squad size is less than 16 players."
+        elif status == 2:
+            message = "The player could not be signed as the squad size is more than 30 players."
+
+        Gtk.MessageDialog.__init__(self)
+        self.set_transient_for(data.window)
+        self.set_title("Squad Size Error")
+        self.set_property("message-type", Gtk.MessageType.ERROR)
+        self.set_markup(message)
+        self.add_button("_Close", Gtk.ResponseType.CLOSE)
+
+        self.run()
+        self.destroy()
