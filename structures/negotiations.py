@@ -294,7 +294,10 @@ class Negotiation:
         elif self.statusid == 2:
             dialog = uigtk.negotiations.PurchaseOffer(self)
 
-            if dialog.show():
+            offer = dialog.show()
+
+            if offer:
+                self.offer = offer
                 self.set_status(3)
             else:
                 data.negotiations.end_negotiation(self)
@@ -310,7 +313,7 @@ class Negotiation:
             dialog = uigtk.negotiations.CompleteTransfer(self)
 
             if dialog.show():
-                print("Complete move")
+                self.complete_purchase()
 
     def respond_to_loan(self):
         '''
@@ -373,16 +376,47 @@ class Negotiation:
         if data.loan_list.get_player_listed(self.player):
             return True
 
-        return random.choice((True, False))
+        status = random.choice((True, False))
+
+        if not status:
+            data.user.club.news.publish("TO01", player=self.player.get_name(mode=1), team=self.player.club.name)
+
+        return status
 
     def consider_offer(self):
         '''
         Determine whether parent club wishes to agree to the offer.
         '''
-        return random.choice((True, False))
+        if data.purchase_list.get_player_listed(self.player):
+            if self.offer >= self.player.value.get_value() * round(random.uniform(0.85, 0.99), 2):
+                return True
+
+        if data.loan_list.get_player_listed(self.player):
+            return True
+
+        status = random.choice((True, False))
+
+        if not status:
+            data.user.club.news.publish("TO06", player=self.player.get_name(mode=1), team=self.player.club.name)
+
+        return status
 
     def consider_contract(self):
         '''
         Determine whether player wishes to move clubs.
         '''
-        return random.choice((True, False))
+        status = random.choice((True, False))
+
+        if not status:
+            data.user.club.news.publish("TO07", player=self.player.get_name(mode=1), team=self.player.club.name)
+
+        return status
+
+    def complete_purchase(self):
+        '''
+        Complete purchase of player.
+        '''
+        print(self.player.get_name())
+
+        if self.club.accounts.request(self.offer):
+            self.club.accounts.withdraw(self.offer, "transfers")

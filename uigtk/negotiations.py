@@ -335,7 +335,11 @@ class PurchaseOffer(Gtk.Dialog):
     def show(self):
         self.show_all()
 
-        state = self.run() == Gtk.ResponseType.ACCEPT
+        state = False
+
+        if self.run() == Gtk.ResponseType.ACCEPT:
+            state = self.spinbuttonAmount.get_value_as_int()
+
         self.destroy()
 
         return state
@@ -471,7 +475,10 @@ class CompleteTransfer(Gtk.MessageDialog):
     Confirmation dialog for completion of transfer.
     '''
     def __init__(self, negotiation):
-        negotiation = data.negotiations.get_negotiation_by_id(negotiationid)
+        if negotiation.club == data.user.club:
+            message = "Complete transfer of %s from %s?" % (negotiation.player.get_name(mode=1), negotiation.player.club.name)
+        else:
+            message = "Complete transfer of %s to %s?" % (negotiation.player.get_name(mode=1), negotiation.player.club.name)
 
         Gtk.MessageDialog.__init__(self)
         self.set_transient_for(data.window)
@@ -481,7 +488,7 @@ class CompleteTransfer(Gtk.MessageDialog):
         self.add_button("Complete _Transfer", Gtk.ResponseType.OK)
         self.set_default_response(Gtk.ResponseType.OK)
         self.set_property("message-type", Gtk.MessageType.QUESTION)
-        self.set_markup("<span size='12000'><b>Complete transfer of %s to %s?</b></span>")
+        self.set_markup("<span size='12000'><b>%s</b></span>" % (message))
         self.format_secondary_text("The transfer can be delayed for a short time if necessary.")
 
     def show(self):
