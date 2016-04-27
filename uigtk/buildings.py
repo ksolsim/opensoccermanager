@@ -59,16 +59,30 @@ class Totals(uigtk.widgets.CommonFrame):
         self.buttonReset.set_tooltip_text("Reset changes made to building configuration.")
         self.buttonReset.connect("clicked", self.on_reset_clicked)
         buttonbox.add(self.buttonReset)
-        buttonApply = uigtk.widgets.Button("_Apply")
-        buttonApply.set_tooltip_text("Apply changes made to number of buildings.")
-        buttonApply.connect("clicked", self.on_apply_clicked)
-        buttonbox.add(buttonApply)
+        self.buttonApply = uigtk.widgets.Button("_Apply")
+        self.buttonApply.set_sensitive(False)
+        self.buttonApply.set_tooltip_text("Apply changes made to number of buildings.")
+        self.buttonApply.connect("clicked", self.on_apply_clicked)
+        buttonbox.add(self.buttonApply)
 
     def update_used_plots(self):
         '''
         Set number of used building plots.
         '''
         self.labelUsedPlots.set_label("%i" % (self.shops.get_building_count()))
+
+        self.update_differential_plots()
+
+    def update_differential_plots(self):
+        '''
+        Determine difference between current shops and user adjusted values.
+        '''
+        if self.shops.get_building_count() - self.shops.get_initial_count() != 0:
+            Buildings.totals.buttonReset.set_sensitive(True)
+            Buildings.totals.buttonApply.set_sensitive(True)
+        else:
+            Buildings.totals.buttonReset.set_sensitive(False)
+            Buildings.totals.buttonApply.set_sensitive(False)
 
     def update_maximum_plots(self):
         '''
@@ -121,6 +135,8 @@ class Totals(uigtk.widgets.CommonFrame):
 
                 data.user.club.accounts.withdraw(cost, "stadium")
                 self.update_construction_cost()
+
+                self.update_differential_plots()
 
     def on_reset_clicked(self, button):
         '''
@@ -189,6 +205,14 @@ class Shops(uigtk.widgets.Grid):
         for count, building in enumerate(data.user.club.stadium.buildings.get_buildings()):
             self.shops[count].spinbutton.set_value(building.number)
 
+    def get_initial_count(self):
+        '''
+        Return current number of buildings.
+        '''
+        plots = sum(building.size * building.number for building in data.user.club.stadium.buildings.get_buildings())
+
+        return plots
+
     def get_building_count(self):
         '''
         Return number of buildings on interface.
@@ -233,7 +257,6 @@ class Shop(uigtk.widgets.Grid):
         Update number of used plots on spinbutton adjustment.
         '''
         Buildings.totals.update_used_plots()
-        Buildings.totals.buttonReset.set_sensitive(True)
 
         self.update_construction_cost(spinbutton)
 
