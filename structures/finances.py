@@ -16,6 +16,7 @@
 #  OpenSoccerManager.  If not, see <http://www.gnu.org/licenses/>.
 
 
+import math
 import random
 
 import data
@@ -58,6 +59,12 @@ class Finances:
 
             self.update_interest_rate()
 
+        def get_loan_permitted(self):
+            '''
+            Return whether bank is willing to provide loan.
+            '''
+            return data.user.club.accounts.balance > 0
+
         def get_loan_active(self):
             '''
             Return if club currently has an active loan.
@@ -69,6 +76,15 @@ class Finances:
             Return maximum permissible loan club can receive.
             '''
             return data.user.club.reputation ** 2 * 10000
+
+        def get_weekly_repayment(self, amount, period):
+            '''
+            Return amount to be paid weekly.
+            '''
+            amount = amount * (self.interest * 0.01 + 1) / (period * 52)
+            amount = math.ceil(amount)
+
+            return amount
 
         def update_interest_rate(self):
             '''

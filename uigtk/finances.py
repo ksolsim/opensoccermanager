@@ -79,6 +79,10 @@ class Loan(uigtk.widgets.CommonFrame):
             self.spinbuttonAmount.connect("value-changed", self.on_amount_changed)
             label.set_mnemonic_widget(self.spinbuttonAmount)
             grid.attach(self.spinbuttonAmount, 1, 0, 1, 1)
+            label = uigtk.widgets.Label("Weekly Payment", leftalign=True)
+            grid.attach(label, 2, 0, 1, 1)
+            self.labelWeekly = uigtk.widgets.Label(leftalign=True)
+            grid.attach(self.labelWeekly, 3, 0, 1, 1)
 
             label = uigtk.widgets.Label("Loan _Period", leftalign=True)
             grid.attach(label, 0, 1, 1, 1)
@@ -87,6 +91,7 @@ class Loan(uigtk.widgets.CommonFrame):
             self.spinbuttonPeriod.set_increments(1, 1)
             self.spinbuttonPeriod.set_numeric(False)
             self.spinbuttonPeriod.connect("output", self.format_repayment_output)
+            self.spinbuttonPeriod.connect("value-changed", self.on_period_changed)
             label.set_mnemonic_widget(self.spinbuttonPeriod)
             grid.attach(self.spinbuttonPeriod, 1, 1, 1, 1)
 
@@ -106,6 +111,25 @@ class Loan(uigtk.widgets.CommonFrame):
             '''
             sensitive = spinbutton.get_value() > 0
             self.buttonApply.set_sensitive(sensitive)
+
+            self.update_weekly_payment()
+
+        def on_period_changed(self, spinbutton):
+            '''
+            Trigger weekly payment update on period change.
+            '''
+            self.update_weekly_payment()
+
+        def update_weekly_payment(self):
+            '''
+            Update label displaying weekly repayment amount.
+            '''
+            amount = self.spinbuttonAmount.get_value_as_int()
+            period = self.spinbuttonPeriod.get_value_as_int()
+
+            weekly = data.user.club.finances.loan.get_weekly_repayment(amount, period)
+
+            self.labelWeekly.set_label("%s%s" % (data.currency.get_currency_symbol(), data.currency.get_comma_value(weekly)))
 
         def format_repayment_output(self, spinbutton):
             '''
@@ -261,24 +285,39 @@ class Loan(uigtk.widgets.CommonFrame):
                 if data.user.club.finances.loan.amount == 0:
                     self.stack.set_visible_child_name("application")
 
-    def run(self):
-        self.application.club = data.user.club
-        self.repayment.club = data.user.club
-
+    def update_interface(self):
+        '''
+        Update visible widgets and status messages.
+        '''
         if data.user.club.finances.loan.get_loan_active():
             self.stack.set_visible_child_name("repayment")
         else:
             self.stack.set_visible_child_name("application")
 
-        maximum = data.user.club.finances.loan.get_maximum_loan()
-        amount = data.currency.get_amount(maximum)
-        amount = "%s%s" % (data.currency.get_currency_symbol(), data.currency.get_comma_value(amount))
+        if data.user.club.finances.loan.get_loan_permitted():
+            maximum = data.user.club.finances.loan.get_maximum_loan()
+            amount = data.currency.get_amount(maximum)
+            amount = "%s%s" % (data.currency.get_currency_symbol(), data.currency.get_comma_value(amount))
 
-        self.labelStatus.set_label("The maximum loan allowed at this time is %s with an interest rate of %i%%." % (amount, data.user.club.finances.loan.interest))
+            self.labelStatus.set_label("The maximum loan allowed at this time is %s with an interest rate of %i%%." % (amount, data.user.club.finances.loan.interest))
 
-        self.application.spinbuttonAmount.set_range(0, maximum)
-        self.application.spinbuttonAmount.set_value(data.user.club.finances.loan.amount)
-        self.application.spinbuttonPeriod.set_value(data.user.club.finances.loan.period)
+            self.application.spinbuttonAmount.set_range(0, maximum)
+            self.application.spinbuttonAmount.set_value(data.user.club.finances.loan.amount)
+            self.application.spinbuttonPeriod.set_value(data.user.club.finances.loan.period)
+
+            self.application.spinbuttonAmount.set_sensitive(True)
+            self.application.spinbuttonPeriod.set_sensitive(True)
+        else:
+            self.labelStatus.set_label("<b>Due to our current debt, the club is not permitted at this time to take out a loan.</b>")
+
+            self.application.spinbuttonAmount.set_sensitive(False)
+            self.application.spinbuttonPeriod.set_sensitive(False)
+
+    def run(self):
+        self.application.club = data.user.club
+        self.repayment.club = data.user.club
+
+        self.update_interface()
 
 
 class Overdraft(uigtk.widgets.CommonFrame):
@@ -365,7 +404,10 @@ class Overdraft(uigtk.widgets.CommonFrame):
             if data.user.club.finances.overdraft.amount == 0:
                 self.buttonApply.set_sensitive(False)
 
-    def run(self):
+    def update_interface(self):
+        '''
+        Update visible widgets and status messages.
+        '''
         maximum = data.user.club.finances.overdraft.get_maximum_overdraft()
         self.spinbuttonOverdraft.set_range(0, maximum)
 
@@ -375,6 +417,9 @@ class Overdraft(uigtk.widgets.CommonFrame):
         self.labelStatus.set_label("The maximum overdraft allowed at this time is %s with an interest rate of %i%%." % (amount, data.user.club.finances.overdraft.interest))
 
         self.spinbuttonOverdraft.set_value(data.user.club.finances.overdraft.amount)
+
+    def run(self):
+        self.update_interface()
 
 
 class Grant(uigtk.widgets.CommonFrame):
@@ -413,9 +458,15 @@ class Grant(uigtk.widgets.CommonFrame):
         buttonbox.add(self.buttonApply)
 
     def on_apply_clicked(self, *args):
+        '''
+        Begin request for stadium improvement grant.
+        '''
         pass
 
-    def run(self):
+    def update_interface(self):
+        '''
+        Update visible widgets and status messages.
+        '''
         if data.user.club.finances.grant.get_grant_available():
             self.labelGrant.set_markup("<b>Grant is available.</b>")
             self.spinbuttonGrant.set_sensitive(True)
@@ -424,6 +475,9 @@ class Grant(uigtk.widgets.CommonFrame):
             self.labelGrant.set_markup("<b>The grant is currently not available to our club.</b>")
             self.spinbuttonGrant.set_sensitive(False)
             self.buttonApply.set_sensitive(False)
+
+    def run(self):
+        self.update_interface()
 
 
 class Flotation(uigtk.widgets.CommonFrame):
@@ -479,15 +533,26 @@ class Flotation(uigtk.widgets.CommonFrame):
 
         if dialog.show():
             data.user.club.finances.flotation.set_initiate_float()
-            self.buttonFloat.set_sensitive(False)
 
-    def run(self):
+            self.update_interface()
+
+    def update_interface(self):
+        '''
+        Update visible widgets and status messages.
+        '''
         amount = data.user.club.finances.flotation.get_float_amount()
         amount = data.currency.get_amount(amount)
         amount = "%s%s" % (data.currency.get_currency_symbol(), data.currency.get_comma_value(amount))
 
-        if not data.user.club.finances.flotation.pending:
-            self.buttonFloat.set_sensitive(True)
-            self.labelStatus.set_markup("<b>Floating the club at this time would raise in the region of %s.</b>" % (amount))
+        if not data.user.club.finances.flotation.public:
+            if not data.user.club.finances.flotation.pending:
+                self.buttonFloat.set_sensitive(True)
+                self.labelStatus.set_markup("<b>Floating the club at this time would raise in the region of %s.</b>" % (amount))
+            else:
+                self.labelStatus.set_markup("<b>The flotation process is currently underway.</b>")
+                self.buttonFloat.set_sensitive(False)
         else:
-            self.buttonFloat.set_sensitive(False)
+            self.labelStatus.set_markup("<b>The club is currently publicly owned by shareholders.</b>")
+
+    def run(self):
+        self.update_interface()
