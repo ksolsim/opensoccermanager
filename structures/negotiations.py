@@ -135,7 +135,7 @@ class Negotiations:
             else:
                 negotiation.statusid = 1
         elif negotiation.statusid == 3:
-            if negotiation.consider_contract():
+            if negotiation.consider_offer():
                 negotiation.statusid = 5
             else:
                 negotiation.statusid = 4
@@ -172,12 +172,13 @@ class Negotiations:
             if state:
                 negotiationid = self.get_negotiationid()
 
-                negotiation = Negotiation(negotiationid, player)
+                if player.club:
+                    negotiation = PurchaseNegotiation(negotiationid, player)
+                else:
+                    negotiation = FreeNegotiation(negotiationid, player)
+
                 negotiation.club = data.user.club
                 self.negotiations[negotiationid] = negotiation
-
-                if not player.club:
-                    negotiation.transfer_type = 2
 
                 data.user.club.shortlist.add_to_shortlist(player)
 
@@ -193,9 +194,8 @@ class Negotiations:
             if dialog.show(player.club, player) == 1:
                 negotiationid = self.get_negotiationid()
 
-                negotiation = Negotiation(negotiationid, player)
+                negotiation = LoanNegotiation(negotiationid, player)
                 negotiation.club = data.user.club
-                negotiation.transfer_type = 1
                 self.negotiations[negotiationid] = negotiation
 
                 data.user.club.shortlist.add_to_shortlist(player)
@@ -236,7 +236,6 @@ class Negotiation:
         self.negotiationid = negotiationid
         self.player = player
         self.club = None
-        self.transfer_type = 0
         self.offer_date = data.date.get_date_as_string()
         self.statusid = 0
         self.status = TransferStatus()
@@ -276,6 +275,12 @@ class Negotiation:
         elif self.transfer_type == 2:
             self.respond_to_free_transfer()
 
+
+class PurchaseNegotiation(Negotiation):
+    def __init__(self, negotiationid, player):
+        Negotiation.__init__(self, negotiationid, player)
+        self.transfer_type = 0
+
     def respond_to_purchase(self):
         '''
         Handle response for purchase transfer types.
@@ -294,10 +299,10 @@ class Negotiation:
         elif self.statusid == 2:
             dialog = uigtk.negotiations.PurchaseOffer(self)
 
-            offer = dialog.show()
+            amount = dialog.show()
 
-            if offer:
-                self.offer = offer
+            if amount:
+                self.amount = amount
                 self.set_status(3)
             else:
                 data.negotiations.end_negotiation(self)
@@ -314,6 +319,73 @@ class Negotiation:
 
             if dialog.show():
                 self.complete_purchase()
+
+    def consider_enquiry(self):
+        '''
+        Determine whether parent club wishes to negotiate for player.
+        '''
+        status = False
+
+        if data.purchase_list.get_player_listed(self.player):
+            status = True
+
+        if status:
+            data.user.club.news.publish("PT02", player=self.player.get_name(mode=1), team=self.player.club.name)
+        else:
+            data.user.club.news.publish("PT01", player=self.player.get_name(mode=1), team=self.player.club.name)
+
+        if not status:
+            status = random.choice((True, False))
+
+        return status
+
+    def consider_offer(self):
+        '''
+        Determine whether parent club wishes to agree to the offer.
+        '''
+        status = False
+
+        if data.purchase_list.get_player_listed(self.player):
+            if self.amount >= self.player.value.get_value() * round(random.uniform(0.85, 0.99), 2):
+                status = True
+
+        if not status:
+            status = random.choice((True, False))
+
+        if status:
+            data.user.club.news.publish("PT04", player=self.player.get_name(mode=1), team=self.player.club.name)
+        else:
+            data.user.club.news.publish("PT03", player=self.player.get_name(mode=1), team=self.player.club.name)
+
+        return status
+
+    def consider_contract(self):
+        '''
+        Determine whether player wishes to move clubs.
+        '''
+        status = random.choice((True, False))
+
+        if status:
+            data.user.club.news.publish("PT06", player=self.player.get_name(mode=1), team=self.player.club.name)
+        else:
+            data.user.club.news.publish("PT05", player=self.player.get_name(mode=1), team=self.player.club.name)
+
+        return status
+
+    def complete_transfer(self):
+        '''
+        Complete purchase transfer of player.
+        '''
+        print(self.player.get_name())
+
+        if self.club.accounts.request(self.offer):
+            self.club.accounts.withdraw(self.offer, "transfers")
+
+
+class LoanNegotiation(Negotiation):
+    def __init__(self, negotiationid, player):
+        Negotiation.__init__(self, negotiationid, player)
+        self.transfer_type = 1
 
     def respond_to_loan(self):
         '''
@@ -339,6 +411,43 @@ class Negotiation:
 
             if dialog.show():
                 print("Complete move")
+
+    def consider_enquiry(self):
+        '''
+        Determine whether parent club wishes to negotiation for player.
+        '''
+        status = False
+
+        if data.loan_list.get_player_listed(self.player):
+            status = True
+
+        if status:
+            data.user.club.news.publish("LT02", player=self.player.get_name(mode=1), team=self.player.club.name)
+        else:
+            data.user.club.news.publish("LT01", player=self.player.get_name(mode=1), team=self.player.club.name)
+
+        if not status:
+            status = random.choice((True, False))
+
+        return status
+
+    def consider_offer(self):
+        '''
+        Determine whether parent club wishes to agree to the offer.
+        '''
+        return random.choice((True, False))
+
+    def complete_transfer(self):
+        '''
+        Complete loan of player.
+        '''
+        print(self.player.get_name())
+
+
+class FreeNegotiation(Negotiation):
+    def __init__(self, negotiationid, player):
+        Negotiation.__init__(self, negotiationid, player)
+        self.transfer_type = 2
 
     def respond_to_free_transfer(self):
         '''
@@ -368,36 +477,14 @@ class Negotiation:
 
     def consider_enquiry(self):
         '''
-        Determine whether parent club wishes to negotiate for player.
+        Determine whether player wishes to negotiation contract.
         '''
-        if data.purchase_list.get_player_listed(self.player):
-            return True
-
-        if data.loan_list.get_player_listed(self.player):
-            return True
-
         status = random.choice((True, False))
 
-        if not status:
-            data.user.club.news.publish("TO01", player=self.player.get_name(mode=1), team=self.player.club.name)
-
-        return status
-
-    def consider_offer(self):
-        '''
-        Determine whether parent club wishes to agree to the offer.
-        '''
-        if data.purchase_list.get_player_listed(self.player):
-            if self.offer >= self.player.value.get_value() * round(random.uniform(0.85, 0.99), 2):
-                return True
-
-        if data.loan_list.get_player_listed(self.player):
-            return True
-
-        status = random.choice((True, False))
-
-        if not status:
-            data.user.club.news.publish("TO06", player=self.player.get_name(mode=1), team=self.player.club.name)
+        if status:
+            data.user.club.news.publish("FT02", player=self.player.get_name(mode=1))
+        else:
+            data.user.club.news.publish("FT01", player=self.player.get_name(mode=1))
 
         return status
 
@@ -407,16 +494,15 @@ class Negotiation:
         '''
         status = random.choice((True, False))
 
-        if not status:
-            data.user.club.news.publish("TO07", player=self.player.get_name(mode=1), team=self.player.club.name)
+        if status:
+            data.user.club.news.publish("FT04", player=self.player.get_name(mode=1))
+        else:
+            data.user.club.news.publish("FT03", player=self.player.get_name(mode=1))
 
         return status
 
-    def complete_purchase(self):
+    def complete_transfer(self):
         '''
-        Complete purchase of player.
+        Complete free transfer of player.
         '''
         print(self.player.get_name())
-
-        if self.club.accounts.request(self.offer):
-            self.club.accounts.withdraw(self.offer, "transfers")

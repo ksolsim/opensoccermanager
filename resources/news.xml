@@ -135,72 +135,82 @@
         <message>The players appear to be fatigued from the heavy team training workload. We may get the best out of the team by focusing the session on a few hours per day.</message>
         <category>4</category>
     </article>
-    <article id="TO01">
+    <article id="PT01">
         <title>Response received to _PLAYER_ transfer offer</title>
         <message>The transfer offer lodged for _PLAYER_ has been rejected by _TEAM_. The club do not wish to sell him at this time.</message>
         <category>2</category>
     </article>
-    <article id="TO01">
+    <article id="PT01">
         <title>Response to _PLAYER_ transfer enquiry received</title>
         <message>A response has been received to our request to purchase _PLAYER_. The enquiry has been rejected by _TEAM_ as they do not want to sell.</message>
         <category>2</category>
     </article>
-    <article id="TO02">
+    <article id="PT02">
         <title>_TEAM_ has responded to transfer offer</title>
         <message>The transfer enquiry made for _PLAYER_ will be accepted pending successful negotiation of the price. The club invite you to negotiate.</message>
         <category>2</category>
     </article>
-    <article id="TO05">
+    <article id="PT03">
         <title>Response to offer for _PLAYER_</title>
-        <message>_TEAM_ have agreed to the transfer fee for _PLAYER_. The club have allowed us to open negotiations with the player, however the transfer completion is now dependent on a deal being made.</message>
+        <message>_TEAM_ have agreed to the fee offered for _PLAYER_. The club have allowed us to open negotiations with the player, however the transfer completion is now dependent on a deal being made.</message>
         <category>2</category>
     </article>
-    <article id="TO06">
+    <article id="PT04">
         <title>Transfer fee for _PLAYER_ rejected</title>
         <message>The transfer fee submitted for _PLAYER_ has been rejected due to _TEAM_ believing that the player is worth more money.</message>
         <category>2</category>
     </article>
-    <article id="TO07">
+    <article id="PT05">
         <title>Contract offer rejected by _PLAYER_</title>
         <message>_PLAYER_ has rejected the contract offered by us. He has decided to stay with his current team but thanks us for the interest shown in him.</message>
         <category>2</category>
     </article>
-    <article id="TO08">
+    <article id="PT06">
         <title>_PLAYER_ has agreed to the contract offered</title>
         <message>_PLAYER_ is delighted with the contract offer made and is ready to transfer to our club. We just need to confirm the signing to complete the transfer.</message>
         <category>2</category>
     </article>
-    <article id="TO08">
+    <article id="PT06">
         <title>_PLAYER_ agrees to contract offering</title>
         <message>The contract for _PLAYER_ has now been finalised. The player will join up with the team on confirmation by us of the transfer.</message>
         <category>2</category>
     </article>
-    <article id="TO09">
-        <title>_PLAYER_ rejects our contract offer</title>
-        <message>The contract offered to _PLAYER_ has been rejected as the player believes he is worth more than the offer.</message>
+    <article id="FT01">
+        <title>_PLAYER_ has turned down our transfer enquiry</title>
+        <message>_PLAYER_ has turned down the enquiry to join our club on free transfer. He does not wish to join our club at this time.</message>
         <category>2</category>
     </article>
-    <article id="TO10">
+    <article id="FT02">
         <title>_PLAYER_ has accepted our transfer enquiry</title>
         <message>_PLAYER_ has accepted the offer of a free transfer and is willing to open contract negotiations to join the club.</message>
         <category>2</category>
     </article>
-    <article id="LO01">
+    <article id="FT03">
+        <title>_PLAYER_ rejects our contract offer</title>
+        <message>The contract offered to _PLAYER_ has been rejected as the player believes he is worth more than the offer.</message>
+        <category>2</category>
+    </article>
+    <article id="FT04">
+        <title>_PLAYER_ has accepted our contract offer</title>
+        <message>The contract offered to _PLAYER_ has been agreed and the player is willing to join our club. The signing just needs to be confirmed now.</message>
+        <category>2</category>
+    </article>
+    <article id="LT01">
         <title>Reply received to _PLAYER_ loan enquiry</title>
         <message>We have received a reply to our request to take _PLAYER_ on loan. _TEAM_ have rejected the offer as they do not wish to loan him to a rival club.</message>
         <category>2</category>
     </article>
-    <article id="LO02">
+    <article id="LT02">
         <title>Answer to _PLAYER_ loan negotiation enquiry</title>
         <message>_TEAM_ have responded to the loan offer for _PLAYER_ positively and have suggested we submit a offer on the loan-length period.</message>
         <category>2</category>
     </article>
-    <article id="LO03">
+    <article id="LT03">
         <title>_TEAM_ response to loan negotiation offer</title>
         <message>The loan offer made for _PLAYER_ has been received and rejected by _TEAM_. The club do not wish to loan the player for that length of time.</message>
         <category>2</category>
     </article>
-    <article id="LO04">
+    <article id="LT04">
         <title>_PLAYER_ loan offer accepted by _TEAM_</title>
         <message>The loan offer made to _TEAM_ for _PLAYER_ has been accepted. The player will be joining the rest of the squad shortly.</message>
         <category>2</category>
@@ -219,16 +229,6 @@
         <title>_PLAYER_ returns to training after injury</title>
         <message>_PLAYER_ has returned to team and individual training as he has now recovered from _INJURY_. He is not fully match fit however so his complete recovery will take some further time.</message>
         <category>10</category>
-    </article>
-    <article id="TE01">
-        <title>Transfer bid for _PLAYER_ declined</title>
-        <message>_TEAM_ have rejected the enquiry for _PLAYER_ as they do not have enough depth in their squad to complete the transfer.</message>
-        <category>2</category>
-    </article>
-    <article id="TE01">
-        <title>_PLAYER_ transfer enquiry turned down</title>
-        <message>The transfer enquiry lodged for _PLAYER_ has been dismissed as _TEAM_ do not have enough players to transfer the player.</message>
-        <category>2</category>
     </article>
     <article id="LE01">
         <title>Loan contract for _PLAYER_ cancelled</title>
