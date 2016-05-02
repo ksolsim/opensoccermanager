@@ -23,16 +23,18 @@ import structures.training
 import uigtk.widgets
 
 
-class TeamTraining(Gtk.Grid):
+class TeamTraining(uigtk.widgets.Grid):
     __name__ = "teamtraining"
 
     def __init__(self):
-        Gtk.Grid.__init__(self)
-        self.set_row_spacing(5)
+        uigtk.widgets.Grid.__init__(self)
+
+        frame = uigtk.widgets.CommonFrame("Training Schedule")
+        self.attach(frame, 0, 0, 1, 1)
 
         grid = uigtk.widgets.Grid()
         grid.set_hexpand(True)
-        self.attach(grid, 0, 0, 1, 1)
+        frame.grid.attach(grid, 0, 0, 1, 1)
 
         hours = ("09:00-10:00", "10:00-11:00", "11:00-12:00", "12:00-13:00", "13:00-14:00", "14:00-15:00")
 
@@ -40,19 +42,24 @@ class TeamTraining(Gtk.Grid):
             label = uigtk.widgets.Label("%s" % (hour))
             grid.attach(label, count, 0, 1, 1)
 
-        for count, day in enumerate(data.calendar.get_days(), start=1):
-            label = uigtk.widgets.Label("%s" % (day), leftalign=True)
-            grid.attach(label, 0, count, 1, 1)
-
         self.comboboxes = []
         count = 0
 
+        days = data.calendar.get_days()
         training = structures.training.Training()
 
         for day in range(0, 7):
+            label = uigtk.widgets.Label("_%s" % (days[day]), leftalign=True)
+            grid.attach(label, 0, day + 1, 1, 1)
+
+            mnemonic = True
+
             for hour in range(0, 6):
                 combobox = Gtk.ComboBoxText()
-                combobox.set_hexpand(True)
+
+                if mnemonic:
+                    label.set_mnemonic_widget(combobox)
+                    mnemonic = False
 
                 combobox.append("0", "No Training")
                 combobox.append("1", "Individual")
@@ -61,6 +68,7 @@ class TeamTraining(Gtk.Grid):
                                                       start=2):
                     combobox.append(str(categoryid), category)
 
+                combobox.set_hexpand(True)
                 combobox.value = count
                 combobox.connect("changed", self.on_combobox_changed)
 
@@ -71,12 +79,15 @@ class TeamTraining(Gtk.Grid):
 
         buttonbox = uigtk.widgets.ButtonBox()
         buttonbox.set_layout(Gtk.ButtonBoxStyle.START)
-        self.attach(buttonbox, 0, 1, 1, 1)
+        frame.grid.attach(buttonbox, 0, 1, 1, 1)
 
-        buttonAssistant = uigtk.widgets.Button("Assistant")
+        buttonAssistant = uigtk.widgets.Button("_Assistant")
         buttonAssistant.set_tooltip_text("Have assistant manager generate a training schedule.")
         buttonAssistant.connect("clicked", self.on_assistant_clicked)
         buttonbox.add(buttonAssistant)
+
+        percentages = Percentages()
+        self.attach(percentages, 0, 1, 1, 1)
 
     def on_combobox_changed(self, combobox):
         '''
@@ -99,3 +110,8 @@ class TeamTraining(Gtk.Grid):
     def run(self):
         self.populate_data()
         self.show_all()
+
+
+class Percentages(uigtk.widgets.CommonFrame):
+    def __init__(self):
+        uigtk.widgets.CommonFrame.__init__(self, "Training Percentages")
