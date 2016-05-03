@@ -207,12 +207,12 @@ class Stadium(uigtk.widgets.Grid):
             frame.grid.attach(label, 5, count, 1, 1)
             stand.box = Gtk.SpinButton()
             stand.box.set_range(0, 500)
-            stand.box.set_increments(250, 250)
+            stand.box.set_increments(125, 125)
             stand.box.set_value(0)
             stand.box.set_snap_to_ticks(True)
             stand.box.set_numeric(True)
             stand.box.set_sensitive(False)
-            stand.box.connect("value-changed", self.on_capacity_changed, stand)
+            stand.box.connect("value-changed", self.on_box_changed, stand)
             frame.grid.attach(stand.box, 6, count, 1, 1)
 
         # Populate adjacent main stands for corner stands
@@ -270,13 +270,31 @@ class Stadium(uigtk.widgets.Grid):
         '''
         Handle changes to main or corner stand capacities.
         '''
+        self.update_capacity()
+
+        stand.on_capacity_changed(spinbutton)
+
+        capacity = stand.capacity.get_value_as_int()
+        stand.get_upgrade_cost(capacity,
+                               seating=stand.seating.get_active(),
+                               roof=stand.roof.get_active())
+
+    def on_box_changed(self, spinbutton, stand):
+        '''
+        Handle changes to executive box capacity.
+        '''
+        self.update_capacity()
+
+    def update_capacity(self):
+        '''
+        Update cost and capacity labels on change.
+        '''
         capacity = sum(stand.capacity.get_value_as_int() for stand in self.main_stands)
         capacity += sum(stand.box.get_value_as_int() for stand in self.main_stands)
         capacity += sum(stand.capacity.get_value_as_int() for stand in self.corner_stands)
 
+        self.upgrades.update_cost(cost="£0")
         self.upgrades.update_capacity(capacity)
-
-        stand.on_capacity_changed(spinbutton)
 
     def on_construct_clicked(self, *args):
         '''
@@ -325,7 +343,7 @@ class Stadium(uigtk.widgets.Grid):
         Save stadium data into data structure.
         '''
         for count, item in enumerate(self.main_stands):
-            stand = self.stadium.main_stands[count]
+            stand = data.user.club.stadium.main_stands[count]
 
             stand.capacity = item.capacity.get_value_as_int()
             stand.seating = not item.standing.get_active()
@@ -333,7 +351,7 @@ class Stadium(uigtk.widgets.Grid):
             stand.box = item.box.get_value_as_int()
 
         for count, item in enumerate(self.corner_stands):
-            stand = self.stadium.corner_stands[count]
+            stand = data.user.club.stadium.corner_stands[count]
 
             stand.capacity = item.capacity.get_value_as_int()
             stand.seating = not item.standing.get_active()
@@ -343,8 +361,10 @@ class Stadium(uigtk.widgets.Grid):
 
     def populate_data(self):
         # Main stand data
-        for count, item in enumerate(self.stadium.main_stands):
+        for count, item in enumerate(data.user.club.stadium.main_stands):
             stand = self.main_stands[count]
+
+            stand.get_upgrade_cost = item.get_upgrade_cost
 
             stand.capacity.set_value(item.capacity)
             stand.capacity.set_range(item.capacity, 15000)
@@ -366,8 +386,10 @@ class Stadium(uigtk.widgets.Grid):
             stand.box.set_range(item.box, 500)
 
         # Corner stand data
-        for count, item in enumerate(self.stadium.corner_stands):
+        for count, item in enumerate(data.user.club.stadium.corner_stands):
             stand = self.corner_stands[count]
+
+            stand.get_upgrade_cost = item.get_upgrade_cost
 
             stand.capacity.set_value(item.capacity)
             stand.capacity.set_range(item.capacity, 3000)
@@ -388,8 +410,6 @@ class Stadium(uigtk.widgets.Grid):
         self.update_interface()
 
     def run(self):
-        self.stadium = data.user.club.stadium
-
         self.details.set_details()
         self.maintenance.set_maintenance_cost()
         self.maintenance.set_condition_percentage()

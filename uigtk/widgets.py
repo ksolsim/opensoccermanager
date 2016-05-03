@@ -52,12 +52,18 @@ class Grid(Gtk.Grid):
 
 
 class Box(Gtk.Box):
+    '''
+    Box with five pixel spacing between cells.
+    '''
     def __init__(self):
         Gtk.Box.__init__(self)
         self.set_spacing(5)
 
 
 class ScrolledWindow(Gtk.ScrolledWindow):
+    '''
+    ScrolledWindow with automatic vertical scrolling and disabled horizontal.
+    '''
     def __init__(self):
         Gtk.ScrolledWindow.__init__(self)
         self.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
@@ -80,6 +86,9 @@ class Label(Gtk.Label):
 
 
 class Button(Gtk.Button):
+    '''
+    Button containing mnemonic setting enabled.
+    '''
     def __init__(self, label=""):
         Gtk.Button.__init__(self)
         self.set_label(label)
@@ -87,6 +96,9 @@ class Button(Gtk.Button):
 
 
 class ToggleButton(Gtk.ToggleButton):
+    '''
+    ToggleButton containing mnemonic setting enabled.
+    '''
     def __init__(self, label=""):
         Gtk.ToggleButton.__init__(self)
         self.set_label(label)
@@ -94,6 +106,9 @@ class ToggleButton(Gtk.ToggleButton):
 
 
 class CheckButton(Gtk.CheckButton):
+    '''
+    CheckButton containing mnemonic setting enabled.
+    '''
     def __init__(self, label=""):
         Gtk.CheckButton.__init__(self)
         self.set_label(label)
@@ -101,6 +116,9 @@ class CheckButton(Gtk.CheckButton):
 
 
 class RadioButton(Gtk.RadioButton):
+    '''
+    RadioButton containing mnemonic setting enabled.
+    '''
     def __init__(self, label=""):
         Gtk.RadioButton.__init__(self)
         self.set_label(label)
@@ -108,6 +126,9 @@ class RadioButton(Gtk.RadioButton):
 
 
 class SpinButton(Gtk.SpinButton):
+    '''
+    SpinButton with tick snapping and defined increments.
+    '''
     def __init__(self, minimum=0, maximum=0):
         Gtk.SpinButton.__init__(self)
         self.set_range(minimum, maximum)
@@ -117,6 +138,9 @@ class SpinButton(Gtk.SpinButton):
 
 
 class ButtonBox(Gtk.ButtonBox):
+    '''
+    ButtonBox with five pixel spacing between child widgets.
+    '''
     def __init__(self):
         Gtk.ButtonBox.__init__(self)
         self.set_spacing(5)
@@ -124,7 +148,7 @@ class ButtonBox(Gtk.ButtonBox):
 
 class MenuItem(Gtk.MenuItem):
     '''
-    MenuItem with mnemonic activated.
+    MenuItem with mnemonic shortcut enabled.
     '''
     def __init__(self, label=""):
         Gtk.MenuItem.__init__(self)
@@ -133,6 +157,9 @@ class MenuItem(Gtk.MenuItem):
 
 
 class CheckMenuItem(Gtk.CheckMenuItem):
+    '''
+    CheckMenuItem with mnemonic shortcut enabled.
+    '''
     def __init__(self, label=""):
         Gtk.CheckMenuItem.__init__(self)
         self.set_label(label)
@@ -152,6 +179,9 @@ class TreeView(Gtk.TreeView):
 
 
 class TreeViewColumn(Gtk.TreeViewColumn):
+    '''
+    TreeViewColumn with arguments for column, title and tooltip text.
+    '''
     def __init__(self, column, title=None, tooltip=None):
         Gtk.TreeViewColumn.__init__(self)
 
@@ -170,12 +200,18 @@ class TreeViewColumn(Gtk.TreeViewColumn):
 
 
 class TextView(Gtk.TextView):
+    '''
+    TextView with pre-created TextBuffer object.
+    '''
     def __init__(self):
         Gtk.TextView.__init__(self)
         self.textbuffer = self.get_buffer()
 
 
 class ComboBox(Gtk.ComboBox):
+    '''
+    ComboBox with auto-created CellRendererText object.
+    '''
     def __init__(self, column):
         Gtk.ComboBox.__init__(self)
 

@@ -308,6 +308,43 @@ class MainStand:
         if box > 0 and self.roof and self.capacity > 4000:
             self.box = box
 
+    def get_upgrade_cost(self, capacity, seating, roof):
+        cost = 0
+
+        difference = capacity - self.capacity
+
+        if self.capacity == 0:
+            if difference > 0:
+                cost += 500000
+
+        if self.capacity < 5000:
+            if capacity > 4000:
+                cost += 250000
+
+        if self.capacity < 9000:
+            if capacity > 8000:
+                cost += 250000
+
+        if capacity > 0 and capacity < 5000:
+            cost += 400000 * (difference / 1000)
+        elif capacity >= 5000 and capacity < 9000:
+            cost += 400000 * (difference / 1000)
+        elif capacity >= 9000:
+            cost += 400000 * (difference / 1000)
+
+        if seating:
+            cost += 200000 * (difference / 1000)
+
+        if roof:
+            if capacity > 8000:
+                cost += 400000
+            elif capacity > 4000:
+                cost += 300000
+            elif capacity > 0:
+                cost += 200000
+
+        return cost
+
 
 class CornerStand:
     def __init__(self):
@@ -328,3 +365,23 @@ class CornerStand:
         '''
         if roof and self.capacity > 0:
             self.roof = True
+
+    def get_upgrade_cost(self, capacity, seating, roof):
+        cost = 0
+
+        difference = capacity - self.capacity
+
+        if self.capacity == 0:
+            if difference > 0:
+                cost += 500000
+
+        if seating:
+            cost += 200000 * (difference / 1000)
+
+        if roof:
+            cost += 100000
+
+        if capacity > 0:
+            cost += 400000 * (difference / 1000)
+
+        return cost
