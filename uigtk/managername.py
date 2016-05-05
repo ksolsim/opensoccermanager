@@ -45,6 +45,7 @@ class ManagerName(Gtk.Dialog):
         self.comboboxName = Gtk.ComboBoxText.new_with_entry()
         self.entryName = self.comboboxName.get_child()
         self.entryName.set_activates_default(True)
+        self.entryName.set_input_purpose(Gtk.InputPurpose.NAME)
         label.set_mnemonic_widget(self.comboboxName)
         grid.attach(self.comboboxName, 1, 0, 1, 1)
 

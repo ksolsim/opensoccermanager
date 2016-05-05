@@ -71,15 +71,19 @@ class Totals(uigtk.widgets.CommonFrame):
         '''
         self.labelUsedPlots.set_label("%i" % (self.shops.get_building_count()))
 
-        self.update_differential_plots()
+        self.update_buttons()
 
-    def update_differential_plots(self):
+    def update_buttons(self):
         '''
         Determine difference between current shops and user adjusted values.
         '''
         if self.shops.get_building_count() - self.shops.get_initial_count() != 0:
-            Buildings.totals.buttonReset.set_sensitive(True)
-            Buildings.totals.buttonApply.set_sensitive(True)
+            if self.shops.get_building_count() <= data.user.club.stadium.buildings.maximum_plots:
+                Buildings.totals.buttonReset.set_sensitive(True)
+                Buildings.totals.buttonApply.set_sensitive(True)
+            else:
+                Buildings.totals.buttonReset.set_sensitive(False)
+                Buildings.totals.buttonApply.set_sensitive(False)
         else:
             Buildings.totals.buttonReset.set_sensitive(False)
             Buildings.totals.buttonApply.set_sensitive(False)
@@ -97,25 +101,11 @@ class Totals(uigtk.widgets.CommonFrame):
         if not data.user.club.finances.grant.get_grant_available():
             self.labelAvailableGrant.set_label("Grant unavailable")
 
-    def calculate_construction_cost(self):
-        '''
-        Calculate cost of construction works.
-        '''
-        cost = 0
-
-        for shop in Buildings.shops:
-            if shop.spinbutton.get_value_as_int() < shop.building.number:
-                cost  += (shop.building.cost * 0.25) * (shop.building.number - shop.spinbutton.get_value_as_int())
-            else:
-                cost += shop.building.cost * (shop.spinbutton.get_value_as_int() - shop.building.number)
-
-        return cost
-
     def update_construction_cost(self):
         '''
         Update label displaying cost of construction work.
         '''
-        cost = self.calculate_construction_cost()
+        cost = Buildings.shops.get_construction_cost()
         cost = data.currency.get_currency(cost, integer=True)
         self.labelConstructionCost.set_label(cost)
 
@@ -123,9 +113,7 @@ class Totals(uigtk.widgets.CommonFrame):
         '''
         Get plot size and ask to confirm upgrade.
         '''
-        plots = sum(shop.building.size * shop.spinbutton.get_value_as_int() for shop in Buildings.shops)
-
-        cost = self.calculate_construction_cost()
+        cost = Buildings.shops.get_construction_cost()
         dialog = ConfirmBuilding(cost)
 
         if dialog.show():
@@ -136,7 +124,7 @@ class Totals(uigtk.widgets.CommonFrame):
                 data.user.club.accounts.withdraw(cost, "stadium")
                 self.update_construction_cost()
 
-                self.update_differential_plots()
+                self.update_buttons()
 
     def on_reset_clicked(self, button):
         '''
@@ -209,9 +197,7 @@ class Shops(uigtk.widgets.Grid):
         '''
         Return current number of buildings.
         '''
-        plots = sum(building.size * building.number for building in data.user.club.stadium.buildings.get_buildings())
-
-        return plots
+        return sum(building.size * building.number for building in data.user.club.stadium.buildings.get_buildings())
 
     def get_building_count(self):
         '''
@@ -224,6 +210,20 @@ class Shops(uigtk.widgets.Grid):
             plots += building.size * shop.spinbutton.get_value_as_int()
 
         return plots
+
+    def get_construction_cost(self):
+        '''
+        Calculate construction cost for specified changes.
+        '''
+        cost = 0
+
+        for shop in self.shops:
+            if shop.spinbutton.get_value_as_int() < shop.building.number:
+                cost  += (shop.building.cost * 0.25) * (shop.building.number - shop.spinbutton.get_value_as_int())
+            else:
+                cost += shop.building.cost * (shop.spinbutton.get_value_as_int() - shop.building.number)
+
+        return cost
 
 
 class Shop(uigtk.widgets.Grid):

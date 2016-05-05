@@ -132,7 +132,6 @@ class Details(uigtk.widgets.Grid):
             label.set_mnemonic_widget(self.comboboxClub)
             frame.grid.attach(self.comboboxClub, 1, 2, 1, 1)
 
-            # Finances
             self.finances = self.Finances()
             frame.grid.attach(self.finances, 0, 3, 2, 1)
 
