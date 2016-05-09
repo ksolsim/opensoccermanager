@@ -110,7 +110,7 @@ class Match(uigtk.widgets.Grid):
         league = data.leagues.get_league_by_id(self.fixture.leagueid)
         league.standings.update_standing(self.fixture)
 
-        self.fixture.referee.increment_statistics(self.fixture)
+        data.events.process_end_of_match_events(self.fixture)
 
         self.fixture.store_team_selection()
         self.fixture.increment_player_appearances()

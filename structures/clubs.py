@@ -52,7 +52,7 @@ class Clubs:
             self.assistant = structures.assistant.Assistant()
             self.news = structures.news.News()
             self.squad = structures.squad.Squad()
-            self.tactics = structures.tactics.Tactics()
+            self.tactics = structures.tactics.Tactics(self)
             self.coaches = structures.coaches.Coaches()
             self.scouts = structures.scouts.Scouts()
             self.tickets = structures.tickets.Tickets()

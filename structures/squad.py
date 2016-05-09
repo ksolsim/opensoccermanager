@@ -97,6 +97,9 @@ class Squad:
         return len(self.squad)
 
     def get_release_permitted(self):
+        '''
+        Determine whether player can be released from club.
+        '''
         if len(self.squad) < 17:
             uigtk.shared.SquadSize(1)
             return False

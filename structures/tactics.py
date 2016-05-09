@@ -16,11 +16,13 @@
 #  OpenSoccerManager.  If not, see <http://www.gnu.org/licenses/>.
 
 
+import data
 import structures.formations
 
 
 class Tactics:
-    def __init__(self):
+    def __init__(self, club):
+        self.club = club
         self.formationid = 0
 
         self.offside_trap = False
@@ -67,5 +69,12 @@ class Tactics:
 
     def pay_bonus(self):
         '''
-        Pay win bonus specified on tactics screen.
+        Pay win bonus percentage specified on tactics screen.
         '''
+        if self.bonus:
+            bonus = 0
+
+            for player in self.club.squad.teamselection.team:
+                bonus += player.wage.get_wage()
+
+            self.club.accounts.withdraw(bonus, "playerwage")

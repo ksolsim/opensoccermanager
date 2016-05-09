@@ -17,6 +17,9 @@
 
 
 class Speciality:
+    '''
+    Speciality attribute for coaches.
+    '''
     def __init__(self):
         self.speciality = {0: "Goalkeeping",
                            1: "Defensive",
@@ -39,6 +42,9 @@ class Speciality:
 
 
 class Categories:
+    '''
+    Categories for individual training dialog when selecting coach.
+    '''
     def __init__(self):
         self.speciality = {0: ("Keeping",),
                            1: ("Tackling", "Stamina"),

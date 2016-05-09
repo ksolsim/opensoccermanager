@@ -65,7 +65,15 @@ class Events:
 
         data.date.set_end_of_season()
 
-    def process_end_of_match_events(self):
+    def process_end_of_match_events(self, fixture):
         '''
         Events processed at the end of a match.
         '''
+        if fixture.result[0] > fixture.result[1]:
+            club = data.clubs.get_club_by_id(fixture.home.clubid)
+            club.tactics.pay_bonus()
+        elif fixture.result[0] < fixture.result[1]:
+            club = data.clubs.get_club_by_id(fixture.away.clubid)
+            club.tactics.pay_bonus()
+
+        fixture.referee.increment_statistics(fixture)
