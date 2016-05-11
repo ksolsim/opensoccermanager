@@ -53,7 +53,8 @@ class NegotiateOffer(Sponsorship):
     Message dialog when sponsorship offer is available for negotiation.
     '''
     def __init__(self):
-        amount = data.currency.get_currency(data.user.club.sponsorship.offer.amount, integer=True)
+        amount = data.currency.get_comma_value(data.user.club.sponsorship.offer.amount)
+        amount = "%s%s" % (data.currency.get_currency_symbol(), amount)
 
         Sponsorship.__init__(self)
         self.add_button("_Reject Deal", Gtk.ResponseType.REJECT)

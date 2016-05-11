@@ -120,10 +120,10 @@ class Contract:
             self.contract -= 1
 
             if self.contract in (4, 8, 12):
-                if self.player.club.clubid == data.user.clubid:
+                if self.player.club is data.user.club:
                     data.user.club.news.publish("PC02", player=self.player.get_name(mode=1), weeks=self.contract)
             elif self.contract == 0:
-                if self.player.club.clubid == data.user.clubid:
+                if self.player.club is data.user.club:
                     data.user.club.news.publish("PC01", player=self.player.get_name(mode=1))
                 elif data.user.club.shortlist.get_player_in_shortlist(self.player.playerid):
                     data.user.club.news.publish("SH01", player=self.player.get_name(mode=1))

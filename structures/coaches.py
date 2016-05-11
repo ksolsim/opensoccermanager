@@ -91,7 +91,7 @@ class Coaches(structures.staff.Staff):
         '''
         coach = self.hired[coachid]
 
-        data.user.club.accounts.withdraw(coach.get_payout(), "staffwage")
+        data.user.club.accounts.withdraw(amount=coach.get_payout(), category="staffwage")
         del self.hired[coachid]
 
 

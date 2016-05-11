@@ -59,7 +59,6 @@ class TransferStatus:
 class Negotiations:
     def __init__(self):
         self.negotiations = {}
-
         self.negotiationid = 0
 
     def get_negotiationid(self):
@@ -379,7 +378,7 @@ class PurchaseNegotiation(Negotiation):
         print(self.player.get_name())
 
         if self.club.accounts.request(self.offer):
-            self.club.accounts.withdraw(self.offer, "transfers")
+            self.club.accounts.withdraw(amount=self.offer, category="transfers")
 
 
 class LoanNegotiation(Negotiation):

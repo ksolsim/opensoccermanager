@@ -47,11 +47,16 @@ class Sponsorship:
         self.offer = self.Offer()
         self.offer.company = random.choice(data.companies.get_companies())
         self.offer.period = random.randint(1, 5)
-        self.offer.amount = (data.user.club.reputation * random.randrange(950, 1100, 10)) * data.user.club.reputation ** 2
+
+        amount = (data.user.club.reputation * random.randrange(950, 1100, 10)) * data.user.club.reputation ** 2
+        self.offer.amount = data.currency.get_rounded_value(amount)
 
         data.user.club.news.publish("BS01")
 
     def update_sponsorship(self):
+        '''
+        Update sponsorship timeout and act on zero timeout.
+        '''
         self.timeout -= 1
 
         if self.timeout == 0:

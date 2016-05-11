@@ -77,4 +77,4 @@ class Tactics:
             for player in self.club.squad.teamselection.team:
                 bonus += player.wage.get_wage()
 
-            self.club.accounts.withdraw(bonus, "playerwage")
+            self.club.accounts.withdraw(amount=bonus, category="playerwage")

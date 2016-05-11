@@ -80,7 +80,7 @@ class Scouts(structures.staff.Staff):
         '''
         scout = self.hired[scoutid]
 
-        data.user.club.accounts.withdraw(scout.get_payout(), "staffwage")
+        data.user.club.accounts.withdraw(amount=scout.get_payout(), category="staffwage")
         del self.hired[scoutid]
 
 

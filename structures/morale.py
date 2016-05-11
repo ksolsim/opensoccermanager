@@ -17,22 +17,29 @@
 
 
 class Morale:
-    morale = ("Annoyed",
-              "Miserable",
-              "Very Unhappy",
-              "Unhappy",
-              "Displeased",
-              "Content",
-              "Pleased",
-              "Happy",
-              "Very Happy",
-              "Delighted")
+    '''
+    Base morale object shared by players and staff.
+    '''
+    def __init__(self):
+        self.morale = ("Annoyed",
+                       "Miserable",
+                       "Very Unhappy",
+                       "Unhappy",
+                       "Displeased",
+                       "Content",
+                       "Pleased",
+                       "Happy",
+                       "Very Happy",
+                       "Delighted")
 
 
 class PlayerMorale(Morale):
     '''
     Morale object used by players.
     '''
+    def __init__(self):
+        Morale.__init__(self)
+
     def get_morale(self, value):
         '''
         Get player morale status for given value.
@@ -63,6 +70,9 @@ class StaffMorale(Morale):
     '''
     Morale object used by coach and scout staff.
     '''
+    def __init__(self):
+        Morale.__init__(self)
+
     def get_morale(self, value):
         '''
         Get staff morale status for given value.

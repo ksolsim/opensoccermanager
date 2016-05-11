@@ -87,18 +87,18 @@ class Clubs:
             '''
             Pay wages for contracted players.
             '''
-            wage = self.get_total_wage()
-            self.accounts.withdraw(wage, category="playerwage")
+            self.accounts.withdraw(amount=self.get_total_wage(),
+                                   category="playerwage")
 
         def pay_staff(self):
             '''
             Pay wage for contracted staff members.
             '''
-            wage = self.coaches.get_total_wage()
-            self.accounts.withdraw(wage, category="staffwage")
+            self.accounts.withdraw(amount=self.coaches.get_total_wage(),
+                                   category="staffwage")
 
-            wage = self.scouts.get_total_wage()
-            self.accounts.withdraw(wage, category="staffwage")
+            self.accounts.withdraw(amount=self.scouts.get_total_wage(),
+                                   category="staffwage")
 
     def __init__(self, season):
         self.clubs = {}

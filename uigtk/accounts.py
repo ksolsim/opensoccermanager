@@ -57,11 +57,16 @@ class Accounts(uigtk.widgets.Grid):
         self.income.run()
         self.expenditure.run()
 
-        amount = data.currency.get_currency(data.user.club.accounts.income, integer=True)
+        amount = data.currency.get_comma_value(data.user.club.accounts.income)
+        amount = "%s%s" % (data.currency.get_currency_symbol(), amount)
         self.labelIncome.set_label(amount)
-        amount = data.currency.get_currency(data.user.club.accounts.expenditure, integer=True)
+
+        amount = data.currency.get_comma_value(data.user.club.accounts.expenditure)
+        amount = "%s%s" % (data.currency.get_currency_symbol(), amount)
         self.labelExpenditure.set_label(amount)
-        amount = data.currency.get_currency(data.user.club.accounts.balance, integer=True)
+
+        amount = data.currency.get_comma_value(data.user.club.accounts.balance)
+        amount = "%s%s" % (data.currency.get_currency_symbol(), amount)
         self.labelBalance.set_label(amount)
 
         self.show_all()
@@ -121,10 +126,12 @@ class Income(uigtk.widgets.Grid):
 
     def run(self):
         for count, (key, item) in enumerate(data.user.club.accounts.incomes.items()):
-            amount = data.currency.get_currency(item.week, integer=True)
+            amount = data.currency.get_comma_value(item.week)
+            amount = "%s%s" % (data.currency.get_currency_symbol(), amount)
             self.labels[count][0].set_label("%s" % (amount))
 
-            amount = data.currency.get_currency(item.season, integer=True)
+            amount = data.currency.get_comma_value(item.season)
+            amount = "%s%s" % (data.currency.get_currency_symbol(), amount)
             self.labels[count][1].set_label("%s" % (amount))
 
 
@@ -170,10 +177,12 @@ class Expenditure(uigtk.widgets.Grid):
 
     def run(self):
         for count, (key, item) in enumerate(data.user.club.accounts.expenditures.items()):
-            amount = data.currency.get_currency(item.week, integer=True)
+            amount = data.currency.get_comma_value(item.week)
+            amount = "%s%s" % (data.currency.get_currency_symbol(), amount)
             self.labels[count][0].set_label("%s" % (amount))
 
-            amount = data.currency.get_currency(item.season, integer=True)
+            amount = data.currency.get_comma_value(item.season)
+            amount = "%s%s" % (data.currency.get_currency_symbol(), amount)
             self.labels[count][1].set_label("%s" % (amount))
 
 
