@@ -55,12 +55,11 @@ class ContinueGame:
             data.calendar.increment_event()
             self.continue_allowed = 0
 
-    def on_continue_to_match(self, clubid):
+    def on_continue_to_match(self, club):
         '''
         Determine whether match can continue or display error.
         '''
         if self.continue_to_match.get_valid_squad():
-            club = data.clubs.get_club_by_id(clubid)
             dialog = uigtk.match.ProceedToMatch(club.name)
 
             if dialog.show():
@@ -121,9 +120,7 @@ class ContinueToMatch:
         '''
         Generate squad for computer-run club.
         '''
-        if fixture.home.clubid == data.user.clubid:
-            club = data.clubs.get_club_by_id(fixture.away.clubid)
-            club.squad.generate_squad()
-        elif fixture.away.clubid == data.user.clubid:
-            club = data.clubs.get_club_by_id(fixture.home.clubid)
-            club.squad.generate_squad()
+        if fixture.home.club == data.user.club:
+            fixture.away.club.squad.generate_squad()
+        elif fixture.away.club == data.user.club:
+            fixture.home.club.squad.generate_squad()

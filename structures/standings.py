@@ -82,8 +82,8 @@ class Standings:
         '''
         Update standings for given fixture object.
         '''
-        home = self.standings[fixture.home.clubid]
-        away = self.standings[fixture.away.clubid]
+        home = self.standings[fixture.home.club.clubid]
+        away = self.standings[fixture.away.club.clubid]
 
         home.played += 1
         away.played += 1
@@ -99,11 +99,8 @@ class Standings:
             away.goal_difference = away.goals_for - away.goals_against
             home.points += 3
 
-            club = data.clubs.get_club_by_id(fixture.home.clubid)
-            club.form.add_form("W")
-
-            club = data.clubs.get_club_by_id(fixture.away.clubid)
-            club.form.add_form("L")
+            club = fixture.home.club.form.add_form("W")
+            club = fixture.away.club.form.add_form("L")
         elif fixture.result[0] < fixture.result[1]:
             away.wins += 1
             home.losses += 1
@@ -115,11 +112,8 @@ class Standings:
             away.goal_difference = away.goals_for - away.goals_against
             away.points += 3
 
-            club = data.clubs.get_club_by_id(fixture.home.clubid)
-            club.form.add_form("L")
-
-            club = data.clubs.get_club_by_id(fixture.away.clubid)
-            club.form.add_form("W")
+            club = fixture.home.club.form.add_form("L")
+            club = fixture.away.club.form.add_form("W")
         else:
             home.draws += 1
             away.draws += 1
@@ -132,11 +126,8 @@ class Standings:
             home.points += 1
             away.points += 1
 
-            club = data.clubs.get_club_by_id(fixture.home.clubid)
-            club.form.add_form("D")
-
-            club = data.clubs.get_club_by_id(fixture.away.clubid)
-            club.form.add_form("D")
+            club = fixture.home.club.form.add_form("D")
+            club = fixture.away.club.form.add_form("D")
 
     def clear_standings(self):
         '''

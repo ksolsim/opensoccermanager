@@ -26,7 +26,6 @@ class User:
     User handling object storing selected club object.
     '''
     def __init__(self):
-        self.team = None
         self.clubid = None
         self.club = None
 

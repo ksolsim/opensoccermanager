@@ -70,10 +70,8 @@ class Events:
         Events processed at the end of a match.
         '''
         if fixture.result[0] > fixture.result[1]:
-            club = data.clubs.get_club_by_id(fixture.home.clubid)
-            club.tactics.pay_bonus()
+            fixture.home.club.tactics.pay_bonus()
         elif fixture.result[0] < fixture.result[1]:
-            club = data.clubs.get_club_by_id(fixture.away.clubid)
-            club.tactics.pay_bonus()
+            fixture.away.club.tactics.pay_bonus()
 
         fixture.referee.increment_statistics(fixture)

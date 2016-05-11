@@ -65,13 +65,13 @@ class Result(uigtk.widgets.Grid):
         league = data.leagues.get_league_by_id(leagueid)
         fixture = league.fixtures.get_fixture_by_id(fixtureid)
 
-        home = data.clubs.get_club_by_id(fixture.home.clubid)
-        away = data.clubs.get_club_by_id(fixture.away.clubid)
+        home = fixture.home.club
+        away = fixture.away.club
 
         self.labelHome.set_markup("<a href='club'><span size='18000'><b>%s</b></span></a>" % (home.name))
-        self.labelHome.clubid = fixture.home.clubid
+        self.labelHome.clubid = fixture.home.club.clubid
         self.labelAway.set_markup("<a href='club'><span size='18000'><b>%s</b></span></a>" % (away.name))
-        self.labelAway.clubid = fixture.away.clubid
+        self.labelAway.clubid = fixture.away.club.clubid
 
         self.information.labelStadium.set_label(home.stadium.name)
         self.information.labelReferee.set_label(fixture.referee.name)
@@ -85,17 +85,15 @@ class Result(uigtk.widgets.Grid):
 
             self.treeviewHomeSquad.liststore.clear()
 
-            for playerid in fixture.home.team_selection[0]:
-                if playerid:
-                    player = data.players.get_player_by_id(playerid)
-                    self.treeviewHomeSquad.liststore.append([playerid, "", player.get_name(mode=1)])
+            for player in fixture.home.team_selection[0]:
+                if player:
+                    self.treeviewHomeSquad.liststore.append([player.playerid, "", player.get_name(mode=1)])
 
             self.treeviewAwaySquad.liststore.clear()
 
-            for playerid in fixture.away.team_selection[0]:
-                if playerid:
-                    player = data.players.get_player_by_id(playerid)
-                    self.treeviewAwaySquad.liststore.append([playerid, "", player.get_name(mode=1)])
+            for player in fixture.away.team_selection[0]:
+                if player:
+                    self.treeviewAwaySquad.liststore.append([player.playerid, "", player.get_name(mode=1)])
 
     def on_label_activated(self, label, uri):
         '''

@@ -60,16 +60,20 @@ class Fixtures:
                     away = rounds
 
                 fixture = Fixture()
-                fixture.leagueid = self.league.leagueid
+                fixture.league = self.league
                 fixture.week = week
                 fixture.referee = data.referees.get_referee_by_id(referees[match])
 
                 if week % 2 == 1:
-                    fixture.home.clubid = self.clubs[home]
-                    fixture.away.clubid = self.clubs[away]
+                    club = data.clubs.get_club_by_id(self.clubs[home])
+                    fixture.home.club = club
+                    club = data.clubs.get_club_by_id(self.clubs[away])
+                    fixture.away.club = club
                 else:
-                    fixture.home.clubid = self.clubs[away]
-                    fixture.away.clubid = self.clubs[home]
+                    club = data.clubs.get_club_by_id(self.clubs[away])
+                    fixture.home.club = club
+                    club = data.clubs.get_club_by_id(self.clubs[home])
+                    fixture.away.club = club
 
                 fixture.fixtureid = self.get_fixtureid()
                 self.fixtures[fixture.fixtureid] = fixture
@@ -85,16 +89,20 @@ class Fixtures:
                     away = rounds
 
                 fixture = Fixture()
-                fixture.leagueid = self.league.leagueid
+                fixture.league = self.league
                 fixture.week = rounds + week
                 fixture.referee = data.referees.get_referee_by_id(referees[match])
 
                 if (rounds + week) % 2 == 1:
-                    fixture.home.clubid = self.clubs[home]
-                    fixture.away.clubid = self.clubs[away]
+                    club = data.clubs.get_club_by_id(self.clubs[home])
+                    fixture.home.club = club
+                    club = data.clubs.get_club_by_id(self.clubs[away])
+                    fixture.away.club = club
                 else:
-                    fixture.away.clubid = self.clubs[away]
-                    fixture.home.clubid = self.clubs[home]
+                    club = data.clubs.get_club_by_id(self.clubs[away])
+                    fixture.home.club = club
+                    club = data.clubs.get_club_by_id(self.clubs[home])
+                    fixture.away.club = club
 
                 fixture.fixtureid = self.get_fixtureid()
                 self.fixtures[fixture.fixtureid] = fixture
@@ -147,16 +155,15 @@ class Fixtures:
 
         for fixture in self.fixtures.values():
             if fixture.week in (0, 1, 2):
-                if data.user.clubid in (fixture.home.clubid, fixture.away.clubid):
-                    fixtures.append([fixture.home.clubid, fixture.away.clubid])
+                if data.user.club in (fixture.home.club, fixture.away.club):
+                    fixtures.append([fixture.home.club, fixture.away.club])
 
         for teams in fixtures:
             for count, team in enumerate(teams):
-                if team != data.user.clubid:
-                    club = data.clubs.get_club_by_id(team)
+                if team is not data.user.club:
                     location = ("A", "H")[count]
 
-                    fixture = "%s (%s)" % (club.name, location)
+                    fixture = "%s (%s)" % (team.name, location)
                     initial.append(fixture)
 
         return initial
@@ -176,23 +183,19 @@ class Fixture:
 
         self.attendance = 0
         self.referee = None
-        self.leagueid = None
+        self.league = None
 
     def get_home_name(self):
         '''
         Return name of home side for fixture.
         '''
-        club = data.clubs.get_club_by_id(self.home.clubid)
-
-        return club.name
+        return self.home.club.name
 
     def get_away_name(self):
         '''
         Return name of away side for fixture.
         '''
-        club = data.clubs.get_club_by_id(self.away.clubid)
-
-        return club.name
+        return self.away.club.name
 
     def increment_player_appearances(self):
         '''
@@ -214,7 +217,7 @@ class FixtureTeam:
     Fixture team object storing squad, events, match statistics, and more.
     '''
     def __init__(self):
-        self.clubid = None
+        self.club = None
 
         self.team_selection = [[], []]
         self.team_played = [[], []]
@@ -239,4 +242,4 @@ class FixtureTeam:
 
         for player in self.team_played[1]:
             if player:
-                player.appearances += 1
+                player.substitute += 1

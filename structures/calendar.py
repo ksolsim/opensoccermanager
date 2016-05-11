@@ -68,7 +68,7 @@ class Calendar:
 
         if data.date.get_date_for_event() == data.user.club.league.fixtures.events[self.event]:
             for fixtureid, fixture in fixtures.items():
-                if data.user.clubid in (fixture.home.clubid, fixture.away.clubid):
+                if data.user.club in (fixture.home.club, fixture.away.club):
                     club1 = fixture.get_home_name()
                     club2 = fixture.get_away_name()
 
@@ -89,7 +89,7 @@ class Calendar:
         league = data.leagues.get_league_by_id(leagueid)
 
         for fixtureid, fixture in league.fixtures.get_fixtures_for_week(self.event).items():
-            if data.user.clubid not in (fixture.home.clubid, fixture.away.clubid):
+            if data.user.club not in (fixture.home.club, fixture.away.club):
                 fixtures.append(fixtureid)
 
         return fixtures
@@ -100,10 +100,10 @@ class Calendar:
         '''
         fixture = self.get_user_fixture()
 
-        if fixture.home.clubid == data.user.clubid:
-            club = fixture.away.clubid
+        if fixture.home.club == data.user.club:
+            club = fixture.away.club
         else:
-            club = fixture.home.clubid
+            club = fixture.home.club
 
         return club
 
@@ -118,5 +118,3 @@ class Calendar:
         Handle end of season event and initiate reset of data.
         '''
         uigtk.endofseason.EndOfSeason()
-
-        data
