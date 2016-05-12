@@ -386,14 +386,19 @@ class NotEnoughPlayers(Gtk.MessageDialog):
         self.set_transient_for(data.window)
         self.set_modal(True)
         self.set_title("Not Enough Players")
-        self.set_property("message-type", Gtk.MessageType.ERROR)
         self.set_markup(message)
+        self.set_property("message-type", Gtk.MessageType.ERROR)
         self.add_button("_Close", Gtk.ResponseType.CLOSE)
+        self.add_button("_Go To Squad", Gtk.ResponseType.OK)
+        self.set_default_response(Gtk.ResponseType.OK)
         self.connect("response", self.on_response)
 
         self.show()
 
-    def on_response(self, *args):
+    def on_response(self, dialog, response):
+        if response == Gtk.ResponseType.OK:
+            data.window.screen.change_visible_screen("squad")
+
         self.destroy()
 
 
@@ -415,11 +420,20 @@ class NotEnoughSubs(Gtk.MessageDialog):
         self.format_secondary_text("Do you wish to proceed to the game anyway?")
         self.set_property("message-type", Gtk.MessageType.WARNING)
         self.add_button("_Do Not Proceed", Gtk.ResponseType.CANCEL)
+        self.add_button("_Go To Squad", 1)
         self.add_button("_Proceed", Gtk.ResponseType.OK)
-        self.set_default_response(Gtk.ResponseType.CANCEL)
+        self.set_default_response(1)
 
     def show(self):
-        state = self.run() == Gtk.ResponseType.OK
+        state = False
+
+        response = self.run()
+
+        if response == Gtk.ResponseType.OK:
+            state = True
+        elif response == 1:
+            data.window.screen.change_visible_screen("squad")
+
         self.destroy()
 
         return state

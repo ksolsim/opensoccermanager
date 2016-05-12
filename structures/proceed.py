@@ -120,7 +120,7 @@ class ContinueToMatch:
         '''
         Generate squad for computer-run club.
         '''
-        if fixture.home.club == data.user.club:
+        if fixture.home.club is data.user.club:
             fixture.away.club.squad.generate_squad()
-        elif fixture.away.club == data.user.club:
+        elif fixture.away.club is data.user.club:
             fixture.home.club.squad.generate_squad()

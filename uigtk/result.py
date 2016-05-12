@@ -58,13 +58,10 @@ class Result(uigtk.widgets.Grid):
         self.treeviewAwaySquad = Squad()
         self.attach(self.treeviewAwaySquad, 1, 2, 1, 1)
 
-    def set_visible_result(self, leagueid, fixtureid):
+    def set_visible_result(self, league, fixture):
         '''
         Display result information for given fixture id in passed league.
         '''
-        league = data.leagues.get_league_by_id(leagueid)
-        fixture = league.fixtures.get_fixture_by_id(fixtureid)
-
         home = fixture.home.club
         away = fixture.away.club
 

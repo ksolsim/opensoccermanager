@@ -72,8 +72,8 @@ class Calendar:
                     club1 = fixture.get_home_name()
                     club2 = fixture.get_away_name()
 
-                    data.window.mainscreen.information.leagueid = data.user.club.league.leagueid
-                    data.window.mainscreen.information.fixtureid = fixtureid
+                    data.window.mainscreen.information.league = data.user.club.league
+                    data.window.mainscreen.information.fixture = fixture
                     data.window.mainscreen.information.set_show_next_match(club1, club2)
 
                     data.window.mainscreen.information.set_continue_to_match()
@@ -100,9 +100,9 @@ class Calendar:
         '''
         fixture = self.get_user_fixture()
 
-        if fixture.home.club == data.user.club:
+        if fixture.home.club is data.user.club:
             club = fixture.away.club
-        else:
+        elif fixture.away.club is data.user.club:
             club = fixture.home.club
 
         return club
