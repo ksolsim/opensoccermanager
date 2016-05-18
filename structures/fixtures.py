@@ -236,10 +236,7 @@ class FixtureTeam:
         '''
         Increment appearances for each player in team.
         '''
-        for player in self.team_played[0]:
-            if player:
-                player.appearances += 1
-
-        for player in self.team_played[1]:
-            if player:
-                player.substitute += 1
+        for players in (self.team_played[0], self.team_played[1]):
+            for player in players:
+                if player:
+                    player.appearances += 1

@@ -151,7 +151,9 @@ class Shortlist(Gtk.Grid):
         model, treeiter = self.treeview.treeselection.get_selected()
         playerid = model[treeiter][0]
 
-        data.negotiations.initialise_purchase(playerid)
+        player = data.players.get_player_by_id(playerid)
+
+        data.negotiations.initialise_purchase(player)
 
     def on_loan_clicked(self, *args):
         '''
@@ -160,7 +162,9 @@ class Shortlist(Gtk.Grid):
         model, treeiter = self.treeview.treeselection.get_selected()
         playerid = model[treeiter][0]
 
-        data.negotiations.initialise_loan(playerid)
+        player = data.players.get_player_by_id(playerid)
+
+        data.negotiations.initialise_loan(player)
 
     def on_remove_clicked(self, *args):
         '''
@@ -280,13 +284,13 @@ class ContextMenu(Gtk.Menu):
         separator = Gtk.SeparatorMenuItem()
         self.append(separator)
 
-        self.menuitemPurchase = uigtk.widgets.MenuItem("Approach For _Purchase")
+        self.menuitemPurchase = uigtk.widgets.MenuItem("Make Offer To _Purchase")
         self.menuitemPurchase.connect("activate", self.on_purchase_clicked)
         self.append(self.menuitemPurchase)
-        self.menuitemLoan = uigtk.widgets.MenuItem("Approach For _Loan")
+        self.menuitemLoan = uigtk.widgets.MenuItem("Make Offer To _Loan")
         self.menuitemLoan.connect("activate", self.on_loan_clicked)
         self.append(self.menuitemLoan)
-        menuitem = uigtk.widgets.MenuItem("_Remove Player From Shortlist")
+        menuitem = uigtk.widgets.MenuItem("_Remove From Shortlist")
         menuitem.connect("activate", self.on_remove_clicked)
         self.append(menuitem)
         self.menuitemScoutReport = uigtk.widgets.MenuItem("_Scout Report")
@@ -312,27 +316,18 @@ class ContextMenu(Gtk.Menu):
         '''
         Confirm purchase approach for player and setup negotiation.
         '''
-        model, treeiter = Shortlist.treeselection.get_selected()
-        playerid = model[treeiter][0]
-
-        data.negotiations.initialise_purchase(playerid)
+        data.negotiations.initialise_purchase(self.player)
 
     def on_loan_clicked(self, *args):
         '''
         Confirm loan approach for player and setup negotiation.
         '''
-        model, treeiter = Shortlist.treeselection.get_selected()
-        playerid = model[treeiter][0]
-
-        data.negotiations.initialise_loan(playerid)
+        data.negotiations.initialise_loan(self.player)
 
     def on_remove_clicked(self, *args):
         '''
         Ask to remove selected player from shortlist.
         '''
-        model, treeiter = Shortlist.treeselection.get_selected()
-        playerid = model[treeiter][0]
-
         dialog = RemoveShortlist()
 
         if dialog.show(self.player):
@@ -344,9 +339,6 @@ class ContextMenu(Gtk.Menu):
         '''
         Provide a scout report for the selected player.
         '''
-        model, treeiter = Shortlist.treeselection.get_selected()
-        playerid = model[treeiter][0]
-
         ScoutReport()
 
     def on_comparison_clicked(self, *args):
@@ -356,14 +348,11 @@ class ContextMenu(Gtk.Menu):
         data.comparison.add_to_comparison(self.player)
 
     def show(self):
-        model, treeiter = Shortlist.treeselection.get_selected()
-        playerid = model[treeiter][0]
-
         if self.player.club:
-            self.menuitemPurchase.set_label("Approach for _Purchase")
+            self.menuitemPurchase.set_label("Make Offer to _Purchase")
             self.menuitemLoan.set_sensitive(True)
         else:
-            self.menuitemPurchase.set_label("Approach to _Sign")
+            self.menuitemPurchase.set_label("Make Offer to _Sign")
             self.menuitemLoan.set_sensitive(False)
 
         sensitive = data.user.club.scouts.get_staff_count() > 0
@@ -381,7 +370,7 @@ class RemoveShortlist(Gtk.MessageDialog):
         self.set_transient_for(data.window)
         self.set_title("Remove From Shortlist")
         self.set_property("message-type", Gtk.MessageType.QUESTION)
-        self.format_secondary_text("Removal will not cancel any ongoing transfer negotiations.")
+        self.format_secondary_text("Removal will not affect any ongoing transfer negotiations.")
         self.add_button("_Do Not Remove", Gtk.ResponseType.CANCEL)
         self.add_button("_Remove", Gtk.ResponseType.OK)
         self.set_default_response(Gtk.ResponseType.CANCEL)

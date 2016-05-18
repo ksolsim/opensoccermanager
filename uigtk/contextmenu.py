@@ -192,13 +192,13 @@ class ContextMenu2(Gtk.Menu):
         '''
         Initiate purchase offer of selected player.
         '''
-        data.negotiations.initialise_purchase(self.player.playerid)
+        data.negotiations.initialise_purchase(self.player)
 
     def on_loan_offer_clicked(self, *args):
         '''
         Initiate loan offer of selected player.
         '''
-        data.negotiations.initialise_loan(self.player.playerid)
+        data.negotiations.initialise_loan(self.player)
 
     def on_add_to_shortlist_clicked(self, *args):
         '''
@@ -213,15 +213,15 @@ class ContextMenu2(Gtk.Menu):
         '''
         dialog = uigtk.shortlist.RemoveShortlist()
 
-        if dialog.show(self.player.playerid):
-            data.user.club.shortlist.remove_from_shortlist(self.player.playerid)
+        if dialog.show(self.player):
+            data.user.club.shortlist.remove_from_shortlist(self.player)
             self.update_sensitivity()
 
     def on_comparison_clicked(self, *args):
         '''
         Add player to stack for comparison.
         '''
-        data.comparison.add_to_comparison(self.player.playerid)
+        data.comparison.add_to_comparison(self.player)
 
     def update_sensitivity(self):
         '''

@@ -75,14 +75,14 @@ class Negotiations:
         '''
         return self.negotiations[negotiationid]
 
-    def get_player_in_negotiations(self, playerid):
+    def get_player_in_negotiations(self, player):
         '''
         Return whether the given player id is already in transfer negotiations.
         '''
         status = False
 
         for negotiation in self.negotiations.values():
-            if playerid == negotiation.player.playerid:
+            if player.playerid == negotiation.player.playerid:
                 if data.user.clubid == negotiation.club.clubid:
                     uigtk.negotiations.InProgress()
                     status = True
@@ -154,16 +154,14 @@ class Negotiations:
             else:
                 negotiation.statusid = 7
 
-    def initialise_purchase(self, playerid):
+    def initialise_purchase(self, player):
         '''
         Create purchase transfer negotiation object.
         '''
-        if not self.get_player_in_negotiations(playerid):
-            player = data.players.get_player_by_id(playerid)
-
+        if not self.get_player_in_negotiations(player):
             if player.club:
                 dialog = uigtk.negotiations.PurchaseEnquiry()
-                state = dialog.show(player.club, player)
+                state = dialog.show(player)
             else:
                 dialog = uigtk.negotiations.FreeEnquiry()
                 state = dialog.show(player)
@@ -181,16 +179,14 @@ class Negotiations:
 
                 data.user.club.shortlist.add_to_shortlist(player)
 
-    def initialise_loan(self, playerid):
+    def initialise_loan(self, player):
         '''
         Create loan transfer negotiation object.
         '''
-        if not self.get_player_in_negotiations(playerid):
+        if not self.get_player_in_negotiations(player):
             dialog = uigtk.negotiations.LoanEnquiry()
 
-            player = data.players.get_player_by_id(playerid)
-
-            if dialog.show(player.club, player) == 1:
+            if dialog.show(player) == 1:
                 negotiationid = self.get_negotiationid()
 
                 negotiation = LoanNegotiation(negotiationid, player)
@@ -297,7 +293,6 @@ class PurchaseNegotiation(Negotiation):
             uigtk.negotiations.AwaitingResponse(self)
         elif self.statusid == 2:
             dialog = uigtk.negotiations.PurchaseOffer(self)
-
             amount = dialog.show()
 
             if amount:
@@ -329,9 +324,13 @@ class PurchaseNegotiation(Negotiation):
             status = True
 
         if status:
-            data.user.club.news.publish("PT02", player=self.player.get_name(mode=1), team=self.player.club.name)
+            data.user.club.news.publish("PT02",
+                                        player=self.player.get_name(mode=1),
+                                        team=self.player.club.name)
         else:
-            data.user.club.news.publish("PT01", player=self.player.get_name(mode=1), team=self.player.club.name)
+            data.user.club.news.publish("PT01",
+                                        player=self.player.get_name(mode=1),
+                                        team=self.player.club.name)
 
         if not status:
             status = random.choice((True, False))
@@ -352,9 +351,13 @@ class PurchaseNegotiation(Negotiation):
             status = random.choice((True, False))
 
         if status:
-            data.user.club.news.publish("PT04", player=self.player.get_name(mode=1), team=self.player.club.name)
+            data.user.club.news.publish("PT04",
+                                        player=self.player.get_name(mode=1),
+                                        team=self.player.club.name)
         else:
-            data.user.club.news.publish("PT03", player=self.player.get_name(mode=1), team=self.player.club.name)
+            data.user.club.news.publish("PT03",
+                                        player=self.player.get_name(mode=1),
+                                        team=self.player.club.name)
 
         return status
 
@@ -365,9 +368,13 @@ class PurchaseNegotiation(Negotiation):
         status = random.choice((True, False))
 
         if status:
-            data.user.club.news.publish("PT06", player=self.player.get_name(mode=1), team=self.player.club.name)
+            data.user.club.news.publish("PT06",
+                                        player=self.player.get_name(mode=1),
+                                        team=self.player.club.name)
         else:
-            data.user.club.news.publish("PT05", player=self.player.get_name(mode=1), team=self.player.club.name)
+            data.user.club.news.publish("PT05",
+                                        player=self.player.get_name(mode=1),
+                                        team=self.player.club.name)
 
         return status
 
@@ -421,9 +428,13 @@ class LoanNegotiation(Negotiation):
             status = True
 
         if status:
-            data.user.club.news.publish("LT02", player=self.player.get_name(mode=1), team=self.player.club.name)
+            data.user.club.news.publish("LT02",
+                                        player=self.player.get_name(mode=1),
+                                        team=self.player.club.name)
         else:
-            data.user.club.news.publish("LT01", player=self.player.get_name(mode=1), team=self.player.club.name)
+            data.user.club.news.publish("LT01",
+                                        player=self.player.get_name(mode=1),
+                                        team=self.player.club.name)
 
         if not status:
             status = random.choice((True, False))
@@ -481,9 +492,11 @@ class FreeNegotiation(Negotiation):
         status = random.choice((True, False))
 
         if status:
-            data.user.club.news.publish("FT02", player=self.player.get_name(mode=1))
+            data.user.club.news.publish("FT02",
+                                        player=self.player.get_name(mode=1))
         else:
-            data.user.club.news.publish("FT01", player=self.player.get_name(mode=1))
+            data.user.club.news.publish("FT01",
+                                        player=self.player.get_name(mode=1))
 
         return status
 
@@ -494,9 +507,11 @@ class FreeNegotiation(Negotiation):
         status = random.choice((True, False))
 
         if status:
-            data.user.club.news.publish("FT04", player=self.player.get_name(mode=1))
+            data.user.club.news.publish("FT04",
+                                        player=self.player.get_name(mode=1))
         else:
-            data.user.club.news.publish("FT03", player=self.player.get_name(mode=1))
+            data.user.club.news.publish("FT03",
+                                        player=self.player.get_name(mode=1))
 
         return status
 
