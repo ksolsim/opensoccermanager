@@ -389,10 +389,16 @@ class ContextMenu(Gtk.Menu):
         self.append(menuitem)
 
     def on_edit_clicked(self, *args):
+        '''
+        Edit individual training values for selected player.
+        '''
         dialog = self.AddTraining(self.playerid)
         dialog.show()
 
     def on_remove_clicked(self, *args):
+        '''
+        Remove player from individual training.
+        '''
         data.user.club.individual_training.remove_from_training(self.playerid)
 
     def show(self):

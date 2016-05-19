@@ -227,7 +227,7 @@ class ContextMenu2(Gtk.Menu):
         '''
         Update menu item sensitivity for available options.
         '''
-        sensitive = data.user.club.shortlist.get_player_in_shortlist(self.player.playerid)
+        sensitive = data.user.club.shortlist.get_player_in_shortlist(self.player)
         self.menuitemAddShortlist.set_sensitive(not sensitive)
         self.menuitemRemoveShortlist.set_sensitive(sensitive)
 

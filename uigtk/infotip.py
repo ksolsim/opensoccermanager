@@ -23,6 +23,9 @@ import uigtk.widgets
 
 
 class InfoTip(Gtk.Grid):
+    '''
+    Information tooltip displayed when hovering over date.
+    '''
     def __init__(self):
         Gtk.Grid.__init__(self)
         self.set_row_spacing(5)

@@ -27,8 +27,6 @@ import uigtk.widgets
 class Shortlist(Gtk.Grid):
     __name__ = "shortlist"
 
-    treeselection = None
-
     def __init__(self):
         Gtk.Grid.__init__(self)
         self.set_row_spacing(5)
@@ -273,58 +271,16 @@ class ShortlistList(Gtk.ListStore):
                          player.set_pieces])
 
 
-class ContextMenu(Gtk.Menu):
+class ContextMenu(uigtk.contextmenu.ContextMenu2):
     def __init__(self):
-        Gtk.Menu.__init__(self)
+        uigtk.contextmenu.ContextMenu2.__init__(self)
 
-        menuitem = uigtk.widgets.MenuItem("_Player Information")
-        menuitem.connect("activate", self.on_player_information_clicked)
-        self.append(menuitem)
-
-        separator = Gtk.SeparatorMenuItem()
-        self.append(separator)
-
-        self.menuitemPurchase = uigtk.widgets.MenuItem("Make Offer To _Purchase")
-        self.menuitemPurchase.connect("activate", self.on_purchase_clicked)
-        self.append(self.menuitemPurchase)
-        self.menuitemLoan = uigtk.widgets.MenuItem("Make Offer To _Loan")
-        self.menuitemLoan.connect("activate", self.on_loan_clicked)
-        self.append(self.menuitemLoan)
-        menuitem = uigtk.widgets.MenuItem("_Remove From Shortlist")
-        menuitem.connect("activate", self.on_remove_clicked)
-        self.append(menuitem)
         self.menuitemScoutReport = uigtk.widgets.MenuItem("_Scout Report")
         self.menuitemScoutReport.set_sensitive(False)
         self.menuitemScoutReport.connect("activate", self.on_scout_report_clicked)
-        self.append(self.menuitemScoutReport)
+        self.insert(self.menuitemScoutReport, 6)
 
-        separator = Gtk.SeparatorMenuItem()
-        self.append(separator)
-
-        menuitem = uigtk.widgets.MenuItem("Add To _Comparison")
-        menuitem.connect("activate", self.on_comparison_clicked)
-        self.append(menuitem)
-
-    def on_player_information_clicked(self, *args):
-        '''
-        Launch player information screen for selected player.
-        '''
-        data.window.screen.change_visible_screen("playerinformation")
-        data.window.screen.active.set_visible_player(self.player.playerid)
-
-    def on_purchase_clicked(self, *args):
-        '''
-        Confirm purchase approach for player and setup negotiation.
-        '''
-        data.negotiations.initialise_purchase(self.player)
-
-    def on_loan_clicked(self, *args):
-        '''
-        Confirm loan approach for player and setup negotiation.
-        '''
-        data.negotiations.initialise_loan(self.player)
-
-    def on_remove_clicked(self, *args):
+    def on_remove_from_shortlist_clicked(self, *args):
         '''
         Ask to remove selected player from shortlist.
         '''
@@ -341,13 +297,14 @@ class ContextMenu(Gtk.Menu):
         '''
         ScoutReport()
 
-    def on_comparison_clicked(self, *args):
+    def update_sensitivity(self):
         '''
-        Add player to stack for comparison.
+        Update menu item sensitivity for available options.
         '''
-        data.comparison.add_to_comparison(self.player)
+        sensitive = data.user.club.shortlist.get_player_in_shortlist(self.player)
+        self.menuitemAddShortlist.set_sensitive(False)
+        self.menuitemRemoveShortlist.set_sensitive(sensitive)
 
-    def show(self):
         if self.player.club:
             self.menuitemPurchase.set_label("Make Offer to _Purchase")
             self.menuitemLoan.set_sensitive(True)
@@ -355,9 +312,8 @@ class ContextMenu(Gtk.Menu):
             self.menuitemPurchase.set_label("Make Offer to _Sign")
             self.menuitemLoan.set_sensitive(False)
 
-        sensitive = data.user.club.scouts.get_staff_count() > 0
-        self.menuitemScoutReport.set_sensitive(sensitive)
-
+    def show(self):
+        self.update_sensitivity()
         self.show_all()
 
 
