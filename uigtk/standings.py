@@ -102,8 +102,10 @@ class Standings(Gtk.Grid):
         model = treeview.get_model()
         clubid = model[treepath][0]
 
+        club = data.clubs.get_club_by_id(clubid)
+
         data.window.screen.change_visible_screen("clubinformation")
-        data.window.screen.active.set_visible_club(clubid)
+        data.window.screen.active.set_visible_club(club)
 
     def on_league_changed(self, *args):
         '''

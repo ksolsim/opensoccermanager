@@ -96,8 +96,10 @@ class Result(uigtk.widgets.Grid):
         '''
         Activate selected club and display information screen.
         '''
+        club = data.clubs.get_club_by_id(label.clubid)
+
         data.window.screen.change_visible_screen("clubinformation")
-        data.window.screen.active.set_visible_club(label.clubid)
+        data.window.screen.active.set_visible_club(club)
 
         return True
 

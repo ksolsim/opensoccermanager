@@ -146,8 +146,10 @@ class ClubSearch(uigtk.widgets.Grid):
         model = treeview.get_model()
         clubid = model[treepath][0]
 
+        club = data.clubs.get_club_by_id(clubid)
+
         data.window.screen.change_visible_screen("clubinformation")
-        data.window.screen.active.set_visible_club(clubid)
+        data.window.screen.active.set_visible_club(club)
 
     def on_search_activated(self, entry):
         '''
@@ -230,7 +232,7 @@ class Filter(Gtk.Dialog):
         self.set_title("Filter Clubs")
 
 
-class ContextMenu(Gtk.Menu, ClubSearch):
+class ContextMenu(Gtk.Menu):
     def __init__(self):
         Gtk.Menu.__init__(self)
 
@@ -243,10 +245,12 @@ class ContextMenu(Gtk.Menu, ClubSearch):
         Launch player information screen for selected club.
         '''
         data.window.screen.change_visible_screen("clubinformation")
-        data.window.screen.active.set_visible_club(self.clubid)
+        data.window.screen.active.set_visible_club(self.club)
 
     def show(self):
         model, treeiter = ClubSearch.treeselection.get_selected()
-        self.clubid = model[treeiter][0]
+        clubid = model[treeiter][0]
+
+        self.club = club = data.clubs.get_club_by_id(clubid)
 
         self.show_all()

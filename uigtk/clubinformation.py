@@ -225,8 +225,10 @@ class ClubInformation(uigtk.widgets.Grid):
         model = treeview.get_model()
         playerid = model[treepath][0]
 
+        player = data.players.get_player_by_id(playerid)
+
         data.window.screen.change_visible_screen("playerinformation")
-        data.window.screen.active.set_visible_player(playerid)
+        data.window.screen.active.set_visible_player(player)
 
     def on_button_release_event(self, treeview, event):
         '''
@@ -245,7 +247,7 @@ class ClubInformation(uigtk.widgets.Grid):
 
     def on_context_menu_event(self, event):
         '''
-        Display context menu for selected player id.
+        Display context menu for selected player.
         '''
         model, treeiter = self.treeview.treeselection.get_selected()
 
@@ -263,11 +265,11 @@ class ClubInformation(uigtk.widgets.Grid):
             contextmenu.show()
             contextmenu.popup(None, None, None, None, event.button, event.time)
 
-    def set_visible_club(self, clubid):
+    def set_visible_club(self, club):
         '''
         Update the display with the visible club for given id.
         '''
-        self.club = data.clubs.get_club_by_id(clubid)
+        self.club = club
 
         self.labelName.set_label("<span size='24000'><b>%s</b></span>" % (self.club.name))
         self.labelNickname.set_label(self.club.nickname)

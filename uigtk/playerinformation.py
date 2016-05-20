@@ -30,8 +30,6 @@ import uigtk.widgets
 class PlayerInformation(uigtk.widgets.Grid):
     __name__ = "playerinformation"
 
-    playerid = None
-
     def __init__(self):
         uigtk.widgets.Grid.__init__(self)
 
@@ -103,12 +101,11 @@ class PlayerInformation(uigtk.widgets.Grid):
         '''
         data.window.screen.return_previous_screen()
 
-    def set_visible_player(self, playerid):
+    def set_visible_player(self, player):
         '''
         Update the display with the visible player for given id.
         '''
-        PlayerInformation.playerid = playerid
-        player = data.players.get_player_by_id(playerid)
+        PlayerInformation.player = player
 
         if player.club:
             club = player.club.name
@@ -151,7 +148,7 @@ class PlayerInformation(uigtk.widgets.Grid):
         self.suspensions.set_suspension_status()
 
         if player.club:
-            if player.club.clubid == data.user.clubid:
+            if player.club is data.user.club:
                 actionmenu = self.contextmenu1
             else:
                 actionmenu = self.contextmenu2
@@ -163,8 +160,8 @@ class PlayerInformation(uigtk.widgets.Grid):
     def run(self):
         self.show_all()
 
-        if PlayerInformation.playerid:
-            self.set_visible_player(PlayerInformation.playerid)
+        #if PlayerInformation.player:
+        #    self.set_visible_player(PlayerInformation.player)
 
 
 class Personal(uigtk.widgets.Grid):
@@ -191,7 +188,7 @@ class Personal(uigtk.widgets.Grid):
         Load club information screen.
         '''
         data.window.screen.change_visible_screen("clubinformation")
-        data.window.screen.active.set_visible_club(self.club.clubid)
+        data.window.screen.active.set_visible_club(self.club)
 
         return True
 
@@ -239,9 +236,7 @@ class Transfer(uigtk.widgets.CommonFrame):
         '''
         Set message for purchase listed status.
         '''
-        player = data.players.get_player_by_id(PlayerInformation.playerid)
-
-        if data.purchase_list.get_player_listed(player):
+        if data.purchase_list.get_player_listed(PlayerInformation.player):
             self.labelPurchaseList.set_label("Currently added to purchase list.")
         else:
             self.labelPurchaseList.set_label("Not listed as available for purchase.")
@@ -250,9 +245,7 @@ class Transfer(uigtk.widgets.CommonFrame):
         '''
         Set message for loan listed status.
         '''
-        player = data.players.get_player_by_id(PlayerInformation.playerid)
-
-        if data.loan_list.get_player_listed(player):
+        if data.loan_list.get_player_listed(PlayerInformation.player):
             self.labelLoanList.set_label("Currently added to loan list.")
         else:
             self.labelLoanList.set_label("Not listed as available for loan.")
@@ -301,7 +294,7 @@ class Injuries(uigtk.widgets.CommonFrame):
         '''
         Set message for current injury status.
         '''
-        player = data.players.get_player_by_id(PlayerInformation.playerid)
+        player = PlayerInformation.player
 
         if not player.injury.get_injured():
             message = "Not currently injured."
@@ -323,7 +316,7 @@ class Suspensions(uigtk.widgets.CommonFrame):
         '''
         Set message for current injury status.
         '''
-        player = data.players.get_player_by_id(PlayerInformation.playerid)
+        player = PlayerInformation.player
 
         if not player.suspension.get_suspended():
             message = "Not currently suspended."
@@ -358,11 +351,11 @@ class Training(uigtk.widgets.CommonFrame):
         '''
         Set the training status string.
         '''
-        player = data.players.get_player_by_id(PlayerInformation.playerid)
+        player = PlayerInformation.player
 
         if player.club:
-            if player.club.individual_training.get_player_in_training(PlayerInformation.playerid):
-                item = player.club.individual_training.get_individual_training_by_playerid(PlayerInformation.playerid)
+            if player.club.individual_training.get_player_in_training(player.playerid):
+                item = player.club.individual_training.get_individual_training_by_playerid(player.playerid)
 
                 coach = player.club.coaches.get_coach_by_id(item.coachid)
                 skill = self.skills.get_skill_name(item.skill)
@@ -418,7 +411,7 @@ class History(uigtk.widgets.CommonFrame):
         '''
         Update history treeview with current and previous seasons.
         '''
-        player = data.players.get_player_by_id(PlayerInformation.playerid)
+        player = PlayerInformation.player
 
         self.liststore.clear()
 
@@ -447,7 +440,7 @@ class Morale(uigtk.widgets.CommonFrame):
         '''
         Display morale string for player.
         '''
-        player = data.players.get_player_by_id(PlayerInformation.playerid)
+        player = PlayerInformation.player
         morale = self.morale.get_morale(player.morale)
 
         self.labelMorale.set_label(morale)

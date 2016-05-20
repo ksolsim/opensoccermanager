@@ -157,21 +157,33 @@ class Squad(uigtk.widgets.Grid):
         Squad.squadfilter = structures.filters.Squad()
 
     def on_drag_data_get(self, treeview, context, selection, info, time):
+        '''
+        Get data for row on start of drag and drop operation.
+        '''
         model, treeiter = Squad.treeselection.get_selected()
 
         data = bytes("%i" % (model[treeiter][0]), "utf-8")
         selection.set(selection.get_target(), 8, data)
 
     def on_key_press_event(self, widget, event):
+        '''
+        Handle press of keyboard menu key.
+        '''
         if Gdk.keyval_name(event.keyval) == "Menu":
             event.button = 3
             self.on_context_menu_event(event)
 
     def on_button_release_event(self, widget, event):
+        '''
+        Handle right-click of mouse on row.
+        '''
         if event.button == 3:
             self.on_context_menu_event(event)
 
     def on_context_menu_event(self, event):
+        '''
+        Display context menu for selected player.
+        '''
         model, treeiter = Squad.treeselection.get_selected()
 
         if treeiter:
@@ -194,8 +206,10 @@ class Squad(uigtk.widgets.Grid):
         model = treeview.get_model()
         playerid = model[treepath][0]
 
+        player = data.players.get_player_by_id(playerid)
+
         data.window.screen.change_visible_screen("playerinformation")
-        data.window.screen.active.set_visible_player(playerid)
+        data.window.screen.active.set_visible_player(player)
 
     def on_view_changed(self, combobox):
         '''

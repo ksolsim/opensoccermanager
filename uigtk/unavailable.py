@@ -82,8 +82,10 @@ class Injuries(uigtk.widgets.CommonFrame):
         '''
         playerid = self.liststore[treepath][0]
 
+        player = data.players.get_player_by_id(playerid)
+
         data.window.screen.change_visible_screen("playerinformation")
-        data.window.screen.active.set_visible_player(playerid)
+        data.window.screen.active.set_visible_player(player)
 
     def populate_data(self):
         self.liststore.clear()
@@ -144,8 +146,10 @@ class Suspensions(uigtk.widgets.CommonFrame):
         '''
         playerid = self.liststore[treepath][0]
 
+        player = data.players.get_player_by_id(playerid)
+
         data.window.screen.change_visible_screen("playerinformation")
-        data.window.screen.active.set_visible_player(playerid)
+        data.window.screen.active.set_visible_player(player)
 
     def populate_data(self):
         self.liststore.clear()
