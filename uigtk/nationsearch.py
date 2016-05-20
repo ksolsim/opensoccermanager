@@ -40,7 +40,8 @@ class NationSearch(uigtk.widgets.Grid):
 
         self.liststoreNations = Gtk.ListStore(int, str)
         self.treemodelfilter = self.liststoreNations.filter_new()
-        self.treemodelfilter.set_visible_func(self.filter_visible, data.nations.get_nations())
+        self.treemodelfilter.set_visible_func(self.filter_visible,
+                                              data.nations.get_nations())
         self.treemodelsort = Gtk.TreeModelSort(self.treemodelfilter)
         self.treemodelsort.set_sort_column_id(1, Gtk.SortType.ASCENDING)
 

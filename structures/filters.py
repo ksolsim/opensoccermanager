@@ -75,3 +75,25 @@ class Player:
         Return whether a filter is currently applied.
         '''
         return self.options != self.defaults
+
+
+class Club:
+    defaults = (("league", 0),)
+    defaults = collections.OrderedDict(defaults)
+
+    def __init__(self):
+        self.options = {}
+
+        self.reset_filter()
+
+    def reset_filter(self):
+        '''
+        Restore default filtering attributes.
+        '''
+        self.options = collections.OrderedDict(self.defaults)
+
+    def get_filter_active(self):
+        '''
+        Return whether a filter is currently applied.
+        '''
+        return self.options != self.defaults

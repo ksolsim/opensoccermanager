@@ -22,6 +22,7 @@ import re
 import unicodedata
 
 import data
+import structures.filters
 import uigtk.widgets
 
 
@@ -51,20 +52,19 @@ class ClubSearch(uigtk.widgets.Grid):
         label.set_hexpand(True)
         grid.attach(label, 1, 0, 1, 1)
 
-        buttonbox = uigtk.widgets.ButtonBox()
-        grid.attach(buttonbox, 2, 0, 1, 1)
-
-        self.buttonReset = uigtk.widgets.Button("_Reset")
-        self.buttonReset.connect("clicked", self.on_reset_clicked)
-        buttonbox.add(self.buttonReset)
+        self.filterbuttons = uigtk.shared.FilterButtons()
+        self.filterbuttons.buttonFilter.connect("clicked", self.on_filter_clicked)
+        self.filterbuttons.buttonReset.connect("clicked", self.on_reset_clicked)
+        grid.attach(self.filterbuttons, 2, 0, 1, 1)
 
         scrolledwindow = uigtk.widgets.ScrolledWindow()
         self.attach(scrolledwindow, 0, 1, 1, 1)
 
-        self.liststore = Gtk.ListStore(int, str, str, str, str, str, int, str,
+        self.liststore = Gtk.ListStore(int, str, str, str, str, int, str, int, str,
                                        str)
         self.treemodelfilter = self.liststore.filter_new()
-        self.treemodelfilter.set_visible_func(self.filter_visible, data.clubs)
+        self.treemodelfilter.set_visible_func(self.filter_visible,
+                                              data.clubs.get_clubs())
         treemodelsort = Gtk.TreeModelSort(self.treemodelfilter)
         treemodelsort.set_sort_column_id(1, Gtk.SortType.ASCENDING)
 
@@ -91,13 +91,13 @@ class ClubSearch(uigtk.widgets.Grid):
         tree_columns.append(treeviewcolumn)
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Stadium", column=4)
         tree_columns.append(treeviewcolumn)
-        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="League", column=5)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="League", column=6)
         tree_columns.append(treeviewcolumn)
-        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Players", column=6)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Players", column=7)
         tree_columns.append(treeviewcolumn)
-        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Value", column=7)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Value", column=8)
         tree_columns.append(treeviewcolumn)
-        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Wage", column=8)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Wage", column=9)
         tree_columns.append(treeviewcolumn)
 
         for column in tree_columns:
@@ -105,6 +105,9 @@ class ClubSearch(uigtk.widgets.Grid):
             self.treeview.append_column(column)
 
         self.contextmenu = ContextMenu()
+        self.filter_dialog = Filter()
+
+        ClubSearch.clubfilter = structures.filters.Club()
 
     def on_button_release_event(self, treeview, event):
         '''
@@ -122,6 +125,9 @@ class ClubSearch(uigtk.widgets.Grid):
             self.on_context_menu_event(event)
 
     def on_context_menu_event(self, event):
+        '''
+        Display appropriate context menu for selected player.
+        '''
         self.contextmenu.show()
         self.contextmenu.popup(None,
                                None,
@@ -130,12 +136,25 @@ class ClubSearch(uigtk.widgets.Grid):
                                event.button,
                                event.time)
 
+    def on_filter_clicked(self, button):
+        '''
+        Display filtering dialog.
+        '''
+        ClubSearch.clubfilter.options = self.filter_dialog.show()
+
+        active = ClubSearch.clubfilter.get_filter_active()
+        self.filterbuttons.buttonReset.set_sensitive(active)
+
+        self.reset_view()
+
     def on_reset_clicked(self, button):
         '''
-        Clear search entry and reset view.
+        Clear filter settings and reset view to default state.
         '''
         self.entrySearch.set_text("")
         button.set_sensitive(False)
+
+        ClubSearch.clubfilter.reset_filter()
 
         self.reset_view()
 
@@ -183,12 +202,14 @@ class ClubSearch(uigtk.widgets.Grid):
         '''
         self.treemodelfilter.refilter()
 
-        self.treeview.scroll_to_cell(0)
-        self.treeselection.select_path(0)
+        if len(self.treemodelfilter) > 0:
+            self.treeview.scroll_to_cell(0)
+            self.treeselection.select_path(0)
 
     def filter_visible(self, model, treeiter, data):
         visible = True
 
+        # Filter by search criteria
         criteria = self.entrySearch.get_text()
 
         for search in (model[treeiter][1],):
@@ -196,6 +217,14 @@ class ClubSearch(uigtk.widgets.Grid):
 
             if not re.findall(criteria, search, re.IGNORECASE):
                 visible = False
+
+        options = ClubSearch.clubfilter.options
+
+        # Filter league
+        if visible:
+            if options["league"] != 0:
+                if model[treeiter][5] != options["league"]:
+                    visible = False
 
         return visible
 
@@ -211,6 +240,7 @@ class ClubSearch(uigtk.widgets.Grid):
                                    club.manager,
                                    club.chairman,
                                    club.stadium.name,
+                                   club.league.leagueid,
                                    club.league.name,
                                    club.squad.get_squad_count(),
                                    value,
@@ -230,6 +260,39 @@ class Filter(Gtk.Dialog):
         self.set_modal(True)
         self.set_resizable(False)
         self.set_title("Filter Clubs")
+        self.add_button("_Cancel", Gtk.ResponseType.CANCEL)
+        self.add_button("_Filter", Gtk.ResponseType.OK)
+        self.set_default_response(Gtk.ResponseType.OK)
+        self.vbox.set_border_width(5)
+        self.vbox.set_spacing(5)
+
+        grid = uigtk.widgets.Grid()
+        self.vbox.add(grid)
+
+        label = uigtk.widgets.Label("_League", leftalign=True)
+        grid.attach(label, 0, 0, 1, 1)
+        self.comboboxLeagues = Gtk.ComboBoxText()
+        label.set_mnemonic_widget(self.comboboxLeagues)
+        grid.attach(self.comboboxLeagues, 1, 0, 1, 1)
+
+        self.comboboxLeagues.append("0", "All")
+
+        for leagueid, league in data.leagues.get_leagues():
+            self.comboboxLeagues.append(str(leagueid), league.name)
+
+    def show(self):
+        self.show_all()
+
+        options = ClubSearch.clubfilter.options
+
+        self.comboboxLeagues.set_active_id(str(options["league"]))
+
+        if self.run() == Gtk.ResponseType.OK:
+            options["league"] = int(self.comboboxLeagues.get_active_id())
+
+        self.hide()
+
+        return options
 
 
 class ContextMenu(Gtk.Menu):

@@ -80,7 +80,8 @@ class PlayerSearch(uigtk.widgets.Grid):
         PlayerSearch.playerlist = PlayerList()
 
         self.treemodelfilter = PlayerSearch.playerlist.filter_new()
-        self.treemodelfilter.set_visible_func(self.filter_visible, data.players.get_players())
+        self.treemodelfilter.set_visible_func(self.filter_visible,
+                                              data.players.get_players())
         self.treemodelsort = Gtk.TreeModelSort(self.treemodelfilter)
         self.treemodelsort.set_sort_column_id(16, Gtk.SortType.DESCENDING)
 
@@ -261,11 +262,11 @@ class PlayerSearch(uigtk.widgets.Grid):
 
     def on_reset_clicked(self, button):
         '''
-        Clear filter settings and reset to default state.
+        Clear filter settings and reset view to default state.
         '''
         self.entrySearch.set_text("")
-
         button.set_sensitive(False)
+
         PlayerSearch.playerfilter.reset_filter()
 
         self.reset_view()
