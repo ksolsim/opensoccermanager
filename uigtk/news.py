@@ -179,20 +179,19 @@ class News(uigtk.widgets.Grid):
 
                 return
 
-    def filter_visible(self, model, treeiter, data):
+    def filter_visible(self, model, treeiter, values):
         display = True
 
         criteria = self.entrySearch.get_text()
 
-        for search in (model[treeiter][2], model[treeiter][3],):
+        for search in (model[treeiter][2], model[treeiter][3]):
             display = re.findall(criteria, search, re.IGNORECASE)
 
         if display:
             selected = int(self.comboboxFilter.get_active_id())
 
-            if selected != 0:
-                if selected != model[treeiter][4]:
-                    display = False
+            if selected not in (0, model[treeiter][4]):
+                display = False
 
         return display
 

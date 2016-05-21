@@ -60,8 +60,8 @@ class ClubSearch(uigtk.widgets.Grid):
         scrolledwindow = uigtk.widgets.ScrolledWindow()
         self.attach(scrolledwindow, 0, 1, 1, 1)
 
-        self.liststore = Gtk.ListStore(int, str, str, str, str, int, str, int, str,
-                                       str)
+        self.liststore = Gtk.ListStore(int, str, str, str, str, int, str, int, 
+                                       str, str)
         self.treemodelfilter = self.liststore.filter_new()
         self.treemodelfilter.set_visible_func(self.filter_visible,
                                               data.clubs.get_clubs())
@@ -206,7 +206,7 @@ class ClubSearch(uigtk.widgets.Grid):
             self.treeview.scroll_to_cell(0)
             self.treeselection.select_path(0)
 
-    def filter_visible(self, model, treeiter, data):
+    def filter_visible(self, model, treeiter, values):
         visible = True
 
         # Filter by search criteria
@@ -314,6 +314,6 @@ class ContextMenu(Gtk.Menu):
         model, treeiter = ClubSearch.treeselection.get_selected()
         clubid = model[treeiter][0]
 
-        self.club = club = data.clubs.get_club_by_id(clubid)
+        self.club = data.clubs.get_club_by_id(clubid)
 
         self.show_all()

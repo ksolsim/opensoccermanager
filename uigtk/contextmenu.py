@@ -55,7 +55,7 @@ class ContextMenu1(Gtk.Menu):
         menuitem = uigtk.widgets.MenuItem("_Terminate Contract")
         menuitem.connect("activate", self.on_terminate_contract_clicked)
         self.append(menuitem)
-        self.menuitemNotForSale = uigtk.widgets.CheckMenuItem("_Not for Sale")
+        self.menuitemNotForSale = uigtk.widgets.CheckMenuItem("_Not For Sale")
         self.menuitemNotForSale.connect("toggled", self.on_not_for_sale_clicked)
         self.append(self.menuitemNotForSale)
 

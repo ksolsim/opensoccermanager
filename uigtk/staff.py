@@ -61,6 +61,7 @@ class Interface(Gtk.Grid):
         commonframe.insert(scrolledwindow)
 
         self.treeviewAvailable = uigtk.widgets.TreeView()
+        self.treeviewAvailable.connect("row-activated", self.on_row_activated)
         self.treeviewAvailable.connect("button-release-event", self.on_button_release_event)
         self.treeviewAvailable.connect("key-press-event", self.on_key_press_event)
         self.treeviewAvailable.treeselection.connect("changed", self.on_available_selection_changed)
@@ -122,6 +123,12 @@ class Interface(Gtk.Grid):
         self.buttonFire.set_sensitive(selected)
         self.buttonRenewContract.set_sensitive(selected)
         self.buttonImproveWage.set_sensitive(selected)
+    
+    def on_row_activated(self, *args):
+        '''
+        Handle row activation on staff member.
+        '''
+        self.on_hire_clicked()
 
     def on_key_press_event(self, widget, event):
         '''
@@ -131,12 +138,12 @@ class Interface(Gtk.Grid):
             event.button = 3
             self.on_context_menu_event(event)
 
-    def on_button_release_event(self, widget, event):
+    def on_button_release_event(self, treeview, event):
         '''
         Handle right-clicking on the treeview.
         '''
         if event.button == 3:
-            if widget == self.treeviewAvailable:
+            if treeview is self.treeviewAvailable:
                 self.on_context_menu_1_event(event)
             else:
                 self.on_context_menu_2_event(event)

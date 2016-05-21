@@ -184,7 +184,7 @@ class NationSearch(uigtk.widgets.Grid):
             entry.set_text("")
             self.treemodelfilter.refilter()
 
-    def filter_visible(self, model, treeiter, data):
+    def filter_visible(self, model, treeiter, values):
         visible = True
 
         criteria = self.entrySearch.get_text()

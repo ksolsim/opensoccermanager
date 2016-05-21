@@ -44,18 +44,16 @@ class Squad:
         '''
         del self.squad[playerid]
 
-    def get_player_in_squad(self, playerid):
+    def get_player_in_squad(self, player):
         '''
         Return whether player id is in squad listing.
         '''
-        return playerid in self.squad
+        return player in self.squad.values()
 
-    def get_player_available(self, playerid):
+    def get_player_available(self, player):
         '''
         Get whether passed player is available to play.
         '''
-        player = data.players.get_player_by_id(playerid)
-
         available = not player.injury.get_injured() and not player.suspension.get_suspended()
 
         return available
@@ -257,11 +255,7 @@ class TeamSelection:
         '''
         Pay contract win bonus for players in team selection.
         '''
-        total = 0
-
-        for player in self.team:
-            if player:
-                total += player.contract.winbonus
+        total = sum(player.contract.winbonus for player in self.team if player)
 
         data.user.club.accounts.withdraw(amount=total, category="playerwage")
 

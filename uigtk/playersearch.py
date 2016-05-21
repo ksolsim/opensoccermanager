@@ -192,13 +192,15 @@ class PlayerSearch(uigtk.widgets.Grid):
 
         if treeiter:
             playerid = model[treeiter][0]
+            
+            player = data.players.get_player_by_id(playerid)
 
-            if data.user.club.squad.get_player_in_squad(playerid):
+            if data.user.club.squad.get_player_in_squad(player):
                 contextmenu = self.contextmenu1
             else:
                 contextmenu = self.contextmenu2
 
-            contextmenu.player = data.players.get_player_by_id(playerid)
+            contextmenu.player = player
             contextmenu.show()
             contextmenu.popup(None, None, None, None, event.button, event.time)
 
