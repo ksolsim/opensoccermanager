@@ -31,7 +31,7 @@ class FilterButtons(uigtk.widgets.ButtonBox):
         self.set_layout(Gtk.ButtonBoxStyle.END)
 
         self.buttonFilter = uigtk.widgets.Button("_Filter")
-        self.buttonFilter.set_tooltip_text("Filter visible players according to criteria.")
+        self.buttonFilter.set_tooltip_text("Filter visible data according to criteria.")
         self.add(self.buttonFilter)
 
         self.buttonReset = uigtk.widgets.Button("_Reset")
@@ -172,6 +172,9 @@ class ContractNegotiation(Gtk.Dialog):
 
 
 class SquadSize(Gtk.MessageDialog):
+    '''
+    Message warning about squad size going out of bounds.
+    '''
     def __init__(self, status):
         if status == 1:
             message = "The player could not be released as the squad size is less than 16 players."

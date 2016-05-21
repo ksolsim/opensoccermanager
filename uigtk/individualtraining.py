@@ -20,6 +20,7 @@ from gi.repository import Gtk
 from gi.repository import Gdk
 
 import data
+import structures.individualtraining
 import structures.intensity
 import structures.skills
 import uigtk.widgets
@@ -27,159 +28,6 @@ import uigtk.widgets
 
 class IndividualTraining(Gtk.Grid):
     __name__ = "individualtraining"
-
-    class AddTraining(Gtk.Dialog):
-        def __init__(self, playerid=None):
-            self.playerid = playerid
-
-            Gtk.Dialog.__init__(self)
-            self.set_transient_for(data.window)
-            self.set_modal(True)
-            self.set_resizable(False)
-            self.set_title("Individual Training")
-            self.vbox.set_border_width(5)
-            self.add_button("_Cancel", Gtk.ResponseType.CANCEL)
-
-            if not playerid:
-                self.add_button("_Add", Gtk.ResponseType.OK)
-            else:
-                self.add_button("_Edit", Gtk.ResponseType.OK)
-
-            self.set_default_response(Gtk.ResponseType.OK)
-
-            grid = uigtk.widgets.Grid()
-            self.vbox.add(grid)
-
-            if not playerid:
-                label = uigtk.widgets.Label("_Player", leftalign=True)
-                grid.attach(label, 0, 0, 1, 1)
-
-                liststore = Gtk.ListStore(int, str)
-                treemodelsort = Gtk.TreeModelSort(liststore)
-                treemodelsort.set_sort_column_id(1, Gtk.SortType.ASCENDING)
-
-                for playerid, player in data.user.club.squad.get_squad():
-                    if not data.user.club.individual_training.get_player_in_training(playerid):
-                        liststore.append([playerid, player.get_name(mode=1)])
-
-                self.comboboxPlayer = uigtk.widgets.ComboBox(column=1)
-                self.comboboxPlayer.set_active(0)
-                self.comboboxPlayer.set_model(treemodelsort)
-                self.comboboxPlayer.set_tooltip_text("Player to add to individual training list.")
-                label.set_mnemonic_widget(self.comboboxPlayer)
-                grid.attach(self.comboboxPlayer, 1, 0, 1, 1)
-
-            label = uigtk.widgets.Label("_Coach", leftalign=True)
-            grid.attach(label, 0, 1, 1, 1)
-
-            self.comboboxCoach = Gtk.ComboBoxText()
-            self.comboboxCoach.connect("changed", self.on_coach_changed)
-            label.set_mnemonic_widget(self.comboboxCoach)
-            grid.attach(self.comboboxCoach, 1, 1, 1, 1)
-
-            self.categories = structures.speciality.Categories()
-
-            self.labelCategory = uigtk.widgets.Label(leftalign=True)
-            grid.attach(self.labelCategory, 2, 1, 1, 1)
-
-            for coachid, coach in data.user.club.coaches.hired.items():
-                self.comboboxCoach.append(str(coachid), coach.name)
-
-            self.comboboxCoach.set_active(0)
-
-            label = uigtk.widgets.Label("_Skill", leftalign=True)
-            grid.attach(label, 0, 2, 1, 1)
-
-            self.comboboxSkill = Gtk.ComboBoxText()
-            label.set_mnemonic_widget(self.comboboxSkill)
-            grid.attach(self.comboboxSkill, 1, 2, 1, 1)
-
-            skills = structures.skills.Skills()
-
-            for count, skill in enumerate(skills.get_names()):
-                self.comboboxSkill.append(str(count), skill)
-
-            self.comboboxSkill.append("9", "Fitness")
-            self.comboboxSkill.set_active(0)
-            self.comboboxSkill.set_tooltip_text("Skill selected player will train.")
-
-            label = uigtk.widgets.Label("Intensity", leftalign=True)
-            grid.attach(label, 0, 3, 1, 1)
-
-            box = uigtk.widgets.Box()
-            box.set_tooltip_text("Intensity at which the skill will be trained.")
-            grid.attach(box, 1, 3, 1, 1)
-
-            self.intensity = []
-
-            radiobuttonIntensityLow = uigtk.widgets.RadioButton("_Low")
-            radiobuttonIntensityLow.intensity = 0
-            self.intensity.append(radiobuttonIntensityLow)
-            box.add(radiobuttonIntensityLow)
-            radiobuttonIntensityMedium = uigtk.widgets.RadioButton("_Medium")
-            radiobuttonIntensityMedium.join_group(radiobuttonIntensityLow)
-            radiobuttonIntensityMedium.set_active(True)
-            radiobuttonIntensityMedium.intensity = 1
-            self.intensity.append(radiobuttonIntensityMedium)
-            box.add(radiobuttonIntensityMedium)
-            radiobuttonIntensityHigh = uigtk.widgets.RadioButton("_High")
-            radiobuttonIntensityHigh.join_group(radiobuttonIntensityLow)
-            radiobuttonIntensityHigh.intensity = 2
-            self.intensity.append(radiobuttonIntensityHigh)
-            box.add(radiobuttonIntensityHigh)
-
-        def on_coach_changed(self, combobox):
-            '''
-            Update recommended training categories when coach is changed.
-            '''
-            coachid = int(combobox.get_active_id())
-            coach = data.user.club.coaches.get_coach_by_id(coachid)
-
-            label = self.categories.get_category_label(coach.speciality)
-            self.labelCategory.set_label(label)
-
-        def show(self):
-            self.show_all()
-
-            if self.run() == Gtk.ResponseType.OK:
-                if not self.playerid:
-                    model = self.comboboxPlayer.get_model()
-                    treeiter = self.comboboxPlayer.get_active_iter()
-
-                    self.playerid = model[treeiter][0]
-
-                coachid = int(self.comboboxCoach.get_active_id())
-                skill = int(self.comboboxSkill.get_active_id())
-
-                for radiobutton in self.intensity:
-                    if radiobutton.get_active():
-                        intensity = radiobutton.intensity
-
-                training = (self.playerid, coachid, skill, intensity)
-
-                data.user.club.individual_training.add_to_training(training)
-
-            self.destroy()
-
-    class RemoveTraining(Gtk.MessageDialog):
-        def __init__(self, playerid):
-            player = data.players.get_player_by_id(playerid)
-
-            Gtk.MessageDialog.__init__(self)
-            self.set_transient_for(data.window)
-            self.set_modal(True)
-            self.set_title("Individual Training")
-            self.set_property("message-type", Gtk.MessageType.QUESTION)
-            self.set_markup("Do you want to remove %s from individual training?" % (player.get_name(mode=1)))
-            self.add_button("_Do Not Remove", Gtk.ResponseType.CANCEL)
-            self.add_button("_Remove", Gtk.ResponseType.OK)
-            self.set_default_response(Gtk.ResponseType.CANCEL)
-
-        def show(self):
-            state = self.run() == Gtk.ResponseType.OK
-            self.destroy()
-
-            return state
 
     def __init__(self):
         Gtk.Grid.__init__(self)
@@ -200,36 +48,36 @@ class IndividualTraining(Gtk.Grid):
         self.labelNoStaff = Gtk.Label("There are no coaches on staff. To assign players to individual training, at least one coach must be hired.")
         self.overlay.add_overlay(self.labelNoStaff)
 
-        self.liststore = Gtk.ListStore(int, str, str, str, str, int, int, str)
-        treemodelsort = Gtk.TreeModelSort(self.liststore)
+        IndividualTraining.liststore = IndividualTrainingList()
+        treemodelsort = Gtk.TreeModelSort(IndividualTraining.liststore)
         treemodelsort.set_sort_column_id(1, Gtk.SortType.ASCENDING)
 
-        self.treeview = uigtk.widgets.TreeView()
-        self.treeview.set_hexpand(True)
-        self.treeview.set_vexpand(True)
-        self.treeview.set_sensitive(False)
-        self.treeview.set_model(treemodelsort)
-        self.treeview.connect("row-activated", self.on_row_activated)
-        self.treeview.connect("button-release-event", self.on_button_release_event)
-        self.treeview.connect("key-press-event", self.on_key_press_event)
-        self.treeview.treeselection.connect("changed", self.on_selection_changed)
-        self.overlay.add(self.treeview)
+        IndividualTraining.treeview = uigtk.widgets.TreeView()
+        IndividualTraining.treeview.set_hexpand(True)
+        IndividualTraining.treeview.set_vexpand(True)
+        IndividualTraining.treeview.set_sensitive(False)
+        IndividualTraining.treeview.set_model(treemodelsort)
+        IndividualTraining.treeview.connect("row-activated", self.on_row_activated)
+        IndividualTraining.treeview.connect("button-release-event", self.on_button_release_event)
+        IndividualTraining.treeview.connect("key-press-event", self.on_key_press_event)
+        IndividualTraining.treeview.treeselection.connect("changed", self.on_selection_changed)
+        self.overlay.add(IndividualTraining.treeview)
 
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Name", column=1)
         treeviewcolumn.set_expand(True)
-        self.treeview.append_column(treeviewcolumn)
+        IndividualTraining.treeview.append_column(treeviewcolumn)
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Coach", column=2)
-        self.treeview.append_column(treeviewcolumn)
+        IndividualTraining.treeview.append_column(treeviewcolumn)
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Skill", column=3)
-        self.treeview.append_column(treeviewcolumn)
+        IndividualTraining.treeview.append_column(treeviewcolumn)
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Intensity", column=4)
-        self.treeview.append_column(treeviewcolumn)
+        IndividualTraining.treeview.append_column(treeviewcolumn)
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Start Value", column=5)
-        self.treeview.append_column(treeviewcolumn)
+        IndividualTraining.treeview.append_column(treeviewcolumn)
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Current Value", column=6)
-        self.treeview.append_column(treeviewcolumn)
+        IndividualTraining.treeview.append_column(treeviewcolumn)
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Status", column=7)
-        self.treeview.append_column(treeviewcolumn)
+        IndividualTraining.treeview.append_column(treeviewcolumn)
 
         buttonbox = uigtk.widgets.ButtonBox()
         buttonbox.set_layout(Gtk.ButtonBoxStyle.END)
@@ -257,7 +105,7 @@ class IndividualTraining(Gtk.Grid):
         '''
         Launch dialog for adding player to individual training.
         '''
-        dialog = self.AddTraining()
+        dialog = AddTraining()
         dialog.show()
 
         self.populate_data()
@@ -266,12 +114,14 @@ class IndividualTraining(Gtk.Grid):
         '''
         Display dialog to edit selected individual player training.
         '''
-        model, treeiter = self.treeview.treeselection.get_selected()
+        model, treeiter = IndividualTraining.treeview.treeselection.get_selected()
 
         if treeiter:
             playerid = model[treeiter][0]
+            
+            training = data.user.club.individual_training.get_individual_training_by_playerid(playerid)
 
-            dialog = self.AddTraining(playerid)
+            dialog = EditTraining(training)
             dialog.show()
 
             self.populate_data()
@@ -280,10 +130,10 @@ class IndividualTraining(Gtk.Grid):
         '''
         Confirm from user to remove selected player from individual training.
         '''
-        model, treeiter = self.treeview.treeselection.get_selected()
+        model, treeiter = IndividualTraining.treeview.treeselection.get_selected()
         playerid = model[treeiter][0]
 
-        dialog = self.RemoveTraining(playerid)
+        dialog = RemoveTraining(playerid)
 
         if dialog.show():
             data.user.club.individual_training.remove_from_training(playerid)
@@ -317,13 +167,14 @@ class IndividualTraining(Gtk.Grid):
         '''
         Display context menu for selected player id.
         '''
-        model, treeiter = self.treeview.treeselection.get_selected()
+        model, treeiter = IndividualTraining.treeview.treeselection.get_selected()
 
         if treeiter:
             playerid = model[treeiter][0]
+            
+            player = data.players.get_player_by_id(playerid)
 
-            self.contextmenu.playerid = playerid
-            self.contextmenu.show()
+            self.contextmenu.show(player)
             self.contextmenu.popup(None,
                                    None,
                                    None,
@@ -345,24 +196,7 @@ class IndividualTraining(Gtk.Grid):
             self.buttonRemoveTraining.set_sensitive(False)
 
     def populate_data(self):
-        skills = structures.skills.Skills()
-        intensity = structures.intensity.Intensity()
-        status = structures.individualtraining.Status()
-
-        self.liststore.clear()
-
-        for playerid, training in data.user.club.individual_training.get_individual_training():
-            player = data.players.get_player_by_id(playerid)
-            coach = data.user.club.coaches.get_coach_by_id(training.coachid)
-
-            self.liststore.append([playerid,
-                                   player.get_name(),
-                                   coach.name,
-                                   skills.get_skill_name(training.skill),
-                                   intensity.get_intensity_by_index(training.intensity),
-                                   training.start_value,
-                                   player.get_skill_by_index(training.skill),
-                                   status.get_status(training.status)])
+        IndividualTraining.liststore.update()
 
     def run(self):
         self.populate_data()
@@ -373,8 +207,235 @@ class IndividualTraining(Gtk.Grid):
 
         state = data.user.club.coaches.get_staff_count() > 0
         self.buttonAddTraining.set_sensitive(state)
-        self.treeview.set_sensitive(state)
+        IndividualTraining.treeview.set_sensitive(state)
         self.labelNoStaff.set_visible(not state)
+
+
+class IndividualTrainingList(Gtk.ListStore):
+    '''
+    ListStore holding list of players in individual training.
+    '''
+    def __init__(self):
+        Gtk.ListStore.__init__(self)
+        self.set_column_types([int, str, str, str, str, int, int, str])
+    
+    def update(self):
+        skills = structures.skills.Skills()
+        intensity = structures.intensity.Intensity()
+        status = structures.individualtraining.Status()
+        
+        self.clear()
+        
+        for playerid, training in data.user.club.individual_training.get_individual_training():
+            player = data.players.get_player_by_id(playerid)
+            coach = data.user.club.coaches.get_coach_by_id(training.coachid)
+
+            self.append([playerid,
+                         player.get_name(),
+                         coach.name,
+                         skills.get_skill_name(training.skill),
+                         intensity.get_intensity_by_index(training.intensity),
+                         training.start_value,
+                         player.get_skill_by_index(training.skill),
+                         status.get_status(training.status)])
+
+
+class Training(Gtk.Dialog):
+    def __init__(self):
+        Gtk.Dialog.__init__(self)
+        self.set_transient_for(data.window)
+        self.set_modal(True)
+        self.set_resizable(False)
+        self.vbox.set_border_width(5)
+        self.add_button("_Cancel", Gtk.ResponseType.CANCEL)
+        
+        self.grid = uigtk.widgets.Grid()
+        self.vbox.add(self.grid)
+        
+        self.categories = structures.speciality.Categories()
+        
+        label = uigtk.widgets.Label("_Coach", leftalign=True)
+        self.grid.attach(label, 0, 1, 1, 1)
+        
+        scrolledwindow = uigtk.widgets.ScrolledWindow()
+        scrolledwindow.set_size_request(-1, 100)
+        self.grid.attach(scrolledwindow, 1, 1, 2, 1)
+        
+        self.liststoreCoach = Gtk.ListStore(int, str, str)
+        
+        for coachid, coach in data.user.club.coaches.hired.items():
+            speciality = self.categories.get_category_label(coach.speciality)
+            self.liststoreCoach.append([coachid, coach.name, speciality])
+        
+        IndividualTraining.treeviewCoach = uigtk.widgets.TreeView()
+        IndividualTraining.treeviewCoach.set_model(self.liststoreCoach)
+        label.set_mnemonic_widget(IndividualTraining.treeviewCoach)
+        IndividualTraining.treeviewCoach.treeselection.set_mode(Gtk.SelectionMode.BROWSE)
+        scrolledwindow.add(IndividualTraining.treeviewCoach)
+        
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Coach", column=1)
+        IndividualTraining.treeviewCoach.append_column(treeviewcolumn)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Speciality", column=2)
+        IndividualTraining.treeviewCoach.append_column(treeviewcolumn)
+
+        label = uigtk.widgets.Label("_Skill", leftalign=True)
+        self.grid.attach(label, 0, 2, 1, 1)
+
+        self.comboboxSkill = Gtk.ComboBoxText()
+        label.set_mnemonic_widget(self.comboboxSkill)
+        self.grid.attach(self.comboboxSkill, 1, 2, 1, 1)
+
+        skills = structures.skills.Skills()
+
+        for count, skill in enumerate(skills.get_names()):
+            self.comboboxSkill.append(str(count), skill)
+
+        self.comboboxSkill.append("9", "Fitness")
+        self.comboboxSkill.set_active(0)
+        self.comboboxSkill.set_tooltip_text("Skill selected player will train.")
+
+        label = uigtk.widgets.Label("Intensity", leftalign=True)
+        self.grid.attach(label, 0, 3, 1, 1)
+
+        box = uigtk.widgets.Box()
+        box.set_tooltip_text("Intensity at which the skill will be trained.")
+        self.grid.attach(box, 1, 3, 1, 1)
+
+        self.intensity = []
+
+        radiobuttonIntensityLow = uigtk.widgets.RadioButton("_Low")
+        radiobuttonIntensityLow.intensity = 0
+        self.intensity.append(radiobuttonIntensityLow)
+        box.add(radiobuttonIntensityLow)
+        radiobuttonIntensityMedium = uigtk.widgets.RadioButton("_Medium")
+        radiobuttonIntensityMedium.join_group(radiobuttonIntensityLow)
+        radiobuttonIntensityMedium.set_active(True)
+        radiobuttonIntensityMedium.intensity = 1
+        self.intensity.append(radiobuttonIntensityMedium)
+        box.add(radiobuttonIntensityMedium)
+        radiobuttonIntensityHigh = uigtk.widgets.RadioButton("_High")
+        radiobuttonIntensityHigh.join_group(radiobuttonIntensityLow)
+        radiobuttonIntensityHigh.intensity = 2
+        self.intensity.append(radiobuttonIntensityHigh)
+        box.add(radiobuttonIntensityHigh)
+
+
+class AddTraining(Training):
+    def __init__(self):
+        Training.__init__(self)
+        
+        self.set_title("Add Individual Training")
+        self.add_button("_Add", Gtk.ResponseType.OK)
+        self.set_default_response(Gtk.ResponseType.OK)
+
+        label = uigtk.widgets.Label("_Player", leftalign=True)
+        self.grid.attach(label, 0, 0, 1, 1)
+
+        liststore = Gtk.ListStore(int, str)
+        treemodelsort = Gtk.TreeModelSort(liststore)
+        treemodelsort.set_sort_column_id(1, Gtk.SortType.ASCENDING)
+
+        for playerid, player in data.user.club.squad.get_squad():
+            if not data.user.club.individual_training.get_player_in_training(playerid):
+                liststore.append([playerid, player.get_name(mode=1)])
+
+        self.comboboxPlayer = uigtk.widgets.ComboBox(column=1)
+        self.comboboxPlayer.set_active(0)
+        self.comboboxPlayer.set_model(treemodelsort)
+        self.comboboxPlayer.set_tooltip_text("Player to add to individual training list.")
+        label.set_mnemonic_widget(self.comboboxPlayer)
+        self.grid.attach(self.comboboxPlayer, 1, 0, 1, 1)
+
+    def show(self):
+        self.show_all()
+        
+        IndividualTraining.treeviewCoach.scroll_to_cell(0)
+        IndividualTraining.treeviewCoach.treeselection.select_path(0)
+
+        if self.run() == Gtk.ResponseType.OK:
+            model = self.comboboxPlayer.get_model()
+            treeiter = self.comboboxPlayer.get_active_iter()
+
+            self.playerid = model[treeiter][0]
+
+            model, treeiter = IndividualTraining.treeviewCoach.treeselection.get_selected()
+            coachid = int(model[treeiter][0])
+            
+            skill = int(self.comboboxSkill.get_active_id())
+
+            for radiobutton in self.intensity:
+                if radiobutton.get_active():
+                    intensity = radiobutton.intensity
+
+            training = (self.playerid, coachid, skill, intensity)
+
+            data.user.club.individual_training.add_to_training(training)
+
+        self.destroy()
+
+
+class EditTraining(Training):
+    def __init__(self, training):
+        self.training = training
+        
+        Training.__init__(self)
+        
+        self.set_title("Edit Individual Training")
+        self.add_button("_Edit", Gtk.ResponseType.OK)
+        self.set_default_response(Gtk.ResponseType.OK)
+        
+        label = uigtk.widgets.Label("Editing individual training for %s." % (training.player.get_name(mode=1)), leftalign=True)
+        self.grid.attach(label, 0, 0, 2, 1)
+        
+        # Set values
+        model = IndividualTraining.treeviewCoach.get_model()
+        
+        for item in model:
+            if item[0] == training.coachid:
+                IndividualTraining.treeviewCoach.treeselection.select_iter(item.iter)
+        
+        self.comboboxSkill.set_active_id(str(training.skill))
+        self.intensity[training.intensity].set_active(True)
+            
+    def show(self):
+        self.show_all()
+        
+        if self.run() == Gtk.ResponseType.OK:
+            model, treeiter = IndividualTraining.treeviewCoach.treeselection.get_selected()
+            
+            self.training.coachid = model[treeiter][0]
+            
+            self.training.skill = int(self.comboboxSkill.get_active_id())
+            
+            for radiobutton in self.intensity:
+                if radiobutton.get_active():
+                    self.training.intensity = radiobutton.intensity
+        
+        self.destroy()
+
+
+class RemoveTraining(Gtk.MessageDialog):
+    '''
+    Message dialog for confirmation of individual training removal.
+    '''
+    def __init__(self, playerid):
+        player = data.players.get_player_by_id(playerid)
+
+        Gtk.MessageDialog.__init__(self)
+        self.set_transient_for(data.window)
+        self.set_modal(True)
+        self.set_title("Remove Individual Training")
+        self.set_property("message-type", Gtk.MessageType.QUESTION)
+        self.set_markup("Do you want to remove %s from individual training?" % (player.get_name(mode=1)))
+        self.add_button("_Do Not Remove", Gtk.ResponseType.CANCEL)
+        self.add_button("_Remove", Gtk.ResponseType.OK)
+        self.set_default_response(Gtk.ResponseType.CANCEL)
+
+    def show(self):
+        state = self.run() == Gtk.ResponseType.OK
+        self.destroy()
+
+        return state
 
 
 class ContextMenu(Gtk.Menu):
@@ -392,14 +453,24 @@ class ContextMenu(Gtk.Menu):
         '''
         Edit individual training values for selected player.
         '''
-        dialog = self.AddTraining(self.playerid)
+        training = data.user.club.individual_training.get_individual_training_by_playerid(self.player.playerid)
+        
+        dialog = EditTraining(training)
         dialog.show()
+        
+        IndividualTraining.liststore.update()
 
     def on_remove_clicked(self, *args):
         '''
         Remove player from individual training.
         '''
-        data.user.club.individual_training.remove_from_training(self.playerid)
+        dialog = RemoveTraining(self.player.playerid)
 
-    def show(self):
+        if dialog.show():
+            data.user.club.individual_training.remove_from_training(self.player.playerid)
+        
+            IndividualTraining.liststore.update()
+
+    def show(self, player):
+        self.player = player
         self.show_all()

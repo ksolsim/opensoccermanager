@@ -15,6 +15,10 @@
 #  You should have received a copy of the GNU General Public License along with
 #  OpenSoccerManager.  If not, see <http://www.gnu.org/licenses/>.
 
+
+import gi
+gi.require_version('Gst', '1.0')
+
 from gi.repository import Gst
 import os
 import sys
