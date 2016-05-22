@@ -129,27 +129,135 @@ class Interface(Gtk.Grid):
         Handle row activation on staff member.
         '''
         self.on_hire_clicked()
+    
+    def on_hire_clicked(self, *args):
+        '''
+        Handle hiring of selected staff member.
+        '''
+        model, treeiter = self.treeviewAvailable.treeselection.get_selected()
 
-    def on_key_press_event(self, widget, event):
+        if treeiter:
+            staffid = model[treeiter][0]
+            staff = self.staff.available[staffid]
+
+            dialog = HireStaff(name=staff.name, role=self.role)
+
+            if dialog.show():
+                self.staff.hire_staff(staffid)
+
+                self.populate_data()
+    
+    def on_fire_clicked(self, *args):
+        '''
+        Handle firing of selected staff member.
+        '''
+        model, treeiter = self.treeviewHired.treeselection.get_selected()
+
+        if treeiter:
+            staffid = model[treeiter][0]
+            staff = self.staff.hired[staffid]
+
+            payout = staff.get_payout()
+            dialog = FireStaff(staff.name, payout)
+
+            if dialog.show():
+                if not data.user.club.accounts.request(payout):
+                    uigtk.accounts.NotEnoughFunds()
+                else:
+                    self.staff.fire_staff(staffid)
+
+                    self.populate_data()
+
+    def on_renew_contract_clicked(self, *args):
+        '''
+        Handle contract renewal of selected staff member.
+        '''
+        model, treeiter = self.treeviewHired.treeselection.get_selected()
+
+        if treeiter:
+            staffid = model[treeiter][0]
+            staff = self.staff.hired[staffid]
+
+            status = staff.get_renew_contract()
+
+            if status != 0:
+                dialog = RenewContractError(staff.name, status)
+
+                return
+
+            period = staff.get_contract_renewal_period()
+            amount = staff.get_contract_renewal_amount()
+
+            dialog = RenewContract(staff.name, period, amount)
+
+            if dialog.show():
+                staff.wage = amount
+                staff.contract = period * 52
+
+                self.populate_data()
+
+    def on_improve_wage_clicked(self, *args):
+        '''
+        Handle wage improvement of selected staff member.
+        '''
+        model, treeiter = self.treeviewHired.treeselection.get_selected()
+
+        if treeiter:
+            staffid = model[treeiter][0]
+            staff = self.staff.hired[staffid]
+
+            amount = staff.get_improve_wage_amount()
+
+            dialog = ImproveWage(staff.name, amount)
+
+            if dialog.show():
+                staff.wage = amount
+
+                self.populate_data()
+    
+    def on_key_press_event(self, treeview, event):
         '''
         Handle button clicks on the treeview.
         '''
         if Gdk.keyval_name(event.keyval) == "Menu":
             event.button = 3
-            self.on_context_menu_event(event)
+            self.on_context_menu_event(treeview, event)
 
     def on_button_release_event(self, treeview, event):
         '''
         Handle right-clicking on the treeview.
         '''
         if event.button == 3:
+            self.on_context_menu_event(treeview, event)
+
+    def on_context_menu_event(self, treeview, event):
+        '''
+        Display context menu for selected coach id.
+        '''
+        model, treeiter = treeview.treeselection.get_selected()
+
+        if treeiter:
+            staffid = model[treeiter][0]
+                        
             if treeview is self.treeviewAvailable:
-                self.on_context_menu_1_event(event)
+                staff = self.staff.available[staffid]
+                contextmenu = self.contextmenu1
             else:
-                self.on_context_menu_2_event(event)
+                staff = self.staff.hired[staffid]
+                contextmenu = self.contextmenu2
+            
+            contextmenu.show(staff)
+            contextmenu.popup(None,
+                              None,
+                              None,
+                              None,
+                              event.button,
+                              event.time)
 
     def run(self):
-        self.show_all()
+        self.populate_data()
+
+        self.treeviewAvailable.set_cursor(0)
 
 
 class Staff(Gtk.Grid):
@@ -204,118 +312,30 @@ class Staff(Gtk.Grid):
 
             for column in columns.columns:
                 self.treeviewAvailable.append_column(column)
-
-        def on_hire_clicked(self, *args):
-            model, treeiter = self.treeviewAvailable.treeselection.get_selected()
-
-            if treeiter:
-                coachid = model[treeiter][0]
-                coach = data.user.club.coaches.available[coachid]
-
-                dialog = HireStaff(name=coach.name, role="Coach")
-
-                if dialog.show():
-                    data.user.club.coaches.hire_staff(coachid)
-
-                    self.populate_data()
-
+        
         def on_fire_clicked(self, *args):
+            '''
+            Handle firing of selected staff member.
+            '''
             model, treeiter = self.treeviewHired.treeselection.get_selected()
 
             if treeiter:
-                coachid = model[treeiter][0]
-                coach = data.user.club.coaches.hired[coachid]
+                staffid = model[treeiter][0]
+                staff = self.staff.hired[staffid]
 
-                if coach.count_players_training() > 0:
-                    dialog = FireStaffError(coach)
+                if staff.count_players_training() > 0:
+                    dialog = FireStaffError(staff)
                 else:
-                    payout = coach.get_payout()
-                    dialog = FireStaff(coach.name, payout)
+                    payout = staff.get_payout()
+                    dialog = FireStaff(staff.name, payout)
 
                     if dialog.show():
                         if not data.user.club.accounts.request(payout):
                             uigtk.accounts.NotEnoughFunds()
                         else:
-                            data.user.club.coaches.fire_staff(coachid)
+                            self.staff.fire_staff(staffid)
 
                             self.populate_data()
-
-        def on_renew_contract_clicked(self, *args):
-            model, treeiter = self.treeviewHired.treeselection.get_selected()
-
-            if treeiter:
-                coachid = model[treeiter][0]
-                coach = data.user.club.coaches.hired[coachid]
-
-                status = coach.get_renew_contract()
-
-                if status != 0:
-                    dialog = RenewContractError(coach.name, status)
-
-                    return
-
-                period = coach.get_contract_renewal_period()
-                amount = coach.get_contract_renewal_amount()
-
-                dialog = RenewContract(coach.name, period, amount)
-
-                if dialog.show():
-                    coach.wage = amount
-                    coach.contract = period * 52
-
-                    self.populate_data()
-
-        def on_improve_wage_clicked(self, *args):
-            model, treeiter = self.treeviewHired.treeselection.get_selected()
-
-            if treeiter:
-                coachid = model[treeiter][0]
-                coach = data.user.club.coaches.hired[coachid]
-
-                amount = coach.get_improve_wage_amount()
-
-                dialog = ImproveWage(coach.name, amount)
-
-                if dialog.show():
-                    coach.wage = amount
-
-                    self.populate_data()
-
-        def on_context_menu_1_event(self, event):
-            '''
-            Display context menu for selected coach id.
-            '''
-            model, treeiter = self.treeviewAvailable.treeselection.get_selected()
-
-            if treeiter:
-                coachid = model[treeiter][0]
-                coach = data.user.club.coaches.available[coachid]
-
-                self.contextmenu1.show(coach)
-                self.contextmenu1.popup(None,
-                                        None,
-                                        None,
-                                        None,
-                                        event.button,
-                                        event.time)
-
-        def on_context_menu_2_event(self, event):
-            '''
-            Display context menu for selected coach id.
-            '''
-            model, treeiter = self.treeviewHired.treeselection.get_selected()
-
-            if treeiter:
-                coachid = model[treeiter][0]
-                coach = data.user.club.coaches.hired[coachid]
-
-                self.contextmenu2.show(coach)
-                self.contextmenu2.popup(None,
-                                        None,
-                                        None,
-                                        None,
-                                        event.button,
-                                        event.time)
 
         def populate_data(self):
             self.liststoreAvailable.clear()
@@ -352,11 +372,6 @@ class Staff(Gtk.Grid):
                                             coach.get_contract_string(),
                                             morale.get_morale(coach.morale),
                                             "%s Players" % (coach.count_players_training())])
-
-        def run(self):
-            self.populate_data()
-
-            self.treeviewAvailable.set_cursor(0)
 
     class Scout(Interface):
         class Columns:
@@ -402,116 +417,6 @@ class Staff(Gtk.Grid):
             for column in columns.columns:
                 self.treeviewAvailable.append_column(column)
 
-        def on_hire_clicked(self, *args):
-            model, treeiter = self.treeviewAvailable.treeselection.get_selected()
-
-            if treeiter:
-                scoutid = model[treeiter][0]
-                scout = data.user.club.scouts.available[scoutid]
-
-                dialog = HireStaff(name=scout.name, role="Scout")
-
-                if dialog.show():
-                    data.user.club.scouts.hire_staff(scoutid)
-
-                    self.populate_data()
-
-        def on_fire_clicked(self, *args):
-            model, treeiter = self.treeviewHired.treeselection.get_selected()
-
-            if treeiter:
-                scoutid = model[treeiter][0]
-                scout = data.user.club.scouts.hired[scoutid]
-                payout = scout.get_payout()
-
-                dialog = FireStaff(scout.name, payout)
-
-                if dialog.show():
-                    if not data.user.club.accounts.request(payout):
-                        uigtk.accounts.NotEnoughFunds()
-                    else:
-                        data.user.club.scouts.fire_staff(scoutid)
-
-                        self.populate_data()
-
-        def on_renew_contract_clicked(self, *args):
-            model, treeiter = self.treeviewHired.treeselection.get_selected()
-
-            if treeiter:
-                scoutid = model[treeiter][0]
-                scout = data.user.club.scouts.hired[scoutid]
-
-                status = scout.get_renew_contract()
-
-                if status != 0:
-                    dialog = RenewContractError(scout.name, status)
-
-                    return
-
-                period = scout.get_contract_renewal_period()
-                amount = scout.get_contract_renewal_amount()
-
-                dialog = RenewContract(scout.name, period, amount)
-
-                if dialog.show():
-                    scout.contract = period * 52
-                    scout.wage = amount
-
-                    self.populate_data()
-
-        def on_improve_wage_clicked(self, *args):
-            model, treeiter = self.treeviewHired.treeselection.get_selected()
-
-            if treeiter:
-                scoutid = model[treeiter][0]
-                scout = data.user.club.scouts.hired[scoutid]
-
-                amount = scout.get_improve_wage_amount()
-
-                dialog = ImproveWage(scout.name, amount)
-
-                if dialog.show():
-                    scout.wage = amount
-
-                    self.populate_data()
-
-        def on_context_menu_1_event(self, event):
-            '''
-            Display context menu for selected coach id.
-            '''
-            model, treeiter = self.treeviewAvailable.treeselection.get_selected()
-
-            if treeiter:
-                scoutid = model[treeiter][0]
-                scout = data.user.club.scouts.available[scoutid]
-
-                self.contextmenu1.show(scout)
-                self.contextmenu1.popup(None,
-                                        None,
-                                        None,
-                                        None,
-                                        event.button,
-                                        event.time)
-
-        def on_context_menu_2_event(self, event):
-            '''
-            Display context menu for selected player id.
-            '''
-            model, treeiter = self.treeviewHired.treeselection.get_selected()
-
-            if treeiter:
-                scoutid = model[treeiter][0]
-                scout = data.user.club.scouts.hired[scoutid]
-
-                self.contextmenu2.show(scout)
-                self.contextmenu2.popup(None,
-                                        None,
-                                        None,
-                                        None,
-                                        event.button,
-                                        event.time)
-
-
         def populate_data(self):
             self.liststoreAvailable.clear()
             self.liststoreHired.clear()
@@ -542,11 +447,6 @@ class Staff(Gtk.Grid):
                                             scout.get_contract_string(),
                                             morale.get_morale(scout.morale)])
 
-        def run(self):
-            self.populate_data()
-
-            self.treeviewAvailable.set_cursor(0)
-
     def __init__(self):
         Gtk.Grid.__init__(self)
 
@@ -554,10 +454,14 @@ class Staff(Gtk.Grid):
         self.attach(notebook, 0, 0, 1, 1)
 
         self.coach = self.Coach()
+        self.coach.staff = data.user.club.coaches
+        self.coach.role = "Coach"
         label = uigtk.widgets.Label("_Coach")
         notebook.append_page(self.coach, label)
 
         self.scout = self.Scout()
+        self.scout.staff = data.user.club.scouts
+        self.scout.role = "Scout"
         label = uigtk.widgets.Label("_Scout")
         notebook.append_page(self.scout, label)
 
@@ -591,6 +495,9 @@ class HireStaff(Gtk.MessageDialog):
 
 
 class FireStaff(Gtk.MessageDialog):
+    '''
+    Message to confirm firing of staff member from club.
+    '''
     def __init__(self, name, payout):
         Gtk.MessageDialog.__init__(self)
         self.set_transient_for(data.window)
