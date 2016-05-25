@@ -16,6 +16,8 @@
 #  OpenSoccerManager.  If not, see <http://www.gnu.org/licenses/>.
 
 
+import random
+
 import data
 
 
@@ -23,7 +25,7 @@ class IndividualTraining:
     class Item:
         def __init__(self):
             self.player = None
-            self.coachid = None
+            self.coach = None
             self.skill = None
             self.intensity = 1
             self.start_value = 0
@@ -42,17 +44,15 @@ class IndividualTraining:
         '''
         Add player along with details to individual training.
         '''
-        playerid, coachid, skill, intensity = training
-
-        player = data.players.get_player_by_id(playerid)
+        player, coach, skill, intensity = training
 
         training = self.Item()
         training.player = player
-        training.coachid = coachid
+        training.coach = coach
         training.skill = skill
         training.intensity = intensity
         training.start_value = player.get_skill_by_index(skill)
-        self.individual_training[playerid] = training
+        self.individual_training[player.playerid] = training
 
     def remove_from_training(self, playerid):
         '''
@@ -116,6 +116,59 @@ class IndividualTraining:
 
             individual.player.training.points += points
             individual.player.training.points = int(individual.player.training.points)
+
+            if individual.player.training.points >= 100:
+                if skill == 0:
+                    individual.player.keeping += 1
+                elif skill == 1:
+                    individual.player.tackling += 1
+                elif skill == 2:
+                    individual.player.passing += 1
+                elif skill == 3:
+                    individual.player.shooting += 1
+                elif skill == 4:
+                    individual.player.heading += 1
+                elif skill == 5:
+                    individual.player.pace += 1
+                elif skill == 6:
+                    individual.player.stamina += 1
+                elif skill == 7:
+                    individual.player.ball_control += 1
+                elif skill == 8:
+                    individual.player.set_pieces += 1
+                elif skill == 9:
+                    individual.player.fitness += 1
+
+                individual.player.training.points -= 100
+
+        for playerid, player in data.user.club.squad.get_squad():
+            if not self.get_player_in_training(playerid):
+                reduction = random.randint(0, 3)
+                player.training.points -= reduction
+
+                if player.training.points <= 0:
+                    skill = random.randint(0, 9)
+
+                    if skill == 0:
+                        player.keeping -= 1
+                    elif skill == 1:
+                        player.tackling -= 1
+                    elif skill == 2:
+                        player.passing -= 1
+                    elif skill == 3:
+                        player.shooting -= 1
+                    elif skill == 4:
+                        player.heading -= 1
+                    elif skill == 5:
+                        player.pace -= 1
+                    elif skill == 6:
+                        player.stamina -= 1
+                    elif skill == 7:
+                        player.ball_control -= 1
+                    elif skill == 8:
+                        player.set_pieces -= 1
+
+                    player.training.points = 99
 
 
 class Status:

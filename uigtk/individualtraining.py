@@ -118,7 +118,7 @@ class IndividualTraining(Gtk.Grid):
 
         if treeiter:
             playerid = model[treeiter][0]
-            
+
             training = data.user.club.individual_training.get_individual_training_by_playerid(playerid)
 
             dialog = EditTraining(training)
@@ -171,7 +171,7 @@ class IndividualTraining(Gtk.Grid):
 
         if treeiter:
             playerid = model[treeiter][0]
-            
+
             player = data.players.get_player_by_id(playerid)
 
             self.contextmenu.show(player)
@@ -218,21 +218,20 @@ class IndividualTrainingList(Gtk.ListStore):
     def __init__(self):
         Gtk.ListStore.__init__(self)
         self.set_column_types([int, str, str, str, str, int, int, str])
-    
+
     def update(self):
         skills = structures.skills.Skills()
         intensity = structures.intensity.Intensity()
         status = structures.individualtraining.Status()
-        
+
         self.clear()
-        
+
         for playerid, training in data.user.club.individual_training.get_individual_training():
             player = data.players.get_player_by_id(playerid)
-            coach = data.user.club.coaches.get_coach_by_id(training.coachid)
 
             self.append([playerid,
                          player.get_name(),
-                         coach.name,
+                         training.coach.name,
                          skills.get_skill_name(training.skill),
                          intensity.get_intensity_by_index(training.intensity),
                          training.start_value,
@@ -248,31 +247,31 @@ class Training(Gtk.Dialog):
         self.set_resizable(False)
         self.vbox.set_border_width(5)
         self.add_button("_Cancel", Gtk.ResponseType.CANCEL)
-        
+
         self.grid = uigtk.widgets.Grid()
         self.vbox.add(self.grid)
-        
+
         self.categories = structures.speciality.Categories()
-        
+
         label = uigtk.widgets.Label("_Coach", leftalign=True)
         self.grid.attach(label, 0, 1, 1, 1)
-        
+
         scrolledwindow = uigtk.widgets.ScrolledWindow()
         scrolledwindow.set_size_request(-1, 100)
         self.grid.attach(scrolledwindow, 1, 1, 2, 1)
-        
+
         self.liststoreCoach = Gtk.ListStore(int, str, str)
-        
+
         for coachid, coach in data.user.club.coaches.hired.items():
             speciality = self.categories.get_category_label(coach.speciality)
             self.liststoreCoach.append([coachid, coach.name, speciality])
-        
+
         IndividualTraining.treeviewCoach = uigtk.widgets.TreeView()
         IndividualTraining.treeviewCoach.set_model(self.liststoreCoach)
         label.set_mnemonic_widget(IndividualTraining.treeviewCoach)
         IndividualTraining.treeviewCoach.treeselection.set_mode(Gtk.SelectionMode.BROWSE)
         scrolledwindow.add(IndividualTraining.treeviewCoach)
-        
+
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Coach", column=1)
         IndividualTraining.treeviewCoach.append_column(treeviewcolumn)
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Speciality", column=2)
@@ -323,7 +322,7 @@ class Training(Gtk.Dialog):
 class AddTraining(Training):
     def __init__(self):
         Training.__init__(self)
-        
+
         self.set_title("Add Individual Training")
         self.add_button("_Add", Gtk.ResponseType.OK)
         self.set_default_response(Gtk.ResponseType.OK)
@@ -348,7 +347,7 @@ class AddTraining(Training):
 
     def show(self):
         self.show_all()
-        
+
         IndividualTraining.treeviewCoach.scroll_to_cell(0)
         IndividualTraining.treeviewCoach.treeselection.select_path(0)
 
@@ -356,18 +355,21 @@ class AddTraining(Training):
             model = self.comboboxPlayer.get_model()
             treeiter = self.comboboxPlayer.get_active_iter()
 
-            self.playerid = model[treeiter][0]
+            playerid = model[treeiter][0]
+            player = data.players.get_player_by_id(playerid)
 
             model, treeiter = IndividualTraining.treeviewCoach.treeselection.get_selected()
+
             coachid = int(model[treeiter][0])
-            
+            coach = data.user.club.coaches.get_coach_by_id(coachid)
+
             skill = int(self.comboboxSkill.get_active_id())
 
             for radiobutton in self.intensity:
                 if radiobutton.get_active():
                     intensity = radiobutton.intensity
 
-            training = (self.playerid, coachid, skill, intensity)
+            training = (player, coach, skill, intensity)
 
             data.user.club.individual_training.add_to_training(training)
 
@@ -376,41 +378,42 @@ class AddTraining(Training):
 
 class EditTraining(Training):
     def __init__(self, training):
-        self.training = training
-        
         Training.__init__(self)
-        
+        self.training = training
+
         self.set_title("Edit Individual Training")
         self.add_button("_Edit", Gtk.ResponseType.OK)
         self.set_default_response(Gtk.ResponseType.OK)
-        
+
         label = uigtk.widgets.Label("Editing individual training for %s." % (training.player.get_name(mode=1)), leftalign=True)
         self.grid.attach(label, 0, 0, 2, 1)
-        
+
         # Set values
         model = IndividualTraining.treeviewCoach.get_model()
-        
+
         for item in model:
-            if item[0] == training.coachid:
+            if item[0] == training.coach.coachid:
                 IndividualTraining.treeviewCoach.treeselection.select_iter(item.iter)
-        
+
         self.comboboxSkill.set_active_id(str(training.skill))
         self.intensity[training.intensity].set_active(True)
-            
+
     def show(self):
         self.show_all()
-        
+
         if self.run() == Gtk.ResponseType.OK:
             model, treeiter = IndividualTraining.treeviewCoach.treeselection.get_selected()
-            
-            self.training.coachid = model[treeiter][0]
-            
+
+            coachid = model[treeiter][0]
+            self.training.coach = data.user.club.coaches.get_coach_by_id(coachid)
+
             self.training.skill = int(self.comboboxSkill.get_active_id())
-            
+            self.training.start_value = self.training.player.get_skill_by_index(self.training.skill)
+
             for radiobutton in self.intensity:
                 if radiobutton.get_active():
                     self.training.intensity = radiobutton.intensity
-        
+
         self.destroy()
 
 
@@ -454,10 +457,10 @@ class ContextMenu(Gtk.Menu):
         Edit individual training values for selected player.
         '''
         training = data.user.club.individual_training.get_individual_training_by_playerid(self.player.playerid)
-        
+
         dialog = EditTraining(training)
         dialog.show()
-        
+
         IndividualTraining.liststore.update()
 
     def on_remove_clicked(self, *args):
@@ -468,7 +471,7 @@ class ContextMenu(Gtk.Menu):
 
         if dialog.show():
             data.user.club.individual_training.remove_from_training(self.player.playerid)
-        
+
             IndividualTraining.liststore.update()
 
     def show(self, player):

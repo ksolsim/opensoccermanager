@@ -108,7 +108,7 @@ class Coach(structures.staff.Member):
         count = 0
 
         for trainingid, training in data.user.club.individual_training.get_individual_training():
-            if self.coachid == training.coachid:
+            if self.coachid == training.coach.coachid:
                 count += 1
 
         return count
