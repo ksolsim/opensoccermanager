@@ -128,12 +128,10 @@ class Score:
 
         self.fixture.result = score
 
-        club = self.fixture.home.club
-        goalscorers = Goalscorers(club, score[0])
+        goalscorers = Goalscorers(self.fixture.home.club, score[0])
         self.fixture.home.goalscorers = goalscorers.generate_goalscorers()
 
-        club = self.fixture.away.club
-        goalscorers = Goalscorers(club, score[1])
+        goalscorers = Goalscorers(self.fixture.away.club, score[1])
         self.fixture.away.goalscorers = goalscorers.generate_goalscorers()
 
     def generate_goals(self):
@@ -227,7 +225,21 @@ class Goalscorers:
 
 
 class Assisters:
-    pass
+    def __init__(self, club):
+        self.club = club
+
+    def get_assister(self, goalscorer):
+        '''
+        Get assister for passed goalscorer.
+        '''
+        players = [player for player in self.club.squad.teamselection.get_team_selection() if player]
+
+        return random.choice(players)
+
+
+class Cards:
+    def __init__(self):
+        pass
 
 
 class Attendance:

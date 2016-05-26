@@ -185,18 +185,6 @@ class Fixture:
         self.referee = None
         self.league = None
 
-    def get_home_name(self):
-        '''
-        Return name of home side for fixture.
-        '''
-        return self.home.club.name
-
-    def get_away_name(self):
-        '''
-        Return name of away side for fixture.
-        '''
-        return self.away.club.name
-
     def increment_player_appearances(self):
         '''
         Increment appearances for both clubs registered to fixture object.
@@ -208,8 +196,8 @@ class Fixture:
         '''
         Save selected first team and substitutions into fixture object.
         '''
-        self.home.team_played[0] = self.home.team_selection[0]
-        self.away.team_played[0] = self.away.team_selection[0]
+        self.home.team_played = self.home.team_selection
+        self.away.team_played = self.away.team_selection
 
 
 class FixtureTeam:
@@ -222,10 +210,8 @@ class FixtureTeam:
         self.team_selection = [[], []]
         self.team_played = [[], []]
 
-        self.team = []
-        self.subs = []
-
         self.goalscorers = None
+        self.assisters = None
 
         self.formationid = 0
 
@@ -236,7 +222,10 @@ class FixtureTeam:
         '''
         Increment appearances for each player in team.
         '''
-        for players in (self.team_played[0], self.team_played[1]):
-            for player in players:
-                if player:
-                    player.appearances += 1
+        for player in self.team_played[0]:
+            if player:
+                player.appearances += 1
+
+        for player in self.team_played[1]:
+            if player:
+                player.appearances += 1

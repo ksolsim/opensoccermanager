@@ -73,8 +73,8 @@ class Match(uigtk.widgets.Grid):
         '''
         self.fixture = fixture
 
-        self.score.set_teams(fixture.fixtureid, fixture)
-        self.set_tactics_buttons(fixture.fixtureid, fixture)
+        self.score.set_teams(fixture)
+        self.set_tactics_buttons(fixture)
 
         home = fixture.home.club
         self.information.set_information(home.stadium.name, fixture.referee.name)
@@ -86,35 +86,30 @@ class Match(uigtk.widgets.Grid):
         team = structures.match.Team(fixture)
         team.set_team_selection()
 
-    def set_tactics_buttons(self, fixtureid, fixture):
+    def set_tactics_buttons(self, fixture):
         '''
         Update label on tactics buttons to display club names.
         '''
-        self.buttonHomeTactics.set_label("_%s\nTactics" % (fixture.get_home_name()))
+        self.buttonHomeTactics.set_label("_%s\nTactics" % (fixture.home.club.name))
         self.buttonHomeTactics.set_sensitive(True)
-        self.buttonAwayTactics.set_label("_%s\nTactics" % (fixture.get_away_name()))
+        self.buttonAwayTactics.set_label("_%s\nTactics" % (fixture.away.club.name))
         self.buttonAwayTactics.set_sensitive(True)
 
     def on_start_match_clicked(self, button):
         '''
         Call match engine to generate result, then enable interface elements.
         '''
-        # Update visible user fixture
+        # Update user fixture
         structures.match.Score(self.fixture)
 
         self.score.set_result(self.fixture.result)
 
         attendance = structures.match.Attendance(self.fixture)
-        self.statistics.set_attendance(str(attendance.get_attendance()))
+        self.statistics.set_attendance(attendance.get_attendance())
 
         self.fixture.league.standings.update_standing(self.fixture)
 
         data.events.process_end_of_match_events(self.fixture)
-
-        self.fixture.store_team_selection()
-        self.fixture.increment_player_appearances()
-
-        self.fixture.played = True
 
         # Update other fixtures
         for leagueid, league in data.leagues.get_leagues():
@@ -122,15 +117,21 @@ class Match(uigtk.widgets.Grid):
                 fixture = league.fixtures.get_fixture_by_id(fixtureid)
 
                 if data.user.club not in (fixture.home.club, fixture.away.club):
+                    fixture.home.club.squad.generate_squad()
+                    fixture.away.club.squad.generate_squad()
+
+                    club = fixture.home.club
+                    fixture.home.team_selection[0] = club.squad.teamselection.team
+                    fixture.home.team_selection[1] = club.squad.teamselection.subs
+
+                    club = fixture.away.club
+                    fixture.away.team_selection[0] = club.squad.teamselection.team
+                    fixture.away.team_selection[1] = club.squad.teamselection.subs
+
                     structures.match.Score(fixture)
                     league.standings.update_standing(fixture)
 
-                    fixture.referee.increment_statistics(fixture)
-
-                    self.fixture.store_team_selection()
-                    fixture.increment_player_appearances()
-
-                    fixture.played = True
+                    data.events.process_end_of_match_events(fixture)
 
         button.set_sensitive(False)
         self.buttonHomeTactics.set_sensitive(False)
@@ -187,12 +188,12 @@ class Score(Gtk.Grid):
         self.eventsAwayTeam = Events()
         self.attach(self.eventsAwayTeam, 2, 1, 1, 1)
 
-    def set_teams(self, fixtureid, fixture):
+    def set_teams(self, fixture):
         '''
         Set competing team names and 0-0 scoreline.
         '''
-        self.labelHomeTeam.set_markup("<span size='18000'><b>%s</b></span>" % (fixture.get_home_name()))
-        self.labelAwayTeam.set_markup("<span size='18000'><b>%s</b></span>" % (fixture.get_away_name()))
+        self.labelHomeTeam.set_markup("<span size='18000'><b>%s</b></span>" % (fixture.home.club.name))
+        self.labelAwayTeam.set_markup("<span size='18000'><b>%s</b></span>" % (fixture.away.club.name))
         self.set_result((0, 0))
 
     def set_result(self, result):
@@ -346,7 +347,7 @@ class Statistics(uigtk.widgets.Grid):
         '''
         Set attendance value at end of match.
         '''
-        self.labelAttendance.set_label(attendance)
+        self.labelAttendance.set_label("%i" % (attendance))
 
 
 class ProceedToMatch(Gtk.MessageDialog):

@@ -75,3 +75,8 @@ class Events:
             fixture.away.club.tactics.pay_bonus()
 
         fixture.referee.increment_statistics(fixture)
+
+        fixture.store_team_selection()
+        fixture.increment_player_appearances()
+
+        fixture.played = True

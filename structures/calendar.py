@@ -69,8 +69,8 @@ class Calendar:
         if data.date.get_date_for_event() == data.user.club.league.fixtures.events[self.event]:
             for fixtureid, fixture in fixtures.items():
                 if data.user.club in (fixture.home.club, fixture.away.club):
-                    club1 = fixture.get_home_name()
-                    club2 = fixture.get_away_name()
+                    club1 = fixture.home.club.name
+                    club2 = fixture.away.club.name
 
                     data.window.mainscreen.information.league = data.user.club.league
                     data.window.mainscreen.information.fixture = fixture
