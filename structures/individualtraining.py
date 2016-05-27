@@ -65,7 +65,7 @@ class IndividualTraining:
         '''
         Return whether passed player id is individual training.
         '''
-        return playerid in self.individual_training.keys()
+        return playerid in self.individual_training
 
     def get_individual_training_by_playerid(self, playerid):
         '''
@@ -179,8 +179,8 @@ class Status:
                        3: "Quickly developing.",
                        4: "No longer progressing."}
 
-    def get_status(self, index):
+    def get_status_by_id(self, statusid):
         '''
         Get status string for given index.
         '''
-        return self.status[index]
+        return self.status[statusid]

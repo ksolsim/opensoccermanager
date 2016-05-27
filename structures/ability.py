@@ -28,7 +28,7 @@ class Ability:
         '''
         return self.abilities.items()
 
-    def get_ability_for_id(self, abilityid):
+    def get_ability_by_id(self, abilityid):
         '''
         Return ability string for given id value.
         '''

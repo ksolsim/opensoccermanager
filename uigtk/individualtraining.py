@@ -133,7 +133,9 @@ class IndividualTraining(Gtk.Grid):
         model, treeiter = IndividualTraining.treeview.treeselection.get_selected()
         playerid = model[treeiter][0]
 
-        dialog = RemoveTraining(playerid)
+        player = data.players.get_player_by_id(playerid)
+
+        dialog = RemoveTraining(player)
 
         if dialog.show():
             data.user.club.individual_training.remove_from_training(playerid)
@@ -202,7 +204,7 @@ class IndividualTraining(Gtk.Grid):
         self.populate_data()
         self.show_all()
 
-        individual = data.user.club.team_training.get_individual_set()
+        individual = data.user.club.team_training.get_individual_training_scheduled()
         self.infobar.set_visible(not individual)
 
         state = data.user.club.coaches.get_staff_count() > 0
@@ -236,10 +238,13 @@ class IndividualTrainingList(Gtk.ListStore):
                          intensity.get_intensity_by_index(training.intensity),
                          training.start_value,
                          player.get_skill_by_index(training.skill),
-                         status.get_status(training.status)])
+                         status.get_status_by_id(training.status)])
 
 
 class Training(Gtk.Dialog):
+    '''
+    Base individual training add/edit dialog.
+    '''
     def __init__(self):
         Gtk.Dialog.__init__(self)
         self.set_transient_for(data.window)
@@ -254,6 +259,7 @@ class Training(Gtk.Dialog):
         self.categories = structures.speciality.Categories()
 
         label = uigtk.widgets.Label("_Coach", leftalign=True)
+        label.set_yalign(0)
         self.grid.attach(label, 0, 1, 1, 1)
 
         scrolledwindow = uigtk.widgets.ScrolledWindow()
@@ -320,6 +326,9 @@ class Training(Gtk.Dialog):
 
 
 class AddTraining(Training):
+    '''
+    Dialog to add individual training for player.
+    '''
     def __init__(self):
         Training.__init__(self)
 
@@ -377,6 +386,9 @@ class AddTraining(Training):
 
 
 class EditTraining(Training):
+    '''
+    Dialog to change defined individual training options.
+    '''
     def __init__(self, training):
         Training.__init__(self)
         self.training = training
@@ -421,9 +433,7 @@ class RemoveTraining(Gtk.MessageDialog):
     '''
     Message dialog for confirmation of individual training removal.
     '''
-    def __init__(self, playerid):
-        player = data.players.get_player_by_id(playerid)
-
+    def __init__(self, player):
         Gtk.MessageDialog.__init__(self)
         self.set_transient_for(data.window)
         self.set_modal(True)
@@ -442,6 +452,9 @@ class RemoveTraining(Gtk.MessageDialog):
 
 
 class ContextMenu(Gtk.Menu):
+    '''
+    Individual training treeview context menu.
+    '''
     def __init__(self):
         Gtk.Menu.__init__(self)
 
@@ -467,7 +480,7 @@ class ContextMenu(Gtk.Menu):
         '''
         Remove player from individual training.
         '''
-        dialog = RemoveTraining(self.player.playerid)
+        dialog = RemoveTraining(self.player)
 
         if dialog.show():
             data.user.club.individual_training.remove_from_training(self.player.playerid)

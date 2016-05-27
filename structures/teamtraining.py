@@ -86,13 +86,13 @@ class TeamTraining:
 
         return overworked
 
-    def get_schedule_set(self):
+    def get_team_training_scheduled(self):
         '''
         Return whether a schedule has been set.
         '''
         return self.team_training != [0] * 42
 
-    def get_individual_set(self):
+    def get_individual_training_scheduled(self):
         '''
         Return whether individual training has been assigned.
         '''
@@ -112,7 +112,7 @@ class TeamTraining:
             self.timeout -= 1
 
             if self.timeout == 0:
-                if self.get_schedule_set():
+                if self.get_team_training_scheduled():
                     data.user.club.news.publish("TT02")
                     self.get_random_timeout()
                 else:

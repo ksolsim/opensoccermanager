@@ -123,13 +123,13 @@ class Interface(Gtk.Grid):
         self.buttonFire.set_sensitive(selected)
         self.buttonRenewContract.set_sensitive(selected)
         self.buttonImproveWage.set_sensitive(selected)
-    
+
     def on_row_activated(self, *args):
         '''
         Handle row activation on staff member.
         '''
         self.on_hire_clicked()
-    
+
     def on_hire_clicked(self, *args):
         '''
         Handle hiring of selected staff member.
@@ -146,7 +146,7 @@ class Interface(Gtk.Grid):
                 self.staff.hire_staff(staffid)
 
                 self.populate_data()
-    
+
     def on_fire_clicked(self, *args):
         '''
         Handle firing of selected staff member.
@@ -214,7 +214,7 @@ class Interface(Gtk.Grid):
                 staff.wage = amount
 
                 self.populate_data()
-    
+
     def on_key_press_event(self, treeview, event):
         '''
         Handle button clicks on the treeview.
@@ -238,14 +238,14 @@ class Interface(Gtk.Grid):
 
         if treeiter:
             staffid = model[treeiter][0]
-                        
+
             if treeview is self.treeviewAvailable:
                 staff = self.staff.available[staffid]
                 contextmenu = self.contextmenu1
             else:
                 staff = self.staff.hired[staffid]
                 contextmenu = self.contextmenu2
-            
+
             contextmenu.show(staff)
             contextmenu.popup(None,
                               None,
@@ -312,7 +312,7 @@ class Staff(Gtk.Grid):
 
             for column in columns.columns:
                 self.treeviewAvailable.append_column(column)
-        
+
         def on_fire_clicked(self, *args):
             '''
             Handle firing of selected staff member.
@@ -346,7 +346,7 @@ class Staff(Gtk.Grid):
             morale = structures.morale.StaffMorale()
 
             for coachid, coach in data.user.club.coaches.available.items():
-                ability = abilities.get_ability_for_id(coach.ability)
+                ability = abilities.get_ability_by_id(coach.ability)
                 speciality = specialities.get_speciality_for_id(coach.speciality)
                 wage = data.currency.get_currency(coach.wage, integer=True)
 
@@ -359,9 +359,14 @@ class Staff(Gtk.Grid):
                                                 coach.get_contract_string()])
 
             for coachid, coach in data.user.club.coaches.hired.items():
-                ability = abilities.get_ability_for_id(coach.ability)
+                ability = abilities.get_ability_by_id(coach.ability)
                 speciality = specialities.get_speciality_for_id(coach.speciality)
                 wage = data.currency.get_currency(coach.wage, integer=True)
+
+                if coach.count_players_training() == 1:
+                    count = "%i Player" % (coach.count_players_training())
+                else:
+                    count = "%i Players" % (coach.count_players_training())
 
                 self.liststoreHired.append([coachid,
                                             coach.name,
@@ -371,7 +376,7 @@ class Staff(Gtk.Grid):
                                             wage,
                                             coach.get_contract_string(),
                                             morale.get_morale(coach.morale),
-                                            "%s Players" % (coach.count_players_training())])
+                                            count])
 
     class Scout(Interface):
         class Columns:
@@ -425,7 +430,7 @@ class Staff(Gtk.Grid):
             morale = structures.morale.StaffMorale()
 
             for scoutid, scout in data.user.club.scouts.available.items():
-                ability = abilities.get_ability_for_id(scout.ability)
+                ability = abilities.get_ability_by_id(scout.ability)
                 wage = data.currency.get_currency(scout.wage, integer=True)
 
                 self.liststoreAvailable.append([scoutid,
@@ -436,7 +441,7 @@ class Staff(Gtk.Grid):
                                                 scout.get_contract_string()])
 
             for scoutid, scout in data.user.club.scouts.hired.items():
-                ability = abilities.get_ability_for_id(scout.ability)
+                ability = abilities.get_ability_by_id(scout.ability)
                 wage = data.currency.get_currency(scout.wage, integer=True)
 
                 self.liststoreHired.append([scoutid,

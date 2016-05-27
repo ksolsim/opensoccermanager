@@ -71,10 +71,10 @@ class Coaches(structures.staff.Staff):
 
             for trainingid, training in club.individual_training.get_individual_training():
                 if coachid == training.coachid:
-                    remove.append(trainingid)
+                    remove.append(playerid)
 
-            for trainingid in remove:
-                club.individual_training.remove_from_training(trainingid)
+            for playerid in remove:
+                club.individual_training.remove_from_training(playerid)
 
             del self.hired[coachid]
 
