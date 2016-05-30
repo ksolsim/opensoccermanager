@@ -17,6 +17,9 @@
 
 
 class Ability:
+    '''
+    Ability value for coaches and scouts.
+    '''
     def __init__(self):
         self.abilities = {0: "Average",
                           1: "Good",

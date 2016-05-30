@@ -31,7 +31,7 @@ class TransferType:
         '''
         return self.transfer_types
 
-    def get_transfer_type_for_index(self, index):
+    def get_transfer_type_by_index(self, index):
         '''
         Return transfer type string for given index value.
         '''
@@ -90,13 +90,11 @@ class PurchaseList(TransferList):
         Update players listed for purchase.
         '''
         for clubid, club in data.clubs.get_clubs():
-            if clubid != data.user.clubid:
+            if club is not data.user.club:
                 score = {}
                 average = 0
 
                 for count, (playerid, player) in enumerate(club.squad.get_squad(), start=1):
-                    player = data.players.get_player_by_id(playerid)
-
                     skills = player.get_skills()
                     score[playerid] = sum(skills) * random.randint(1, 3)
 
@@ -134,13 +132,11 @@ class LoanList(TransferList):
         Update players listed for loan.
         '''
         for clubid, club in data.clubs.get_clubs():
-            if clubid != data.user.clubid:
+            if club is not data.user.club:
                 score = {}
                 average = 0
 
                 for count, (playerid, player) in enumerate(club.squad.get_squad(), start=1):
-                    player = data.players.get_player_by_id(playerid)
-
                     skills = player.get_skills()
                     score[playerid] = sum(skills) * random.randint(1, 3)
 

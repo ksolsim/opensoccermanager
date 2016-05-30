@@ -20,6 +20,9 @@ import uigtk.comparison
 
 
 class Comparison:
+    '''
+    Storage class for players added to comparison.
+    '''
     def __init__(self):
         self.comparison = []
 

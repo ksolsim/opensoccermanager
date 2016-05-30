@@ -347,7 +347,7 @@ class Staff(Gtk.Grid):
 
             for coachid, coach in data.user.club.coaches.available.items():
                 ability = abilities.get_ability_by_id(coach.ability)
-                speciality = specialities.get_speciality_for_id(coach.speciality)
+                speciality = specialities.get_speciality_by_id(coach.speciality)
                 wage = data.currency.get_currency(coach.wage, integer=True)
 
                 self.liststoreAvailable.append([coachid,
@@ -360,7 +360,7 @@ class Staff(Gtk.Grid):
 
             for coachid, coach in data.user.club.coaches.hired.items():
                 ability = abilities.get_ability_by_id(coach.ability)
-                speciality = specialities.get_speciality_for_id(coach.speciality)
+                speciality = specialities.get_speciality_by_id(coach.speciality)
                 wage = data.currency.get_currency(coach.wage, integer=True)
 
                 if coach.count_players_training() == 1:

@@ -34,7 +34,7 @@ class Speciality:
         '''
         return self.speciality
 
-    def get_speciality_for_id(self, specialityid):
+    def get_speciality_by_id(self, specialityid):
         '''
         Return speciality for given id value.
         '''

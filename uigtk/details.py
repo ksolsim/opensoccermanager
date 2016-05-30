@@ -329,9 +329,9 @@ class Details(uigtk.widgets.Grid):
         data.window.screen.run()
         data.window.screen.change_visible_screen("squad")
 
-        data.database.close()
-
         start.setup_initial_values()
+
+        data.database.close()
 
     def set_initial_finances(self):
         '''

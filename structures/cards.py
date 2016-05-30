@@ -17,10 +17,13 @@
 
 
 class Cards:
+    '''
+    Storage class for assists.
+    '''
     def __init__(self):
         self.cards = {}
 
-    def add_player(self, playerid, card):
+    def add_player(self, player, card):
         '''
         Add player to card list with points total.
         '''
@@ -29,10 +32,10 @@ class Cards:
         else:
             points = 3
 
-        if playerid not in self.cards.keys():
-            self.cards[playerid] = points
+        if player not in self.cards.values():
+            self.cards[player.playerid] = points
         else:
-            self.cards[playerid] += points
+            self.cards[player.playerid] += points
 
     def get_sorted_cards(self):
         '''

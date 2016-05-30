@@ -39,9 +39,7 @@ class TrainingCamp:
         '''
         Return cost of training camp for first team.
         '''
-        cost = self.get_player_cost() * 16
-
-        return cost
+        return self.get_player_cost() * 16
 
     def get_reserve_team_cost(self):
         '''

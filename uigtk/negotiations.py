@@ -183,7 +183,7 @@ class Negotiations(Gtk.Grid):
                                        negotiation.player.playerid,
                                        negotiation.player.get_name(mode=1),
                                        negotiation.offer_date,
-                                       self.transfer_type.get_transfer_type_for_index(negotiation.transfer_type),
+                                       self.transfer_type.get_transfer_type_by_index(negotiation.transfer_type),
                                        club,
                                        negotiation.get_status_message()])
 

@@ -25,9 +25,9 @@ class User:
     '''
     User handling object storing selected club object.
     '''
-    def __init__(self):
-        self.clubid = None
-        self.club = None
+    def __init__(self, clubid):
+        self.clubid = clubid
+        self.club = data.clubs.get_club_by_id(clubid)
 
     def set_club(self, clubid):
         '''

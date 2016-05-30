@@ -17,6 +17,9 @@
 
 
 class Number:
+    '''
+    Ordinal number retrieval for dates and positions.
+    '''
     def __init__(self):
         self.first = "st"
         self.second = "nd"

@@ -79,9 +79,7 @@ class Date:
         '''
         Return the current season string.
         '''
-        season = "%i/%i" % (self.year, self.year + 1)
-
-        return season
+        return "%i/%i" % (self.year, self.year + 1)
 
     def get_date_as_string(self):
         '''

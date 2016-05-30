@@ -23,19 +23,13 @@ import data
 
 
 class Staff:
-    surnames = []
-
     def __init__(self):
+        self.surnames = []
+
         self.available = {}
         self.hired = {}
 
         self.populate_surnames()
-
-    def populate_surnames(self):
-        data.database.cursor.execute("SELECT * FROM staff")
-
-        for name in data.database.cursor.fetchall():
-            self.surnames.append(name[0])
 
     def get_staff_count(self):
         '''
@@ -49,13 +43,19 @@ class Staff:
         '''
         return sum(staff.wage for staff in self.hired.values())
 
+    def populate_surnames(self):
+        data.database.cursor.execute("SELECT * FROM staff")
+
+        for name in data.database.cursor.fetchall():
+            self.surnames.append(name[0])
+
 
 class Member(Staff):
     '''
     Base member object for use by scouts and coaches.
     '''
     def __init__(self):
-        super(Staff, self).__init__()
+        Staff.__init__(self)
 
         self.name = self.generate_name()
         self.age = random.randint(45, 60)
@@ -73,7 +73,7 @@ class Member(Staff):
         '''
         letters = list(string.ascii_letters[26:])
         initial = random.choice(letters)
-        surname = random.choice(Staff.surnames)
+        surname = random.choice(self.surnames)
 
         return "%s. %s" % (initial, surname)
 

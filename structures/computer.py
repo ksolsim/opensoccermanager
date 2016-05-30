@@ -37,7 +37,10 @@ class InjuryGenerator:
                     injury = data.injuries.get_random_injury()
                     player.injury.set_injured(injury)
 
-                    player.club.news.publish("IN01", player=player.get_name(mode=1), weeks=player.injury.period, injury=injury.name)
+                    player.club.news.publish("IN01",
+                                             player=player.get_name(mode=1),
+                                             weeks=player.injury.period,
+                                             injury=injury.name)
 
     def injury_recovery(self):
         '''
@@ -50,7 +53,9 @@ class InjuryGenerator:
                 if player.injury.period == 0:
                     injury = data.injuries.get_injury_by_id(player.injury.injuryid)
 
-                    player.club.news.publish("IN03", player=player.get_name(mode=1), injury=injury.name)
+                    player.club.news.publish("IN03",
+                                             player=player.get_name(mode=1),
+                                             injury=injury.name)
 
                     player.injury.injuryid = None
 

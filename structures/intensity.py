@@ -17,6 +17,9 @@
 
 
 class Intensity:
+    '''
+    Individual training intensity class.
+    '''
     def __init__(self):
         self.intensity = ["Low", "Medium", "High"]
 

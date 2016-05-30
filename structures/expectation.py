@@ -54,6 +54,9 @@ class Evaluation:
 
 
 class Expectation:
+    '''
+    Initial season expectation generator.
+    '''
     def __init__(self):
         pass
 

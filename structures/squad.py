@@ -277,7 +277,7 @@ class TeamGenerator:
         Generate eleven first team members and assign to first team.
         '''
         formationid = self.generate_formation()
-        formation = self.formation.get_formation_by_index(formationid)
+        formation = self.formation.get_formation_by_id(formationid)
 
         selection = []
 

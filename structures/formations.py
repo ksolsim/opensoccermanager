@@ -24,8 +24,7 @@ class Formations:
                            ("4-5-1", ("GK", "DL", "DR", "DC", "DC", "ML", "MR", "MC", "MC", "MC", "AS")),
                            ("4-3-3", ("GK", "DL", "DR", "DC", "DC", "MC", "MC", "MC", "AS", "AS", "AS")),
                            ("5-4-1", ("GK", "DL", "DR", "DC", "DC", "DC", "ML", "MR", "MC", "MC", "AS")),
-                           ("5-3-2", ("GK", "DL", "DR", "DC", "DC", "DC", "MC", "MC", "MC", "AS", "AS")),
-                          )
+                           ("5-3-2", ("GK", "DL", "DR", "DC", "DC", "DC", "MC", "MC", "MC", "AS", "AS")))
 
     def get_formation_names(self):
         '''
@@ -39,11 +38,11 @@ class Formations:
         '''
         return self.formations
 
-    def get_formation_by_index(self, index):
+    def get_formation_by_id(self, formationid):
         '''
         Return formation tuple of name and positions for given index.
         '''
-        return self.formations[index]
+        return self.formations[formationid]
 
     def get_name(self, formationid):
         '''

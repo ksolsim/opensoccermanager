@@ -17,10 +17,18 @@
 
 
 class Assists:
+    '''
+    Storage class for assists.
+    '''
     def __init__(self):
         self.assists = []
 
     def get_sorted_assists(self):
         '''
         Return sorted list of assisters.
+        '''
+
+    def add_player(self, player, assists):
+        '''
+        Add player to assists chart.
         '''

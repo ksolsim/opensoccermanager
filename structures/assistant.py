@@ -20,6 +20,9 @@ import data
 
 
 class Assistant:
+    '''
+    Assistant manager options storage.
+    '''
     def __init__(self):
         self.advertising = False
 

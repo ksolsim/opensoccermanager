@@ -17,10 +17,18 @@
 
 
 class Goals:
+    '''
+    Storage class for goals.
+    '''
     def __init__(self):
         self.goals = []
 
     def get_sorted_goals(self):
         '''
         Return sorted list of goalscorers.
+        '''
+
+    def add_player(self, player, goals):
+        '''
+        Add player to goals chart.
         '''

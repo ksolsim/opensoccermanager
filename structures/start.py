@@ -44,8 +44,6 @@ class Start:
     Object initialisation for in-game data structures.
     '''
     def __init__(self, clubid, season):
-        data.user = structures.user.User()
-
         data.calendar = structures.calendar.Calendar()
         data.date = structures.date.Date(season)
         data.continuegame = structures.proceed.ContinueGame()
@@ -74,7 +72,7 @@ class Start:
         data.injury = structures.computer.InjuryGenerator()
         data.advertising = structures.computer.AdvertHandler()
 
-        data.user.set_club(clubid)
+        data.user = structures.user.User(clubid)
 
     def set_manager_name(self, name):
         '''
