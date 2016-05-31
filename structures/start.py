@@ -36,6 +36,7 @@ import structures.referees
 import structures.seasons
 import structures.stadiums
 import structures.staff
+import structures.suspensions
 import structures.user
 
 
@@ -112,6 +113,8 @@ class Start:
         data.user.club.tickets.set_initial_school_tickets()
         data.user.club.tickets.set_initial_season_tickets()
 
+        data.user.club.expectation.generate_expectation()
+
         self.publish_initial_news()
 
     def publish_initial_news(self):
@@ -123,3 +126,5 @@ class Start:
         initial1, initial2, initial3 = data.user.club.league.fixtures.get_initial_fixtures()
 
         data.user.club.news.publish("FX01", fixture1=initial1, fixture2=initial2, fixture3=initial3)
+
+        data.user.club.expectation.publish_expectation()
