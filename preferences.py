@@ -26,8 +26,8 @@ class Preferences:
     def __init__(self):
         home = os.path.expanduser("~")
         self.data_path = os.path.join(home, ".config", "opensoccermanager")
-        self.preferences_path = os.path.join(self.data_path, "preferences.ini")
         self.save_path = os.path.join(self.data_path, "saves")
+        self.preferences_path = os.path.join(self.data_path, "preferences.ini")
         self.database_path = os.path.join("databases", "opensoccermanager.db")
 
         self.start_screen = "squad"
@@ -44,6 +44,9 @@ class Preferences:
 
         if not os.path.exists(self.data_path):
             os.mkdir(self.data_path)
+
+        if not os.path.exists(self.save_path):
+            os.mkdir(self.save_path)
 
         if not os.path.exists(self.preferences_path):
             self.create_initial_config()

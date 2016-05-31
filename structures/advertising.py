@@ -63,7 +63,7 @@ class Advertising:
 
     def generate_adverts(self, number):
         '''
-        Generate given number of advertisements and add to available list.
+        Generate given number of adverts and add to available dictionary.
         '''
         self.regenerate = number
 
@@ -73,7 +73,7 @@ class Advertising:
         for name in companies[:number]:
             advert = self.Advert(name)
             advertid = self.get_advertid()
-            self.available[self.advertid] = advert
+            self.available[advertid] = advert
 
     def get_advert_count(self):
         '''
@@ -83,7 +83,7 @@ class Advertising:
 
     def move(self, advertid):
         '''
-        Purchase advertisement and add to current list.
+        Accept advertisement and add to current dictionary.
         '''
         advert = self.available[advertid]
 

@@ -65,7 +65,7 @@ class DeleteDialog(Gtk.Dialog):
         treeviewcolumn = uigtk.widgets.TreeViewColumn(column=1)
         treeview.append_column(treeviewcolumn)
 
-        buttonbox = Gtk.ButtonBox()
+        buttonbox = uigtk.widgets.ButtonBox()
         buttonbox.set_layout(Gtk.ButtonBoxStyle.END)
         self.vbox.add(buttonbox)
 

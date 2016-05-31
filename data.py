@@ -20,7 +20,6 @@ import database
 import music
 import preferences
 import structures.currency
-import structures.suspensions
 import structures.user
 
 
