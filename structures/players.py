@@ -61,7 +61,7 @@ class Players:
             self.injury = Injury()
             self.suspension = Suspension()
             self.training = Training()
-            self.history = None
+            self.history = History(self)
             self.retiring = False
 
         def get_name(self, mode=0):
@@ -204,9 +204,6 @@ class Players:
                 # Add player to nation
                 player.nationality = data.nations.get_nation_by_id(item[5])
                 player.nationality.add_to_nation(player)
-
-                # Add history object
-                player.history = History(player)
 
                 # Set value, wage and contract values
                 player.value = structures.value.Value(player)

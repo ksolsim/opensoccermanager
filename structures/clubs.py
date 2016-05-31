@@ -51,7 +51,7 @@ class Clubs:
             self.stadium = None
             self.assistant = structures.assistant.Assistant()
             self.news = structures.news.News()
-            self.squad = structures.squad.Squad()
+            self.squad = structures.squad.Squad(self)
             self.tactics = structures.tactics.Tactics(self)
             self.coaches = structures.coaches.Coaches()
             self.scouts = structures.scouts.Scouts()
@@ -127,6 +127,17 @@ class Clubs:
         '''
         return self.clubs.keys()
 
+    def set_initial_balance(self, option):
+        '''
+        Set the initial bank balance based on details chosen.
+        '''
+        for club in self.clubs.values():
+            if option == -1:
+                club.accounts.balance = club.reputation ** 3 * random.randint(985, 1025) * 3
+            else:
+                finances = structures.finances.Categories()
+                club.accounts.balance = finances.get_value_by_index(option)
+
     def populate_data(self):
         data.database.cursor.execute("SELECT * FROM club \
                                      JOIN clubattr \
@@ -146,26 +157,13 @@ class Clubs:
             club.stadium = data.stadiums.get_stadium_by_id(item[9])
             club.reputation = item[10]
 
-            club.squad.clubid = club.clubid
-
             club.league.add_club_to_league(club)
-
-    def set_initial_balance(self, option):
-        '''
-        Set the initial bank balance based on details chosen.
-        '''
-        for club in self.clubs.values():
-            if option == -1:
-                club.accounts.balance = club.reputation ** 3 * random.randint(985, 1025) * 3
-            else:
-                finances = structures.finances.Categories()
-                club.accounts.balance = finances.get_value_by_index(option)
 
 
 class History:
     def __init__(self, club):
-        self.history = []
         self.club = club
+        self.history = []
 
     def add_history(self):
         '''

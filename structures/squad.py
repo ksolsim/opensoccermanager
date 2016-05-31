@@ -24,13 +24,12 @@ import uigtk.shared
 
 
 class Squad:
-    def __init__(self):
-        self.clubid = None
+    def __init__(self, club):
+        self.club = club
 
         self.squad = {}
         self.teamselection = TeamSelection()
-
-        self.teamgenerator = TeamGenerator()
+        self.teamgenerator = TeamGenerator(club)
 
     def add_to_squad(self, player):
         '''
@@ -66,7 +65,7 @@ class Squad:
 
         for playerid, player in self.squad.items():
             if player.injury.get_injured():
-                injured.append(playerid)
+                injured.append(player)
 
         return injured
 
@@ -78,7 +77,7 @@ class Squad:
 
         for playerid, player in self.squad.items():
             if player.suspension.get_suspended():
-                suspended.append(playerid)
+                suspended.append(player)
 
         return suspended
 
@@ -123,8 +122,6 @@ class Squad:
         '''
         Initiate handler class to generate squad selection.
         '''
-        self.teamgenerator.clubid = self.clubid
-        self.teamgenerator.squad = self.squad
         self.teamgenerator.teamselection = self.teamselection
         self.teamgenerator.generate_team_selection()
         self.teamgenerator.generate_sub_selection()
@@ -261,8 +258,8 @@ class TeamSelection:
 
 
 class TeamGenerator:
-    def __init__(self):
-        self.clubid = None
+    def __init__(self, club):
+        self.club = club
 
         self.formation = structures.formations.Formations()
 
@@ -284,7 +281,7 @@ class TeamGenerator:
         for position in formation[1]:
             scores = {}
 
-            for player in self.squad.values():
+            for playerid, player in self.club.squad.get_squad():
                 if player not in selection:
                     skills = player.get_skills()
                     score = sum(skills)
@@ -318,7 +315,7 @@ class TeamGenerator:
         for count in range(0, 5):
             scores = {}
 
-            for player in self.squad.values():
+            for playerid, player in self.club.squad.get_squad():
                 if player not in selection:
                     if player not in self.teamselection.get_team_selection():
                         skills = player.get_skills()

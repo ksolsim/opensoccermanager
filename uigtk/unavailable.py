@@ -43,38 +43,29 @@ class Unavailable(uigtk.widgets.Grid):
         self.suspensions.run()
 
 
-class Injuries(uigtk.widgets.CommonFrame):
-    def __init__(self):
-        uigtk.widgets.CommonFrame.__init__(self, title="Injuries")
+class Interface(uigtk.widgets.CommonFrame):
+    '''
+    Base layout for unavailable players interface.
+    '''
+    def __init__(self, title):
+        uigtk.widgets.CommonFrame.__init__(self, title=title)
 
-        overlay = Gtk.Overlay()
-        self.grid.attach(overlay, 0, 0, 1, 1)
-
-        self.labelNoInjuries = Gtk.Label("No players are currently injured.")
-        overlay.add_overlay(self.labelNoInjuries)
+        self.overlay = Gtk.Overlay()
+        self.grid.attach(self.overlay, 0, 0, 1, 1)
 
         self.scrolledwindow = uigtk.widgets.ScrolledWindow()
         self.scrolledwindow.set_sensitive(False)
-        overlay.add(self.scrolledwindow)
+        self.overlay.add(self.scrolledwindow)
 
-        self.liststore = Gtk.ListStore(int, str, str, str, str)
-
-        treeview = uigtk.widgets.TreeView()
-        treeview.set_vexpand(True)
-        treeview.set_hexpand(True)
-        treeview.set_model(self.liststore)
-        treeview.connect("row-activated", self.on_row_activated)
-        self.scrolledwindow.add(treeview)
+        self.treeview = uigtk.widgets.TreeView()
+        self.treeview.set_vexpand(True)
+        self.treeview.set_hexpand(True)
+        self.treeview.connect("row-activated", self.on_row_activated)
+        self.scrolledwindow.add(self.treeview)
 
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Name", column=1)
         treeviewcolumn.set_expand(True)
-        treeview.append_column(treeviewcolumn)
-        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Injury", column=2)
-        treeview.append_column(treeviewcolumn)
-        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Period", column=3)
-        treeview.append_column(treeviewcolumn)
-        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Fitness", column=4)
-        treeview.append_column(treeviewcolumn)
+        self.treeview.append_column(treeviewcolumn)
 
     def on_row_activated(self, treeview, treepath, treeviewcolumn):
         '''
@@ -87,17 +78,36 @@ class Injuries(uigtk.widgets.CommonFrame):
         data.window.screen.change_visible_screen("playerinformation")
         data.window.screen.active.set_visible_player(player)
 
+
+class Injuries(Interface):
+    '''
+    Listing of injured players.
+    '''
+    def __init__(self):
+        Interface.__init__(self, title="Injuries")
+
+        self.labelNoInjuries = Gtk.Label("No players are currently injured.")
+        self.overlay.add_overlay(self.labelNoInjuries)
+
+        self.liststore = Gtk.ListStore(int, str, str, str, str)
+        self.treeview.set_model(self.liststore)
+
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Injury", column=2)
+        self.treeview.append_column(treeviewcolumn)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Period", column=3)
+        self.treeview.append_column(treeviewcolumn)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Fitness", column=4)
+        self.treeview.append_column(treeviewcolumn)
+
     def populate_data(self):
         self.liststore.clear()
 
-        for playerid in data.user.club.squad.get_injured_players():
-            player = data.players.get_player_by_id(playerid)
-
-            self.liststore.append([playerid,
+        for player in data.user.club.squad.get_injured_players():
+            self.liststore.append([player.playerid,
                                    player.get_name(),
                                    player.injury.get_injury_name(),
                                    player.injury.get_injury_period(),
-                                   "%s%%" % (player.injury.fitness)])
+                                   "%i%%" % (player.injury.fitness)])
 
     def run(self):
         self.populate_data()
@@ -109,55 +119,30 @@ class Injuries(uigtk.widgets.CommonFrame):
         self.labelNoInjuries.set_visible(not state)
 
 
-class Suspensions(uigtk.widgets.CommonFrame):
+class Suspensions(Interface):
+    '''
+    Listing of suspended players.
+    '''
     def __init__(self):
-        uigtk.widgets.CommonFrame.__init__(self, title="Suspensions")
-
-        overlay = Gtk.Overlay()
-        self.grid.attach(overlay, 0, 0, 1, 1)
+        Interface.__init__(self, title="Suspensions")
 
         self.labelNoSuspensions = Gtk.Label("No players are currently suspended.")
-        overlay.add_overlay(self.labelNoSuspensions)
-
-        self.scrolledwindow = uigtk.widgets.ScrolledWindow()
-        self.scrolledwindow.set_sensitive(False)
-        overlay.add(self.scrolledwindow)
+        self.overlay.add_overlay(self.labelNoSuspensions)
 
         self.liststore = Gtk.ListStore(int, str, str, str)
+        self.treeview.set_model(self.liststore)
 
-        treeview = uigtk.widgets.TreeView()
-        treeview.set_vexpand(True)
-        treeview.set_hexpand(True)
-        treeview.set_model(self.liststore)
-        treeview.connect("row-activated", self.on_row_activated)
-        self.scrolledwindow.add(treeview)
-
-        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Name", column=1)
-        treeviewcolumn.set_expand(True)
-        treeview.append_column(treeviewcolumn)
-        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Suspension", column=2)
-        treeview.append_column(treeviewcolumn)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Suspension",
+                                                      column=2)
+        self.treeview.append_column(treeviewcolumn)
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Period", column=3)
-        treeview.append_column(treeviewcolumn)
-
-    def on_row_activated(self, treeview, treepath, treeviewcolumn):
-        '''
-        Handle row activation for listed player.
-        '''
-        playerid = self.liststore[treepath][0]
-
-        player = data.players.get_player_by_id(playerid)
-
-        data.window.screen.change_visible_screen("playerinformation")
-        data.window.screen.active.set_visible_player(player)
+        self.treeview.append_column(treeviewcolumn)
 
     def populate_data(self):
         self.liststore.clear()
 
-        for playerid in data.user.club.squad.get_suspended_players():
-            player = data.players.get_player_by_id(playerid)
-
-            self.liststore.append([playerid,
+        for player in data.user.club.squad.get_suspended_players():
+            self.liststore.append([player.playerid,
                                    player.get_name(),
                                    player.suspension.get_suspension_name(),
                                    player.suspension.get_suspension_period()])
