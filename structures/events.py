@@ -77,6 +77,5 @@ class Events:
         fixture.referee.increment_statistics(fixture)
 
         fixture.store_team_selection()
-        fixture.increment_player_appearances()
 
         fixture.played = True

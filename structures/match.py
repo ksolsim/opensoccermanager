@@ -128,6 +128,12 @@ class Score:
 
         self.fixture.result = score
 
+        substitutes = Substitutes(self.fixture.home)
+        substitutes.generate_substitutes()
+
+        substitutes = Substitutes(self.fixture.away)
+        substitutes.generate_substitutes()
+
         goalscorers = Goalscorers(self.fixture.home.club, score[0])
         self.fixture.home.goalscorers = goalscorers.generate_goalscorers()
 
@@ -163,15 +169,24 @@ class Score:
 
 
 class Substitutes:
-    pass
+    def __init__(self, fixtureteam):
+        self.fixtureteam = fixtureteam
 
+    def generate_substitutes(self):
+        if len(self.fixtureteam.club.squad.teamselection.subs) >= 3:
+            choice = random.randint(0, 3)
+        else:
+            choice = random.randint(0, len(self.fixtureteam.club.squad.teamselection.subs))
 
-class Injuries:
-    pass
+        substitutes = [player for player in self.fixtureteam.club.squad.teamselection.subs]
+        selected = []
 
+        for count in range(0, choice):
+            player = substitutes[count]
+            selected.append(player)
+            substitutes.remove(player)
 
-class Suspensions:
-    pass
+        self.fixtureteam.team_played[1] = selected
 
 
 class Goalscorers:
@@ -187,11 +202,11 @@ class Goalscorers:
 
         if player.position == "GK":
             maximum = 1
-        elif player.position == ("DL", "DR", "DC", "D"):
+        elif player.position in ("DL", "DR", "DC", "D"):
             maximum = player.tackling
-        elif player.position == ("ML", "MR", "MC", "M"):
+        elif player.position in ("ML", "MR", "MC", "M"):
             maximum = player.passing * 2.5
-        elif player.position == ("AS", "AF"):
+        elif player.position in ("AS", "AF"):
             maximum = player.shooting * 5
 
         return maximum
@@ -235,6 +250,11 @@ class Assisters:
         players = [player for player in self.club.squad.teamselection.get_team_selection() if player]
 
         return random.choice(players)
+
+
+class Injuries:
+    def __init__(self):
+        pass
 
 
 class Cards:
