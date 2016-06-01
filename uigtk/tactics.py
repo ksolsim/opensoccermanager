@@ -277,13 +277,14 @@ class Responsibilities(uigtk.widgets.CommonFrame):
         '''
         if combobox.get_active_id():
             if combobox.get_active_id() != "0":
-                data.user.club.tactics.captain = int(combobox.get_active_id())
+                playerid = int(combobox.get_active_id())
+                player = data.players.get_player_by_id(playerid)
 
-                player = data.players.get_player_by_id(Tactics.club.tactics.captain)
-                self.labelCaptain.update_player(player)
+                data.user.club.tactics.captain = player
             else:
                 data.user.club.tactics.captain = None
-                self.labelCaptain.update_player()
+
+            self.labelCaptain.update_player(data.user.club.tactics.captain)
 
     def on_penalty_taker_changed(self, combobox):
         '''
@@ -291,13 +292,14 @@ class Responsibilities(uigtk.widgets.CommonFrame):
         '''
         if combobox.get_active_id():
             if combobox.get_active_id() != "0":
-                Tactics.club.tactics.penalty_taker = int(combobox.get_active_id())
+                playerid = int(combobox.get_active_id())
+                player = data.players.get_player_by_id(playerid)
 
-                player = data.players.get_player_by_id(Tactics.club.tactics.penalty_taker)
-                self.labelPenaltyTaker.update_player(player)
+                Tactics.club.tactics.penalty_taker = player
             else:
                 Tactics.club.tactics.penalty_taker = None
-                self.labelPenaltyTaker.update_player()
+
+            self.labelPenaltyTaker.update_player(Tactics.club.tactics.penalty_taker)
 
     def on_free_kick_taker_changed(self, combobox):
         '''
@@ -305,13 +307,14 @@ class Responsibilities(uigtk.widgets.CommonFrame):
         '''
         if combobox.get_active_id():
             if combobox.get_active_id() != "0":
-                Tactics.club.tactics.free_kick_taker = int(combobox.get_active_id())
+                playerid = int(combobox.get_active_id())
+                player = data.players.get_player_by_id(playerid)
 
-                player = data.players.get_player_by_id(Tactics.club.tactics.free_kick_taker)
-                self.labelFreeKickTaker.update_player(player)
+                Tactics.club.tactics.free_kick_taker = player
             else:
                 Tactics.club.tactics.free_kick_taker = None
-                self.labelFreeKickTaker.update_player()
+
+            self.labelFreeKickTaker.update_player(Tactics.club.tactics.free_kick_taker)
 
     def on_corner_taker_changed(self, combobox):
         '''
@@ -319,35 +322,36 @@ class Responsibilities(uigtk.widgets.CommonFrame):
         '''
         if combobox.get_active_id():
             if combobox.get_active_id() != "0":
-                Tactics.club.tactics.corner_taker = int(combobox.get_active_id())
+                playerid = int(combobox.get_active_id())
+                player = data.players.get_player_by_id(playerid)
 
-                player = data.players.get_player_by_id(Tactics.club.tactics.corner_taker)
-                self.labelCornerTaker.update_player(player)
+                Tactics.club.tactics.corner_taker = player
             else:
                 Tactics.club.tactics.corner_taker = None
-                self.labelCornerTaker.update_player()
+
+            self.labelCornerTaker.update_player(Tactics.club.tactics.corner_taker)
 
     def set_responsibilities(self):
         '''
         Set team responsibilities for players.
         '''
         if data.user.club.tactics.captain:
-            self.comboboxCaptain.set_active_id(str(data.user.club.tactics.captain))
+            self.comboboxCaptain.set_active_id(str(data.user.club.tactics.captain.playerid))
         else:
             self.comboboxCaptain.set_active_id("0")
 
         if data.user.club.tactics.penalty_taker:
-            self.comboboxPenaltyTaker.set_active_id(str(data.user.club.tactics.penalty_taker))
+            self.comboboxPenaltyTaker.set_active_id(str(data.user.club.tactics.penalty_taker.playerid))
         else:
             self.comboboxPenaltyTaker.set_active_id("0")
 
         if data.user.club.tactics.free_kick_taker:
-            self.comboboxFreeKickTaker.set_active_id(str(data.user.club.tactics.free_kick_taker))
+            self.comboboxFreeKickTaker.set_active_id(str(data.user.club.tactics.free_kick_taker.playerid))
         else:
             self.comboboxFreeKickTaker.set_active_id("0")
 
         if data.user.club.tactics.corner_taker:
-            self.comboboxCornerTaker.set_active_id(str(data.user.club.tactics.corner_taker))
+            self.comboboxCornerTaker.set_active_id(str(data.user.club.tactics.corner_taker.playerid))
         else:
             self.comboboxCornerTaker.set_active_id("0")
 
@@ -441,7 +445,7 @@ class PlayerInformation(uigtk.widgets.Label):
 
         return True
 
-    def update_player(self, player=None):
+    def update_player(self, player):
         '''
         Update visibility of player information link.
         '''
