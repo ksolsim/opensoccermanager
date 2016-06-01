@@ -66,6 +66,8 @@ class Charts(uigtk.widgets.Grid):
 
             self.charts.run()
 
+            self.populate_data()
+
     def populate_charts(self):
         self.combobox.remove_all()
 
@@ -74,27 +76,79 @@ class Charts(uigtk.widgets.Grid):
 
         self.combobox.set_active_id("0")
 
+    def populate_data(self):
+        viewid = int(self.combobox.get_active_id())
+        view = self.views[viewid]
+
+        view.populate_data()
+
     def run(self):
         self.populate_charts()
 
         self.show_all()
 
 
-class TreeView(Gtk.TreeView):
+class Leagues(uigtk.widgets.Grid):
     '''
-    Base TreeView class for charts displaying player information.
+    Visible league data selector.
     '''
     def __init__(self):
-        Gtk.TreeView.__init__(self)
-        self.set_hexpand(True)
-        self.set_vexpand(True)
-        self.connect("row-activated", self.on_row_activated)
+        uigtk.widgets.Grid.__init__(self)
+
+        self.radiobuttonAll = uigtk.widgets.RadioButton("_All Leagues")
+        self.radiobuttonAll.set_tooltip_text("Display data for all leagues.")
+        self.radiobuttonAll.connect("toggled", self.on_view_toggled)
+        self.attach(self.radiobuttonAll, 0, 0, 1, 1)
+        self.radiobuttonSelected = uigtk.widgets.RadioButton("_Specific League")
+        self.radiobuttonSelected.join_group(self.radiobuttonAll)
+        self.radiobuttonSelected.set_tooltip_text("Display data for selected league.")
+        self.radiobuttonSelected.connect("toggled", self.on_view_toggled)
+        self.attach(self.radiobuttonSelected, 1, 0, 1, 1)
+
+        self.liststore = Gtk.ListStore(str, str)
+        treemodelsort = Gtk.TreeModelSort(self.liststore)
+        treemodelsort.set_sort_column_id(1, Gtk.SortType.ASCENDING)
+
+        for leagueid, league in data.leagues.get_leagues():
+            self.liststore.append([str(leagueid), league.name])
+
+        self.comboboxLeagues = uigtk.widgets.ComboBox(column=1)
+        self.comboboxLeagues.set_model(treemodelsort)
+        self.comboboxLeagues.set_id_column(0)
+        self.comboboxLeagues.set_active(0)
+        self.comboboxLeagues.set_sensitive(False)
+        self.comboboxLeagues.set_tooltip_text("Select league to show visible fixtures.")
+        self.attach(self.comboboxLeagues, 2, 0, 1, 1)
+
+    def on_view_toggled(self, radiobutton):
+        if radiobutton is self.radiobuttonAll:
+            self.comboboxLeagues.set_sensitive(not radiobutton.get_active())
+
+
+class Display(uigtk.widgets.Grid):
+    '''
+    Base ScrolledWindow and TreeView for charts displaying player information.
+    '''
+    def __init__(self):
+        uigtk.widgets.Grid.__init__(self)
+
+        self.leagues = Leagues()
+        self.attach(self.leagues, 0, 0, 1, 1)
+
+        scrolledwindow = uigtk.widgets.ScrolledWindow()
+        self.attach(scrolledwindow, 0, 1, 1, 1)
+
+        self.treeview = uigtk.widgets.TreeView()
+        self.treeview.set_hexpand(True)
+        self.treeview.set_vexpand(True)
+        self.treeview.connect("row-activated", self.on_row_activated)
+        scrolledwindow.add(self.treeview)
 
     def on_row_activated(self, treeview, treepath, treeviewcolumn):
         '''
         Launch player information screen for selected player.
         '''
-        model = treeview.get_model()
+        model = sef.treeview.get_model()
         playerid = model[treepath][0]
 
         player = data.players.get_player_by_id(playerid)
@@ -109,20 +163,20 @@ class Goalscorers(uigtk.widgets.Grid):
     def __init__(self):
         uigtk.widgets.Grid.__init__(self)
 
-        scrolledwindow = uigtk.widgets.ScrolledWindow()
-        self.attach(scrolledwindow, 0, 0, 1, 1)
+        self.display = Display()
+        self.attach(self.display, 0, 0, 1, 1)
 
-        treeview = TreeView()
-        scrolledwindow.add(treeview)
+        self.liststore = Gtk.ListStore(int, str, str, str, int)
+        self.display.treeview.set_model(self.liststore)
 
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Player", column=1)
-        treeview.append_column(treeviewcolumn)
+        self.display.treeview.append_column(treeviewcolumn)
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Club", column=2)
-        treeview.append_column(treeviewcolumn)
+        self.display.treeview.append_column(treeviewcolumn)
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="League", column=3)
-        treeview.append_column(treeviewcolumn)
+        self.display.treeview.append_column(treeviewcolumn)
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Goals", column=4)
-        treeview.append_column(treeviewcolumn)
+        self.display.treeview.append_column(treeviewcolumn)
 
     def populate_data(self):
         pass
@@ -137,20 +191,20 @@ class Assisters(uigtk.widgets.Grid):
     def __init__(self):
         uigtk.widgets.Grid.__init__(self)
 
-        scrolledwindow = uigtk.widgets.ScrolledWindow()
-        self.attach(scrolledwindow, 0, 0, 1, 1)
+        self.display = Display()
+        self.attach(self.display, 0, 0, 1, 1)
 
-        treeview = TreeView()
-        scrolledwindow.add(treeview)
+        self.liststore = Gtk.ListStore(int, str, str, str, int)
+        self.display.treeview.set_model(self.liststore)
 
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Player", column=1)
-        treeview.append_column(treeviewcolumn)
+        self.display.treeview.append_column(treeviewcolumn)
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Club", column=2)
-        treeview.append_column(treeviewcolumn)
+        self.display.treeview.append_column(treeviewcolumn)
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="League", column=3)
-        treeview.append_column(treeviewcolumn)
+        self.display.treeview.append_column(treeviewcolumn)
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Assists", column=4)
-        treeview.append_column(treeviewcolumn)
+        self.display.treeview.append_column(treeviewcolumn)
 
     def populate_data(self):
         pass
@@ -165,24 +219,27 @@ class Cards(uigtk.widgets.Grid):
     def __init__(self):
         uigtk.widgets.Grid.__init__(self)
 
-        scrolledwindow = uigtk.widgets.ScrolledWindow()
-        self.attach(scrolledwindow, 0, 0, 1, 1)
+        self.display = Display()
+        self.attach(self.display, 0, 0, 1, 1)
 
-        treeview = TreeView()
-        scrolledwindow.add(treeview)
+        self.liststore = Gtk.ListStore(int, str, str, str, int, int, int)
+        self.display.treeview.set_model(self.liststore)
 
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Player", column=1)
-        treeview.append_column(treeviewcolumn)
+        self.display.treeview.append_column(treeviewcolumn)
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Club", column=2)
-        treeview.append_column(treeviewcolumn)
+        self.display.treeview.append_column(treeviewcolumn)
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="League", column=3)
-        treeview.append_column(treeviewcolumn)
-        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Yellow Cards", column=4)
-        treeview.append_column(treeviewcolumn)
-        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Red Cards", column=5)
-        treeview.append_column(treeviewcolumn)
-        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Card Points", column=6)
-        treeview.append_column(treeviewcolumn)
+        self.display.treeview.append_column(treeviewcolumn)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Yellow Cards",
+                                                      column=4)
+        self.display.treeview.append_column(treeviewcolumn)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Red Cards",
+                                                      column=5)
+        self.display.treeview.append_column(treeviewcolumn)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Card Points",
+                                                      column=6)
+        self.display.treeview.append_column(treeviewcolumn)
 
     def populate_data(self):
         pass
@@ -197,23 +254,23 @@ class Transfers(uigtk.widgets.Grid):
     def __init__(self):
         uigtk.widgets.Grid.__init__(self)
 
-        scrolledwindow = uigtk.widgets.ScrolledWindow()
-        self.attach(scrolledwindow, 0, 0, 1, 1)
+        self.display = Display()
+        self.attach(self.display, 0, 0, 1, 1)
 
         self.liststore = Gtk.ListStore(int, str, str, str, str)
-
-        treeview = TreeView()
-        treeview.set_model(self.liststore)
-        scrolledwindow.add(treeview)
+        self.display.treeview.set_model(self.liststore)
 
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Player", column=1)
-        treeview.append_column(treeviewcolumn)
-        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Former Club", column=2)
-        treeview.append_column(treeviewcolumn)
-        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Current Club", column=3)
-        treeview.append_column(treeviewcolumn)
-        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Transfer Fee", column=4)
-        treeview.append_column(treeviewcolumn)
+        self.display.treeview.append_column(treeviewcolumn)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Former Club",
+                                                      column=2)
+        self.display.treeview.append_column(treeviewcolumn)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Current Club",
+                                                      column=3)
+        self.display.treeview.append_column(treeviewcolumn)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Transfer Fee",
+                                                      column=4)
+        self.display.treeview.append_column(treeviewcolumn)
 
     def populate_data(self):
         pass
@@ -233,7 +290,7 @@ class Referees(uigtk.widgets.Grid):
 
         self.liststore = Gtk.ListStore(int, str, str, int, int, int, int)
 
-        treeview = Gtk.TreeView()
+        treeview = uigtk.widgets.TreeView()
         treeview.set_vexpand(True)
         treeview.set_hexpand(True)
         treeview.set_model(self.liststore)
@@ -246,13 +303,16 @@ class Referees(uigtk.widgets.Grid):
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Games", column=3)
         treeviewcolumn.set_fixed_width(80)
         treeview.append_column(treeviewcolumn)
-        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Yellow Cards", column=4)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Yellow Cards",
+                                                      column=4)
         treeviewcolumn.set_fixed_width(80)
         treeview.append_column(treeviewcolumn)
-        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Red Cards", column=5)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Red Cards",
+                                                      column=5)
         treeviewcolumn.set_fixed_width(80)
         treeview.append_column(treeviewcolumn)
-        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Card Points", column=6)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Card Points",
+                                                      column=6)
         treeviewcolumn.set_fixed_width(80)
         treeview.append_column(treeviewcolumn)
 
