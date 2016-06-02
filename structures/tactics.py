@@ -51,20 +51,20 @@ class Tactics:
         '''
         return self.formations.get_positions(self.formationid)
 
-    def remove_responsiblity(self, playerid):
+    def remove_responsiblity(self, player):
         '''
         Removes specified player id from role of responsibility.
         '''
-        if playerid == self.captain:
+        if player is self.captain:
             self.captain = None
 
-        if playerid == self.corner_taker:
+        if player is self.corner_taker:
             self.corner_taker = None
 
-        if playerid == self.free_kick_taker:
+        if player is self.free_kick_taker:
             self.free_kick_taker = None
 
-        if playerid == self.penalty_taker:
+        if player is self.penalty_taker:
             self.penalty_taker = None
 
     def pay_bonus(self):

@@ -438,3 +438,31 @@ class NotEnoughSubs(Gtk.MessageDialog):
         self.destroy()
 
         return state
+
+
+class UnsetResponsibilities(Gtk.MessageDialog):
+    def __init__(self):
+        Gtk.MessageDialog.__init__(self)
+        self.set_transient_for(data.window)
+        self.set_modal(True)
+        self.set_title("Unset Responsibilities")
+        self.set_markup("<span size='12000'><b>There are responsibilities in the team which have no player assigned.</b></span>")
+        self.format_secondary_text("Not setting responsibilities for team members can impact team performance.")
+        self.add_button("_Do Not Proceed", Gtk.ResponseType.CANCEL)
+        self.add_button("_Go To Tactics", 1)
+        self.add_button("_Proceed", Gtk.ResponseType.OK)
+        self.set_default_response(1)
+
+    def show(self):
+        state = False
+
+        response = self.run()
+
+        if response == Gtk.ResponseType.OK:
+            state = True
+        elif response == 1:
+            data.window.screen.change_visible_screen("tactics")
+
+        self.destroy()
+
+        return state

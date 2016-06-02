@@ -59,6 +59,7 @@ class Preferences:
         self.confighandler["INTERFACE"] = {"Currency": 0,
                                            "StartScreen": "squad",
                                            "Maximized": False,
+                                           "HideWarnings": False,
                                            "ConfirmQuit": False,
                                            "Width": 780,
                                            "Height": 480,
@@ -79,6 +80,7 @@ class Preferences:
         self.play_music = self.confighandler["AUDIO"].getboolean("PlayMusic")
         self.start_screen = self.confighandler["INTERFACE"]["StartScreen"]
         self.currency = int(self.confighandler["INTERFACE"]["Currency"])
+        self.hide_warnings = self.confighandler["INTERFACE"].getboolean("HideWarnings")
         self.confirm_quit = self.confighandler["INTERFACE"].getboolean("ConfirmQuit")
 
         width = int(self.confighandler["INTERFACE"]["Width"])
@@ -101,6 +103,7 @@ class Preferences:
         self.confighandler["AUDIO"]["PlayMusic"] = str(self.play_music)
         self.confighandler["INTERFACE"]["StartScreen"] = self.start_screen
         self.confighandler["INTERFACE"]["Currency"] = str(self.currency)
+        self.confighandler["INTERFACE"]["HideWarnings"] = str(self.hide_warnings)
         self.confighandler["INTERFACE"]["ConfirmQuit"] = str(self.confirm_quit)
         self.confighandler["INTERFACE"]["Maximized"] = str(data.window.is_maximized())
 

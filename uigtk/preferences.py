@@ -75,11 +75,17 @@ class Dialog(Gtk.Dialog):
         label.set_mnemonic_widget(comboboxCurrency)
         frame.grid.attach(comboboxCurrency, 1, 2, 2, 1)
 
+        checkbuttonHideWarnings = uigtk.widgets.CheckButton("_Hide Warnings About Team Selection")
+        checkbuttonHideWarnings.set_active(data.preferences.hide_warnings)
+        checkbuttonHideWarnings.set_tooltip_text("Suppress warnings about substitute selection or responsiblities.")
+        checkbuttonHideWarnings.connect("toggled", self.on_hide_warnings_toggled)
+        frame.grid.attach(checkbuttonHideWarnings, 0, 3, 3, 1)
+
         checkbuttonConfirmQuit = uigtk.widgets.CheckButton("_Confirm Quit When Exiting")
         checkbuttonConfirmQuit.set_active(data.preferences.confirm_quit)
         checkbuttonConfirmQuit.set_tooltip_text("Confirm from user whether they want to quit the game.")
         checkbuttonConfirmQuit.connect("toggled", self.on_confirm_quit_toggled)
-        frame.grid.attach(checkbuttonConfirmQuit, 0, 3, 3, 1)
+        frame.grid.attach(checkbuttonConfirmQuit, 0, 4, 3, 1)
 
         # Data locations
         frame = uigtk.widgets.CommonFrame("Data")
@@ -129,6 +135,13 @@ class Dialog(Gtk.Dialog):
         else:
             data.music.stop()
 
+        data.preferences.write_to_config()
+
+    def on_hide_warnings_toggled(self, checkbutton):
+        '''
+        Toggle suppression of warning dialogs.
+        '''
+        data.preferences.hide_warnings = checkbutton.get_active()
         data.preferences.write_to_config()
 
     def on_confirm_quit_toggled(self, checkbutton):

@@ -102,9 +102,13 @@ class ContinueToMatch:
 
         state = True
 
-        if count < 5:
-            dialog = uigtk.match.NotEnoughSubs(count)
-            state = dialog.show()
+        if not data.preferences.hide_warnings:
+            if count < 5:
+                dialog = uigtk.match.NotEnoughSubs(count)
+                state = dialog.show()
+
+            if state:
+                state = self.get_selected_responsibilities()
 
         if state:
             fixture = data.calendar.get_user_fixture()
@@ -113,6 +117,21 @@ class ContinueToMatch:
 
             data.window.screen.change_visible_screen("match")
             data.window.screen.active.update_match_details(fixture)
+
+        return state
+
+    def get_selected_responsibilities(self):
+        '''
+        Check whether the user has selected team responsibilities.
+        '''
+        state = True
+
+        if None in (data.user.club.tactics.captain,
+                    data.user.club.tactics.corner_taker,
+                    data.user.club.tactics.penalty_taker,
+                    data.user.club.tactics.free_kick_taker):
+            dialog = uigtk.match.UnsetResponsibilities()
+            state = dialog.show()
 
         return state
 
