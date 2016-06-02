@@ -80,16 +80,12 @@ class Score:
         '''
         Determine percentage chance of win, loss, and draw for each team.
         '''
-        club = self.fixture.home.club
-
         percent1 = ((self.weights[0] / self.total) + self.home_advantage()) * 100
-        percent1 = (percent1 * 0.05) * club.reputation
+        percent1 = (percent1 * 0.05) * self.fixture.home.club.reputation
         self.percent1 = round(percent1)
 
-        club = self.fixture.away.club
-
         percent2 = (self.weights[0] / self.total) * 100
-        percent2 = (percent2 * 0.05) * club.reputation
+        percent2 = (percent2 * 0.05) * self.fixture.away.club.reputation
         self.percent2 = round(percent2)
 
         self.determine_result()
@@ -131,8 +127,14 @@ class Score:
         substitutes = Substitutes(self.fixture.home)
         substitutes.generate_substitutes()
 
+        injuries = Injuries(self.fixture.home)
+        injuries.generate_injuries()
+
         substitutes = Substitutes(self.fixture.away)
         substitutes.generate_substitutes()
+
+        injuries = Injuries(self.fixture.away)
+        injuries.generate_injuries()
 
         goalscorers = Goalscorers(self.fixture.home.club, score[0])
         self.fixture.home.goalscorers = goalscorers.generate_goalscorers()
@@ -253,8 +255,40 @@ class Assisters:
 
 
 class Injuries:
-    def __init__(self):
-        pass
+    def __init__(self, fixture):
+        self.fixture = fixture
+
+    def generate_injuries(self):
+        '''
+        Generate injuries from matchday team selection.
+        '''
+        if random.randint(0, 100) < 20:
+            selection = []
+
+            for player in self.fixture.club.squad.teamselection.team:
+                selection.append(player)
+
+                if player.injury.fitness > 100:
+                    value = int((100 - player.injury.fitness) % 4)
+
+                    for count in range(0, value):
+                        selection.append(player)
+
+            random.shuffle(selection)
+
+            player = random.choice(selection)
+
+            injury = data.injuries.get_random_injury()
+
+            player.injury.injuryid = injury.injuryid
+            player.injury.period = random.randint(injury.period[0], injury.period[1])
+            player.injury.fitness -= random.randint(injury.impact[0], injury.impact[1])
+
+            if player.club is data.user.club:
+                data.user.club.news.publish("IN02",
+                                            player=player.get_name(mode=1),
+                                            weeks=player.injury.period,
+                                            injury=player.injury.get_injury_name())
 
 
 class Cards:
