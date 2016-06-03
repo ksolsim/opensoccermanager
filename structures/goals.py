@@ -16,19 +16,51 @@
 #  OpenSoccerManager.  If not, see <http://www.gnu.org/licenses/>.
 
 
-class Goals:
+class Goalscorers:
     '''
-    Storage class for goals.
+    Storage class for goals scored in game.
     '''
     def __init__(self):
-        self.goals = []
+        self.goals = {}
 
     def get_sorted_goals(self):
         '''
         Return sorted list of goalscorers.
         '''
 
-    def add_player(self, player, goals):
+    def get_goals_for_player(self, player):
+        '''
+        Return goals for given player.
+        '''
+        if player.playerid in self.goals:
+            return self.goals[player.playerid]
+        else:
+            return None
+
+    def add_goal(self, player, goals):
         '''
         Add player to goals chart.
         '''
+        if player.playerid in self.goals:
+            goal = Goal(player)
+            goal.league += goals
+            self.goals[player.player] = goal
+        else:
+            goal = self.goals[player.player]
+            goal.league += goals
+
+    def clear_goals(self):
+        '''
+        Clear list of goals for end of season.
+        '''
+        self.goals.clear()
+
+
+class Goal:
+    '''
+    Individual goal object for each player.
+    '''
+    def __init__(self, player):
+        self.player = player
+
+        self.league = 0

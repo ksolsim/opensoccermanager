@@ -336,12 +336,13 @@ class MainStand:
             cost += 200000 * (difference / 1000)
 
         if roof:
-            if capacity > 8000:
-                cost += 400000
-            elif capacity > 4000:
-                cost += 300000
-            elif capacity > 0:
-                cost += 200000
+            if self.roof is not roof:
+                if capacity > 8000:
+                    cost += 400000
+                elif capacity > 4000:
+                    cost += 300000
+                elif capacity > 0:
+                    cost += 200000
 
         return cost
 
@@ -379,7 +380,8 @@ class CornerStand:
             cost += 200000 * (difference / 1000)
 
         if roof:
-            cost += 100000
+            if self.roof is not roof:
+                cost += 100000
 
         if capacity > 0:
             cost += 400000 * (difference / 1000)

@@ -154,7 +154,7 @@ class Stadium(uigtk.widgets.Grid):
             stand.capacity.connect("value-changed", stand.on_capacity_changed)
             frame.grid.attach(stand.capacity, 1, count, 1, 1)
 
-            stand.roof.connect("toggled", stand.on_roof_changed)
+            stand.roof.connect("toggled", stand.on_roof_toggled)
             frame.grid.attach(stand.roof, 2, count, 1, 1)
 
             stand.standing.connect("toggled", stand.on_seating_toggled)
@@ -181,8 +181,12 @@ class Stadium(uigtk.widgets.Grid):
             stand.capacity.connect("value-changed", stand.on_capacity_changed)
             frame.grid.attach(stand.capacity, 1, count + 4, 1, 1)
 
+            stand.roof.connect("toggled", stand.on_roof_toggled)
             frame.grid.attach(stand.roof, 2, count + 4, 1, 1)
+
+            stand.standing.connect("toggled", stand.on_seating_toggled)
             frame.grid.attach(stand.standing, 3, count + 4, 1, 1)
+            stand.seating.connect("toggled", stand.on_seating_toggled)
             frame.grid.attach(stand.seating, 4, count + 4, 1, 1)
 
         for count, stand in enumerate(self.main_stands):
@@ -206,7 +210,7 @@ class Stadium(uigtk.widgets.Grid):
         '''
         Store values and update interface when user clicks to build.
         '''
-        dialog = UpgradeStadium(cost=0)
+        dialog = UpgradeStadium(cost=Stadium.upgrades.get_cost())
 
         if dialog.show():
             self.save_data()
@@ -243,6 +247,7 @@ class Stadium(uigtk.widgets.Grid):
 
         self.details.set_details()
         self.maintenance.set_details()
+        Stadium.upgrades.update_cost()
 
     def save_data(self):
         '''
@@ -321,52 +326,10 @@ class Stadium(uigtk.widgets.Grid):
         self.show_all()
 
 
-class Upgrades(uigtk.widgets.CommonFrame):
-    def __init__(self):
-        uigtk.widgets.CommonFrame.__init__(self, "Upgrades")
-
-        label = uigtk.widgets.Label("Upgrade Cost", leftalign=True)
-        self.grid.attach(label, 0, 0, 1, 1)
-        self.labelUpgradeCost = uigtk.widgets.Label(leftalign=True)
-        self.grid.attach(self.labelUpgradeCost, 1, 0, 1, 1)
-
-        label = uigtk.widgets.Label("Upgrade Capacity", leftalign=True)
-        self.grid.attach(label, 0, 1, 1, 1)
-        self.labelUpgradeCapacity = uigtk.widgets.Label(leftalign=True)
-        self.grid.attach(self.labelUpgradeCapacity, 1, 1, 1, 1)
-
-    def get_cost(self):
-        cost = 0
-
-        for stands in (Stadium.main_stands, Stadium.corner_stands):
-            for stand in stands:
-                capacity = stand.capacity.get_value_as_int()
-
-                cost += stand.data.get_upgrade_cost(capacity=capacity, seating=False, roof=False)
-
-        return cost
-
-    def update_cost(self):
-        '''
-        Set the upgrade cost for current amendments.
-        '''
-        self.labelUpgradeCost.set_label("%s" % (self.get_cost()))
-
-    def get_capacity(self):
-        capacity = sum(stand.capacity.get_value_as_int() for stand in Stadium.main_stands)
-        capacity += sum(stand.box.get_value_as_int() for stand in Stadium.main_stands)
-        capacity += sum(stand.capacity.get_value_as_int() for stand in Stadium.corner_stands)
-
-        return capacity
-
-    def update_capacity(self):
-        '''
-        Set the upgrade capacity for the current amendments.
-        '''
-        self.labelUpgradeCapacity.set_label("%s" % (self.get_capacity()))
-
-
 class Stand:
+    '''
+    Base stand interface for main and corner stands.
+    '''
     def __init__(self):
         self.capacity = Gtk.SpinButton()
         self.capacity.set_range(0, 15000)
@@ -383,6 +346,9 @@ class Stand:
         self.seating = Gtk.RadioButton("Seating")
         self.seating.set_sensitive(False)
         self.seating.join_group(self.standing)
+
+    def on_seating_toggled(self, *args):
+        Stadium.upgrades.update_cost()
 
 
 class MainStand(Stand):
@@ -411,6 +377,8 @@ class MainStand(Stand):
         '''
         if not self.roof.get_active():
             self.roof.set_sensitive(True)
+            self.box.set_value(0)
+            self.box.set_sensitive(False)
 
         if not self.seating.get_active():
             self.standing.set_sensitive(True)
@@ -418,7 +386,12 @@ class MainStand(Stand):
 
         if not self.capacity.get_value_as_int() > 0:
             self.roof.set_active(False)
+            self.roof.set_sensitive(False)
             self.standing.set_active(True)
+            self.standing.set_sensitive(False)
+            self.seating.set_sensitive(False)
+            self.box.set_value(0)
+            self.box.set_sensitive(False)
 
         self.update_box_status()
         self.update_adjacent_status()
@@ -433,7 +406,7 @@ class MainStand(Stand):
         for stand in self.corners:
             stand.check_adjacent_capacity()
 
-    def on_roof_changed(self, *args):
+    def on_roof_toggled(self, *args):
         '''
         Update box status when roof widget is toggled.
         '''
@@ -441,9 +414,6 @@ class MainStand(Stand):
 
         Stadium.upgrades.update_cost()
         Stadium.upgrades.update_capacity()
-
-    def on_seating_toggled(self, *args):
-        Stadium.upgrades.update_cost()
 
     def on_box_changed(self, *args):
         Stadium.upgrades.update_cost()
@@ -493,10 +463,83 @@ class CornerStand(Stand):
 
         if not self.capacity.get_value_as_int() > 0:
             self.roof.set_active(False)
+            self.roof.set_sensitive(False)
             self.standing.set_active(True)
+            self.standing.set_sensitive(False)
+            self.seating.set_sensitive(False)
 
         Stadium.upgrades.update_cost()
         Stadium.upgrades.update_capacity()
+
+    def on_roof_toggled(self, *args):
+        '''
+        Update box status when roof widget is toggled.
+        '''
+        Stadium.upgrades.update_cost()
+        Stadium.upgrades.update_capacity()
+
+
+class Upgrades(uigtk.widgets.CommonFrame):
+    '''
+    Labels displaying upgrade cost and capacity.
+    '''
+    def __init__(self):
+        uigtk.widgets.CommonFrame.__init__(self, "Upgrades")
+
+        label = uigtk.widgets.Label("Upgrade Cost", leftalign=True)
+        self.grid.attach(label, 0, 0, 1, 1)
+        self.labelUpgradeCost = uigtk.widgets.Label(leftalign=True)
+        self.grid.attach(self.labelUpgradeCost, 1, 0, 1, 1)
+
+        label = uigtk.widgets.Label("Upgrade Capacity", leftalign=True)
+        self.grid.attach(label, 0, 1, 1, 1)
+        self.labelUpgradeCapacity = uigtk.widgets.Label(leftalign=True)
+        self.grid.attach(self.labelUpgradeCapacity, 1, 1, 1, 1)
+
+    def get_cost(self):
+        '''
+        Get cost of stadium modifications.
+        '''
+        cost = 0
+
+        for stands in (Stadium.main_stands, Stadium.corner_stands):
+            for stand in stands:
+                capacity = stand.capacity.get_value_as_int()
+                seating = stand.seating.get_active()
+                roof = stand.roof.get_active()
+
+                if hasattr(stand, "data"):
+                    cost += stand.data.get_upgrade_cost(capacity=capacity,
+                                                        seating=seating,
+                                                        roof=roof)
+
+        return cost
+
+    def update_cost(self):
+        '''
+        Set the upgrade cost for current amendments.
+        '''
+        amount = int(self.get_cost())
+        amount = data.currency.get_amount(amount)
+        amount = data.currency.get_comma_value(amount)
+        cost = "%s%s" % (data.currency.get_currency_symbol(), amount)
+        self.labelUpgradeCost.set_label(cost)
+
+    def get_capacity(self):
+        '''
+        Get capacity of stadium modifications.
+        '''
+        capacity = sum(stand.capacity.get_value_as_int() for stand in Stadium.main_stands)
+        capacity += sum(stand.box.get_value_as_int() for stand in Stadium.main_stands)
+        capacity += sum(stand.capacity.get_value_as_int() for stand in Stadium.corner_stands)
+
+        return capacity
+
+    def update_capacity(self):
+        '''
+        Set the upgrade capacity for the current amendments.
+        '''
+        self.labelUpgradeCapacity.set_label("%s" % (self.get_capacity()))
 
 
 class UpgradeStadium(Gtk.MessageDialog):
