@@ -19,6 +19,7 @@
 import data
 import structures.buildings
 import structures.calendar
+import structures.charts
 import structures.clubs
 import structures.companies
 import structures.computer
@@ -67,6 +68,9 @@ class Start:
         data.stadiums = structures.stadiums.Stadiums(season)
         data.clubs = structures.clubs.Clubs(season)
         data.players = structures.players.Players(season)
+
+        data.goalscorers = structures.charts.Goalscorers()
+        data.assists = structures.charts.Assists()
 
         data.events = structures.events.Events()
 

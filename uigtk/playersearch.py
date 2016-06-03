@@ -192,7 +192,7 @@ class PlayerSearch(uigtk.widgets.Grid):
 
         if treeiter:
             playerid = model[treeiter][0]
-            
+
             player = data.players.get_player_by_id(playerid)
 
             if data.user.club.squad.get_player_in_squad(player):
@@ -425,8 +425,8 @@ class PlayerList(Gtk.ListStore):
                          data.purchase_list.get_player_listed(player),
                          data.loan_list.get_player_listed(player),
                          player.get_appearances(),
-                         player.goals,
-                         player.assists,
+                         data.goalscorers.get_goals_for_player(player),
+                         data.assists.get_assists_for_player(player),
                          player.get_cards(),
                          player.man_of_the_match,
                          player.rating.get_average_rating()])

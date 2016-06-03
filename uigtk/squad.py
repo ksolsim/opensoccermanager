@@ -59,7 +59,7 @@ class Squad(uigtk.widgets.Grid):
         self.treemodelfilter.set_visible_func(self.filter_visible, data.players.get_players())
         treemodelsort = Gtk.TreeModelSort(self.treemodelfilter)
         treemodelsort.set_sort_column_id(1, Gtk.SortType.ASCENDING)
-        
+
         targets = [("MY_TREE_MODEL_ROW", Gtk.TargetFlags.SAME_APP, 0),
                    ("TEXT", 0, 1)]
 
@@ -265,7 +265,7 @@ class Squad(uigtk.widgets.Grid):
         '''
         Update treeview displaying entire squad list.
         '''
-        Squad.squadlist.update()        
+        Squad.squadlist.update()
 
     def populate_selection(self):
         '''
@@ -314,8 +314,8 @@ class SquadList(Gtk.ListStore):
                          player.contract.get_contract(),
                          player.get_morale(),
                          player.get_appearances(),
-                         player.goals,
-                         player.assists,
+                         data.goalscorers.get_goals_for_player(player),
+                         data.assists.get_assists_for_player(player),
                          player.get_cards(),
                          player.man_of_the_match,
                          player.rating.get_average_rating(),

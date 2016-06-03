@@ -374,7 +374,7 @@ class History(uigtk.widgets.CommonFrame):
         scrolledwindow = uigtk.widgets.ScrolledWindow()
         self.grid.attach(scrolledwindow, 0, 0, 1, 1)
 
-        self.liststore = Gtk.ListStore(str, str, str, int, int, int, str, int)
+        self.liststore = Gtk.ListStore(str, str, str, str, int, int, str, int)
 
         treeview = uigtk.widgets.TreeView()
         treeview.set_hexpand(True)
@@ -390,7 +390,7 @@ class History(uigtk.widgets.CommonFrame):
         treeview.append_column(treeviewcolumn)
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Transfer", column=2)
         treeview.append_column(treeviewcolumn)
-        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Appearances", column=3)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Games", column=3)
         treeview.append_column(treeviewcolumn)
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Goals", column=4)
         treeviewcolumn.set_fixed_width(50)
