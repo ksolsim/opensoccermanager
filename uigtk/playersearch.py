@@ -142,7 +142,9 @@ class PlayerSearch(uigtk.widgets.Grid):
         self.tree_columns[2].append(treeviewcolumn)
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Cards", column=27)
         self.tree_columns[2].append(treeviewcolumn)
-        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="MOTM", column=28)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="MOTM",
+                                                      tooltip="Man of the Match",
+                                                      column=28)
         self.tree_columns[2].append(treeviewcolumn)
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Rating", column=29)
         self.tree_columns[2].append(treeviewcolumn)

@@ -126,7 +126,9 @@ class Squad(uigtk.widgets.Grid):
         self.tree_columns[2].append(treeviewcolumn)
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Cards", column=22)
         self.tree_columns[2].append(treeviewcolumn)
-        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="MOTM", column=23)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="MOTM",
+                                                      tooltip="Man of the Match",
+                                                      column=23)
         self.tree_columns[2].append(treeviewcolumn)
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Rating", column=24)
         self.tree_columns[2].append(treeviewcolumn)
@@ -142,11 +144,13 @@ class Squad(uigtk.widgets.Grid):
         notebook.set_size_request(225, -1)
         self.attach(notebook, 1, 0, 1, 2)
 
-        Squad.firstteam = FirstTeam()
+        Squad.teamlist = Team()
+
+        Squad.firstteam = Squad.teamlist.firstteam
         label = uigtk.widgets.Label("_Team")
         notebook.append_page(Squad.firstteam, label)
 
-        Squad.substitutions = Substitutions()
+        Squad.substitutions = Squad.teamlist.substitutions
         label = uigtk.widgets.Label("_Subs")
         notebook.append_page(self.substitutions, label)
 
@@ -160,8 +164,9 @@ class Squad(uigtk.widgets.Grid):
         Get data for row on start of drag and drop operation.
         '''
         model, treeiter = Squad.treeselection.get_selected()
+        playerid = model[treeiter][0]
 
-        data = bytes("%i" % (model[treeiter][0]), "utf-8")
+        data = bytes("%i" % (playerid), "utf-8")
         selection.set(selection.get_target(), 8, data)
 
     def on_key_press_event(self, widget, event):
@@ -214,11 +219,9 @@ class Squad(uigtk.widgets.Grid):
         '''
         Change which columns of information are visible.
         '''
-        index = int(combobox.get_active_id())
-
         for count, columns in enumerate(self.tree_columns):
             for column in columns:
-                column.set_visible(count == index)
+                column.set_visible(count == int(combobox.get_active_id()))
 
     def on_filter_clicked(self, button):
         '''
@@ -261,22 +264,9 @@ class Squad(uigtk.widgets.Grid):
 
         return display
 
-    def populate_data(self):
-        '''
-        Update treeview displaying entire squad list.
-        '''
-        Squad.squadlist.update()
-
-    def populate_selection(self):
-        '''
-        Call to update team selection interface.
-        '''
-        Squad.firstteam.populate_team()
-        Squad.substitutions.populate_subs()
-
     def run(self):
-        self.populate_data()
-        self.populate_selection()
+        Squad.squadlist.update()
+        Squad.teamlist.update()
         self.show_all()
 
 
@@ -291,6 +281,9 @@ class SquadList(Gtk.ListStore):
                                int, int, str, int, str, str, str])
 
     def update(self):
+        '''
+        Call to update squad listing interface.
+        '''
         self.clear()
 
         for playerid, player in data.user.club.squad.get_squad():
@@ -321,6 +314,22 @@ class SquadList(Gtk.ListStore):
                          player.rating.get_average_rating(),
                          player.injury.get_injury_name(),
                          player.suspension.get_suspension_name()])
+
+
+class Team:
+    '''
+    Holding object for first team and substitution interface elements.
+    '''
+    def __init__(self):
+        self.firstteam = FirstTeam()
+        self.substitutions = Substitutions()
+
+    def update(self):
+        '''
+        Call to update team selection interface.
+        '''
+        self.firstteam.populate_team()
+        self.substitutions.populate_subs()
 
 
 class FirstTeam(uigtk.widgets.Grid):
@@ -356,13 +365,13 @@ class FirstTeam(uigtk.widgets.Grid):
         '''
         Process dragged data and get player from specified position.
         '''
-        playerid = data.user.club.squad.teamselection.team[positionid]
+        player = data.user.club.squad.teamselection.team[positionid]
 
-        if playerid:
+        if player:
             data.user.club.squad.teamselection.team[positionid] = None
 
-            data = bytes("%i" % (playerid), "utf-8")
-            selection.set(selection.get_target(), 8, data)
+            selected = bytes("%i" % (player.playerid), "utf-8")
+            selection.set(selection.get_target(), 8, selected)
 
         return
 
@@ -374,7 +383,7 @@ class FirstTeam(uigtk.widgets.Grid):
         player = data.players.get_player_by_id(playerid)
 
         data.user.club.squad.teamselection.add_to_team(player, positionid)
-        Squad.populate_selection(Squad)
+        Squad.teamlist.update()
 
         if context.get_actions() == Gdk.DragAction.COPY:
             context.finish(True, False, time)
@@ -390,13 +399,13 @@ class FirstTeam(uigtk.widgets.Grid):
 
         if status == -1:
             data.user.club.squad.teamselection.remove_from_team_by_position(positionid)
-            Squad.populate_selection(Squad)
+            Squad.teamlist.update()
         elif status == 0:
             pass
         else:
             player = data.players.get_player_by_id(status)
             data.user.club.squad.teamselection.add_to_team(player, positionid)
-            Squad.populate_selection(Squad)
+            Squad.teamlist.update()
 
     def on_button_release_event(self, button, event, positionid):
         if event.button == 3:
@@ -413,8 +422,7 @@ class FirstTeam(uigtk.widgets.Grid):
         Update team selection buttons with player name.
         '''
         for count, position in enumerate(data.user.club.tactics.get_formation_positions()):
-            label = self.labels[count]
-            label.set_label("_%s" % (position))
+            self.labels[count].set_label("_%s" % (position))
 
         for count, player in enumerate(data.user.club.squad.teamselection.get_team_selection()):
             if player:
@@ -473,7 +481,7 @@ class Substitutions(uigtk.widgets.Grid):
         player = data.players.get_player_by_id(playerid)
 
         data.user.club.squad.teamselection.add_to_subs(player, positionid)
-        Squad.populate_selection(Squad)
+        Squad.teamlist.update()
 
         if context.get_actions() == Gdk.DragAction.COPY:
             context.finish(True, False, time)
@@ -489,13 +497,13 @@ class Substitutions(uigtk.widgets.Grid):
 
         if status == -1:
             data.user.club.squad.teamselection.remove_from_subs_by_position(positionid)
-            Squad.populate_selection(Squad)
+            Squad.teamlist.update()
         elif status == 0:
             pass
         else:
             player = data.players.get_player_by_id(status)
             data.user.club.squad.teamselection.add_to_subs(player, positionid)
-            Squad.populate_selection(Squad)
+            Squad.teamlist.update()
 
     def on_button_release_event(self, button, event, positionid):
         '''
@@ -710,6 +718,9 @@ class Filter(Gtk.Dialog):
 
 
 class ContextMenu(uigtk.contextmenu.ContextMenu1):
+    '''
+    ContextMenu for display when right-clicking squad list.
+    '''
     def __init__(self):
         uigtk.contextmenu.ContextMenu1.__init__(self)
 
@@ -728,7 +739,7 @@ class ContextMenu(uigtk.contextmenu.ContextMenu1):
         '''
         data.user.club.squad.teamselection.remove_from_team(self.player)
 
-        Squad.populate_selection(Squad)
+        Squad.teamlist.update()
 
     def show(self):
         self.positionmenu = PositionMenu()
@@ -754,7 +765,7 @@ class PositionMenu(Gtk.Menu):
         '''
         data.user.club.squad.teamselection.add_to_team(self.player, positionid)
 
-        Squad.populate_selection(Squad)
+        Squad.teamlist.update()
 
     def on_add_subs_clicked(self, menuitem, event, subid):
         '''
@@ -762,7 +773,7 @@ class PositionMenu(Gtk.Menu):
         '''
         data.user.club.squad.teamselection.add_to_subs(self.player, subid)
 
-        Squad.populate_selection(Squad)
+        Squad.teamlist.update()
 
     def show(self):
         for count, position in enumerate(data.user.club.tactics.get_formation_positions()):
@@ -797,14 +808,14 @@ class ContextMenu2(Gtk.Menu):
         Remove player from team if found in team selection.
         '''
         data.user.club.squad.teamselection.remove_from_team_by_position(self.positionid)
-        Squad.populate_selection(Squad)
+        Squad.teamlist.update()
 
     def on_remove_from_subs_clicked(self, *args):
         '''
         Remove player from substitutes if found in substitute selection.
         '''
         data.user.club.squad.teamselection.remove_from_subs_by_position(self.positionid)
-        Squad.populate_selection(Squad)
+        Squad.teamlist.update()
 
     def show(self, positionid):
         self.positionid = positionid
