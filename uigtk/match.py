@@ -104,6 +104,9 @@ class Match(uigtk.widgets.Grid):
 
         self.score.set_result(self.fixture.result)
 
+        self.score.eventsHomeTeam.update_events(self.fixture.home.goalscorers)
+        self.score.eventsAwayTeam.update_events(self.fixture.away.goalscorers)
+
         attendance = structures.match.Attendance(self.fixture)
         self.statistics.set_attendance(attendance.get_attendance())
 
@@ -242,18 +245,19 @@ class Events(uigtk.widgets.ScrolledWindow):
 
         self.grid = None
 
-    def add_event(self):
+    def update_events(self, goalscorers):
         '''
         Add event to list of in-game events.
         '''
         self.grid = Gtk.Grid()
         self.viewport.add(self.grid)
 
-        for count, playerid in enumerate(scorers):
-            player = data.players.get_player_by_id(playerid)
+        if goalscorers:
+            for count, player in enumerate(goalscorers):
+                label = uigtk.widgets.Label(player.get_name(mode=1), leftalign=True)
+                self.grid.attach(label, 0, count, 1, 1)
 
-            label = uigtk.widgets.Label(player.get_name(mode=1), leftalign=True)
-            self.grid.attach(label, 0, count, 1, 1)
+        self.show_all()
 
     def clear_events(self):
         '''

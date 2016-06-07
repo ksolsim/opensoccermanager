@@ -223,18 +223,17 @@ class Goalscorers:
             for count in range(0, self.score):
                 scores = []
 
-                if scores != []:
-                    for player in self.club.squad.teamselection.get_team_selection():
-                        if player:
-                            maximum = self.calculate_score(player)
+                for player in self.club.squad.teamselection.get_team_selection():
+                    if player:
+                        maximum = self.calculate_score(player)
 
-                            for count in range(0, maximum):
-                                scores.append(player)
+                        for count in range(0, int(maximum)):
+                            scores.append(player)
 
-                    random.shuffle(scores)
+                random.shuffle(scores)
 
-                    goalscorer = random.choice(scores)
-                    goalscorers.append(goalscorer)
+                goalscorer = random.choice(scores)
+                goalscorers.append(goalscorer)
 
             return goalscorers
 
@@ -292,8 +291,13 @@ class Injuries:
 
 
 class Cards:
-    def __init__(self):
-        pass
+    def __init__(self, fixture):
+        self.fixture = fixture
+
+    def generate_cards(self):
+        '''
+        Generate yellow and red cards for match.
+        '''
 
 
 class Attendance:
