@@ -52,8 +52,6 @@ class Players:
             self.not_for_sale = False
             self.appearances = 0
             self.substitute = 0
-            self.yellow_cards = 0
-            self.red_cards = 0
             self.man_of_the_match = 0
             self.rating = Rating()
             self.injury = Injury()
@@ -360,7 +358,7 @@ class History:
                    "%i (%i)" % (self.player.appearances, self.player.substitute),
                    data.goalscorers.get_goals_for_player(self.player),
                    data.assists.get_assists_for_player(self.player),
-                   "%i/%i" % (self.player.yellow_cards, self.player.red_cards),
+                   data.cards.get_cards_string_for_player(self.player),
                    self.player.man_of_the_match)
 
         return current

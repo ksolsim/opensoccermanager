@@ -29,14 +29,6 @@ class Advertising:
             self.period = random.randint(1, 12)
             self.amount = (data.user.club.reputation + random.randint(-5, 5)) * 100
 
-        def get_item(self):
-            '''
-            Return list containing advertisement details.
-            '''
-            item = [self.name, self.quantity, self.period, self.amount]
-
-            return item
-
         def get_period(self):
             '''
             Return period string for display.

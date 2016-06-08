@@ -71,6 +71,7 @@ class Start:
 
         data.goalscorers = structures.charts.Goalscorers()
         data.assists = structures.charts.Assists()
+        data.cards = structures.charts.Cards()
 
         data.events = structures.events.Events()
 

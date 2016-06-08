@@ -429,7 +429,7 @@ class PlayerList(Gtk.ListStore):
                          player.get_appearances(),
                          data.goalscorers.get_goals_for_player(player),
                          data.assists.get_assists_for_player(player),
-                         player.get_cards(),
+                         data.cards.get_cards_string_for_player(player),
                          player.man_of_the_match,
                          player.rating.get_average_rating()])
 

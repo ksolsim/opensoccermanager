@@ -100,11 +100,9 @@ class Member(Staff):
         Grab string for displaying contract length.
         '''
         if self.contract > 1:
-            contract = "%i Weeks" % (self.contract)
+            return "%i Weeks" % (self.contract)
         else:
-            contract = "%i Week" % (self.contract)
-
-        return contract
+            return "%i Week" % (self.contract)
 
     def get_payout(self):
         '''
@@ -120,8 +118,8 @@ class Member(Staff):
             return 1
         elif self.morale < 5:
             return 2
-
-        return 0
+        else:
+            return 0
 
     def get_contract_renewal_period(self):
         '''

@@ -88,6 +88,6 @@ class Accounts:
         '''
         Clear weekly deposits and withdrawals.
         '''
-        for finances in (self.incomes.values(), self.expenditures.values()):
-            for item in finances:
+        for finances in (self.incomes, self.expenditures):
+            for item in finances.values():
                 item.week = 0
