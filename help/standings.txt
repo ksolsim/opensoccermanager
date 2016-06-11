@@ -1,0 +1,5 @@
+The standings display the current league table for each league, with the leader shown at the top. The number of games played are displayed alongside the number of wins, draws, and losses. Also shown are goals for and goals against which are calculated to produce the goal difference. Finally, the points tally achieved is displayed in the final column.
+
+The visible league can be selected by choosing from the dropdown menu.
+
+If more information about the team is required, the team entry can be double-clicked to view the club information screen.

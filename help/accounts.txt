@@ -1,21 +1,23 @@
 Accounts are broken down into a number of categories to make income and expenditure easily observable. Keeping the club in the black is important to progressing in the future, and ensuring that the chairman and staff remain happy.
 
-Prize Money - Given when a club finishes at the top of the league or wins a cup
-Sponsorship - Renewed periodically, provides a hefty injection of cash
-Advertising -
-Merchandise -
-Catering -
-Ticket Sales -
-Transfer Fees -
-Loan -
+Prize Money - Given when a club finishes at the top of the league or wins a cup.
+Sponsorship - Renewed periodically, provides a hefty injection of cash.
+Advertising - Advertising is displayed on boards around the pitch or in match programmes.
+Merchandise - Merchandise is sold from shops outside the stadium.
+Catering - Catering items are sold from shops outside the stadium.
+Ticket Sales - Ticket sales are determined base on attendance and specified prices.
+Transfer Fees - Transfer fees received for players which have been sold.
+Loan - Income from bank loans taken out by the club.
+Grant - Money received from stadium improvement grants.
+Teleivison Money - Income from games aired on television.
 
-Fines -
-Stadium Maintenance -
-Staff Wages -
-Player Wages -
-Transfer Fees -
-Stadium Costs -
-Merchandise -
-Catering -
-Loan Repayment -
-Overdraft Repayment -
+Fines - Fines levied on the club by the Football Association.
+Stadium - Cost of maintaining the stadium and grounds, along with improvements.
+Staff Wages - Wages paid to the staff such as coaches and scouts.
+Player Wages - Wages paid to the players in the squad.
+Transfer Fees - Transfer fees paid for players which have been purchased.
+Merchandise - Payments for production of merchandise items.
+Catering - Payments for production of catering items.
+Loan Repayment - Repayment amounts for bank loans.
+Overdraft Repayment - Costs and repayment fees for overdraft.
+Training - Money paid for arrangement of training camps.

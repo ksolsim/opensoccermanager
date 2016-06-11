@@ -1,3 +1,7 @@
 The shortlist is used to keep a list of players which you may be interested in.
 
-A player can be scouted from the shortlist, with a scout from the club giving his opinion on whether the player would be a good signing for the club.
+When an enquiry is launched for a player, they are automatically added to the shortlist. Players can also be added manually, from which they can be removed if required, or a purchase or loan enquiry can be started by clicking the buttons.
+
+A player can also be scouted from the shortlist, with a scout from the club giving his opinion on whether the player would be a good signing for the club.
+
+To view the player information screen, double-click on a player entry listed in the shortlist view.

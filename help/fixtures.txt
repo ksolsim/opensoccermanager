@@ -1,0 +1,7 @@
+The fixtures screen combines to show upcoming fixtures, and results from previously played fixtures.
+
+All fixtures for a particular league can be shown, or alternatively the user club being managed can be displayed in a single listing.
+
+When a fixture is double-clicked, the result screen will be shown displaying information such as the result, team selection, injuries, cards, match statistics, and other such information. If a fixture has not been played, only the teams and venue will be displayed.
+
+Friendly fixtures can also be arranged in the pre-season period prior to the first game.
