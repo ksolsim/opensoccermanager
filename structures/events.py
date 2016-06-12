@@ -77,5 +77,6 @@ class Events:
         fixture.referee.increment_statistics(fixture)
 
         fixture.store_team_selection()
+        fixture.pay_televised_money()
 
         fixture.played = True

@@ -107,6 +107,8 @@ class Fixtures:
                 fixture.fixtureid = self.get_fixtureid()
                 self.fixtures[fixture.fixtureid] = fixture
 
+        self.generate_televised_fixtures()
+
     def get_referee_list(self):
         '''
         Return randomly ordered list of referees for assignment to fixture.
@@ -168,6 +170,24 @@ class Fixtures:
 
         return initial
 
+    def get_televised_fixtures(self):
+        '''
+        Return fixtures which have been marked for show on television.
+        '''
+
+    def generate_televised_fixtures(self):
+        '''
+        Choose fixtures which will be shown on television.
+        '''
+        fixtures = []
+
+        for count in range(0, self.get_number_of_rounds()):
+            fixtures = self.get_fixtures_for_week(count)
+            fixtures = list(fixtures.values())
+
+            fixture = random.choice(fixtures)
+            fixture.televised = True
+
 
 class Fixture:
     '''
@@ -176,6 +196,7 @@ class Fixture:
     def __init__(self):
         self.week = 0
         self.played = False
+        self.televised = False
 
         self.home = FixtureTeam()
         self.away = FixtureTeam()
@@ -184,6 +205,30 @@ class Fixture:
         self.attendance = 0
         self.referee = None
         self.league = None
+
+    def pay_televised_money(self):
+        '''
+        Pay money to clubs for game being televised.
+        '''
+        if self.televised:
+            amount = (self.home.club.reputation * 2) * 20000
+            self.home.club.accounts.deposit(amount, "television")
+
+            amount = (self.away.club.reputation * 2) * 20000
+            self.away.club.accounts.deposit(amount, "television")
+
+            if data.user.club is self.home.club:
+                amount = (self.home.club.reputation * 2) * 20000
+                amount = data.currency.get_currency(amount, integer=True)
+                data.user.club.news.publish("TM01",
+                                            team=self.away.club.name,
+                                            amount=amount)
+            elif data.user.club is self.away.club:
+                amount = (self.away.club.reputation * 2) * 20000
+                amount = data.currency.get_currency(amount, integer=True)
+                data.user.club.news.publish("TM01",
+                                            team=self.home.club.name,
+                                            amount=amount)
 
     def store_team_selection(self):
         '''

@@ -140,6 +140,9 @@ class Match(uigtk.widgets.Grid):
         self.buttonHomeTactics.set_sensitive(False)
         self.buttonAwayTactics.set_sensitive(False)
 
+        self.score.eventsHomeTeam.clear_events()
+        self.score.eventsAwayTeam.clear_events()
+
         data.window.mainscreen.menu.set_sensitive(True)
         data.window.mainscreen.information.set_continue_game_button()
         data.window.mainscreen.information.buttonContinue.set_sensitive(True)

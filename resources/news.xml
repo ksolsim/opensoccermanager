@@ -420,4 +420,9 @@
         <message>Due to the low funds in our bank account, the overdraft is now being used. Our interest rate at this time is _OVERDRAFTINTEREST_%.</message>
         <category>13</category>
     </article>
+    <article id="TM01">
+        <title>Television money received for match</title>
+        <message>The recent match against _TEAM_ was broadcast on television. We have received our share of the fee for the match which totals _AMOUNT_.</message>
+        <category>13</category>
+    </article>
 </news>
