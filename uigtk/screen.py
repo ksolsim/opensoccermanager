@@ -98,7 +98,7 @@ class Screen(Gtk.Grid):
         for screen in screens:
             self.screens[screen.__name__] = screen
 
-    def change_visible_screen(self, name):
+    def change_visible_screen(self, name, **kwargs):
         '''
         Change visible screen being displayed to the user.
         '''
@@ -109,6 +109,7 @@ class Screen(Gtk.Grid):
         self.active = self.screens[name]
         self.active.name = name
         self.add(self.active)
+        self.active.kwargs = kwargs
         self.active.run()
 
     def refresh_visible_screen(self):

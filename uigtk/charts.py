@@ -121,6 +121,9 @@ class Leagues(uigtk.widgets.Grid):
         self.attach(self.comboboxLeagues, 2, 0, 1, 1)
 
     def on_view_toggled(self, radiobutton):
+        '''
+        Toggle view of visible league data.
+        '''
         if radiobutton is self.radiobuttonAll:
             self.comboboxLeagues.set_sensitive(not radiobutton.get_active())
 
@@ -153,8 +156,7 @@ class Display(uigtk.widgets.Grid):
 
         player = data.players.get_player_by_id(playerid)
 
-        data.window.screen.change_visible_screen("playerinformation")
-        data.window.screen.active.set_visible_player(player)
+        data.window.screen.change_visible_screen("playerinformation", player=player)
 
 
 class Goalscorers(uigtk.widgets.Grid):

@@ -212,8 +212,7 @@ class Squad(uigtk.widgets.Grid):
 
         player = data.players.get_player_by_id(playerid)
 
-        data.window.screen.change_visible_screen("playerinformation")
-        data.window.screen.active.set_visible_player(player)
+        data.window.screen.change_visible_screen("playerinformation", player=player)
 
     def on_view_changed(self, combobox):
         '''
@@ -749,7 +748,7 @@ class ContextMenu(uigtk.contextmenu.ContextMenu1):
         Squad.teamlist.update()
 
     def show(self):
-        self.positionmenu = PositionMenu(player)
+        self.positionmenu = PositionMenu(self.player)
         self.menuitemAddTeam.set_submenu(self.positionmenu)
         self.positionmenu.show()
 
@@ -839,8 +838,7 @@ class ContextMenu2(Gtk.Menu):
         Show player information screen for selected player.
         '''
         if self.player:
-            data.window.screen.change_visible_screen("playerinformation")
-            data.window.screen.active.set_visible_player(self.player)
+            data.window.screen.change_visible_screen("playerinformation", player=player)
 
     def show(self, positionid, player):
         self.positionid = positionid

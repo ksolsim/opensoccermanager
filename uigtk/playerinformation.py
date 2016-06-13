@@ -158,10 +158,11 @@ class PlayerInformation(uigtk.widgets.Grid):
             actionmenu.show()
 
     def run(self):
-        self.show_all()
+        if "player" in self.kwargs:
+            PlayerInformation.player = self.kwargs["player"]
+            self.set_visible_player(PlayerInformation.player)
 
-        #if PlayerInformation.player:
-        #    self.set_visible_player(PlayerInformation.player)
+            self.show_all()
 
 
 class Personal(uigtk.widgets.Grid):

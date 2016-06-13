@@ -437,11 +437,9 @@ class PlayerInformation(uigtk.widgets.Label):
         Display player information screen for selected player.
         '''
         playerid = int(self.combobox.get_active_id())
-
         player = data.players.get_player_by_id(playerid)
 
-        data.window.screen.change_visible_screen("playerinformation")
-        data.window.screen.active.set_visible_player(player)
+        data.window.screen.change_visible_screen("playerinformation", player=player)
 
         return True
 
