@@ -408,8 +408,13 @@ class FirstTeam(uigtk.widgets.Grid):
             Squad.teamlist.update()
 
     def on_button_release_event(self, button, event, positionid):
+        '''
+        Handle right-click to display context menu on squad button.
+        '''
         if event.button == 3:
-            self.contextmenu.show(positionid)
+            player = data.user.club.squad.teamselection.get_player_for_position(positionid)
+
+            self.contextmenu.show(positionid, player)
             self.contextmenu.popup(None,
                                    None,
                                    None,
@@ -510,7 +515,9 @@ class Substitutions(uigtk.widgets.Grid):
         Handle right-click to display context menu on squad button.
         '''
         if event.button == 3:
-            self.contextmenu.show(positionid)
+            player = data.user.club.squad.teamselection.get_player_for_position(positionid)
+
+            self.contextmenu.show(positionid, player)
             self.contextmenu.popup(None,
                                    None,
                                    None,
@@ -742,8 +749,7 @@ class ContextMenu(uigtk.contextmenu.ContextMenu1):
         Squad.teamlist.update()
 
     def show(self):
-        self.positionmenu = PositionMenu()
-        self.positionmenu.player = self.player
+        self.positionmenu = PositionMenu(player)
         self.menuitemAddTeam.set_submenu(self.positionmenu)
         self.positionmenu.show()
 
@@ -756,12 +762,13 @@ class PositionMenu(Gtk.Menu):
     '''
     Context submenu for adding players to positions via menu.
     '''
-    def __init__(self):
+    def __init__(self, player):
         Gtk.Menu.__init__(self)
+        self.player = player
 
     def on_add_team_clicked(self, menuitem, event, positionid):
         '''
-        Add player id to passed position id.
+        Add player id to passed team position id.
         '''
         data.user.club.squad.teamselection.add_to_team(self.player, positionid)
 
@@ -769,7 +776,7 @@ class PositionMenu(Gtk.Menu):
 
     def on_add_subs_clicked(self, menuitem, event, subid):
         '''
-        Add player id to passed position (substitution) id.
+        Add player id to passed substitution position id.
         '''
         data.user.club.squad.teamselection.add_to_subs(self.player, subid)
 
@@ -795,13 +802,23 @@ class ContextMenu2(Gtk.Menu):
         Gtk.Menu.__init__(self)
 
         if squad == 0:
-            menuitemRemoveTeam = uigtk.widgets.MenuItem("_Remove From Team")
-            menuitemRemoveTeam.connect("activate", self.on_remove_from_team_clicked)
-            self.append(menuitemRemoveTeam)
+            self.menuitemRemovePlayer = uigtk.widgets.MenuItem("_Remove From Team")
+            self.menuitemRemovePlayer.connect("activate", self.on_remove_from_team_clicked)
+            self.append(self.menuitemRemovePlayer)
         else:
-            menuitemRemoveSubs = uigtk.widgets.MenuItem("_Remove From Subs")
-            menuitemRemoveSubs.connect("activate", self.on_remove_from_subs_clicked)
-            self.append(menuitemRemoveSubs)
+            self.menuitemRemovePlayer = uigtk.widgets.MenuItem("_Remove From Subs")
+            self.menuitemRemovePlayer.connect("activate", self.on_remove_from_subs_clicked)
+            self.append(self.menuitemRemovePlayer)
+
+        self.menuitemRemovePlayer.set_sensitive(False)
+
+        separator = Gtk.SeparatorMenuItem()
+        self.append(separator)
+
+        self.menuitemPlayerInformation = uigtk.widgets.MenuItem("_Player Information")
+        self.menuitemPlayerInformation.set_sensitive(False)
+        self.menuitemPlayerInformation.connect("activate", self.on_player_information_clicked)
+        self.append(self.menuitemPlayerInformation)
 
     def on_remove_from_team_clicked(self, *args):
         '''
@@ -817,8 +834,25 @@ class ContextMenu2(Gtk.Menu):
         data.user.club.squad.teamselection.remove_from_subs_by_position(self.positionid)
         Squad.teamlist.update()
 
-    def show(self, positionid):
+    def on_player_information_clicked(self, *args):
+        '''
+        Show player information screen for selected player.
+        '''
+        if self.player:
+            data.window.screen.change_visible_screen("playerinformation")
+            data.window.screen.active.set_visible_player(self.player)
+
+    def show(self, positionid, player):
         self.positionid = positionid
+        self.player = player
+
+        if self.player:
+            self.menuitemRemovePlayer.set_sensitive(True)
+            self.menuitemPlayerInformation.set_sensitive(True)
+        else:
+            self.menuitemRemovePlayer.set_sensitive(False)
+            self.menuitemPlayerInformation.set_sensitive(False)
+
         self.show_all()
 
 
