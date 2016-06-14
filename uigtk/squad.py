@@ -56,7 +56,7 @@ class Squad(uigtk.widgets.Grid):
         Squad.squadlist = SquadList()
 
         self.treemodelfilter = Squad.squadlist.filter_new()
-        self.treemodelfilter.set_visible_func(self.filter_visible, data.players.get_players())
+        self.treemodelfilter.set_visible_func(self.filter_visible, data.players.get_players)
         treemodelsort = Gtk.TreeModelSort(self.treemodelfilter)
         treemodelsort.set_sort_column_id(1, Gtk.SortType.ASCENDING)
 
@@ -164,13 +164,10 @@ class Squad(uigtk.widgets.Grid):
 
         Squad.teamlist = Team()
 
-        Squad.firstteam = Squad.teamlist.firstteam
         label = uigtk.widgets.Label("_Team")
-        notebook.append_page(Squad.firstteam, label)
-
-        Squad.substitutions = Squad.teamlist.substitutions
+        notebook.append_page(Squad.teamlist.firstteam, label)
         label = uigtk.widgets.Label("_Subs")
-        notebook.append_page(self.substitutions, label)
+        notebook.append_page(Squad.teamlist.substitutions, label)
 
         self.contextmenu = ContextMenu()
         self.filter_dialog = Filter()
@@ -212,8 +209,7 @@ class Squad(uigtk.widgets.Grid):
             playerid = model[treeiter][0]
             player = data.players.get_player_by_id(playerid)
 
-            self.contextmenu.player = player
-            self.contextmenu.show()
+            self.contextmenu.show(player)
             self.contextmenu.popup(None,
                                    None,
                                    None,
@@ -786,8 +782,10 @@ class ContextMenu(uigtk.contextmenu.ContextMenu1):
 
         Squad.teamlist.update()
 
-    def show(self):
-        self.positionmenu = PositionMenu(self.player)
+    def show(self, player):
+        self.player = player
+
+        self.positionmenu = PositionMenu(player)
         self.menuitemAddTeam.set_submenu(self.positionmenu)
         self.positionmenu.show()
 

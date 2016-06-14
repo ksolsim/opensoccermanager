@@ -97,7 +97,7 @@ class PlayerSearch(uigtk.widgets.Grid):
 
         PlayerSearch.treeselection = self.treeview.get_selection()
 
-        self.tree_columns = ([], [], [])
+        self.tree_columns = ([], [], [], [])
 
         # Personal
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Name", column=1)
@@ -149,7 +149,22 @@ class PlayerSearch(uigtk.widgets.Grid):
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Rating", column=29)
         self.tree_columns[2].append(treeviewcolumn)
 
-        for columns in (self.tree_columns[0], self.tree_columns[2]):
+        # Status
+        cellrenderertoggle = Gtk.CellRendererToggle()
+        treeviewcolumn = Gtk.TreeViewColumn("Injured")
+        treeviewcolumn.pack_start(cellrenderertoggle, False)
+        treeviewcolumn.add_attribute(cellrenderertoggle, "active", column=30)
+        self.tree_columns[3].append(treeviewcolumn)
+        treeviewcolumn = Gtk.TreeViewColumn("Suspended")
+        treeviewcolumn.pack_start(cellrenderertoggle, False)
+        treeviewcolumn.add_attribute(cellrenderertoggle, "active", column=31)
+        self.tree_columns[3].append(treeviewcolumn)
+        treeviewcolumn = Gtk.TreeViewColumn("Out On Loan")
+        treeviewcolumn.pack_start(cellrenderertoggle, False)
+        treeviewcolumn.add_attribute(cellrenderertoggle, "active", column=32)
+        self.tree_columns[3].append(treeviewcolumn)
+
+        for columns in (self.tree_columns[0], self.tree_columns[2], self.tree_columns[3]):
             for column in columns:
                 column.set_expand(True)
                 column.set_visible(False)
@@ -388,7 +403,7 @@ class PlayerList(Gtk.ListStore):
         self.set_column_types([int, str, int, int, str, str, str, int, int, int,
                                int, int, int, int, int, int, int, str,int, str,
                                int, str, bool, bool, str, int, int, str, int,
-                               str])
+                               str, bool, bool, bool])
 
     def update(self):
         self.clear()
@@ -430,7 +445,10 @@ class PlayerList(Gtk.ListStore):
                          data.assists.get_assists_for_player(player),
                          data.cards.get_cards_string_for_player(player),
                          player.man_of_the_match,
-                         player.rating.get_average_rating()])
+                         player.rating.get_average_rating(),
+                         player.injury.get_injured(),
+                         player.suspension.get_suspended(),
+                         False])
 
 
 class Filter(Gtk.Dialog):
