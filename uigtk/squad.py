@@ -84,7 +84,7 @@ class Squad(uigtk.widgets.Grid):
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Position", column=3)
         treeview.append_column(treeviewcolumn)
 
-        self.tree_columns = ([], [], [])
+        self.tree_columns = ([], [], [], [])
 
         # Personal
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Age", column=2)
@@ -133,7 +133,25 @@ class Squad(uigtk.widgets.Grid):
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Rating", column=24)
         self.tree_columns[2].append(treeviewcolumn)
 
-        for columns in (self.tree_columns[0], self.tree_columns[2]):
+        # Status
+        cellrenderertoggle = Gtk.CellRendererToggle()
+        treeviewcolumn = Gtk.TreeViewColumn("Injured")
+        treeviewcolumn.pack_start(cellrenderertoggle, False)
+        treeviewcolumn.add_attribute(cellrenderertoggle, "active", column=27)
+        self.tree_columns[3].append(treeviewcolumn)
+        treeviewcolumn = Gtk.TreeViewColumn("Suspended")
+        treeviewcolumn.pack_start(cellrenderertoggle, False)
+        treeviewcolumn.add_attribute(cellrenderertoggle, "active", column=28)
+        self.tree_columns[3].append(treeviewcolumn)
+        treeviewcolumn = Gtk.TreeViewColumn("Out On Loan")
+        treeviewcolumn.pack_start(cellrenderertoggle, False)
+        treeviewcolumn.add_attribute(cellrenderertoggle, "active", column=29)
+        self.tree_columns[3].append(treeviewcolumn)
+        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Individual Training",
+                                                      column=30)
+        self.tree_columns[3].append(treeviewcolumn)
+
+        for columns in (self.tree_columns[0], self.tree_columns[2], self.tree_columns[3]):
             for column in columns:
                 column.set_expand(True)
                 column.set_visible(False)
@@ -141,7 +159,7 @@ class Squad(uigtk.widgets.Grid):
 
         notebook = Gtk.Notebook()
         notebook.set_hexpand(False)
-        notebook.set_size_request(225, -1)
+        notebook.set_size_request(250, -1)
         self.attach(notebook, 1, 0, 1, 2)
 
         Squad.teamlist = Team()
@@ -277,7 +295,8 @@ class SquadList(Gtk.ListStore):
         Gtk.ListStore.__init__(self)
         self.set_column_types([int, str, int, str, int, int, int, int, int, int,
                                int, int, int, str, str, str, str, str, str, str,
-                               int, int, str, int, str, str, str])
+                               int, int, str, int, str, str, str, bool, bool,
+                               bool, str])
 
     def update(self):
         '''
@@ -312,7 +331,11 @@ class SquadList(Gtk.ListStore):
                          player.man_of_the_match,
                          player.rating.get_average_rating(),
                          player.injury.get_injury_name(),
-                         player.suspension.get_suspension_name()])
+                         player.suspension.get_suspension_name(),
+                         player.injury.get_injured(),
+                         player.suspension.get_suspended(),
+                         False,
+                         ""])
 
 
 class Team:
@@ -340,6 +363,7 @@ class FirstTeam(uigtk.widgets.Grid):
 
         self.labels = []
         self.buttons = []
+        self.statuses = []
 
         for count in range(0, 11):
             label = uigtk.widgets.Label()
@@ -360,11 +384,16 @@ class FirstTeam(uigtk.widgets.Grid):
             self.attach(button, 1, count, 1, 1)
             self.buttons.append(button)
 
+            button = Gtk.Button()
+            button.set_size_request(25, -1)
+            self.attach(button, 2, count, 1, 1)
+            self.statuses.append(button)
+
     def on_drag_data_get(self, button, context, selection, info, time, positionid):
         '''
         Process dragged data and get player from specified position.
         '''
-        player = data.user.club.squad.teamselection.team[positionid]
+        player = data.user.club.squad.teamselection.get_player_for_position(positionid)
 
         if player:
             data.user.club.squad.teamselection.team[positionid] = None
@@ -431,8 +460,18 @@ class FirstTeam(uigtk.widgets.Grid):
         for count, player in enumerate(data.user.club.squad.teamselection.get_team_selection()):
             if player:
                 self.buttons[count].set_label(player.get_name())
+
+                if player.injury.get_injured():
+                    self.statuses[count].set_label("I")
+                    self.statuses[count].set_visible(True)
+                elif player.suspension.get_suspended():
+                    self.statuses[count].set_label("S")
+                    self.statuses[count].set_visible(True)
+                else:
+                    self.statuses[count].set_label("")
             else:
                 self.buttons[count].set_label("")
+                self.statuses[count].set_label("")
 
 
 class Substitutions(uigtk.widgets.Grid):
@@ -467,12 +506,12 @@ class Substitutions(uigtk.widgets.Grid):
         '''
         Process dragged data and get player from specified position.
         '''
-        playerid = data.user.club.squad.teamselection.subs[positionid]
+        player = data.user.club.squad.teamselection.get_sub_player_for_position(positionid)
 
-        if playerid:
+        if player:
             data.user.club.squad.teamselection.subs[positionid] = None
 
-            data = bytes("%i" % (playerid), "utf-8")
+            data = bytes("%i" % (player.playerid), "utf-8")
             selection.set(selection.get_target(), 8, data)
 
         return
@@ -838,7 +877,7 @@ class ContextMenu2(Gtk.Menu):
         Show player information screen for selected player.
         '''
         if self.player:
-            data.window.screen.change_visible_screen("playerinformation", player=player)
+            data.window.screen.change_visible_screen("playerinformation", player=self.player)
 
     def show(self, positionid, player):
         self.positionid = positionid

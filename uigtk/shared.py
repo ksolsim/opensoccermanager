@@ -53,6 +53,7 @@ class ColumnViews(uigtk.widgets.Grid):
         self.comboboxView.append("0", "Personal")
         self.comboboxView.append("1", "Skill")
         self.comboboxView.append("2", "Form")
+        self.comboboxView.append("3", "Status")
         self.comboboxView.set_active(1)
         self.comboboxView.set_tooltip_text("Change visible columns of information.")
         label.set_mnemonic_widget(self.comboboxView)
