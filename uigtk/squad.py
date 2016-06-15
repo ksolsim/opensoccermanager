@@ -137,18 +137,18 @@ class Squad(uigtk.widgets.Grid):
         cellrenderertoggle = Gtk.CellRendererToggle()
         treeviewcolumn = Gtk.TreeViewColumn("Injured")
         treeviewcolumn.pack_start(cellrenderertoggle, False)
-        treeviewcolumn.add_attribute(cellrenderertoggle, "active", column=27)
+        treeviewcolumn.add_attribute(cellrenderertoggle, "active", column=25)
         self.tree_columns[3].append(treeviewcolumn)
         treeviewcolumn = Gtk.TreeViewColumn("Suspended")
         treeviewcolumn.pack_start(cellrenderertoggle, False)
-        treeviewcolumn.add_attribute(cellrenderertoggle, "active", column=28)
+        treeviewcolumn.add_attribute(cellrenderertoggle, "active", column=26)
         self.tree_columns[3].append(treeviewcolumn)
         treeviewcolumn = Gtk.TreeViewColumn("Out On Loan")
         treeviewcolumn.pack_start(cellrenderertoggle, False)
-        treeviewcolumn.add_attribute(cellrenderertoggle, "active", column=29)
+        treeviewcolumn.add_attribute(cellrenderertoggle, "active", column=27)
         self.tree_columns[3].append(treeviewcolumn)
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Individual Training",
-                                                      column=30)
+                                                      column=28)
         self.tree_columns[3].append(treeviewcolumn)
 
         for columns in (self.tree_columns[0], self.tree_columns[2], self.tree_columns[3]):
@@ -260,22 +260,27 @@ class Squad(uigtk.widgets.Grid):
         '''
         Filter visible players based on criteria.
         '''
-        display = True
+        visible = True
 
         if Squad.squadfilter.options["position"] == 1:
             if model[treeiter][3] not in ("GK",):
-                display = False
+                visible = False
         elif Squad.squadfilter.options["position"] == 2:
             if model[treeiter][3] not in ("DL", "DR", "DC", "D"):
-                display = False
+                visible = False
         elif Squad.squadfilter.options["position"] == 3:
             if model[treeiter][3] not in ("ML", "MR", "MC", "M"):
-                display = False
+                visible = False
         elif Squad.squadfilter.options["position"] == 4:
             if model[treeiter][3] not in ("AF", "AS"):
-                display = False
+                visible = False
 
-        return display
+        if visible:
+            if Squad.squadfilter.options["availableonly"]:
+                if True in model[treeiter][25:27]:
+                    visible = False
+
+        return visible
 
     def run(self):
         Squad.squadlist.update()
@@ -291,8 +296,7 @@ class SquadList(Gtk.ListStore):
         Gtk.ListStore.__init__(self)
         self.set_column_types([int, str, int, str, int, int, int, int, int, int,
                                int, int, int, str, str, str, str, str, str, str,
-                               int, int, str, int, str, str, str, bool, bool,
-                               bool, str])
+                               int, int, str, int, str, bool, bool, bool, str])
 
     def update(self):
         '''
@@ -326,8 +330,6 @@ class SquadList(Gtk.ListStore):
                          data.cards.get_cards_string_for_player(player),
                          player.man_of_the_match,
                          player.rating.get_average_rating(),
-                         player.injury.get_injury_name(),
-                         player.suspension.get_suspension_name(),
                          player.injury.get_injured(),
                          player.suspension.get_suspended(),
                          False,
@@ -382,6 +384,7 @@ class FirstTeam(uigtk.widgets.Grid):
 
             button = Gtk.Button()
             button.set_size_request(25, -1)
+            button.connect("clicked", self.on_status_clicked, count)
             self.attach(button, 2, count, 1, 1)
             self.statuses.append(button)
 
@@ -397,8 +400,6 @@ class FirstTeam(uigtk.widgets.Grid):
             selected = bytes("%i" % (player.playerid), "utf-8")
             selection.set(selection.get_target(), 8, selected)
 
-        return
-
     def on_drag_data_received(self, button, context, x, y, selection, info, time, positionid):
         '''
         Process dropped data and set player into squad at specified postion.
@@ -411,8 +412,6 @@ class FirstTeam(uigtk.widgets.Grid):
 
         if context.get_actions() == Gdk.DragAction.COPY:
             context.finish(True, False, time)
-
-        return
 
     def on_player_select_clicked(self, button, positionid):
         '''
@@ -445,6 +444,18 @@ class FirstTeam(uigtk.widgets.Grid):
                                    None,
                                    event.button,
                                    event.time)
+
+    def on_status_clicked(self, button, positionid):
+        '''
+        Display message dialog for player status.
+        '''
+        player = data.user.club.squad.teamselection.get_player_for_position(positionid)
+
+        if player:
+            if player.injury.get_injured():
+                StatusDialog(player, status=0)
+            elif player.suspension.get_suspended():
+                StatusDialog(player, status=1)
 
     def populate_team(self):
         '''
@@ -926,3 +937,23 @@ class TerminateContract(Gtk.MessageDialog):
         self.destroy()
 
         return state
+
+
+class StatusDialog(Gtk.MessageDialog):
+    '''
+    Status dialog for display when status button is clicked.
+    '''
+    def __init__(self, player, status):
+        if status == 0:
+            message = "%s is currently injured and is unavailable for %s." % (player.get_name(mode=0), player.injury.get_injury_period())
+        elif status == 1:
+            message = "%s is currently suspended and is unavailable for %s." % (player.get_name(mode=0), player.injury.get_injury_period())
+
+        Gtk.MessageDialog.__init__(self)
+        self.set_transient_for(data.window)
+        self.set_title("Player Status")
+        self.set_markup(message)
+        self.add_button("_Close", Gtk.ResponseType.CLOSE)
+
+        self.run()
+        self.destroy()
