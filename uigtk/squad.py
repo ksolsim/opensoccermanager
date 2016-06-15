@@ -489,6 +489,7 @@ class Substitutions(uigtk.widgets.Grid):
         self.contextmenu = ContextMenu2(squad=1)
 
         self.buttons = []
+        self.statuses = []
 
         for count in range(0, 5):
             label = uigtk.widgets.Label("Sub _%i" % (count + 1))
@@ -509,6 +510,12 @@ class Substitutions(uigtk.widgets.Grid):
             self.attach(button, 1, count, 1, 1)
             self.buttons.append(button)
 
+            button = Gtk.Button()
+            button.set_size_request(25, -1)
+            button.connect("clicked", self.on_status_clicked, count)
+            self.attach(button, 2, count, 1, 1)
+            self.statuses.append(button)
+
     def on_drag_data_get(self, button, context, selection, info, time, positionid):
         '''
         Process dragged data and get player from specified position.
@@ -520,8 +527,6 @@ class Substitutions(uigtk.widgets.Grid):
 
             data = bytes("%i" % (player.playerid), "utf-8")
             selection.set(selection.get_target(), 8, data)
-
-        return
 
     def on_drag_data_received(self, button, context, x, y, selection, info, time, positionid):
         '''
@@ -535,8 +540,6 @@ class Substitutions(uigtk.widgets.Grid):
 
         if context.get_actions() == Gdk.DragAction.COPY:
             context.finish(True, False, time)
-
-        return
 
     def on_player_select_clicked(self, button, positionid):
         '''
@@ -570,6 +573,18 @@ class Substitutions(uigtk.widgets.Grid):
                                    event.button,
                                    event.time)
 
+    def on_status_clicked(self, button, positionid):
+        '''
+        Display message dialog for player status.
+        '''
+        player = data.user.club.squad.teamselection.get_sub_player_for_position(positionid)
+
+        if player:
+            if player.injury.get_injured():
+                StatusDialog(player, status=0)
+            elif player.suspension.get_suspended():
+                StatusDialog(player, status=1)
+
     def populate_subs(self):
         '''
         Update subs selection buttons with player name.
@@ -577,8 +592,18 @@ class Substitutions(uigtk.widgets.Grid):
         for count, player in enumerate(data.user.club.squad.teamselection.get_subs_selection()):
             if player:
                 self.buttons[count].set_label(player.get_name())
+
+                if player.injury.get_injured():
+                    self.statuses[count].set_label("I")
+                    self.statuses[count].set_visible(True)
+                elif player.suspension.get_suspended():
+                    self.statuses[count].set_label("S")
+                    self.statuses[count].set_visible(True)
+                else:
+                    self.statuses[count].set_label("")
             else:
                 self.buttons[count].set_label("")
+                self.statuses[count].set_label("")
 
 
 class PlayerSelect(Gtk.Dialog):
