@@ -384,6 +384,7 @@ class FirstTeam(uigtk.widgets.Grid):
 
             button = Gtk.Button()
             button.set_size_request(25, -1)
+            button.set_sensitive(False)
             button.connect("clicked", self.on_status_clicked, count)
             self.attach(button, 2, count, 1, 1)
             self.statuses.append(button)
@@ -470,15 +471,17 @@ class FirstTeam(uigtk.widgets.Grid):
 
                 if player.injury.get_injured():
                     self.statuses[count].set_label("I")
-                    self.statuses[count].set_visible(True)
+                    self.statuses[count].set_sensitive(True)
                 elif player.suspension.get_suspended():
                     self.statuses[count].set_label("S")
-                    self.statuses[count].set_visible(True)
+                    self.statuses[count].set_sensitive(True)
                 else:
                     self.statuses[count].set_label("")
+                    self.statuses[count].set_sensitive(False)
             else:
                 self.buttons[count].set_label("")
                 self.statuses[count].set_label("")
+                self.statuses[count].set_sensitive(False)
 
 
 class Substitutions(uigtk.widgets.Grid):
@@ -595,15 +598,17 @@ class Substitutions(uigtk.widgets.Grid):
 
                 if player.injury.get_injured():
                     self.statuses[count].set_label("I")
-                    self.statuses[count].set_visible(True)
+                    self.statuses[count].set_sensitive(True)
                 elif player.suspension.get_suspended():
                     self.statuses[count].set_label("S")
-                    self.statuses[count].set_visible(True)
+                    self.statuses[count].set_sensitive(True)
                 else:
                     self.statuses[count].set_label("")
+                    self.statuses[count].set_sensitive(False)
             else:
                 self.buttons[count].set_label("")
                 self.statuses[count].set_label("")
+                self.statuses[count].set_sensitive(False)
 
 
 class PlayerSelect(Gtk.Dialog):
@@ -970,9 +975,9 @@ class StatusDialog(Gtk.MessageDialog):
     '''
     def __init__(self, player, status):
         if status == 0:
-            message = "%s is currently injured and is unavailable for %s." % (player.get_name(mode=0), player.injury.get_injury_period())
+            message = "%s is currently injured and is unavailable for %s." % (player.get_name(mode=1), player.injury.get_injury_period())
         elif status == 1:
-            message = "%s is currently suspended and is unavailable for %s." % (player.get_name(mode=0), player.injury.get_injury_period())
+            message = "%s is currently suspended and is unavailable for %s." % (player.get_name(mode=1), player.injury.get_injury_period())
 
         Gtk.MessageDialog.__init__(self)
         self.set_transient_for(data.window)

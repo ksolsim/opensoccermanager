@@ -60,7 +60,7 @@ class ClubSearch(uigtk.widgets.Grid):
         scrolledwindow = uigtk.widgets.ScrolledWindow()
         self.attach(scrolledwindow, 0, 1, 1, 1)
 
-        self.liststore = Gtk.ListStore(int, str, str, str, str, int, str, int, 
+        self.liststore = Gtk.ListStore(int, str, str, str, str, int, str, int,
                                        str, str)
         self.treemodelfilter = self.liststore.filter_new()
         self.treemodelfilter.set_visible_func(self.filter_visible,
@@ -177,7 +177,7 @@ class ClubSearch(uigtk.widgets.Grid):
         if entry.get_text_length() > 0:
             self.reset_view()
 
-            self.buttonReset.set_sensitive(True)
+            self.filterbuttons.buttonReset.set_sensitive(True)
 
     def on_search_pressed(self, entry, position, event):
         '''
@@ -187,7 +187,7 @@ class ClubSearch(uigtk.widgets.Grid):
             self.entrySearch.set_text("")
             self.reset_view()
 
-            self.buttonReset.set_sensitive(False)
+            self.filterbuttons.buttonReset.set_sensitive(False)
 
     def on_search_changed(self, entry):
         '''

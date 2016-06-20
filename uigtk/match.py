@@ -65,7 +65,8 @@ class Match(uigtk.widgets.Grid):
 
         self.statistics = Statistics()
         self.statistics.set_visible(False)
-        self.notebook.append_page(self.statistics, uigtk.widgets.Label("_Statistics"))
+        self.notebook.append_page(self.statistics,
+                                  uigtk.widgets.Label("_Statistics"))
 
     def update_match_details(self, fixture):
         '''
@@ -76,12 +77,9 @@ class Match(uigtk.widgets.Grid):
         self.score.set_teams(fixture)
         self.set_tactics_buttons(fixture)
 
-        home = fixture.home.club
-        self.information.set_information(home.stadium.name, fixture.referee.name)
-
-        away = fixture.away.club
-
-        self.teams.set_teams_list(home, away)
+        self.information.set_information(fixture.home.club.stadium.name,
+                                         fixture.referee.name)
+        self.teams.set_teams_list(fixture.home.club, fixture.away.club)
 
         team = structures.match.Team(fixture)
         team.set_team_selection()
@@ -140,9 +138,6 @@ class Match(uigtk.widgets.Grid):
         self.buttonHomeTactics.set_sensitive(False)
         self.buttonAwayTactics.set_sensitive(False)
 
-        self.score.eventsHomeTeam.clear_events()
-        self.score.eventsAwayTeam.clear_events()
-
         data.window.mainscreen.menu.set_sensitive(True)
         data.window.mainscreen.information.set_continue_game_button()
         data.window.mainscreen.information.buttonContinue.set_sensitive(True)
@@ -166,6 +161,9 @@ class Match(uigtk.widgets.Grid):
         self.notebook.set_show_tabs(False)
         self.notebook.set_show_border(False)
         self.statistics.set_visible(False)
+
+        self.score.eventsHomeTeam.clear_events()
+        self.score.eventsAwayTeam.clear_events()
 
 
 class Score(Gtk.Grid):
@@ -259,6 +257,8 @@ class Events(uigtk.widgets.ScrolledWindow):
             for count, player in enumerate(goalscorers):
                 label = uigtk.widgets.Label(player.get_name(mode=1), leftalign=True)
                 self.grid.attach(label, 0, count, 1, 1)
+
+                print(player.get_name())
 
         self.show_all()
 
