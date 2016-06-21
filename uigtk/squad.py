@@ -23,6 +23,7 @@ import unicodedata
 
 import data
 import structures.filters
+import structures.position
 import structures.skills
 import uigtk.contextmenu
 import uigtk.widgets
@@ -389,6 +390,8 @@ class FirstTeam(uigtk.widgets.Grid):
             self.attach(button, 2, count, 1, 1)
             self.statuses.append(button)
 
+        self.position = structures.position.Position()
+
     def on_drag_data_get(self, button, context, selection, info, time, positionid):
         '''
         Process dragged data and get player from specified position.
@@ -464,6 +467,7 @@ class FirstTeam(uigtk.widgets.Grid):
         '''
         for count, position in enumerate(data.user.club.tactics.get_formation_positions()):
             self.labels[count].set_label("_%s" % (position))
+            self.labels[count].set_tooltip_text(self.position.get_position_name_by_positionid(position))
 
         for count, player in enumerate(data.user.club.squad.teamselection.get_team_selection()):
             if player:

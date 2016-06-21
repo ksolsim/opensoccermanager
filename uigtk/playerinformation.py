@@ -20,6 +20,7 @@ from gi.repository import Gtk
 from gi.repository import Gdk
 
 import data
+import structures.position
 import structures.skills
 import uigtk.contextmenu
 import uigtk.playersearch
@@ -92,6 +93,8 @@ class PlayerInformation(uigtk.widgets.Grid):
         self.training = Training()
         box.pack_start(self.training, False, False, 0)
 
+        self.position = structures.position.Position()
+
         self.contextmenu1 = uigtk.contextmenu.ContextMenu1()
         self.contextmenu2 = uigtk.contextmenu.ContextMenu2()
 
@@ -122,6 +125,7 @@ class PlayerInformation(uigtk.widgets.Grid):
         self.personal.labelClub.set_markup("Club: <a href='club'>%s</a>" % (club))
         self.personal.labelNationality.set_markup("Nation: <a href='nation'>%s</a>" % (player.nationality.name))
         self.personal.labelPosition.set_label("Position: %s" % (player.position))
+        self.personal.labelPosition.set_tooltip_text(self.position.get_position_name_by_positionid(player.position))
 
         for count, skill in enumerate(player.get_skills()):
             self.skills.labelAttributes[count].set_label("%s" % (skill))
