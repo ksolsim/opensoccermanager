@@ -56,7 +56,8 @@ class Player:
                 ("pace", [0, 99]),
                 ("stamina", [0, 99]),
                 ("ball_control", [0, 99]),
-                ("set_pieces", [0, 99]))
+                ("set_pieces", [0, 99]),
+                ("scout_recommends", False))
     defaults = collections.OrderedDict(defaults)
 
     def __init__(self):

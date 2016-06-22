@@ -70,7 +70,8 @@ class ContextMenu1(Gtk.Menu):
         '''
         Launch player information screen for selected player.
         '''
-        data.window.screen.change_visible_screen("playerinformation", player=self.player)
+        data.window.screen.change_visible_screen("playerinformation",
+                                                 player=self.player)
 
     def on_purchase_list_clicked(self, *args):
         '''
@@ -184,7 +185,8 @@ class ContextMenu2(Gtk.Menu):
         '''
         Launch player information screen for selected player.
         '''
-        data.window.screen.change_visible_screen("playerinformation", player=self.player)
+        data.window.screen.change_visible_screen("playerinformation",
+                                                 player=self.player)
 
     def on_purchase_offer_clicked(self, *args):
         '''

@@ -22,9 +22,11 @@ class Position:
                           "DL": "Left-Sided Defender",
                           "DR": "Right-Sided Defender",
                           "DC": "Central Defender",
+                          "D": "Defender",
                           "ML": "Left-Sided Midfielder",
                           "MR": "Right-Sided Midfielder",
                           "MC": "Central Midfielder",
+                          "M": "Midfielder",
                           "AF": "Forward",
                           "AS": "Striker"}
 

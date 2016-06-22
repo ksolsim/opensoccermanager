@@ -25,6 +25,8 @@ class Scouts(structures.staff.Staff):
         structures.staff.Staff.__init__(self)
 
         self.scoutid = 0
+        self.scoutreport = ScoutReport()
+        self.recommendations = Recommendations()
 
     def get_scoutid(self):
         '''
@@ -80,8 +82,19 @@ class Scouts(structures.staff.Staff):
         '''
         scout = self.hired[scoutid]
 
-        data.user.club.accounts.withdraw(amount=scout.get_payout(), category="staffwage")
+        data.user.club.accounts.withdraw(amount=scout.get_payout(),
+                                         category="staffwage")
         del self.hired[scoutid]
+
+    def get_scout_report(self):
+        '''
+        Get scout report if at least one scout is on staff.
+        '''
+        if self.get_staff_count() > 0:
+            self.scoutreport.get_scout_report()
+            return True
+
+        return False
 
 
 class Scout(structures.staff.Member):
@@ -102,3 +115,44 @@ class ScoutReport:
         Get scout reporting string for given report id.
         '''
         return self.report[reportid]
+
+
+class Recommendations:
+    def get_scout_recommends(self, shortlist_player):
+        '''
+        Get rating of individual given player from scout.
+        '''
+        shortlist_position = shortlist_player.position
+
+        equivalents = []
+
+        for playerid, player in data.user.club.squad.get_squad():
+            if shortlist_position in ("GK",):
+                equivalents.append(player)
+            elif shortlist_position in ("DL", "DR", "DC", "D"):
+                equivalents.append(player)
+            elif shortlist_position in ("ML", "MR", "MC", "M"):
+                equivalents.append(player)
+            elif shortlist_position in ("AF", "AS"):
+                equivalents.append(player)
+
+        averages = []
+
+        for player in equivalents:
+            skills = player.get_skills()
+
+            average = sum(skills[0:6]) + (skills[8] * 1.5) + (skills[5] * 0.2) + (skills[6] * 0.2) + (skills[7] * 1.5)
+            average = average / 9
+
+            averages.append(average)
+
+        position_average = sum(averages) / len(averages)
+
+        skills = shortlist_player.get_skills()
+
+        average = sum(skills[0:6]) + (skills[8] * 1.5) + (skills[5] * 0.2) + (skills[6] * 0.2) + (skills[7] * 1.5)
+        average = average / 9
+
+        status = average < position_average
+
+        return status

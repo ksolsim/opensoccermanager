@@ -385,6 +385,14 @@ class PlayerSearch(uigtk.widgets.Grid):
         if visible:
             visible = options["set_pieces"][0] <= model[treeiter][15] <= options["set_pieces"][1]
 
+        # Show scout recommended
+        if visible:
+            if options["scout_recommends"]:
+                playerid = model[treeiter][0]
+                player = data.players.get_player_by_id(playerid)
+
+                visible = data.user.club.scouts.recommendations.get_scout_recommends(player)
+
         return visible
 
     def populate_data(self):
@@ -597,6 +605,12 @@ class Filter(Gtk.Dialog):
         label.set_mnemonic_widget(self.set_pieces.minimum)
         frame.grid.attach(self.set_pieces, 5, 2, 1, 1)
 
+        frame = uigtk.widgets.CommonFrame("Skills")
+        self.vbox.pack_start(frame, True, True, 0)
+
+        self.checkbuttonShowScoutRecommends = uigtk.widgets.CheckButton("_Show Only Players Recommended By Scouting Team")
+        frame.grid.attach(self.checkbuttonShowScoutRecommends, 0, 0, 1, 1)
+
     def on_age_changed(self, spinbutton):
         '''
         Update age ranges on change of minimum age amount.
@@ -634,6 +648,7 @@ class Filter(Gtk.Dialog):
         self.stamina.set_values(options["stamina"])
         self.ball_control.set_values(options["ball_control"])
         self.set_pieces.set_values(options["set_pieces"])
+        self.checkbuttonShowScoutRecommends.set_active(options["scout_recommends"])
 
         if self.run() == Gtk.ResponseType.OK:
             options["own_players"] = self.checkbuttonShowOwnPlayers.get_active()
@@ -652,6 +667,7 @@ class Filter(Gtk.Dialog):
             options["stamina"] = self.stamina.get_values()
             options["ball_control"] = self.ball_control.get_values()
             options["set_pieces"] = self.set_pieces.get_values()
+            options["scout_recommends"] = self.checkbuttonShowScoutRecommends.get_active()
 
         self.hide()
 
