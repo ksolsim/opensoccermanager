@@ -20,6 +20,7 @@ from gi.repository import Gtk
 from gi.repository import Gdk
 
 import data
+import structures.scouts
 import structures.skills
 import uigtk.widgets
 
@@ -188,7 +189,11 @@ class Shortlist(Gtk.Grid):
         model, treeiter = self.treeview.treeselection.get_selected()
         playerid = model[treeiter][0]
 
-        ScoutReport()
+        player = data.players.get_player_by_id(playerid)
+
+        statusid = data.user.club.scouts.get_scout_report(player)
+
+        ScoutReport(player, statusid)
 
     def on_key_press_event(self, widget, event):
         '''
@@ -345,7 +350,7 @@ class ScoutReport(Gtk.MessageDialog):
     '''
     Message dialog reporting on the quality of the selected player.
     '''
-    def __init__(self):
+    def __init__(self, player, statusid):
         Gtk.MessageDialog.__init__(self)
         self.set_transient_for(data.window)
         self.set_modal(True)
@@ -353,6 +358,11 @@ class ScoutReport(Gtk.MessageDialog):
         self.set_title("Scout Report")
         self.add_button("_Close", Gtk.ResponseType.CLOSE)
         self.connect("response", self.on_response)
+
+        report = structures.scouts.ScoutReport()
+        message = report.get_scout_report(statusid)
+
+        self.set_markup(message % (player.get_name(mode=1)))
 
         self.show()
 

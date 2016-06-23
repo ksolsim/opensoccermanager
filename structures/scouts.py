@@ -25,7 +25,7 @@ class Scouts(structures.staff.Staff):
         structures.staff.Staff.__init__(self)
 
         self.scoutid = 0
-        self.scoutreport = ScoutReport()
+
         self.recommendations = Recommendations()
 
     def get_scoutid(self):
@@ -86,15 +86,11 @@ class Scouts(structures.staff.Staff):
                                          category="staffwage")
         del self.hired[scoutid]
 
-    def get_scout_report(self):
+    def get_scout_report(self, player):
         '''
         Get scout report if at least one scout is on staff.
         '''
-        if self.get_staff_count() > 0:
-            self.scoutreport.get_scout_report()
-            return True
-
-        return False
+        return self.recommendations.get_scout_report(player)
 
 
 class Scout(structures.staff.Member):
@@ -118,9 +114,43 @@ class ScoutReport:
 
 
 class Recommendations:
+    def __init__(self):
+        self.scoutreport = ScoutReport()
+
+    def get_scout_report(self, shortlist_player):
+        '''
+        Get scout report on given player.
+        '''
+        averages = []
+
+        for playerid, player in data.players.get_players():
+            if player.position == shortlist_player.position:
+                skills = player.get_skills()
+
+                average = sum(skills[0:6]) + (skills[8] * 1.5) + (skills[5] * 0.2) + (skills[6] * 0.2) + (skills[7] * 1.5)
+                average = average / 9
+
+                averages.append(average)
+
+        score = sum(averages) / len(averages)
+
+        skills = shortlist_player.get_skills()
+
+        average = sum(skills[0:6]) + (skills[8] * 1.5) + (skills[5] * 0.2) + (skills[6] * 0.2) + (skills[7] * 1.5)
+        average = average / 9
+
+        if average > score:
+            statusid = 2
+        elif average > score * 0.8:
+            statusid = 1
+        else:
+            statusid = 0
+
+        return statusid
+
     def get_scout_recommends(self, shortlist_player):
         '''
-        Get rating of individual given player from scout.
+        Get scout recommendation status for given player.
         '''
         shortlist_position = shortlist_player.position
 
