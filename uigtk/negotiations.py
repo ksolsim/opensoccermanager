@@ -257,7 +257,7 @@ class PurchaseEnquiry(uigtk.shared.TransferEnquiry):
 
     def show(self, player):
         if player.injury.get_injured():
-            self.set_markup("<span size='12000'><b>Approach %s for the purchase of %s?</b></span>" % (club.name, player.get_name(mode=1)))
+            self.set_markup("<span size='12000'><b>Approach %s for the purchase of %s?</b></span>" % (player.club.name, player.get_name(mode=1)))
             self.set_injury_warning(player)
         else:
             self.set_markup("Approach %s for the purchase of %s?" % (player.club.name, player.get_name(mode=1)))
@@ -277,7 +277,7 @@ class LoanEnquiry(uigtk.shared.TransferEnquiry):
 
     def show(self, player):
         if player.injury.get_injured():
-            self.set_markup("<span size='12000'><b>Approach %s for the loan of %s?</b></span>" % (club.name, player.get_name(mode=1)))
+            self.set_markup("<span size='12000'><b>Approach %s for the loan of %s?</b></span>" % (player.club.name, player.get_name(mode=1)))
             self.set_injury_warning(player)
         else:
             self.set_markup("Approach %s for the loan of %s?" % (player.club.name, player.get_name(mode=1)))
