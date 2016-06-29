@@ -22,6 +22,9 @@ import data
 
 
 class EditorNotFound(Gtk.MessageDialog):
+    '''
+    Message dialog shown when editor folder is not found.
+    '''
     def __init__(self):
         Gtk.MessageDialog.__init__(self)
         self.set_transient_for(data.window)
@@ -29,6 +32,7 @@ class EditorNotFound(Gtk.MessageDialog):
         self.set_title("Editor Not Found")
         self.add_button("_Close", Gtk.ResponseType.CLOSE)
         self.set_markup("<span size='12000'><b>Data Editor is not installed.</b></span>")
-        self.format_secondary_text("Place the editor folder into this directory.")
+        self.format_secondary_text("Place the editor folder into the OpenSoccerManager directory.")
+        self.set_property("message-type", Gtk.MessageType.ERROR)
         self.run()
         self.destroy()
