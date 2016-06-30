@@ -120,11 +120,13 @@ class Fixtures(uigtk.widgets.Grid):
         treeiter = model.get_iter(treepath)
 
         if not model.iter_has_child(treeiter):
-            fixtureid = model[treeiter][0]
             leagueid = int(self.comboboxLeagues.get_active_id())
+            fixtureid = model[treeiter][0]
 
-            data.window.screen.change_visible_screen("result")
-            data.window.screen.active.set_visible_result(leagueid, fixtureid)
+            league = data.leagues.get_league_by_id(leagueid)
+            fixture = league.fixtures.get_fixture_by_id(fixtureid)
+
+            data.window.screen.change_visible_screen("result", fixture=fixture)
 
     def on_friendly_clicked(self, *args):
         '''

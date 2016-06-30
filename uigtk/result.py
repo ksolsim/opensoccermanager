@@ -58,40 +58,6 @@ class Result(uigtk.widgets.Grid):
         self.treeviewAwaySquad = Squad()
         self.attach(self.treeviewAwaySquad, 1, 2, 1, 1)
 
-    def set_visible_result(self, league, fixture):
-        '''
-        Display result information for given fixture id in passed league.
-        '''
-        home = fixture.home.club
-        away = fixture.away.club
-
-        self.labelHome.set_markup("<a href='club'><span size='18000'><b>%s</b></span></a>" % (home.name))
-        self.labelHome.clubid = fixture.home.club.clubid
-        self.labelAway.set_markup("<a href='club'><span size='18000'><b>%s</b></span></a>" % (away.name))
-        self.labelAway.clubid = fixture.away.club.clubid
-
-        self.information.labelStadium.set_label(home.stadium.name)
-        self.information.labelReferee.set_label(fixture.referee.name)
-
-        self.labelNotPlayed.set_visible(not fixture.played)
-        self.treeviewHomeSquad.set_visible(fixture.played)
-        self.treeviewAwaySquad.set_visible(fixture.played)
-
-        if fixture.played:
-            self.labelResult.set_markup("<span size='18000'><b>%i - %i</b></span>" % (fixture.result))
-
-            self.treeviewHomeSquad.liststore.clear()
-
-            for player in fixture.home.team_selection[0]:
-                if player:
-                    self.treeviewHomeSquad.liststore.append([player.playerid, "", player.get_name(mode=1)])
-
-            self.treeviewAwaySquad.liststore.clear()
-
-            for player in fixture.away.team_selection[0]:
-                if player:
-                    self.treeviewAwaySquad.liststore.append([player.playerid, "", player.get_name(mode=1)])
-
     def on_label_activated(self, label, uri):
         '''
         Activate selected club and display information screen.
@@ -103,11 +69,52 @@ class Result(uigtk.widgets.Grid):
 
         return True
 
+    def set_visible_result(self, fixture):
+        '''
+        Display result information for given fixture id in passed league.
+        '''
+        self.labelHome.set_markup("<a href='club'><span size='18000'><b>%s</b></span></a>" % (fixture.home.club.name))
+        self.labelHome.clubid = fixture.home.club.clubid
+        self.labelAway.set_markup("<a href='club'><span size='18000'><b>%s</b></span></a>" % (fixture.away.club.name))
+        self.labelAway.clubid = fixture.away.club.clubid
+
+        self.information.labelStadium.set_label(fixture.home.club.stadium.name)
+        self.information.labelReferee.set_label(fixture.referee.name)
+
+        self.labelNotPlayed.set_visible(not fixture.played)
+        self.treeviewHomeSquad.set_visible(fixture.played)
+        self.treeviewAwaySquad.set_visible(fixture.played)
+
+        if fixture.played:
+            self.labelResult.set_markup("<span size='18000'><b>%i - %i</b></span>" % (fixture.result))
+
+            self.treeviewHomeSquad.liststore.clear()
+            self.treeviewAwaySquad.liststore.clear()
+
+            for player in fixture.home.team_selection[0]:
+                if player:
+                    self.treeviewHomeSquad.liststore.append([player.playerid,
+                                                             "",
+                                                             player.get_name(mode=1)])
+
+            for player in fixture.away.team_selection[0]:
+                if player:
+                    self.treeviewAwaySquad.liststore.append([player.playerid,
+                                                             "",
+                                                             player.get_name(mode=1)])
+
     def run(self):
-        self.show_all()
+        if "fixture" in self.kwargs:
+            self.show_all()
+
+            fixture = self.kwargs["fixture"]
+            self.set_visible_result(fixture)
 
 
 class Squad(uigtk.widgets.TreeView):
+    '''
+    Base squad listing object for selected team and substitutes.
+    '''
     def __init__(self):
         uigtk.widgets.TreeView.__init__(self)
         self.set_vexpand(True)

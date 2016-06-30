@@ -75,8 +75,7 @@ class Information(Gtk.Grid):
         '''
         Display result screen for next match
         '''
-        data.window.screen.change_visible_screen("result")
-        data.window.screen.active.set_visible_result(self.league, self.fixture)
+        data.window.screen.change_visible_screen("result", fixture=self.fixture)
 
     def on_continue_clicked(self, *args):
         '''
