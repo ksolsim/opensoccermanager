@@ -213,6 +213,10 @@ class NationSearch(uigtk.widgets.Grid):
         treeiter = self.treemodelsort.get_iter_first()
         self.treeviewSearch.treeselection.select_iter(treeiter)
 
+        if "nation" in self.kwargs:
+            NationSearch.nation = self.kwargs["nation"]
+            self.set_visible_nation(NationSearch.nation)
+
 
 class Position(uigtk.widgets.CommonFrame):
     def __init__(self, position):
@@ -243,7 +247,6 @@ class Position(uigtk.widgets.CommonFrame):
         Display player information screen when row activated.
         '''
         playerid = self.liststore[treepath][0]
-
         player = data.players.get_player_by_id(playerid)
 
         data.window.screen.change_visible_screen("playerinformation", player=player)

@@ -306,4 +306,8 @@ class ClubInformation(uigtk.widgets.Grid):
         self.liststoreHistory.insert(0, self.club.history.get_current_history())
 
     def run(self):
-        self.show_all()
+        if "club" in self.kwargs:
+            ClubInformation.club = self.kwargs["club"]
+            self.set_visible_club(ClubInformation.club)
+
+            self.show_all()

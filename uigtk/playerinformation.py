@@ -108,7 +108,7 @@ class PlayerInformation(uigtk.widgets.Grid):
         '''
         Update the display with the visible player for given id.
         '''
-        PlayerInformation.player = player
+        self.player = player
 
         if player.club:
             club = player.club.name
@@ -192,8 +192,7 @@ class Personal(uigtk.widgets.Grid):
         '''
         Load club information screen.
         '''
-        data.window.screen.change_visible_screen("clubinformation")
-        data.window.screen.active.set_visible_club(self.club)
+        data.window.screen.change_visible_screen("clubinformation", club=self.club)
 
         return True
 
@@ -201,8 +200,7 @@ class Personal(uigtk.widgets.Grid):
         '''
         Load nation information screen.
         '''
-        data.window.screen.change_visible_screen("nationsearch")
-        data.window.screen.active.set_visible_nation(self.nation)
+        data.window.screen.change_visible_screen("nationsearch", nation=self.nation)
 
         return True
 

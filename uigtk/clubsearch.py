@@ -167,8 +167,7 @@ class ClubSearch(uigtk.widgets.Grid):
 
         club = data.clubs.get_club_by_id(clubid)
 
-        data.window.screen.change_visible_screen("clubinformation")
-        data.window.screen.active.set_visible_club(club)
+        data.window.screen.change_visible_screen("clubinformation", club=club)
 
     def on_search_activated(self, entry):
         '''
@@ -307,8 +306,7 @@ class ContextMenu(Gtk.Menu):
         '''
         Launch player information screen for selected club.
         '''
-        data.window.screen.change_visible_screen("clubinformation")
-        data.window.screen.active.set_visible_club(self.club)
+        data.window.screen.change_visible_screen("clubinformation", club=self.club)
 
     def show(self):
         model, treeiter = ClubSearch.treeselection.get_selected()
