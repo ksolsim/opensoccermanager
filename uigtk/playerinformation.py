@@ -95,7 +95,7 @@ class PlayerInformation(uigtk.widgets.Grid):
 
         self.position = structures.position.Position()
 
-        self.contextmenu1 = uigtk.contextmenu.ContextMenu1()
+        self.contextmenu1 = uigtk.contextmenu.ContextMenu1(info_item=False)
         self.contextmenu2 = uigtk.contextmenu.ContextMenu2()
 
     def on_back_clicked(self, *args):

@@ -23,19 +23,52 @@ import structures.transfer
 import uigtk.widgets
 
 
-class ContextMenu1(Gtk.Menu):
+class ContextMenu(Gtk.Menu):
     '''
-    Context menu displayed for players belonging to user club.
+    Base context menu structure and methods.
     '''
-    def __init__(self):
+    def __init__(self, info_item):
         Gtk.Menu.__init__(self)
 
-        menuitem = uigtk.widgets.MenuItem("_Player Information")
-        menuitem.connect("activate", self.on_player_information_clicked)
+        if info_item:
+            menuitem = uigtk.widgets.MenuItem("_Player Information")
+            menuitem.connect("activate", self.on_player_information_clicked)
+            self.append(menuitem)
+
+            separator = Gtk.SeparatorMenuItem()
+            self.append(separator)
+
+        menuitem = uigtk.widgets.MenuItem("Add To _Comparison")
+        menuitem.connect("activate", self.on_comparison_clicked)
         self.append(menuitem)
 
         separator = Gtk.SeparatorMenuItem()
         self.append(separator)
+
+    def on_player_information_clicked(self, *args):
+        '''
+        Launch player information screen for selected player.
+        '''
+        data.window.screen.change_visible_screen("playerinformation",
+                                                 player=self.player)
+
+    def on_comparison_clicked(self, *args):
+        '''
+        Add player to stack for comparison.
+        '''
+        data.comparison.add_to_comparison(self.player)
+
+    def show(self):
+        self.update_sensitivity()
+        self.show_all()
+
+
+class ContextMenu1(ContextMenu):
+    '''
+    Context menu displayed for players belonging to user club.
+    '''
+    def __init__(self, info_item=True):
+        ContextMenu.__init__(self, info_item)
 
         self.menuitemAddPurchase = uigtk.widgets.MenuItem("_Add To Purchase List")
         self.menuitemAddPurchase.connect("activate", self.on_purchase_list_clicked)
@@ -58,20 +91,6 @@ class ContextMenu1(Gtk.Menu):
         self.menuitemNotForSale = uigtk.widgets.CheckMenuItem("_Not For Sale")
         self.menuitemNotForSale.connect("toggled", self.on_not_for_sale_clicked)
         self.append(self.menuitemNotForSale)
-
-        separator = Gtk.SeparatorMenuItem()
-        self.append(separator)
-
-        menuitem = uigtk.widgets.MenuItem("Add To _Comparison")
-        menuitem.connect("activate", self.on_comparison_clicked)
-        self.append(menuitem)
-
-    def on_player_information_clicked(self, *args):
-        '''
-        Launch player information screen for selected player.
-        '''
-        data.window.screen.change_visible_screen("playerinformation",
-                                                 player=self.player)
 
     def on_purchase_list_clicked(self, *args):
         '''
@@ -126,12 +145,6 @@ class ContextMenu1(Gtk.Menu):
         '''
         self.player.not_for_sale = checkmenuitem.get_active()
 
-    def on_comparison_clicked(self, *args):
-        '''
-        Add player to stack for comparison.
-        '''
-        data.comparison.add_to_comparison(self.player)
-
     def update_sensitivity(self):
         '''
         Update menu item sensitivity for available options.
@@ -142,24 +155,13 @@ class ContextMenu1(Gtk.Menu):
         self.menuitemRemoveLoan.set_sensitive(data.loan_list.get_player_listed(self.player))
         self.menuitemNotForSale.set_active(self.player.not_for_sale)
 
-    def show(self):
-        self.update_sensitivity()
-        self.show_all()
 
-
-class ContextMenu2(Gtk.Menu):
+class ContextMenu2(ContextMenu):
     '''
     Context menu for players out of contract or contracted to other clubs.
     '''
-    def __init__(self):
-        Gtk.Menu.__init__(self)
-
-        menuitem = uigtk.widgets.MenuItem("_Player Information")
-        menuitem.connect("activate", self.on_player_information_clicked)
-        self.append(menuitem)
-
-        separator = Gtk.SeparatorMenuItem()
-        self.append(separator)
+    def __init__(self, info_item=True):
+        ContextMenu.__init__(self, info_item)
 
         self.menuitemPurchase = uigtk.widgets.MenuItem("Make Offer To _Purchase")
         self.menuitemPurchase.connect("activate", self.on_purchase_offer_clicked)
@@ -173,20 +175,6 @@ class ContextMenu2(Gtk.Menu):
         self.menuitemRemoveShortlist = uigtk.widgets.MenuItem("_Remove From Shortlist")
         self.menuitemRemoveShortlist.connect("activate", self.on_remove_from_shortlist_clicked)
         self.append(self.menuitemRemoveShortlist)
-
-        separator = Gtk.SeparatorMenuItem()
-        self.append(separator)
-
-        menuitem = uigtk.widgets.MenuItem("Add To _Comparison")
-        menuitem.connect("activate", self.on_comparison_clicked)
-        self.append(menuitem)
-
-    def on_player_information_clicked(self, *args):
-        '''
-        Launch player information screen for selected player.
-        '''
-        data.window.screen.change_visible_screen("playerinformation",
-                                                 player=self.player)
 
     def on_purchase_offer_clicked(self, *args):
         '''
@@ -217,12 +205,6 @@ class ContextMenu2(Gtk.Menu):
             data.user.club.shortlist.remove_from_shortlist(self.player)
             self.update_sensitivity()
 
-    def on_comparison_clicked(self, *args):
-        '''
-        Add player to stack for comparison.
-        '''
-        data.comparison.add_to_comparison(self.player)
-
     def update_sensitivity(self):
         '''
         Update menu item sensitivity for available options.
@@ -237,7 +219,3 @@ class ContextMenu2(Gtk.Menu):
         else:
             self.menuitemPurchase.set_label("Make Offer to _Sign")
             self.menuitemLoan.set_sensitive(False)
-
-    def show(self):
-        self.update_sensitivity()
-        self.show_all()
