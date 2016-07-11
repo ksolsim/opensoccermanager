@@ -151,7 +151,7 @@ class Display(uigtk.widgets.Grid):
         '''
         Launch player information screen for selected player.
         '''
-        model = sef.treeview.get_model()
+        model = self.treeview.get_model()
         playerid = model[treepath][0]
 
         player = data.players.get_player_by_id(playerid)
@@ -181,9 +181,18 @@ class Goalscorers(uigtk.widgets.Grid):
         self.display.treeview.append_column(treeviewcolumn)
 
     def populate_data(self):
-        pass
+        self.liststore.clear()
+
+        for playerid, goal in data.goalscorers.get_sorted_goals():
+            self.liststore.append([playerid,
+                                   goal.player.get_name(mode=1),
+                                   goal.player.club.name,
+                                   goal.player.club.league.name,
+                                   goal.league,
+                                   ])
 
     def run(self):
+        self.populate_data()
         self.show_all()
 
 
@@ -325,7 +334,11 @@ class Referees(uigtk.widgets.Grid):
             self.liststore.append([refereeid,
                                    referee.name,
                                    referee.league.name,
-                                   0, 0, 0, 0])
+                                   referee.games,
+                                   referee.yellow_cards,
+                                   referee.red_cards,
+                                   referee.get_points()
+                                   ])
 
     def run(self):
         self.populate_data()

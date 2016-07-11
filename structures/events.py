@@ -74,6 +74,11 @@ class Events:
         elif fixture.result[0] < fixture.result[1]:
             fixture.away.club.tactics.pay_bonus()
 
+        for goalscorers in (fixture.home.goalscorers, fixture.away.goalscorers):
+            if goalscorers:
+                for goalscorer in goalscorers:
+                    data.goalscorers.add_goal(goalscorer, 1)
+
         fixture.referee.increment_statistics(fixture)
 
         fixture.store_team_selection()

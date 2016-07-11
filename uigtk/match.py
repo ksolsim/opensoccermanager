@@ -258,8 +258,6 @@ class Events(uigtk.widgets.ScrolledWindow):
                 label = uigtk.widgets.Label(player.get_name(mode=1), leftalign=True)
                 self.grid.attach(label, 0, count, 1, 1)
 
-                print(player.get_name())
-
         self.show_all()
 
     def clear_events(self):

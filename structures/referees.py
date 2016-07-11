@@ -73,7 +73,8 @@ class Referees:
                               key=lambda item: (item[1].get_points(),
                                                 item[1].red_cards,
                                                 item[1].yellow_cards,
-                                                item[1].games))
+                                                item[1].games),
+                              reverse=True)
 
         return referees
 

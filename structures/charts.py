@@ -36,27 +36,35 @@ class Goalscorers:
         '''
         Return sorted list of goalscorers.
         '''
+        goals = sorted(self.goals.items(),
+                       key=lambda item: (item[1].league),
+                       reverse=True)
+
+        print(goals[:25])
+
+        return goals[:25]
 
     def get_goals_for_player(self, player):
         '''
         Return goals for given player.
         '''
+        goals = 0
+
         if player.playerid in self.goals:
-            return self.goals[player.playerid]
-        else:
-            return None
+            goal = self.goals[player.playerid]
+            goals = goal.league
+
+        return goals
 
     def add_goal(self, player, goals):
         '''
         Add player to goals chart.
         '''
-        if player.playerid in self.goals:
-            goal = self.Goal(player)
-            goal.league += goals
-            self.goals[player.playerid] = goal
-        else:
-            goal = self.goals[player.playerid]
-            goal.league += goals
+        if player.playerid not in self.goals.keys():
+            self.goals[player.playerid] = self.Goal(player)
+
+        goal = self.goals[player.playerid]
+        goal.league += goals
 
     def clear_goals(self):
         '''
@@ -67,7 +75,7 @@ class Goalscorers:
 
 class Assists:
     '''
-    Storage class for assists.
+    Storage class for assists made in game.
     '''
     class Assist:
         '''
