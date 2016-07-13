@@ -24,6 +24,7 @@ import data
 class TeamTraining:
     def __init__(self):
         self.team_training = [0] * 42
+        self.temporary = [0] * 42
 
         self.timeout = 6
 
@@ -43,18 +44,28 @@ class TeamTraining:
 
     def get_random_schedule(self):
         '''
-        Apply new random schedule for team training.
+        Get random schedule for display to user.
         '''
+        self.temporary = [0] * 42
+
         values = [count for count in range(2, 18)]
         random.shuffle(values)
 
         for count in range(0, 6):
-            self.team_training[count * 6] = values[count * 2]
-            self.team_training[count * 6 + 1] = values[count * 2 + 1]
-            self.team_training[count * 6 + 2] = 1
-            self.team_training[count * 6 + 3] = 0
-            self.team_training[count * 6 + 4] = 0
-            self.team_training[count * 6 + 5] = 0
+            self.temporary[count * 6] = values[count * 2]
+            self.temporary[count * 6 + 1] = values[count * 2 + 1]
+            self.temporary[count * 6 + 2] = 1
+            self.temporary[count * 6 + 3] = 0
+            self.temporary[count * 6 + 4] = 0
+            self.temporary[count * 6 + 5] = 0
+
+        return self.temporary
+
+    def set_random_schedule(self):
+        '''
+        Apply new random schedule for team training.
+        '''
+        self.team_training = [item for item in self.temporary]
 
         self.get_random_timeout()
 
@@ -82,9 +93,8 @@ class TeamTraining:
         Return True if the team is being overworked.
         '''
         count = sum(1 for trainingid in self.team_training if trainingid != 0)
-        overworked = count > 18
 
-        return overworked
+        return count > 18
 
     def get_team_training_scheduled(self):
         '''
@@ -114,13 +124,13 @@ class TeamTraining:
             if self.timeout == 0:
                 if self.get_team_training_scheduled():
                     data.user.club.news.publish("TT02")
-                    self.get_random_timeout()
                 else:
                     data.user.club.news.publish("TT01")
-                    self.get_random_timeout()
 
                 if self.get_sunday_training():
                     data.user.club.news.publish("TT03")
 
                 if self.get_overworked_training():
                     data.user.club.news.publish("TT04")
+
+                self.get_random_timeout()

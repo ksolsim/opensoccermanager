@@ -70,21 +70,42 @@ class TeamTraining(uigtk.widgets.Grid):
 
                 combobox.set_hexpand(True)
                 combobox.value = count
-                combobox.connect("changed", self.on_combobox_changed)
+                connectid = combobox.connect("changed", self.on_combobox_changed)
+                combobox.connectid = connectid
 
                 grid.attach(combobox, hour + 1, day + 1, 1, 1)
                 self.comboboxes.append(combobox)
 
                 count += 1
 
+        grid = uigtk.widgets.Grid()
+        frame.grid.attach(grid, 0, 1, 1, 1)
+
         buttonbox = uigtk.widgets.ButtonBox()
         buttonbox.set_layout(Gtk.ButtonBoxStyle.START)
-        frame.grid.attach(buttonbox, 0, 1, 1, 1)
+        grid.attach(buttonbox, 0, 0, 1, 1)
 
         buttonAssistant = uigtk.widgets.Button("_Assistant")
         buttonAssistant.set_tooltip_text("Have assistant manager generate a training schedule.")
         buttonAssistant.connect("clicked", self.on_assistant_clicked)
         buttonbox.add(buttonAssistant)
+
+        self.boxAccept = Gtk.Box()
+        self.boxAccept.set_spacing(5)
+        grid.attach(self.boxAccept, 1, 0, 1, 1)
+
+        label = uigtk.widgets.Label("Do you wish to apply the generated schedule?", leftalign=True)
+        self.boxAccept.add(label)
+
+        buttonbox = uigtk.widgets.ButtonBox()
+        self.boxAccept.add(buttonbox)
+
+        self.buttonAccept = uigtk.widgets.Button("_Accept")
+        self.buttonAccept.connect("clicked", self.on_accept_schedule)
+        buttonbox.add(self.buttonAccept)
+        self.buttonReject = uigtk.widgets.Button("_Reject")
+        self.buttonReject.connect("clicked", self.on_reject_schedule)
+        buttonbox.add(self.buttonReject)
 
         percentages = Percentages()
         self.attach(percentages, 0, 1, 1, 1)
@@ -99,17 +120,48 @@ class TeamTraining(uigtk.widgets.Grid):
         '''
         Generate random training session and display.
         '''
-        data.user.club.team_training.get_random_schedule()
+        self.boxAccept.show_all()
+
+        self.populate_generated()
+
+    def on_accept_schedule(self, *args):
+        '''
+        Accept randomly generated schedule and save.
+        '''
+        self.boxAccept.hide()
+
+        data.user.club.team_training.set_random_schedule()
+
+        self.populate_data()
+
+    def on_reject_schedule(self, *args):
+        '''
+        Reject randomly generated schedule and revert to previous.
+        '''
+        self.boxAccept.hide()
 
         self.populate_data()
 
     def populate_data(self):
+        '''
+        Populate team training schedule in use.
+        '''
         for count, trainingid in enumerate(data.user.club.team_training.get_training()):
             self.comboboxes[count].set_active(trainingid)
+
+    def populate_generated(self):
+        '''
+        Populate generated team training schedule.
+        '''
+        for count, trainingid in enumerate(data.user.club.team_training.get_random_schedule()):
+            self.comboboxes[count].handler_block(self.comboboxes[count].connectid)
+            self.comboboxes[count].set_active(trainingid)
+            self.comboboxes[count].handler_unblock(self.comboboxes[count].connectid)
 
     def run(self):
         self.populate_data()
         self.show_all()
+        self.boxAccept.hide()
 
 
 class Percentages(uigtk.widgets.CommonFrame):
