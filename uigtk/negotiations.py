@@ -212,6 +212,9 @@ class ContextMenu(Gtk.Menu):
 
         Gtk.Menu.__init__(self)
 
+        menuitemRespond = uigtk.widgets.MenuItem("_Respond To Transfer")
+        menuitemRespond.connect("activate", self.on_respond_clicked)
+        self.append(menuitemRespond)
         menuitem = uigtk.widgets.MenuItem("_End Transfer")
         menuitem.connect("activate", self.on_end_clicked)
         self.append(menuitem)
@@ -221,20 +224,17 @@ class ContextMenu(Gtk.Menu):
         menuitem.connect("activate", self.on_player_information_clicked)
         self.append(menuitem)
 
+    def on_respond_clicked(self, *args):
+        '''
+        Display response message to selected negotiation.
+        '''
+        self.interface.on_respond_clicked()
+
     def on_end_clicked(self, *args):
         '''
         Display message to confirm whether transfer will be ended.
         '''
-        model, treeiter = self.interface.treeview.treeselection.get_selected()
-        negotiationid = model[treeiter][0]
-        negotiation = data.negotiations.get_negotiation_by_id(negotiationid)
-
-        dialog = EndTransfer(negotiation)
-
-        if dialog.show():
-            data.negotiations.end_negotiation(negotiation)
-
-            self.interface.populate_data()
+        self.interface.on_end_clicked()
 
     def on_player_information_clicked(self, *args):
         '''
