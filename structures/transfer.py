@@ -21,6 +21,14 @@ import random
 import data
 
 
+class Transfers:
+    '''
+    List of in-game transfers between clubs.
+    '''
+    def __init__(self):
+        self.transfers = []
+
+
 class TransferType:
     def __init__(self):
         self.transfer_types = ("Purchase", "Loan", "Free Transfer")
@@ -80,6 +88,16 @@ class PurchaseList(TransferList):
     '''
     Listing of players available for purchase by other clubs.
     '''
+    class PurchaseListing:
+        '''
+        Object containing purchase listing details.
+        '''
+        def __init__(self, player, value):
+            self.player = player
+            self.value = value
+
+            player.not_for_sale = False
+
     def __init__(self):
         TransferList.__init__(self)
 
@@ -106,22 +124,18 @@ class PurchaseList(TransferList):
                     choice = random.choice((False, True))
 
                     if score[playerid] < average * 0.125 and choice:
-                        listing = PurchaseListing(player, player.value.get_value())
+                        listing = self.PurchaseListing(player, player.value.get_value())
                         self.add_to_list(listing)
 
 
-class PurchaseListing:
-    '''
-    Object containing purchase listing details.
-    '''
-    def __init__(self, player, value):
-        self.player = player
-        self.value = value
-
-        player.not_for_sale = False
-
-
 class LoanList(TransferList):
+    class LoanListing:
+        '''
+        Object containing loan listing details.
+        '''
+        def __init__(self, player):
+            self.player = player
+
     def __init__(self):
         TransferList.__init__(self)
 
@@ -153,13 +167,5 @@ class LoanList(TransferList):
                     choice = random.choice((False, True))
 
                     if score[playerid] < average * 0.125 and choice:
-                        listing = LoanListing(player)
+                        listing = self.LoanListing(player)
                         self.add_to_list(listing)
-
-
-class LoanListing:
-    '''
-    Object containing loan listing details.
-    '''
-    def __init__(self, player):
-        self.player = player

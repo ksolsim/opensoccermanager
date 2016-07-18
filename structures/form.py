@@ -27,7 +27,7 @@ class Form:
         '''
         Insert form character to list.
         '''
-        self.form.insert(0, form)
+        self.form.append(form)
 
     def get_form(self):
         '''
@@ -39,7 +39,7 @@ class Form:
         '''
         Return form list for given required length.
         '''
-        return self.form[:length]
+        return self.form[-length:]
 
     def get_form_string_for_length(self, length):
         '''

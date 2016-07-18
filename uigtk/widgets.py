@@ -125,6 +125,13 @@ class RadioButton(Gtk.RadioButton):
         self.set_use_underline(True)
 
 
+class MenuButton(Gtk.MenuButton):
+    def __init__(self, label=""):
+        Gtk.MenuButton.__init__(self)
+        self.set_label(label)
+        self.set_use_underline(True)
+
+
 class SpinButton(Gtk.SpinButton):
     '''
     SpinButton with tick snapping and defined increments.

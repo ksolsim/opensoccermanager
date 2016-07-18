@@ -91,8 +91,13 @@ class Standings(Gtk.Grid):
         treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Points", column=9)
         treeviewcolumn.set_fixed_width(50)
         treeview.append_column(treeviewcolumn)
-        treeviewcolumn = uigtk.widgets.TreeViewColumn(title="Form", column=10)
+
+        cellrenderertext = Gtk.CellRendererText()
+        cellrenderertext.set_property("font", "monospace")
+        treeviewcolumn = Gtk.TreeViewColumn(title="Form")
         treeviewcolumn.set_fixed_width(100)
+        treeviewcolumn.pack_start(cellrenderertext, True)
+        treeviewcolumn.add_attribute(cellrenderertext, "text", 10)
         treeview.append_column(treeviewcolumn)
 
     def on_row_activated(self, treeview, treepath, treeviewcolumn):

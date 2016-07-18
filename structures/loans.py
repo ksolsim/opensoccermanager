@@ -17,37 +17,84 @@
 
 
 class Loans:
-    class Loan:
-        def __init__(self):
-            self.player = None
-            self.period = 0
-
     def __init__(self):
-        self.loans = {}
+        self.loans = []
 
-        self.loanid = 0
-
-    def get_loanid(self):
+    def complete_loan(self, player, club, period):
         '''
-        Return new loan id.
+        Complete loan transfer and join new club.
         '''
-        self.loanid += 1
+        loan = Loan(player, period)
 
-        return self.loanid
+        player.club.loan_out.add_loan_out(loan)
+        club.loans_in.add_loan_in(loan)
 
-    def end_loan(self, playerid):
+        self.loans.append(loan)
+
+    def extend_loan(self, player):
+        '''
+        Query loan extension for given player.
+        '''
+
+    def end_loan(self, player):
         '''
         End the loan contract and return player to parent club.
         '''
+        self.loans.remove(player.playerid)
 
     def update_loans(self):
         '''
         Update loan object and return any players at end of their loan spell.
         '''
-        for loan in game.loans.values():
+        for loan in self.loans:
             loan.period -= 1
 
             if loan.period in (4, 8, 12):
-                pass
+                data.user.club.news.publish("LA01",
+                                            player=loan.player.get_name(mode=1),
+                                            weeks=loan.period)
             elif loan.period == 0:
                 self.end_loan()
+
+    def get_player_on_loan(self, player):
+        '''
+        Return whether player is on loan.
+        '''
+        for loan in self.loans:
+            if player is loan.player:
+                return True
+
+        return False
+
+
+class Loan:
+    '''
+    Loan attribute information object.
+    '''
+    def __init__(self, player, period):
+        self.player = player
+        self.club = player.club
+
+        self.period = period
+
+
+class LoansIn:
+    '''
+    Players that have been loaned by the club from other clubs.
+    '''
+    def __init__(self):
+        self.loans = []
+
+    def add_loan_in(self, loan):
+        self.loans.append(loan)
+
+
+class LoansOut:
+    '''
+    Players that have been loaned out by the club to other clubs.
+    '''
+    def __init__(self):
+        self.loans = []
+
+    def add_loan_out(self):
+        self.loans.append(loan)

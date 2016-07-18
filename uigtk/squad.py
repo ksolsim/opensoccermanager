@@ -306,6 +306,11 @@ class SquadList(Gtk.ListStore):
         self.clear()
 
         for playerid, player in data.user.club.squad.get_squad():
+            if not player.injury.get_injured():
+                injury = "Not currently injured."
+            else:
+                injury = "Out for %s with a %s." % (player.injury.get_injury_period(), player.injury.get_injury_name())
+
             self.append([playerid,
                          player.get_name(),
                          player.get_age(),
@@ -333,8 +338,8 @@ class SquadList(Gtk.ListStore):
                          player.rating.get_average_rating(),
                          player.injury.get_injured(),
                          player.suspension.get_suspended(),
-                         False,
-                         ""])
+                         data.loans.get_player_on_loan(player),
+                         injury])
 
 
 class Team:

@@ -392,6 +392,7 @@ class LoanNegotiation(Negotiation):
     def __init__(self, negotiationid, player):
         Negotiation.__init__(self, negotiationid, player)
         self.transfer_type = 1
+        self.period = 0
 
     def respond_to_loan(self):
         '''
@@ -416,7 +417,7 @@ class LoanNegotiation(Negotiation):
             dialog = uigtk.negotiations.CompleteTransfer(self)
 
             if dialog.show():
-                print("Complete move")
+                self.complete_transfer()
 
     def consider_enquiry(self):
         '''
@@ -451,7 +452,7 @@ class LoanNegotiation(Negotiation):
         '''
         Complete loan of player.
         '''
-        print(self.player.get_name())
+        data.loans.complete_loan(self.player, self.club, self.period)
 
 
 class FreeNegotiation(Negotiation):

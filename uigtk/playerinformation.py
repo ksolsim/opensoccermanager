@@ -45,8 +45,7 @@ class PlayerInformation(uigtk.widgets.Grid):
         buttonBack.set_tooltip_text("Return to previously visible screen.")
         buttonBack.connect("clicked", self.on_back_clicked)
         buttonbox.add(buttonBack)
-        self.buttonActions = Gtk.MenuButton("_Actions")
-        self.buttonActions.set_use_underline(True)
+        self.buttonActions = uigtk.widgets.MenuButton("_Actions")
         self.buttonActions.set_tooltip_text("Perform actions on current player.")
         buttonbox.add(self.buttonActions)
 

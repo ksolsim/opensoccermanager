@@ -172,6 +172,7 @@ class Score(Gtk.Grid):
     '''
     def __init__(self):
         Gtk.Grid.__init__(self)
+        self.set_column_spacing(5)
         self.set_hexpand(True)
         self.set_column_homogeneous(True)
 

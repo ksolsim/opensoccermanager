@@ -214,8 +214,8 @@ class ContextMenu2(ContextMenu):
         self.menuitemRemoveShortlist.set_sensitive(sensitive)
 
         if self.player.club:
-            self.menuitemPurchase.set_label("Make Offer to _Purchase")
+            self.menuitemPurchase.set_label("Make Offer To _Purchase")
             self.menuitemLoan.set_sensitive(True)
         else:
-            self.menuitemPurchase.set_label("Make Offer to _Sign")
+            self.menuitemPurchase.set_label("Make Offer To _Sign")
             self.menuitemLoan.set_sensitive(False)

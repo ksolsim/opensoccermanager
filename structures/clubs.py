@@ -70,6 +70,8 @@ class Clubs:
             self.form = structures.form.Form()
             self.expectation = structures.expectation.Expectation()
             self.history = History(self)
+            self.loans_in = structures.loans.LoansIn()
+            self.loans_out = structures.loans.LoansOut()
 
         def get_total_value(self):
             '''
