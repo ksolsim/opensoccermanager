@@ -65,7 +65,7 @@ class Menu(Gtk.MenuBar):
                                      key,
                                      modifier,
                                      Gtk.AccelFlags.VISIBLE)
-        menuitemSave.connect("activate", uigtk.filedialog.SaveDialog)
+        menuitemSave.connect("activate", self.on_save_clicked)
         menu.append(menuitemSave)
         menuitemDelete = uigtk.widgets.MenuItem("_Delete Game...")
         menuitemDelete.connect("activate", uigtk.deletedialog.DeleteDialog)
@@ -313,6 +313,14 @@ class Menu(Gtk.MenuBar):
         elif response == Gtk.ResponseType.ACCEPT:
             data.window.welcome.set_show_welcome_screen()
 
+        dialog.destroy()
+
+    def on_save_clicked(self, *args):
+        '''
+        Display save file dialog.
+        '''
+        dialog = uigtk.filedialog.SaveDialog()
+        dialog.run()
         dialog.destroy()
 
     def on_print_clicked(self, *args):

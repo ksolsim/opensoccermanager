@@ -29,13 +29,6 @@ class User:
         self.clubid = clubid
         self.club = data.clubs.get_club_by_id(clubid)
 
-    def set_club(self, clubid):
-        '''
-        Load club object and store for access.
-        '''
-        self.clubid = clubid
-        self.club = data.clubs.get_club_by_id(clubid)
-
 
 class Names:
     '''

@@ -46,6 +46,8 @@ class Start:
     Object initialisation for in-game data structures.
     '''
     def __init__(self, clubid, season):
+        data.unsaved = True
+
         data.calendar = structures.calendar.Calendar()
         data.date = structures.date.Date(season)
         data.continuegame = structures.proceed.ContinueGame()

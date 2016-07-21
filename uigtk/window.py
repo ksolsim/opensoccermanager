@@ -67,14 +67,33 @@ class Window(Gtk.Window):
         data.preferences.write_to_config()
 
         if data.preferences.confirm_quit:
-            dialog = uigtk.quitdialog.QuitDialog()
+            dialogQuit = uigtk.quitdialog.QuitDialog()
 
-            if dialog.run() == Gtk.ResponseType.OK:
+            if dialogQuit.run() == Gtk.ResponseType.OK:
                 Gtk.main_quit()
             else:
-                dialog.destroy()
+                dialogQuit.destroy()
         else:
-            Gtk.main_quit()
+            if data.unsaved:
+                dialogUnsaved = uigtk.quitdialog.UnsavedDialog()
+                response = dialogUnsaved.run()
+
+                if response == Gtk.ResponseType.ACCEPT:
+                    dialogUnsaved.destroy()
+
+                    dialogSave = uigtk.filedialog.SaveDialog()
+                    response = dialogSave.run()
+
+                    if response == Gtk.ResponseType.OK:
+                        Gtk.main_quit()
+                    else:
+                        dialogSave.destroy()
+                elif response == Gtk.ResponseType.REJECT:
+                    Gtk.main_quit()
+                else:
+                    dialogUnsaved.destroy()
+            else:
+                Gtk.main_quit()
 
         return True
 

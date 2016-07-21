@@ -32,6 +32,7 @@ class LoadDialog(Gtk.FileChooserDialog):
         self.set_title("Load Game")
         self.add_button("_Cancel", Gtk.ResponseType.CANCEL)
         self.add_button("_Open", Gtk.ResponseType.OK)
+        self.set_default_response(Gtk.ResponseType.CANCEL)
         self.set_action(Gtk.FileChooserAction.OPEN)
         self.set_current_folder(data.preferences.save_path)
         self.connect("response", self.on_response)
@@ -58,16 +59,11 @@ class SaveDialog(Gtk.FileChooserDialog):
         self.set_title("Save Game")
         self.add_button("_Cancel", Gtk.ResponseType.CANCEL)
         self.add_button("_Save", Gtk.ResponseType.OK)
+        self.set_default_response(Gtk.ResponseType.OK)
         self.set_action(Gtk.FileChooserAction.SAVE)
         self.set_current_folder(data.preferences.save_path)
-        self.connect("response", self.on_response)
 
         filefilter = Gtk.FileFilter()
         filefilter.set_name("Saved Game")
         filefilter.add_pattern("*.osm")
         self.add_filter(filefilter)
-
-        self.show()
-
-    def on_response(self, dialog, response):
-        self.destroy()

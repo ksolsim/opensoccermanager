@@ -23,6 +23,8 @@ import structures.currency
 import structures.user
 
 
+unsaved = False
+
 # User information class
 user = None
 
